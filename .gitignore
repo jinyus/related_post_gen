@@ -1,0 +1,5 @@
+rust/target
+rust_parallel/target
+go/related
+odin/main
+related*.json
