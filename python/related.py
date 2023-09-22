@@ -1,4 +1,5 @@
 import json
+from typing import Dict
 
 
 class Post:
@@ -42,21 +43,20 @@ def main():
 
     all_related_posts = []
     for post in posts:
-        related_posts = {}
+        related_posts_dict: Dict[Post, int] = {}
         for tag in post["tags"]:
             for related_post in tag_map[tag]:
                 if related_post._id != post["_id"]:
-                    if related_post not in related_posts:
-                        related_posts[related_post] = 0
-                    related_posts[related_post] += 1
+                    if related_post not in related_posts_dict:
+                        related_posts_dict[related_post] = 0
+                    related_posts_dict[related_post] += 1
 
-        related_posts_slice = [
-            PostWithSharedTags(p, c) for p, c in related_posts.items()
-        ]
-        related_posts_slice.sort(key=lambda x: x.shared_tags, reverse=True)
+        sorted_posts = sorted(
+            related_posts_dict.items(), key=lambda x: x[1], reverse=True
+        )
 
-        num = min(5, len(related_posts_slice))
-        top_posts = [p.post.to_dict() for p in related_posts_slice[:num]]
+        num = min(5, len(sorted_posts))
+        top_posts = [p[0].to_dict() for p in sorted_posts[:num]]
 
         all_related_posts.append(
             {
