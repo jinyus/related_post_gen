@@ -1,4 +1,4 @@
-use std::sync::{Mutex, Arc};
+use std::sync::{Arc, Mutex};
 
 use serde::{Deserialize, Serialize};
 use serde_json::from_str;
@@ -39,11 +39,12 @@ fn main() {
         }
     }
 
-    let related_posts: Arc<Mutex<Vec<RelatedPosts>>> = 
+    let related_posts: Arc<Mutex<Vec<RelatedPosts>>> =
         Arc::new(Mutex::new(Vec::with_capacity(posts.len())));
 
     posts.par_iter().for_each(|post| {
         let mut related_posts_map: FxHashMap<&Post, i8> = FxHashMap::default();
+        related_posts_map.reserve(posts.len());
 
         for tag in &post.tags {
             if let Some(tag_posts) = post_tags_map.get(tag) {
