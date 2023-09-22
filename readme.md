@@ -23,4 +23,4 @@ Generate related posts based on tags. Sort by the number of shared tags.
 | -------- | ---------- |
 | Go       | 1.58s      |
 | Rust     | 4.49s      |
-| Python   | 10.14s     |
+| Python   | 7.81s      |
