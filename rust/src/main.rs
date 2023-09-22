@@ -1,7 +1,16 @@
+use std::sync::{Mutex, Arc};
+
 use serde::{Deserialize, Serialize};
 use serde_json::from_str;
 // use std::collections::HashMap;
 use rustc_data_structures::fx::FxHashMap;
+
+use rayon::prelude::*;
+
+use mimalloc::MiMalloc;
+
+#[global_allocator]
+static GLOBAL: MiMalloc = MiMalloc;
 
 #[derive(Debug, Serialize, Deserialize, Clone, Eq, PartialEq, Hash)]
 struct Post {
@@ -30,9 +39,10 @@ fn main() {
         }
     }
 
-    let mut related_posts: Vec<RelatedPosts> = Vec::with_capacity(posts.len());
+    let related_posts: Arc<Mutex<Vec<RelatedPosts>>> = 
+        Arc::new(Mutex::new(Vec::with_capacity(posts.len())));
 
-    for post in posts.iter() {
+    posts.par_iter().for_each(|post| {
         let mut related_posts_map: FxHashMap<&Post, i8> = FxHashMap::default();
 
         for tag in &post.tags {
@@ -52,7 +62,9 @@ fn main() {
 
         related_posts_for_post.truncate(5);
 
-        related_posts.push(RelatedPosts {
+        let mut related = related_posts.lock().unwrap();
+
+        related.push(RelatedPosts {
             _id: &post._id,
             tags: &post.tags,
             related: related_posts_for_post
@@ -60,9 +72,11 @@ fn main() {
                 .map(|(post, _)| post)
                 .collect(),
         });
-    }
+    });
 
     // Write the result to a JSON file.
-    let json_str = serde_json::to_string(&related_posts).unwrap();
+    let related = related_posts.lock().unwrap();
+    let rel = related.as_slice();
+    let json_str = serde_json::to_string(rel).unwrap();
     std::fs::write("../related_posts_rust.json", json_str).unwrap();
 }
