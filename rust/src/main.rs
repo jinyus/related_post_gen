@@ -1,6 +1,7 @@
 use serde::{Deserialize, Serialize};
 use serde_json::from_str;
-use std::collections::HashMap;
+// use std::collections::HashMap;
+use rustc_data_structures::fx::FxHashMap;
 
 #[derive(Debug, Serialize, Deserialize, Clone, Eq, PartialEq, Hash)]
 struct Post {
@@ -21,7 +22,7 @@ fn main() {
     let json_str = std::fs::read_to_string("../posts.json").unwrap();
     let posts: Vec<Post> = from_str(&json_str).unwrap();
 
-    let mut post_tags_map: HashMap<&String, Vec<&Post>> = HashMap::new();
+    let mut post_tags_map: FxHashMap<&String, Vec<&Post>> = FxHashMap::default();
 
     for post in &posts {
         for tag in &post.tags {
@@ -32,7 +33,7 @@ fn main() {
     let mut related_posts: Vec<RelatedPosts> = Vec::with_capacity(posts.len());
 
     for post in posts.iter() {
-        let mut related_posts_map: HashMap<&Post, i8> = HashMap::new();
+        let mut related_posts_map: FxHashMap<&Post, i8> = FxHashMap::default();
 
         for tag in &post.tags {
             if let Some(tag_posts) = post_tags_map.get(tag) {
