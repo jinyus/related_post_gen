@@ -22,5 +22,5 @@ Generate related posts based on tags. Sort by the number of shared tags.
 | Language | Time (avg) |
 | -------- | ---------- |
 | Go       | 1.58s      |
-| Rust     | 4.97s      |
+| Rust     | 4.49s      |
 | Python   | 10.14s     |
