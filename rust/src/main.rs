@@ -32,9 +32,11 @@ fn main() {
 
     let mut related_posts: Vec<RelatedPosts> = Vec::with_capacity(posts.len());
 
-    for post in posts.iter() {
-        let mut related_posts_map: FxHashMap<&Post, i8> = FxHashMap::default();
+    let mut related_posts_map: FxHashMap<&Post, i8> = FxHashMap::default();
+    // related_posts_map.reserve(posts.len());
+    let mut related_posts_for_post: Vec<(&Post, i8)> = Vec::with_capacity(posts.len());
 
+    for post in posts.iter() {
         for tag in &post.tags {
             if let Some(tag_posts) = post_tags_map.get(tag) {
                 for other_post in tag_posts {
@@ -45,10 +47,12 @@ fn main() {
             }
         }
 
-        let mut related_posts_for_post: Vec<_> = related_posts_map.into_iter().collect();
+        // let mut related_posts_for_post: Vec<_> = related_posts_map.drain().collect();
+        related_posts_for_post.clear();
+        related_posts_for_post.extend(related_posts_map.drain());
 
         // related_videos_for_video.sort_unstable_by_key(|&(_, count)| -count);
-        related_posts_for_post.sort_by(|post_a, post_b| post_b.1.cmp(&post_a.1));
+        related_posts_for_post.sort_unstable_by(|post_a, post_b| post_b.1.cmp(&post_a.1));
 
         related_posts_for_post.truncate(5);
 
@@ -56,13 +60,12 @@ fn main() {
             _id: &post._id,
             tags: &post.tags,
             related: related_posts_for_post
-                .into_iter()
+                .drain(0..)
                 .map(|(post, _)| post)
                 .collect(),
         });
     }
 
-    // Write the result to a JSON file.
     let json_str = serde_json::to_string(&related_posts).unwrap();
     std::fs::write("../related_posts_rust.json", json_str).unwrap();
 }
