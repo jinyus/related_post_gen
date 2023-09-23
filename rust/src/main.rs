@@ -1,4 +1,4 @@
-use std::{cmp::Reverse, collections::BinaryHeap};
+use std::{cmp::Reverse, collections::BinaryHeap, time::Instant};
 
 use rustc_data_structures::fx::FxHashMap;
 use serde::{Deserialize, Serialize};
@@ -22,6 +22,8 @@ struct RelatedPosts<'a> {
 fn main() {
     let json_str = std::fs::read_to_string("../posts.json").unwrap();
     let posts: Vec<Post> = from_str(&json_str).unwrap();
+
+    let start = Instant::now();
 
     let mut post_tags_map: FxHashMap<&String, Vec<usize>> = FxHashMap::default();
 
@@ -70,6 +72,10 @@ fn main() {
             related: top_five.into_iter().map(|(_, post)| &posts[post]).collect(),
         });
     }
+
+    let end = Instant::now();
+
+    print!("Processing time (w/o IO): {:?}", end.duration_since(start));
 
     let json_str = serde_json::to_string(&related_posts).unwrap();
     std::fs::write("../related_posts_rust.json", json_str).unwrap();

@@ -1,8 +1,10 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"os"
+	"time"
 
 	"github.com/emirpasic/gods/trees/binaryheap"
 	"github.com/goccy/go-json"
@@ -38,6 +40,8 @@ func main() {
 	if err != nil {
 		log.Panicln(err)
 	}
+
+	start := time.Now()
 
 	tagMap := make(map[string][]int, 100)
 
@@ -94,6 +98,10 @@ func main() {
 			Related: topPosts,
 		})
 	}
+
+	end := time.Now()
+
+	fmt.Println("Processing time (w/o IO)", end.Sub(start))
 
 	file, err := os.Create("../related_posts_go.json")
 
