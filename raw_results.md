@@ -2,7 +2,7 @@ Device: Thinkpad p16s Gen 1 w/AMD Ryzen 7 PRO 6850U running Arch Linux
 
 Todo:
 
--   Run on VM
+-   Run on VM (Please submit a PR if you have the results from a VM)
 
 Go:
 
