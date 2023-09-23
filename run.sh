@@ -25,10 +25,10 @@ run_python() {
 
 check_output() {
     cd .. &&
+        echo "Checking output" &&
         python3 verify.py "$1"
 }
 
-# Check if the first arg is "go"
 if [ "$first_arg" = "go" ]; then
 
     run_go &&
@@ -54,6 +54,5 @@ elif [ "$first_arg" = "all" ]; then
         run_python
 
 else
-    # If the first arg is not "go", "rust", or "all", print an error message
     echo "Valid args: go | rust | python | all. Unknown argument: $first_arg"
 fi

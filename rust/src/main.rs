@@ -1,9 +1,8 @@
 use std::{cmp::Reverse, collections::BinaryHeap};
 
+use rustc_data_structures::fx::FxHashMap;
 use serde::{Deserialize, Serialize};
 use serde_json::from_str;
-// use std::collections::HashMap;
-use rustc_data_structures::fx::FxHashMap;
 
 #[derive(Debug, Serialize, Deserialize, Clone, Eq, PartialEq, Hash)]
 struct Post {
