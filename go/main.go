@@ -28,13 +28,13 @@ type RelatedPosts struct {
 }
 
 func main() {
-	f, err := os.Open("../posts.json")
+	file, err := os.Open("../posts.json")
 	if err != nil {
 		log.Panicln(err)
 	}
 
 	var posts []Post
-	err = json.NewDecoder(f).Decode(&posts)
+	err = json.NewDecoder(file).Decode(&posts)
 
 	if err != nil {
 		log.Panicln(err)
@@ -100,7 +100,7 @@ func main() {
 
 	fmt.Println("Processing time (w/o IO)", end.Sub(start))
 
-	file, err := os.Create("../related_posts_go.json")
+	file, err = os.Create("../related_posts_go.json")
 
 	if err != nil {
 		log.Panicln(err)
