@@ -42,8 +42,6 @@ func main() {
 
 	start := time.Now()
 
-	// create post comparator
-
 	tagMap := make(map[string][]int, 100)
 
 	for i, post := range posts {
@@ -113,13 +111,6 @@ func main() {
 	if err != nil {
 		log.Panicln(err)
 	}
-}
-
-func min(a, b int) int {
-	if a < b {
-		return a
-	}
-	return b
 }
 
 func PostComparator(a, b PostWithSharedTags) int {
