@@ -52,7 +52,6 @@ func main() {
 	allRelatedPosts := make([]RelatedPosts, len(posts))
 
 	relatedPosts := make(map[int]int, len(posts))
-	// relatedPostsSlice := make([]PostWithSharedTags, 0, len(posts))
 
 	for i, post := range posts {
 
@@ -78,15 +77,6 @@ func main() {
 			}
 		}
 
-		// for v, count := range relatedPosts {
-		// 	relatedPostsSlice = append(relatedPostsSlice, PostWithSharedTags{Post: v, SharedTags: count})
-		// }
-
-		// // // Sort the related posts by the number of shared tags.
-		// sort.Slice(relatedPostsSlice, func(i, j int) bool {
-		// 	return relatedPostsSlice[i].SharedTags > relatedPostsSlice[j].SharedTags
-		// })
-
 		num := min(5, t5.Size())
 		topPosts := make([]*Post, num)
 
@@ -103,7 +93,6 @@ func main() {
 		}
 
 		clear(relatedPosts)
-		// relatedPostsSlice = relatedPostsSlice[:0]
 
 	}
 
