@@ -75,7 +75,10 @@ fn main() {
 
     let end = Instant::now();
 
-    print!("Processing time (w/o IO): {:?}", end.duration_since(start));
+    print!(
+        "Processing time (w/o IO): {:?}\n",
+        end.duration_since(start)
+    );
 
     let json_str = serde_json::to_string(&related_posts).unwrap();
     std::fs::write("../related_posts_rust.json", json_str).unwrap();
