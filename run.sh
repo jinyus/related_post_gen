@@ -16,7 +16,19 @@ run_go() {
         if [ $HYPER == 1 ]; then
             command hyperfine -r 5 "./related"
         else
-            command time -f '%es %Mk' ./related
+            command ./related
+        fi
+}
+
+run_go_concurrent() {
+    echo "Running Go with concurrency" &&
+        cd ./go_con &&
+        go build &&
+        #command time -f '%es %Mk' ./related_concurrent
+        if [ $HYPER == 1 ]; then
+            command hyperfine -r 5 "./related_concurrent"
+        else
+            command ./related_concurrent
         fi
 }
 
@@ -27,7 +39,7 @@ run_rust() {
         if [ $HYPER == 1 ]; then
             command hyperfine -w 3 "./target/release/rust"
         else
-            command time -f '%es %Mk' ./target/release/rust
+            command ./target/release/rust
         fi
 }
 
@@ -62,6 +74,11 @@ if [ "$first_arg" = "go" ]; then
 
     run_go &&
         check_output "related_posts_go.json"
+
+elif [ "$first_arg" = "go_con" ]; then
+
+    run_go_concurrent &&
+        check_output "related_posts_rust.json"
 
 elif [ "$first_arg" = "rust" ]; then
 
