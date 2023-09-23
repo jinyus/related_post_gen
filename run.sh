@@ -3,24 +3,53 @@
 # Read the first arg passed to the script
 first_arg=$1
 
+HYPER=0
+if command -v hyperfine &> /dev/null; then
+    HYPER=1
+fi
+
 run_go() {
     echo "Running Go" &&
         cd ./go &&
         go build &&
-        command time -f '%es %Mk' ./related
+        #command time -f '%es %Mk' ./related
+        if [ $HYPER == 1 ]; then
+            command hyperfine -w 3 "./related"
+        else
+            command time -f '%es %Mk' ./related
+        fi
 }
 
 run_rust() {
     echo "Running Rust" &&
         cd ./rust &&
         cargo build --release &&
-        command time -f '%es %Mk' ./target/release/rust
+        if [ $HYPER == 1 ]; then
+            command hyperfine -w 3 "./target/release/rust"
+        else
+            command time -f '%es %Mk' ./target/release/rust
+        fi
+}
+
+run_rust_rayon() {
+    echo "Running Rust w/ Rayon" &&
+        cd ./rust_rayon &&
+        cargo build --release &&
+        if [ $HYPER == 1 ]; then
+            command hyperfine -w 3 "./target/release/rust_rayon"
+        else
+            command time -f '%es %Mk' ./target/release/rust_rayon
+        fi
 }
 
 run_python() {
     echo "Running Python" &&
         cd ./python &&
-        command time -f '%es %Mk' python3 ./related.py
+        if [ $HYPER == 1 ]; then
+            command hyperfine -w 3 "python3 ./related.py"
+        else
+            command time -f '%es %Mk' python3 ./related.py
+        fi
 }
 
 check_output() {
@@ -38,6 +67,11 @@ elif [ "$first_arg" = "rust" ]; then
 
     run_rust &&
         check_output "related_posts_rust.json"
+
+elif [ "$first_arg" = "rust_ray" ]; then
+
+    run_rust_rayon &&
+        check_output "related_posts_rust_rayon.json"
 
 elif [ "$first_arg" = "python" ]; then
 
