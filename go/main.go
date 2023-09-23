@@ -4,7 +4,8 @@ import (
 	"encoding/json"
 	"log"
 	"os"
-	"sort"
+
+	"github.com/emirpasic/gods/trees/binaryheap"
 )
 
 type Post struct {
@@ -20,7 +21,7 @@ type RelatedPosts struct {
 }
 
 type PostWithSharedTags struct {
-	Post       *Post
+	Post       int
 	SharedTags int
 }
 
@@ -40,45 +41,59 @@ func main() {
 		log.Fatalln(err)
 	}
 
-	tagMap := make(map[string][]*Post)
+	tagMap := make(map[string][]int)
 
-	// Create tags map for each post for better intersection performance
 	for i := range posts {
 		for _, tag := range posts[i].Tags {
-			tagMap[tag] = append(tagMap[tag], &posts[i])
+			tagMap[tag] = append(tagMap[tag], i)
 		}
 	}
 
 	allRelatedPosts := make([]RelatedPosts, len(posts))
 
-	for i, post := range posts {
+	relatedPosts := make(map[int]int, len(posts))
+	// relatedPostsSlice := make([]PostWithSharedTags, 0, len(posts))
 
-		relatedPosts := make(map[*Post]int)
+	for i, post := range posts {
 
 		for _, tag := range post.Tags {
 			for _, relatedPost := range tagMap[tag] {
-				if relatedPost.ID != post.ID {
+				if relatedPost != i {
 					relatedPosts[relatedPost]++
 				}
 			}
 		}
 
-		relatedPostsSlice := make([]PostWithSharedTags, 0, len(relatedPosts))
+		t5 := binaryheap.NewWith(PostComparator)
 
 		for v, count := range relatedPosts {
-			relatedPostsSlice = append(relatedPostsSlice, PostWithSharedTags{Post: v, SharedTags: count})
+			if t5.Size() < 5 {
+				t5.Push(PostWithSharedTags{Post: v, SharedTags: count})
+			} else {
+				if t, _ := t5.Peek(); t.(PostWithSharedTags).SharedTags < count {
+					t5.Pop()
+					t5.Push(PostWithSharedTags{Post: v, SharedTags: count})
+				}
+
+			}
 		}
 
-		// // Sort the related posts by the number of shared tags.
-		sort.Slice(relatedPostsSlice, func(i, j int) bool {
-			return relatedPostsSlice[i].SharedTags > relatedPostsSlice[j].SharedTags
-		})
+		// for v, count := range relatedPosts {
+		// 	relatedPostsSlice = append(relatedPostsSlice, PostWithSharedTags{Post: v, SharedTags: count})
+		// }
 
-		num := min(5, len(relatedPostsSlice))
+		// // // Sort the related posts by the number of shared tags.
+		// sort.Slice(relatedPostsSlice, func(i, j int) bool {
+		// 	return relatedPostsSlice[i].SharedTags > relatedPostsSlice[j].SharedTags
+		// })
+
+		num := min(5, t5.Size())
 		topPosts := make([]*Post, num)
 
 		for i := 0; i < num; i++ {
-			topPosts[i] = relatedPostsSlice[i].Post
+			if t, _ := t5.Pop(); t != nil {
+				topPosts[i] = &posts[t.(PostWithSharedTags).Post]
+			}
 		}
 
 		allRelatedPosts[i] = RelatedPosts{
@@ -86,6 +101,9 @@ func main() {
 			Tags:    post.Tags,
 			Related: topPosts,
 		}
+
+		clear(relatedPosts)
+		// relatedPostsSlice = relatedPostsSlice[:0]
 
 	}
 
@@ -100,4 +118,20 @@ func main() {
 	if err != nil {
 		log.Fatalln(err)
 	}
+}
+
+func PostComparator(a, b interface{}) int {
+	aAsserted := a.(PostWithSharedTags)
+	bAsserted := b.(PostWithSharedTags)
+
+	if aAsserted.SharedTags > bAsserted.SharedTags {
+		return 1
+
+	} else if aAsserted.SharedTags < bAsserted.SharedTags {
+		return -1
+
+	} else {
+		return 0
+	}
+
 }

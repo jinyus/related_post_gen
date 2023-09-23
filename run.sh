@@ -4,7 +4,7 @@
 first_arg=$1
 
 HYPER=0
-if command -v hyperfine &> /dev/null; then
+if command -v hyperfine &>/dev/null; then
     HYPER=1
 fi
 
@@ -14,7 +14,7 @@ run_go() {
         go build &&
         #command time -f '%es %Mk' ./related
         if [ $HYPER == 1 ]; then
-            command hyperfine -w 3 "./related"
+            command hyperfine -r 3 "./related"
         else
             command time -f '%es %Mk' ./related
         fi
