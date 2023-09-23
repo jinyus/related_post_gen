@@ -4,8 +4,7 @@ import (
 	"encoding/json"
 	"log"
 	"os"
-
-	"github.com/emirpasic/gods/trees/binaryheap"
+	// "github.com/emirpasic/gods/trees/binaryheap"
 )
 
 type Post struct {
@@ -53,6 +52,8 @@ func main() {
 
 	relatedPosts := make(map[int]int, len(posts))
 
+	h := PostHeap{}
+
 	for i, post := range posts {
 
 		for _, tag := range post.Tags {
@@ -63,27 +64,27 @@ func main() {
 			}
 		}
 
-		t5 := binaryheap.NewWith(PostComparator)
+		// t5 := binheap.EmptyTopNHeap(5, PostComparator)
+
+		// for v, count := range relatedPosts {
+		// 	t5.Push(PostWithSharedTags{Post: v, SharedTags: count})
+		// }
+
+		// // num := min(5, t5.Size())
+		// topPosts := make([]*Post, 5)
+
+		// for i, val := range t5.PopTopN() {
+		// 	topPosts[i] = &posts[val.Post]
+		// }
 
 		for v, count := range relatedPosts {
-			if t5.Size() < 5 {
-				t5.Push(PostWithSharedTags{Post: v, SharedTags: count})
-			} else {
-				if t, _ := t5.Peek(); t.(PostWithSharedTags).SharedTags < count {
-					t5.Pop()
-					t5.Push(PostWithSharedTags{Post: v, SharedTags: count})
-				}
-
-			}
+			h.Push(PostWithSharedTags{Post: v, SharedTags: count})
 		}
 
-		num := min(5, t5.Size())
-		topPosts := make([]*Post, num)
+		topPosts := make([]*Post, 5)
 
-		for i := 0; i < num; i++ {
-			if t, _ := t5.Pop(); t != nil {
-				topPosts[i] = &posts[t.(PostWithSharedTags).Post]
-			}
+		for i := 0; i < 5; i++ {
+			topPosts[i] = &posts[h[i].Post]
 		}
 
 		allRelatedPosts[i] = RelatedPosts{
@@ -93,7 +94,7 @@ func main() {
 		}
 
 		clear(relatedPosts)
-
+		clear(h)
 	}
 
 	file, err := os.Create("../related_posts_go.json")
@@ -109,18 +110,16 @@ func main() {
 	}
 }
 
-func PostComparator(a, b interface{}) int {
-	aAsserted := a.(PostWithSharedTags)
-	bAsserted := b.(PostWithSharedTags)
+func PostComparator(a, b PostWithSharedTags) bool {
 
-	if aAsserted.SharedTags > bAsserted.SharedTags {
-		return 1
+	if a.SharedTags > b.SharedTags {
+		return true
 
-	} else if aAsserted.SharedTags < bAsserted.SharedTags {
-		return -1
+	} else if a.SharedTags < b.SharedTags {
+		return false
 
 	} else {
-		return 0
+		return false
 	}
 
 }
