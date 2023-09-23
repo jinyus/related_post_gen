@@ -42,7 +42,6 @@ fn main() {
             if let Some(tag_posts) = post_tags_map.get(tag) {
                 for other_post_idx in tag_posts {
                     if idx != *other_post_idx {
-                        // *related_posts_map.entry(other_post_idx).or_default() += 1;
                         tagged_post_count[*other_post_idx] += 1;
                     }
                 }
