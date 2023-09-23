@@ -26,46 +26,47 @@ type PostWithSharedTags struct {
 }
 
 func main() {
-
 	f, err := os.Open("../posts.json")
-
 	if err != nil {
-		log.Fatalln(err)
+		log.Panicln(err)
 	}
 
 	var posts []Post
-
 	err = json.NewDecoder(f).Decode(&posts)
 
 	if err != nil {
-		log.Fatalln(err)
+		log.Panicln(err)
 	}
 
 	tagMap := make(map[string][]int)
 
-	for i := range posts {
-		for _, tag := range posts[i].Tags {
+	for i, post := range posts {
+		for _, tag := range post.Tags {
 			tagMap[tag] = append(tagMap[tag], i)
 		}
 	}
 
-	allRelatedPosts := make([]RelatedPosts, len(posts))
+	allRelatedPosts := make([]RelatedPosts, 0, len(posts))
 
-	relatedPosts := make(map[int]int, len(posts))
+	taggedPostCount := make([]int, len(posts))
 
 	for i, post := range posts {
+		// luckily this is optimized to a memset
+		for i := range taggedPostCount {
+			taggedPostCount[i] = 0
+		}
 
 		for _, tag := range post.Tags {
-			for _, relatedPost := range tagMap[tag] {
-				if relatedPost != i {
-					relatedPosts[relatedPost]++
+			for _, otherPostIdx := range tagMap[tag] {
+				if otherPostIdx != i {
+					taggedPostCount[otherPostIdx]++
 				}
 			}
 		}
 
 		t5 := binaryheap.NewWith(PostComparator)
 
-		for v, count := range relatedPosts {
+		for v, count := range taggedPostCount {
 			if t5.Size() < 5 {
 				t5.Push(PostWithSharedTags{Post: v, SharedTags: count})
 			} else {
@@ -86,26 +87,23 @@ func main() {
 			}
 		}
 
-		allRelatedPosts[i] = RelatedPosts{
+		allRelatedPosts = append(allRelatedPosts, RelatedPosts{
 			ID:      post.ID,
 			Tags:    post.Tags,
 			Related: topPosts,
-		}
-
-		clear(relatedPosts)
-
+		})
 	}
 
 	file, err := os.Create("../related_posts_go.json")
 
 	if err != nil {
-		log.Fatalln(err)
+		log.Panicln(err)
 	}
 
 	err = json.NewEncoder(file).Encode(allRelatedPosts)
 
 	if err != nil {
-		log.Fatalln(err)
+		log.Panicln(err)
 	}
 }
 
