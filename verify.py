@@ -59,5 +59,5 @@ if __name__ == "__main__":
             )
             sys.exit(1)
 
-    print("All posts are valid!")
+    print(f"Output file: {filepath} is valid!")
     sys.exit(0)
