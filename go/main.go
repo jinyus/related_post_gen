@@ -67,8 +67,6 @@ func main() {
 			}
 		}
 
-		t5.Clear() // Clear the heap for next post
-
 		for v, count := range taggedPostCount {
 			if t5.Size() < 5 {
 				t5.Push(PostWithSharedTags{Post: v, SharedTags: count})
