@@ -33,41 +33,42 @@ fn main() {
 
     let mut related_posts: Vec<RelatedPosts> = Vec::with_capacity(posts.len());
 
-    let mut related_posts_map: FxHashMap<&usize, i8> = FxHashMap::default();
+    let mut tagged_post_count = vec![0; posts.len()];
 
     for (idx, post) in posts.iter().enumerate() {
+        tagged_post_count.fill(0);
+
         for tag in &post.tags {
             if let Some(tag_posts) = post_tags_map.get(tag) {
                 for other_post_idx in tag_posts {
                     if idx != *other_post_idx {
-                        *related_posts_map.entry(other_post_idx).or_default() += 1;
+                        // *related_posts_map.entry(other_post_idx).or_default() += 1;
+                        tagged_post_count[*other_post_idx] += 1;
                     }
                 }
             }
         }
 
         let mut top_five = BinaryHeap::new();
-        related_posts_map.iter().for_each(|(&post, &count)| {
-            if top_five.len() < 5 {
-                top_five.push((Reverse(count), post));
-            } else {
-                let (Reverse(cnt), _) = top_five.peek().unwrap();
-                if count > *cnt {
-                    top_five.pop();
+        tagged_post_count
+            .iter()
+            .enumerate()
+            .for_each(|(post, count)| {
+                if top_five.len() < 5 {
                     top_five.push((Reverse(count), post));
+                } else {
+                    let (Reverse(cnt), _) = top_five.peek().unwrap();
+                    if count > *cnt {
+                        top_five.pop();
+                        top_five.push((Reverse(count), post));
+                    }
                 }
-            }
-        });
-
-        related_posts_map.clear();
+            });
 
         related_posts.push(RelatedPosts {
             _id: &post._id,
             tags: &post.tags,
-            related: top_five
-                .into_iter()
-                .map(|(_, post)| &posts[*post])
-                .collect(),
+            related: top_five.into_iter().map(|(_, post)| &posts[post]).collect(),
         });
     }
 
