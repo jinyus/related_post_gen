@@ -14,7 +14,7 @@ run_go() {
         go build &&
         #command time -f '%es %Mk' ./related
         if [ $HYPER == 1 ]; then
-            command hyperfine -r 10 -w 3 "./related"
+            command hyperfine --show-output -r 10 -w 3 "./related"
         else
             command ./related
         fi
@@ -37,7 +37,7 @@ run_rust() {
         cd ./rust &&
         cargo build --release &&
         if [ $HYPER == 1 ]; then
-            command hyperfine -r 10 -w 3 "./target/release/rust"
+            command hyperfine --show-output-r 10 -w 3 "./target/release/rust"
         else
             command ./target/release/rust
         fi
@@ -48,7 +48,7 @@ run_rust_rayon() {
         cd ./rust_rayon &&
         cargo build --release &&
         if [ $HYPER == 1 ]; then
-            command hyperfine -r 10 -w 3 "./target/release/rust_rayon"
+            command hyperfine --show-output -r 10 -w 3 "./target/release/rust_rayon"
         else
             command time -f '%es %Mk' ./target/release/rust_rayon
         fi
