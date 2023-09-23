@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"log"
 	"os"
-	// "github.com/emirpasic/gods/trees/binaryheap"
 )
 
 type Post struct {
@@ -63,19 +62,6 @@ func main() {
 				}
 			}
 		}
-
-		// t5 := binheap.EmptyTopNHeap(5, PostComparator)
-
-		// for v, count := range relatedPosts {
-		// 	t5.Push(PostWithSharedTags{Post: v, SharedTags: count})
-		// }
-
-		// // num := min(5, t5.Size())
-		// topPosts := make([]*Post, 5)
-
-		// for i, val := range t5.PopTopN() {
-		// 	topPosts[i] = &posts[val.Post]
-		// }
 
 		for v, count := range relatedPosts {
 			h.Push(PostWithSharedTags{Post: v, SharedTags: count})
