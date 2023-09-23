@@ -6,8 +6,8 @@ import (
 	"os"
 	"time"
 
-	"github.com/emirpasic/gods/trees/binaryheap"
 	"github.com/goccy/go-json"
+	"github.com/ugurcsen/gods-generic/trees/binaryheap"
 )
 
 type Post struct {
@@ -16,26 +16,25 @@ type Post struct {
 	Tags  []string `json:"tags"`
 }
 
+type PostWithSharedTags struct {
+	Post       int
+	SharedTags int
+}
+
 type RelatedPosts struct {
 	ID      string   `json:"_id"`
 	Tags    []string `json:"tags"`
 	Related []*Post  `json:"related"`
 }
 
-type PostWithSharedTags struct {
-	Post       int
-	SharedTags int
-}
-
 func main() {
-
-	file, err := os.Open("../posts.json")
+	f, err := os.Open("../posts.json")
 	if err != nil {
 		log.Panicln(err)
 	}
 
 	var posts []Post
-	err = json.NewDecoder(file).Decode(&posts)
+	err = json.NewDecoder(f).Decode(&posts)
 
 	if err != nil {
 		log.Panicln(err)
@@ -52,16 +51,15 @@ func main() {
 	}
 
 	allRelatedPosts := make([]RelatedPosts, 0, len(posts))
-
 	taggedPostCount := make([]int, len(posts))
+	t5 := binaryheap.NewWith[PostWithSharedTags](PostComparator)
 
-	for i, post := range posts {
-		// luckily this is optimized to a memset
-		for i := range taggedPostCount {
-			taggedPostCount[i] = 0
+	for i := range posts {
+		for j := range taggedPostCount {
+			taggedPostCount[j] = 0
 		}
 
-		for _, tag := range post.Tags {
+		for _, tag := range posts[i].Tags {
 			for _, otherPostIdx := range tagMap[tag] {
 				if otherPostIdx != i {
 					taggedPostCount[otherPostIdx]++
@@ -69,17 +67,16 @@ func main() {
 			}
 		}
 
-		t5 := binaryheap.NewWith(PostComparator)
+		t5.Clear() // Clear the heap for next post
 
 		for v, count := range taggedPostCount {
 			if t5.Size() < 5 {
 				t5.Push(PostWithSharedTags{Post: v, SharedTags: count})
 			} else {
-				if t, _ := t5.Peek(); t.(PostWithSharedTags).SharedTags < count {
+				if t, _ := t5.Peek(); t.SharedTags < count {
 					t5.Pop()
 					t5.Push(PostWithSharedTags{Post: v, SharedTags: count})
 				}
-
 			}
 		}
 
@@ -87,14 +84,14 @@ func main() {
 		topPosts := make([]*Post, num)
 
 		for i := 0; i < num; i++ {
-			if t, _ := t5.Pop(); t != nil {
-				topPosts[i] = &posts[t.(PostWithSharedTags).Post]
+			if t, ok := t5.Pop(); ok {
+				topPosts[i] = &posts[t.Post]
 			}
 		}
 
 		allRelatedPosts = append(allRelatedPosts, RelatedPosts{
-			ID:      post.ID,
-			Tags:    post.Tags,
+			ID:      posts[i].ID,
+			Tags:    posts[i].Tags,
 			Related: topPosts,
 		})
 	}
@@ -103,7 +100,7 @@ func main() {
 
 	fmt.Println("Processing time (w/o IO)", end.Sub(start))
 
-	file, err = os.Create("../related_posts_go.json")
+	file, err := os.Create("../related_posts_go.json")
 
 	if err != nil {
 		log.Panicln(err)
@@ -114,21 +111,14 @@ func main() {
 	if err != nil {
 		log.Panicln(err)
 	}
-
 }
 
-func PostComparator(a, b interface{}) int {
-	aAsserted := a.(PostWithSharedTags)
-	bAsserted := b.(PostWithSharedTags)
-
-	if aAsserted.SharedTags > bAsserted.SharedTags {
+func PostComparator(a, b PostWithSharedTags) int {
+	if a.SharedTags > b.SharedTags {
 		return 1
-
-	} else if aAsserted.SharedTags < bAsserted.SharedTags {
-		return -1
-
-	} else {
-		return 0
 	}
-
+	if a.SharedTags < b.SharedTags {
+		return -1
+	}
+	return 0
 }
