@@ -19,11 +19,12 @@ Generate related posts based on tags. Sort by the number of shared tags.
 
 ### Results (on my machine)
 
-| Language | Time (avg) |
-| -------- | ---------- |
-| Go       | 1.58s      |
-| Rust     | 0.04s      |
-| Python   | 7.81s      |
+| Language     | Time (avg) |
+| ------------ | ---------- |
+| Go           | 1.58s      |
+| Rust         | 0.04s      |
+| Rust (Rayon) | 0.02s      |
+| Python       | 7.81s      |
 
 #### Special thanks these reddits users for optimizing the Rust code
 

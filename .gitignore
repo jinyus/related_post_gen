@@ -1,5 +1,5 @@
 rust/target
-rust_parallel/target
+rust_rayon/target
 go/related
 odin/main
 related*.json
