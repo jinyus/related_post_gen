@@ -46,7 +46,7 @@ run_python() {
     echo "Running Python" &&
         cd ./python &&
         if [ $HYPER == 1 ]; then
-            command hyperfine -w 3 "python3 ./related.py"
+            command hyperfine -r 1 "python3 ./related.py"
         else
             command time -f '%es %Mk' python3 ./related.py
         fi
