@@ -1,11 +1,11 @@
 package main
 
 import (
-	"encoding/json"
 	"log"
 	"os"
 
 	"github.com/emirpasic/gods/trees/binaryheap"
+	"github.com/goccy/go-json"
 )
 
 type Post struct {
@@ -26,6 +26,7 @@ type PostWithSharedTags struct {
 }
 
 func main() {
+
 	f, err := os.Open("../posts.json")
 	if err != nil {
 		log.Panicln(err)
@@ -38,7 +39,7 @@ func main() {
 		log.Panicln(err)
 	}
 
-	tagMap := make(map[string][]int)
+	tagMap := make(map[string][]int, 100)
 
 	for i, post := range posts {
 		for _, tag := range post.Tags {
@@ -105,6 +106,7 @@ func main() {
 	if err != nil {
 		log.Panicln(err)
 	}
+
 }
 
 func PostComparator(a, b interface{}) int {
