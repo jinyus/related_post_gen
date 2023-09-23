@@ -14,7 +14,7 @@ run_go() {
         go build &&
         #command time -f '%es %Mk' ./related
         if [ $HYPER == 1 ]; then
-            command hyperfine -r 5 "./related"
+            command hyperfine -r 10 "./related"
         else
             command time -f '%es %Mk' ./related
         fi
