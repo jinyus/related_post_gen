@@ -74,6 +74,7 @@ func main() {
 		<-doneChan
 	}
 	close(resultsChan)
+	close(doneChan)
 
 	allRelatedPosts := make([]RelatedPosts, len(posts))
 	for r := range resultsChan {

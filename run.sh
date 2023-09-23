@@ -14,7 +14,7 @@ run_go() {
         go build &&
         #command time -f '%es %Mk' ./related
         if [ $HYPER == 1 ]; then
-            command hyperfine -r 5 "./related"
+            command hyperfine -r 10 -w 3 "./related"
         else
             command ./related
         fi
@@ -26,7 +26,7 @@ run_go_concurrent() {
         go build &&
         #command time -f '%es %Mk' ./related_concurrent
         if [ $HYPER == 1 ]; then
-            command hyperfine -r 5 "./related_concurrent"
+            command hyperfine -r 10 -w 3 "./related_concurrent"
         else
             command ./related_concurrent
         fi
@@ -37,7 +37,7 @@ run_rust() {
         cd ./rust &&
         cargo build --release &&
         if [ $HYPER == 1 ]; then
-            command hyperfine -w 3 "./target/release/rust"
+            command hyperfine -r 10 -w 3 "./target/release/rust"
         else
             command ./target/release/rust
         fi
@@ -48,7 +48,7 @@ run_rust_rayon() {
         cd ./rust_rayon &&
         cargo build --release &&
         if [ $HYPER == 1 ]; then
-            command hyperfine -w 3 "./target/release/rust_rayon"
+            command hyperfine -r 10 -w 3 "./target/release/rust_rayon"
         else
             command time -f '%es %Mk' ./target/release/rust_rayon
         fi
@@ -102,7 +102,9 @@ elif [ "$first_arg" = "all" ]; then
         cd .. &&
         run_rust &&
         cd .. &&
-        run_python
+        run_rust_rayon &&
+        cd .. &&
+        run_python 
 
 else
     echo "Valid args: go | rust | python | all. Unknown argument: $first_arg"
