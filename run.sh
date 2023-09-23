@@ -23,18 +23,26 @@ run_python() {
         command time -f '%es %Mk' python3 ./related.py
 }
 
+check_output() {
+    cd .. &&
+        python3 verify.py "$1"
+}
+
 # Check if the first arg is "go"
 if [ "$first_arg" = "go" ]; then
 
-    run_go
+    run_go &&
+        check_output "related_posts_go.json"
 
 elif [ "$first_arg" = "rust" ]; then
 
-    run_rust
+    run_rust &&
+        check_output "related_posts_rust.json"
 
 elif [ "$first_arg" = "python" ]; then
 
-    run_python
+    run_python &&
+        check_output "related_posts_python.json"
 
 elif [ "$first_arg" = "all" ]; then
 
