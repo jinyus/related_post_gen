@@ -3,7 +3,6 @@ use std::{
     time::{Duration, Instant},
 };
 
-use rayon::prelude::*;
 use rustc_data_structures::fx::FxHashMap;
 use serde::{Deserialize, Serialize};
 use serde_json::from_str;
@@ -12,7 +11,7 @@ use mimalloc::MiMalloc;
 #[global_allocator]
 static GLOBAL: MiMalloc = MiMalloc;
 
-#[derive(Debug, Serialize, Deserialize, Clone, Eq, PartialEq, Hash)]
+#[derive(Serialize, Deserialize)]
 struct Post {
     _id: String,
     title: String,
@@ -22,7 +21,7 @@ struct Post {
 
 const NUM_TOP_ITEMS: usize = 5;
 
-#[derive(Debug, Serialize)]
+#[derive(Serialize)]
 struct RelatedPosts<'a> {
     _id: &'a String,
     tags: &'a Vec<String>,
@@ -49,15 +48,20 @@ impl std::cmp::PartialOrd for PostCount {
 
 impl std::cmp::Ord for PostCount {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering {
+        // reverse order
         other.count.cmp(&self.count)
     }
 }
 
 fn least_n<T: Ord>(n: usize, mut from: impl Iterator<Item = T>) -> impl Iterator<Item = T> {
     let mut h = BinaryHeap::from_iter(from.by_ref().take(n));
+
     for it in from {
+        // heap thinks the smallest is the greatest because of reverse order
         let mut greatest = h.peek_mut().unwrap();
+
         if it < *greatest {
+            // heap rebalances after the smart pointer is dropped
             *greatest = it;
         }
     }
@@ -74,11 +78,11 @@ fn process(posts: &[Post]) -> Vec<RelatedPosts<'_>> {
     }
 
     posts
-        .par_iter()
+        .iter()
         .enumerate()
         .map(|(idx, post)| {
+            // faster than allocating outside the loop
             let mut tagged_post_count = vec![0; posts.len()];
-            tagged_post_count.fill(0);
 
             for tag in &post.tags {
                 if let Some(tag_posts) = post_tags_map.get(tag) {
@@ -97,7 +101,6 @@ fn process(posts: &[Post]) -> Vec<RelatedPosts<'_>> {
                     .enumerate()
                     .map(|(post, &count)| PostCount { post, count }),
             );
-
             let related = top.map(|it| &posts[it.post]).collect();
 
             RelatedPosts {
@@ -144,5 +147,5 @@ fn main() {
     );
 
     let json_str = serde_json::to_string(&related_posts).unwrap();
-    std::fs::write("../related_posts_rust_rayon.json", json_str).unwrap();
+    std::fs::write("../related_posts_rust_max.json", json_str).unwrap();
 }
