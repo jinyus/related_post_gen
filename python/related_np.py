@@ -6,6 +6,7 @@ import time
 def main():
     with open("../posts.json") as f:
         posts = json.load(f)
+    t0 = time.monotonic()
     tags = []
     for post in posts:
         tags.extend(post['tags'])
@@ -18,16 +19,15 @@ def main():
         for j, utag in enumerate(unique_tags):
             tag_map[i,j] = int(utag in post['tags'])
 
-    related_posts = np.empty((len(posts),5), dtype=np.uint16)
-    for i in range(len(posts)):
-        # This it the linear algebra, because tag_map is arranged as a matrix,
-        # a matmul with a vector accomplishes the same thing as the nested for
-        # loop and sum operation in one function
-        # call using highly optimized BLAS routines.
+    # This it the linear algebra, because tag_map is arranged as a matrix,
+    # a matmul with a vector accomplishes the same thing as the nested for
+    # loop and sum operation in one function
+    # call using highly optimized BLAS routines.
+    
+    relatedness = np.squeeze(np.dot(tag_map[:,None,:], tag_map[:,:,None]))
+    np.fill_diagonal(relatedness, 0)
+    related_posts = np.flip(np.argsort(relatedness,axis=1,kind='stable')[:,-5:],axis=1)
 
-        relatedness = tag_map @ tag_map[i,:]
-        relatedness[i] = 0
-        related_posts[i,:] = np.argsort(relatedness, )[-5:][::-1]
 
     all_related = []
     for i, post in enumerate(posts):
@@ -37,10 +37,10 @@ def main():
                 "tags": post["tags"],
                 "related": [posts[idx].copy() for idx in related_posts[i,:]],
             })
-    
+    t1 = time.monotonic()
     with open("../related_posts_python_np.json", "w") as f:
         json.dump(all_related, f)
-
+    print(f'took: {t1-t0:.3f} without IO')
 if __name__ == "__main__":
 #    t0 = time.monotonic()
     main()
