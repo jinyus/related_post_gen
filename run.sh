@@ -13,9 +13,20 @@ run_go() {
         cd ./go &&
         go build &&
         if [ $HYPER == 1 ]; then
-            command hyperfine -r 10 --show-output "./related"
+            command hyperfine --show-output -r 10 -w 3 "./related"
         else
             command time -f '%es %Mk' ./related
+        fi
+}
+
+run_go_concurrent() {
+    echo "Running Go with concurrency" &&
+        cd ./go_con &&
+        go build &&
+        if [ $HYPER == 1 ]; then
+            command hyperfine --show-output -r 10 -w 3 "./related_concurrent"
+        else
+            command time -f '%es %Mk' ./related_concurrent
         fi
 }
 
@@ -24,9 +35,9 @@ run_rust() {
         cd ./rust &&
         cargo build --release &&
         if [ $HYPER == 1 ]; then
-            command hyperfine -r 20 --show-output "./target/release/rust"
+            command hyperfine --show-output -r 10 -w 3 "./target/release/rust"
         else
-            command time -f '%es %Mk' ./target/release/rust
+            command ./target/release/rust
         fi
 }
 
@@ -35,7 +46,7 @@ run_rust_rayon() {
         cd ./rust_rayon &&
         cargo build --release &&
         if [ $HYPER == 1 ]; then
-            command hyperfine -r 10 --show-output "./target/release/rust_rayon"
+            command hyperfine --show-output -r 10 -w 3 "./target/release/rust_rayon"
         else
             command time -f '%es %Mk' ./target/release/rust_rayon
         fi
@@ -45,7 +56,7 @@ run_python() {
     echo "Running Python" &&
         cd ./python &&
         if [ $HYPER == 1 ]; then
-            command hyperfine -r 2 --show-output "python3 ./related.py"
+            command hyperfine -r 1 "python3 ./related.py"
         else
             command time -f '%es %Mk' python3 ./related.py
         fi
@@ -61,6 +72,11 @@ if [ "$first_arg" = "go" ]; then
 
     run_go &&
         check_output "related_posts_go.json"
+
+elif [ "$first_arg" = "go_con" ]; then
+
+    run_go_concurrent &&
+        check_output "related_posts_go_con.json"
 
 elif [ "$first_arg" = "rust" ]; then
 
@@ -83,6 +99,8 @@ elif [ "$first_arg" = "all" ]; then
         run_go &&
         cd .. &&
         run_rust &&
+        cd .. &&
+        run_rust_rayon &&
         cd .. &&
         run_python
 
