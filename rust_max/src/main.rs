@@ -48,15 +48,20 @@ impl std::cmp::PartialOrd for PostCount {
 
 impl std::cmp::Ord for PostCount {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering {
+        // reverse order
         other.count.cmp(&self.count)
     }
 }
 
 fn least_n<T: Ord>(n: usize, mut from: impl Iterator<Item = T>) -> impl Iterator<Item = T> {
     let mut h = BinaryHeap::from_iter(from.by_ref().take(n));
+
     for it in from {
+        // heap thinks the smallest is the greatest because of reverse order
         let mut greatest = h.peek_mut().unwrap();
+
         if it < *greatest {
+            // heap rebalances after the smart pointer is dropped
             *greatest = it;
         }
     }
