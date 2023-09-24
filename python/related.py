@@ -44,17 +44,17 @@ def main():
 
     all_related_posts = []
     for this_post_idx, post in enumerate(posts):
-        related_posts_dict: Dict[int, int] = {}
+        related_posts_list = [0] * len(posts)
         for tag in post["tags"]:
             for related_post in tag_map[tag]:
                 if related_post != this_post_idx:
-                    if related_post not in related_posts_dict:
-                        related_posts_dict[related_post] = 0
-                    related_posts_dict[related_post] += 1
+                    related_posts_list[related_post] += 1
 
         top_posts = [
             {k: posts[p][k] for k in ("_id", "title", "tags")}
-            for p in heapq.nlargest(5, related_posts_dict, key=related_posts_dict.get)
+            for p in heapq.nlargest(
+                5, range(len(posts)), key=lambda x: related_posts_list[x]
+            )
         ]
 
         all_related_posts.append(

@@ -16,7 +16,7 @@ run_go() {
         if [ $HYPER == 1 ]; then
             command hyperfine -r 10 --show-output "./related"
         else
-            command time -f '%es %Mk' ./related
+            command /usr/bin/time -f '%es %Mk' ./related
         fi
 }
 
@@ -25,7 +25,7 @@ run_rust() {
         cd ./rust &&
         cargo build --release &&
         if [ $HYPER == 1 ]; then
-            command hyperfine -r 10 --show-output "./target/release/rust"
+            command hyperfine -r 40 --show-output "./target/release/rust"
         else
             command time -f '%es %Mk' ./target/release/rust
         fi
