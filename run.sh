@@ -103,6 +103,20 @@ run_python_pandas() {
         fi
 }
 
+run_python_polars() {
+    echo "Running Python with Polars" &&
+        cd ./python &&
+        if [ ! -d "venv" ]; then
+            python3 -m venv venv
+        fi
+        ./venv/bin/pip freeze | grep polars || ./venv/bin/pip install polars &&
+        if [ $HYPER == 1 ]; then
+            command hyperfine -r 5 --show-output "./venv/bin/python3 ./related_pl.py"
+        else
+            command time -f '%es %Mk' ./venv/bin/python3 ./related_pl.py
+        fi
+}
+
 check_output() {
     cd .. &&
         echo "Checking output" &&
@@ -148,6 +162,11 @@ elif [ "$first_arg" = "pandas" ]; then
     run_python_pandas &&
         check_output "related_posts_python_pd.json"
 
+elif [ "$first_arg" = "polars" ]; then
+
+    run_python_polars &&
+        check_output "related_posts_python_pl.json"
+
 elif [ "$first_arg" = "all" ]; then
 
     echo "running all" &&
@@ -160,6 +179,8 @@ elif [ "$first_arg" = "all" ]; then
         run_python
         cd .. &&
         run_python_pandas
+        cd .. &&
+        run_python_polars
 
 elif [ "$first_arg" = "clean" ]; then
 
@@ -171,5 +192,5 @@ elif [ "$first_arg" = "clean" ]; then
         cd rust_rayon && cargo clean
 
 else
-    echo "Valid args: go | rust | py | numpy | pandas | all | clean. Unknown argument: $first_arg"
+    echo "Valid args: go | rust | py | numpy | pandas | polars | all | clean. Unknown argument: $first_arg"
 fi
