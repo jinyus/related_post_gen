@@ -6,3 +6,4 @@ go_con/related_concurrent
 odin/main
 related*.json
 .DS_Store
+.vscode/settings.json
