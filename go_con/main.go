@@ -85,7 +85,7 @@ func main() {
 
 	fmt.Println("Processing time (w/o IO)", end.Sub(start))
 
-	file, err := os.Create("../related_posts_go.json")
+	file, err := os.Create("../related_posts_go_con.json")
 	if err != nil {
 		log.Panicln(err)
 	}
