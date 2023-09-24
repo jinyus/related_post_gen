@@ -80,3 +80,14 @@ Python:
     Processing time (w/o IO): 0:00:01.316292
     Time (mean ± σ):      1.529 s ±  0.018 s    [User: 1.489 s, System: 0.031 s]
     Range (min … max):    1.502 s …  1.549 s    5 runs
+
+Numpy:
+
+    Benchmark 1: python3 ./related_np.py
+    Processing time (w/o IO): 0.567s
+    Processing time (w/o IO): 0.572s
+    Processing time (w/o IO): 0.575s
+    Processing time (w/o IO): 0.571s
+    Processing time (w/o IO): 0.579s
+    Time (mean ± σ): 877.5 ms ± 11.4 ms [User: 972.4 ms, System: 1236.1 ms]
+    Range (min … max): 864.6 ms … 895.9 ms 5 runs
