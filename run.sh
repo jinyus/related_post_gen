@@ -52,6 +52,17 @@ run_rust_rayon() {
         fi
 }
 
+run_rust_max() {
+    echo "Running Rust Max Optimized" &&
+        cd ./rust_max &&
+        cargo build --release &&
+        if [ $HYPER == 1 ]; then
+            command hyperfine -r 10 -w 3 --show-output "./target/release/rust_max"
+        else
+            command time -f '%es %Mk' ./target/release/rust_max
+        fi
+}
+
 run_python() {
     echo "Running Python" &&
         cd ./python &&
@@ -87,6 +98,11 @@ elif [ "$first_arg" = "rust_ray" ]; then
 
     run_rust_rayon &&
         check_output "related_posts_rust_rayon.json"
+
+elif [ "$first_arg" = "rust_max" ]; then
+
+    run_rust_max &&
+        check_output "related_posts_rust_max.json"
 
 elif [ "$first_arg" = "python" ]; then
 
