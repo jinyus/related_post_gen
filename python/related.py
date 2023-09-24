@@ -1,11 +1,14 @@
 import heapq
 import json
 from collections import Counter
+from datetime import datetime
 
 
 def main():
     with open("../posts.json") as f:
         posts = json.load(f)
+
+    start = datetime.now()
 
     tag_map = {}
     for idx, post in enumerate(posts):
@@ -31,6 +34,10 @@ def main():
                 "related": top_posts,
             }
         )
+
+    end = datetime.now()
+
+    print(f"Processing time (w/o IO): {end - start}")
 
     with open("../related_posts_python.json", "w") as f:
         json.dump(all_related_posts, f)

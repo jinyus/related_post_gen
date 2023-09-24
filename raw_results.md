@@ -51,3 +51,13 @@ Rust Rayon:
     Processing time (w/o IO): 9.468889ms
     Time (mean ± σ):      24.2 ms ±   0.8 ms    [User: 89.3 ms, System: 33.7 ms]
     Range (min … max):    23.4 ms …  25.8 ms    10 runs
+
+Python:
+
+    Processing time (w/o IO): 0:00:01.355318
+    Processing time (w/o IO): 0:00:01.349105
+    Processing time (w/o IO): 0:00:01.335888
+    Processing time (w/o IO): 0:00:01.371586
+    Processing time (w/o IO): 0:00:01.316292
+    Time (mean ± σ):      1.529 s ±  0.018 s    [User: 1.489 s, System: 0.031 s]
+    Range (min … max):    1.502 s …  1.549 s    5 runs
