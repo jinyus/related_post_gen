@@ -48,13 +48,12 @@ fn main() {
 
     posts.par_iter().enumerate().for_each(|(idx, post)| {
         let mut tagged_post_count = vec![0; posts.len()];
-        tagged_post_count.fill(0);
 
         for tag in &post.tags {
             if let Some(tag_posts) = post_tags_map.get(tag) {
-                for other_post_idx in tag_posts {
-                    if idx != *other_post_idx {
-                        tagged_post_count[*other_post_idx] += 1;
+                for &other_post_idx in tag_posts {
+                    if idx != other_post_idx {
+                        tagged_post_count[other_post_idx] += 1;
                     }
                 }
             }
@@ -62,7 +61,7 @@ fn main() {
 
         let mut top_five = BinaryHeap::new();
         tagged_post_count
-            .iter()
+            .into_iter()
             .enumerate()
             .for_each(|(post, count)| {
                 if top_five.len() < 5 {
@@ -76,10 +75,12 @@ fn main() {
                 }
             });
 
+        let related = top_five.into_iter().map(|(_, post)| &posts[post]).collect();
+
         related_posts.lock().unwrap().push(RelatedPosts {
             _id: &post._id,
             tags: &post.tags,
-            related: top_five.into_iter().map(|(_, post)| &posts[post]).collect(),
+            related,
         });
     });
 

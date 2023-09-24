@@ -13,7 +13,7 @@ run_go() {
         cd ./go &&
         go build &&
         if [ $HYPER == 1 ]; then
-            command hyperfine --show-output -r 10 -w 3 "./related"
+            command hyperfine -r 10 -w 3 --show-output "./related"
         else
             command time -f '%es %Mk' ./related
         fi
@@ -24,7 +24,7 @@ run_go_concurrent() {
         cd ./go_con &&
         go build &&
         if [ $HYPER == 1 ]; then
-            command hyperfine --show-output -r 10 -w 3 "./related_concurrent"
+            command hyperfine -r 10 -w 3 --show-output "./related_concurrent"
         else
             command time -f '%es %Mk' ./related_concurrent
         fi
@@ -35,9 +35,9 @@ run_rust() {
         cd ./rust &&
         cargo build --release &&
         if [ $HYPER == 1 ]; then
-            command hyperfine --show-output -r 10 -w 3 "./target/release/rust"
+            command hyperfine -r 10 -w 3 --show-output "./target/release/rust"
         else
-            command ./target/release/rust
+            command time -f '%es %Mk' ./target/release/rust
         fi
 }
 
@@ -46,7 +46,7 @@ run_rust_rayon() {
         cd ./rust_rayon &&
         cargo build --release &&
         if [ $HYPER == 1 ]; then
-            command hyperfine --show-output -r 10 -w 3 "./target/release/rust_rayon"
+            command hyperfine -r 10 -w 3 --show-output "./target/release/rust_rayon"
         else
             command time -f '%es %Mk' ./target/release/rust_rayon
         fi
@@ -56,7 +56,7 @@ run_python() {
     echo "Running Python" &&
         cd ./python &&
         if [ $HYPER == 1 ]; then
-            command hyperfine -r 1 "python3 ./related.py"
+            command hyperfine -r 2 "python3 ./related.py"
         else
             command time -f '%es %Mk' python3 ./related.py
         fi
@@ -104,6 +104,15 @@ elif [ "$first_arg" = "all" ]; then
         cd .. &&
         run_python
 
+elif [ "$first_arg" = "clean" ]; then
+
+    echo "cleaning" &&
+        cd go && rm -f related &&
+        cd .. &&
+        cd rust && cargo clean &&
+        cd .. &&
+        cd rust_rayon && cargo clean
+
 else
-    echo "Valid args: go | rust | python | all. Unknown argument: $first_arg"
+    echo "Valid args: go | rust | python | all | clean. Unknown argument: $first_arg"
 fi

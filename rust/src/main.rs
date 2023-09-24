@@ -4,6 +4,10 @@ use rustc_data_structures::fx::FxHashMap;
 use serde::{Deserialize, Serialize};
 use serde_json::from_str;
 
+use mimalloc::MiMalloc;
+#[global_allocator]
+static GLOBAL: MiMalloc = MiMalloc;
+
 #[derive(Serialize, Deserialize)]
 struct Post {
     _id: String,
@@ -35,16 +39,15 @@ fn main() {
 
     let mut related_posts: Vec<RelatedPosts> = Vec::with_capacity(posts.len());
 
-    let mut tagged_post_count = vec![0; posts.len()];
 
     for (idx, post) in posts.iter().enumerate() {
-        tagged_post_count.fill(0);
+        let mut tagged_post_count = vec![0; posts.len()];
 
         for tag in &post.tags {
             if let Some(tag_posts) = post_tags_map.get(tag) {
-                for other_post_idx in tag_posts {
-                    if idx != *other_post_idx {
-                        tagged_post_count[*other_post_idx] += 1;
+                for &other_post_idx in tag_posts {
+                    if idx != other_post_idx {
+                        tagged_post_count[other_post_idx] += 1;
                     }
                 }
             }
@@ -52,7 +55,7 @@ fn main() {
 
         let mut top_five = BinaryHeap::new();
         tagged_post_count
-            .iter()
+            .into_iter()
             .enumerate()
             .for_each(|(post, count)| {
                 if top_five.len() < 5 {
