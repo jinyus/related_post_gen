@@ -26,14 +26,6 @@ Generate related posts based on tags. Sort by the number of shared tags.
 | Rust (Rayon) | 0.02s      |
 | Python       | 7.81s      |
 
-#### Special thanks these reddits users for optimizing the Rust code
-
-[RB5009](https://www.reddit.com/r/rust/comments/16plgok/comment/k1s5ea0/?utm_source=share&utm_medium=web2x&context=3) <br>
-[darth_chewbacca](https://www.reddit.com/r/rust/comments/16plgok/comment/k1s1214/?utm_source=share&utm_medium=web2x&context=3)<br>
-[Darksonn](https://www.reddit.com/r/rust/comments/16plgok/comment/k1rzwdx/?utm_source=share&utm_medium=web2x&context=3)<br>
-[vdrmn](https://www.reddit.com/r/rust/comments/16plgok/comment/k1rzo7g/?utm_source=share&utm_medium=web2x&context=3)<br>
-[phazer99](https://www.reddit.com/r/rust/comments/16plgok/comment/k1rtr4x/?utm_source=share&utm_medium=web2x&context=3)<br>
-
 ### Notes
 
 | Language   | Time (avg) | Time (minus I/O) | Details                                                                                                                                                                                                                                                                                         |
