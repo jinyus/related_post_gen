@@ -53,6 +53,16 @@ run_rust_rayon() {
 }
 
 run_python() {
+    echo "Running Python with Numpy" &&
+        cd ./python &&
+        if [ $HYPER == 1 ]; then
+            command hyperfine -r 1 "python3 ./related_np.py"
+        else
+            command time -f '%es %Mk' python3 ./related_np.py
+        fi
+}
+
+run_python() {
     echo "Running Python" &&
         cd ./python &&
         if [ $HYPER == 1 ]; then
