@@ -12,11 +12,10 @@ run_go() {
     echo "Running Go" &&
         cd ./go &&
         go build &&
-        #command time -f '%es %Mk' ./related
         if [ $HYPER == 1 ]; then
             command hyperfine --show-output -r 10 -w 3 "./related"
         else
-            command ./related
+            command time -f '%es %Mk' ./related
         fi
 }
 
@@ -24,11 +23,10 @@ run_go_concurrent() {
     echo "Running Go with concurrency" &&
         cd ./go_con &&
         go build &&
-        #command time -f '%es %Mk' ./related_concurrent
         if [ $HYPER == 1 ]; then
-            command hyperfine -r 10 -w 3 "./related_concurrent"
+            command hyperfine --show-output -r 10 -w 3 "./related_concurrent"
         else
-            command ./related_concurrent
+            command time -f '%es %Mk' ./related_concurrent
         fi
 }
 
@@ -37,7 +35,7 @@ run_rust() {
         cd ./rust &&
         cargo build --release &&
         if [ $HYPER == 1 ]; then
-            command hyperfine --show-output-r 10 -w 3 "./target/release/rust"
+            command hyperfine --show-output -r 10 -w 3 "./target/release/rust"
         else
             command ./target/release/rust
         fi
@@ -78,7 +76,7 @@ if [ "$first_arg" = "go" ]; then
 elif [ "$first_arg" = "go_con" ]; then
 
     run_go_concurrent &&
-        check_output "related_posts_rust.json"
+        check_output "related_posts_go_con.json"
 
 elif [ "$first_arg" = "rust" ]; then
 
@@ -104,7 +102,7 @@ elif [ "$first_arg" = "all" ]; then
         cd .. &&
         run_rust_rayon &&
         cd .. &&
-        run_python 
+        run_python
 
 else
     echo "Valid args: go | rust | python | all. Unknown argument: $first_arg"
