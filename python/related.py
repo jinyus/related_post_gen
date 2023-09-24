@@ -36,35 +36,26 @@ def main():
         posts = json.load(f)
 
     tag_map = {}
-    for idx, post in enumerate(posts):
+    for post in posts:
         for tag in post["tags"]:
             if tag not in tag_map:
                 tag_map[tag] = []
-            tag_map[tag].append(idx)
+            tag_map[tag].append(Post(post["_id"], post["title"], post["tags"]))
 
     all_related_posts = []
-    for this_post_idx, post in enumerate(posts):
+    for post in posts:
         related_posts_dict: Dict[Post, int] = {}
         for tag in post["tags"]:
             for related_post in tag_map[tag]:
-                if related_post != this_post_idx:
+                if related_post._id != post["_id"]:
                     if related_post not in related_posts_dict:
                         related_posts_dict[related_post] = 0
                     related_posts_dict[related_post] += 1
 
-        top_posts_idx = heapq.nlargest(
-            5, related_posts_dict, key=related_posts_dict.get
-        )
-        top_posts = []
-        for idx in top_posts_idx:
-            tp = posts[idx]
-            top_posts.append(
-                {
-                    "_id": tp["_id"],
-                    "title": tp["title"],
-                    "tags": tp["tags"],
-                }
-            )
+        top_posts = [
+            p.to_dict()
+            for p in heapq.nlargest(5, related_posts_dict, key=related_posts_dict.get)
+        ]
 
         all_related_posts.append(
             {
