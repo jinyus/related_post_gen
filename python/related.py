@@ -21,9 +21,7 @@ def main():
 
         top_posts = [
             {k: posts[p][k] for k in ("_id", "title", "tags")}
-            for p in heapq.nlargest(
-                5, related_posts_list, key=lambda x: related_posts_list[x]
-            )
+            for p in heapq.nlargest(5, related_posts_list, key=related_posts_list.get)
         ]
 
         all_related_posts.append(
