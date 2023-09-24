@@ -12,11 +12,10 @@ run_go() {
     echo "Running Go" &&
         cd ./go &&
         go build &&
-        #command time -f '%es %Mk' ./related
         if [ $HYPER == 1 ]; then
             command hyperfine -r 10 --show-output "./related"
         else
-            command /usr/bin/time -f '%es %Mk' ./related
+            command time -f '%es %Mk' ./related
         fi
 }
 
@@ -25,7 +24,7 @@ run_rust() {
         cd ./rust &&
         cargo build --release &&
         if [ $HYPER == 1 ]; then
-            command hyperfine -r 40 --show-output "./target/release/rust"
+            command hyperfine -r 20 --show-output "./target/release/rust"
         else
             command time -f '%es %Mk' ./target/release/rust
         fi
@@ -46,7 +45,7 @@ run_python() {
     echo "Running Python" &&
         cd ./python &&
         if [ $HYPER == 1 ]; then
-            command hyperfine -r 1 "python3 ./related.py"
+            command hyperfine -r 2 --show-output "python3 ./related.py"
         else
             command time -f '%es %Mk' python3 ./related.py
         fi
