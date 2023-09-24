@@ -11,9 +11,10 @@ import (
 )
 
 type Post struct {
-	ID    string   `json:"_id"`
-	Title string   `json:"title"`
-	Tags  []string `json:"tags"`
+	ID           string           `json:"_id"`
+	Title        string           `json:"title"`
+	Tags         []string         `json:"tags"`
+	TagsAsIntSet map[int]struct{} `json:"-"`
 }
 
 type PostWithSharedTags struct {
@@ -42,11 +43,33 @@ func main() {
 
 	start := time.Now()
 
-	tagMap := make(map[string][]int, 100)
+	tagToInt := make(map[string]int)
+
+	// assuming max 100 tags, might allow passing this as a cli arg
+	tagToPostIDs := make([][]int, 100)
+
+	// tagMap := make(map[string][]int, 100)
+
+	emptyVal := struct{}{}
 
 	for i, post := range posts {
+
+		posts[i].TagsAsIntSet = make(map[int]struct{}, len(post.Tags))
+
 		for _, tag := range post.Tags {
-			tagMap[tag] = append(tagMap[tag], i)
+
+			var tagIndex int
+
+			if tInt, ok := tagToInt[tag]; ok {
+				tagIndex = tInt
+			} else {
+				tagIndex = len(tagToInt) + 1
+				tagToInt[tag] = tagIndex
+			}
+
+			tagToPostIDs[tagIndex] = append(tagToPostIDs[tagIndex], i)
+
+			posts[i].TagsAsIntSet[tagIndex] = emptyVal
 		}
 	}
 
@@ -60,8 +83,8 @@ func main() {
 			taggedPostCount[j] = 0
 		}
 
-		for _, tag := range posts[i].Tags {
-			for _, otherPostIdx := range tagMap[tag] {
+		for tagInt := range posts[i].TagsAsIntSet {
+			for _, otherPostIdx := range tagToPostIDs[tagInt] {
 				if otherPostIdx != i {
 					taggedPostCount[otherPostIdx]++
 				}
