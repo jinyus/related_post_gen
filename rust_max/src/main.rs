@@ -117,6 +117,8 @@ fn main() {
     let posts: Vec<Post> = from_str(&json_str).unwrap();
 
     let start = Instant::now();
+
+    // somehow gets slower when I remove match statement
     let args: Vec<_> = std::env::args().collect();
     match &args[..] {
         [_progname] => {}
