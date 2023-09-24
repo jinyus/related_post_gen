@@ -14,3 +14,4 @@ serde_json = "1.0.107"
 [profile.release]
 lto = true
 codegen-units = 1
+debug = "line-tables-only"
