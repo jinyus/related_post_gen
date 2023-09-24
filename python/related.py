@@ -1,35 +1,6 @@
 import heapq
 import json
 from collections import Counter
-from typing import Dict
-
-
-class Post:
-    def __init__(self, _id, title, tags):
-        self._id = _id
-        self.title = title
-        self.tags = tags
-
-    def __hash__(self):
-        return hash(self._id)
-
-    def __eq__(self, other):
-        if isinstance(other, Post):
-            return self._id == other._id
-        return False
-
-    def to_dict(self):
-        return {
-            "_id": self._id,
-            "title": self.title,
-            "tags": self.tags,
-        }
-
-
-class PostWithSharedTags:
-    def __init__(self, post, shared_tags):
-        self.post = post
-        self.shared_tags = shared_tags
 
 
 def main():
@@ -45,13 +16,13 @@ def main():
 
     all_related_posts = []
     for this_post_idx, post in enumerate(posts):
-        related_posts_list2 = Counter((p for tag in post["tags"] for p in tag_map[tag]))
-        related_posts_list2[this_post_idx] = 0
+        related_posts_list = Counter((p for tag in post["tags"] for p in tag_map[tag]))
+        related_posts_list[this_post_idx] = 0
 
         top_posts = [
             {k: posts[p][k] for k in ("_id", "title", "tags")}
             for p in heapq.nlargest(
-                5, related_posts_list2, key=lambda x: related_posts_list2[x]
+                5, related_posts_list, key=lambda x: related_posts_list[x]
             )
         ]
 
