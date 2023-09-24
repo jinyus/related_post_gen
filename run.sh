@@ -52,14 +52,13 @@ run_rust_rayon() {
         fi
 }
 
-run_rust_max() {
-    echo "Running Rust Max Optimized" &&
-        cd ./rust_max &&
-        cargo build --release &&
+run_python_np() {
+    echo "Running Python with Numpy" &&
+        cd ./python &&
         if [ $HYPER == 1 ]; then
-            command hyperfine -r 10 -w 3 --show-output "./target/release/rust_max"
+            command hyperfine -r 5 --show-output "python3 ./related_np.py"
         else
-            command time -f '%es %Mk' ./target/release/rust_max
+            command time -f '%es %Mk' python3 ./related_np.py
         fi
 }
 
@@ -99,15 +98,15 @@ elif [ "$first_arg" = "rust_ray" ]; then
     run_rust_rayon &&
         check_output "related_posts_rust_rayon.json"
 
-elif [ "$first_arg" = "rust_max" ]; then
-
-    run_rust_max &&
-        check_output "related_posts_rust_max.json"
-
-elif [ "$first_arg" = "python" ]; then
+elif [ "$first_arg" = "py" ]; then
 
     run_python &&
         check_output "related_posts_python.json"
+
+elif [ "$first_arg" = "numpy" ]; then
+
+    run_python_np &&
+        check_output "related_posts_python_np.json"
 
 elif [ "$first_arg" = "all" ]; then
 
@@ -130,5 +129,5 @@ elif [ "$first_arg" = "clean" ]; then
         cd rust_rayon && cargo clean
 
 else
-    echo "Valid args: go | rust | python | all | clean. Unknown argument: $first_arg"
+    echo "Valid args: go | rust | py | numpy | all | clean. Unknown argument: $first_arg"
 fi
