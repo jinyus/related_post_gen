@@ -81,9 +81,9 @@ func main() {
 		num := min(5, t5.Size())
 		topPosts := make([]*Post, num)
 
-		for i := 0; i < num; i++ {
+		for j := 0; j < num; j++ {
 			if t, ok := t5.Pop(); ok {
-				topPosts[i] = &posts[t.Post]
+				topPosts[j] = &posts[t.Post]
 			}
 		}
 
@@ -99,13 +99,11 @@ func main() {
 	fmt.Println("Processing time (w/o IO)", end.Sub(start))
 
 	file, err = os.Create("../related_posts_go.json")
-
 	if err != nil {
 		log.Panicln(err)
 	}
 
 	err = json.NewEncoder(file).Encode(allRelatedPosts)
-
 	if err != nil {
 		log.Panicln(err)
 	}
