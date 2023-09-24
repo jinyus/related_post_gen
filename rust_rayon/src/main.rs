@@ -1,5 +1,4 @@
 use std::{
-    cmp::Reverse,
     collections::BinaryHeap,
     time::{Duration, Instant},
 };
@@ -21,11 +20,48 @@ struct Post {
     tags: Vec<String>,
 }
 
+const NUM_TOP_ITEMS: usize = 5;
+
 #[derive(Debug, Serialize)]
 struct RelatedPosts<'a> {
     _id: &'a String,
     tags: &'a Vec<String>,
     related: Vec<&'a Post>,
+}
+
+#[derive(Eq)]
+struct PostCount {
+    post: usize,
+    count: usize,
+}
+
+impl std::cmp::PartialEq for PostCount {
+    fn eq(&self, other: &Self) -> bool {
+        self.count == other.count
+    }
+}
+
+impl std::cmp::PartialOrd for PostCount {
+    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+        Some(self.cmp(other))
+    }
+}
+
+impl std::cmp::Ord for PostCount {
+    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
+        other.count.cmp(&self.count)
+    }
+}
+
+fn least_n<T: Ord>(n: usize, mut from: impl Iterator<Item = T>) -> impl Iterator<Item = T> {
+    let mut h = BinaryHeap::from_iter(from.by_ref().take(n));
+    for it in from {
+        let mut greatest = h.peek_mut().unwrap();
+        if it < *greatest {
+            *greatest = it;
+        }
+    }
+    h.into_iter()
 }
 
 fn process(posts: &[Post]) -> Vec<RelatedPosts<'_>> {
@@ -54,23 +90,15 @@ fn process(posts: &[Post]) -> Vec<RelatedPosts<'_>> {
                 }
             }
 
-            let mut top_five = BinaryHeap::new();
-            tagged_post_count
-                .into_iter()
-                .enumerate()
-                .for_each(|(post, count)| {
-                    if top_five.len() < 5 {
-                        top_five.push((Reverse(count), post));
-                    } else {
-                        let (Reverse(cnt), _) = top_five.peek().unwrap();
-                        if count > *cnt {
-                            top_five.pop();
-                            top_five.push((Reverse(count), post));
-                        }
-                    }
-                });
+            let top = least_n(
+                NUM_TOP_ITEMS,
+                tagged_post_count
+                    .iter()
+                    .enumerate()
+                    .map(|(post, &count)| PostCount { post, count }),
+            );
 
-            let related = top_five.into_iter().map(|(_, post)| &posts[post]).collect();
+            let related = top.map(|it| &posts[it.post]).collect();
 
             RelatedPosts {
                 _id: &post._id,
