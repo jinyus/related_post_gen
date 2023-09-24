@@ -39,8 +39,8 @@ fn main() {
 
     let mut related_posts: Vec<RelatedPosts> = Vec::with_capacity(posts.len());
 
-
     for (idx, post) in posts.iter().enumerate() {
+        // faster than allocating outside the loop
         let mut tagged_post_count = vec![0; posts.len()];
 
         for tag in &post.tags {
