@@ -1,4 +1,5 @@
 rust/target
+rust_max/target
 rust_rayon/target
 go/related
 go_con/related_concurrent
