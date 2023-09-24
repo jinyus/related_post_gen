@@ -20,10 +20,14 @@ def main():
 
     related_posts = np.empty((len(posts),5), dtype=np.uint16)
     for i in range(len(posts)):
+        # This it the linear algebra, because tag_map is arranged as a matrix,
+        # a matmul with a vector accomplishes the same thing as the nested for
+        # loop and sum operation in one function
+        # call using highly optimized BLAS routines.
+
         relatedness = tag_map @ tag_map[i,:]
         relatedness[i] = 0
         related_posts[i,:] = np.argsort(relatedness, )[-5:][::-1]
-    # related_posts = calc_related_posts(tag_map, len(posts))
 
     all_related = []
     for i, post in enumerate(posts):
