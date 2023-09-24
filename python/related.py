@@ -1,3 +1,4 @@
+import heapq
 import json
 from typing import Dict
 
@@ -51,12 +52,10 @@ def main():
                         related_posts_dict[related_post] = 0
                     related_posts_dict[related_post] += 1
 
-        sorted_posts = sorted(
-            related_posts_dict.items(), key=lambda x: x[1], reverse=True
-        )
-
-        num = min(5, len(sorted_posts))
-        top_posts = [p[0].to_dict() for p in sorted_posts[:num]]
+        top_posts = [
+            p.to_dict()
+            for p in heapq.nlargest(5, related_posts_dict, key=related_posts_dict.get)
+        ]
 
         all_related_posts.append(
             {
