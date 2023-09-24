@@ -55,6 +55,7 @@ func main() {
 	t5 := binaryheap.NewWith[PostWithSharedTags](PostComparator)
 
 	for i := range posts {
+		// optimized to a memset
 		for j := range taggedPostCount {
 			taggedPostCount[j] = 0
 		}
