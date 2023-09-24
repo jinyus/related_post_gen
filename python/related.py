@@ -44,7 +44,7 @@ def main():
 
     all_related_posts = []
     for this_post_idx, post in enumerate(posts):
-        related_posts_dict: Dict[Post, int] = {}
+        related_posts_dict: Dict[int, int] = {}
         for tag in post["tags"]:
             for related_post in tag_map[tag]:
                 if related_post != this_post_idx:
