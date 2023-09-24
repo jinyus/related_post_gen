@@ -55,11 +55,17 @@ run_rust_rayon() {
 run_python_np() {
     echo "Running Python with Numpy" &&
         cd ./python &&
+        if [ ! -d "venv" ]; then
+            python3 -m venv venv
+        fi
+    source venv/bin/activate &&
+        pip freeze | grep numpy || pip install numpy &&
         if [ $HYPER == 1 ]; then
             command hyperfine -r 5 --show-output "python3 ./related_np.py"
         else
             command time -f '%es %Mk' python3 ./related_np.py
         fi
+    deactivate
 }
 
 run_python() {
