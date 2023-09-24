@@ -1,5 +1,7 @@
 rust/target
 rust_rayon/target
 go/related
+go_con/related_concurrent
 odin/main
 related*.json
+.DS_Store
