@@ -52,6 +52,25 @@ Rust Rayon:
     Time (mean ± σ):      24.2 ms ±   0.8 ms    [User: 89.3 ms, System: 33.7 ms]
     Range (min … max):    23.4 ms …  25.8 ms    10 runs
 
+Rust Max:
+
+    Benchmark 1: ./target/release/rust_max
+    Processing time (w/o IO): 23.883277ms
+    Processing time (w/o IO): 23.185584ms
+    Processing time (w/o IO): 23.119578ms
+    Processing time (w/o IO): 24.165036ms
+    Processing time (w/o IO): 23.48229ms
+    Processing time (w/o IO): 24.449101ms
+    Processing time (w/o IO): 23.581751ms
+    Processing time (w/o IO): 23.878877ms
+    Processing time (w/o IO): 23.901787ms
+    Processing time (w/o IO): 22.709303ms
+    Processing time (w/o IO): 24.491706ms
+    Processing time (w/o IO): 22.751906ms
+    Processing time (w/o IO): 23.401616ms
+    Time (mean ± σ):      38.4 ms ±   1.8 ms    [User: 30.9 ms, System: 7.2 ms]
+    Range (min … max):    36.4 ms …  41.4 ms    10 runs
+
 Python:
 
     Processing time (w/o IO): 0:00:01.355318
