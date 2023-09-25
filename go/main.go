@@ -42,6 +42,7 @@ func main() {
 
 	start := time.Now()
 
+	// assumes that there are less than 100 tags
 	tagMap := make(map[string][]int, 100)
 
 	for i, post := range posts {
@@ -55,6 +56,7 @@ func main() {
 	t5 := binaryheap.NewWith[PostWithSharedTags](PostComparator)
 
 	for i := range posts {
+		// optimized to a memset
 		for j := range taggedPostCount {
 			taggedPostCount[j] = 0
 		}
