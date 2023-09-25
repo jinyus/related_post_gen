@@ -8,3 +8,4 @@ related_*.json
 .DS_Store
 .vscode/settings.json
 venv/
+crystal/
