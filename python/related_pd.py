@@ -15,8 +15,8 @@ def main():
     counts = pairs.groupby(["index_x", "index_y"], sort=False).count()
     top5 = counts.sort_values("tags").groupby(level=0, group_keys=False, sort=False).head(5).drop(columns="tags")
 
-    related = posts.join(top5.reset_index(level=0))
-    related = related.groupby("index_x").apply(lambda g: g.drop(columns="index_x").to_dict("records"))
+    related = top5.reset_index(level=0).join(posts).set_index("index_x")
+    related = related.groupby(level=0).apply(lambda g: g.to_dict("records"))
 
     result = posts[["_id", "tags"]]
     result["related"] = related
