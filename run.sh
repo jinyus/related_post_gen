@@ -147,7 +147,7 @@ run_python_numba() {
             python3 -m venv venv
         fi
     source venv/bin/activate &&
-        (pip freeze | grep numpy && pip freeze | grep orjson) || pip install -r requirements.txt &&
+        (pip freeze | grep numba && pip freeze | grep orjson) || pip install -r requirements.txt &&
         if [ $HYPER == 1 ]; then
             capture "Numba" hyperfine -r 10 -w 3 --show-output "python3 ./related_numba.py"
         else
