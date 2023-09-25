@@ -117,6 +117,17 @@ run_python_polars() {
         fi
 }
 
+run_jq() {
+    echo "Running jq" &&
+        cd ./jq &&
+        if [ $HYPER == 1 ]; then
+            command hyperfine -r 5 --show-output "jq -c -f ./related.jq ../posts.json > ../related_posts_jq.json"
+        else
+            command time -f '%es %Mk' jq -c -f ./related.jq ../posts.json > ../related_posts_jq.json
+        fi
+}
+
+
 check_output() {
     cd .. &&
         echo "Checking output" &&
@@ -167,6 +178,11 @@ elif [ "$first_arg" = "polars" ]; then
     run_python_polars &&
         check_output "related_posts_python_pl.json"
 
+elif [ "$first_arg" = "jq" ]; then
+
+    run_jq &&
+        check_output "related_posts_jq.json"
+
 elif [ "$first_arg" = "all" ]; then
 
     echo "running all" &&
@@ -181,6 +197,8 @@ elif [ "$first_arg" = "all" ]; then
         run_python_pandas
         cd .. &&
         run_python_polars
+        cd .. &&
+        run_jq
 
 elif [ "$first_arg" = "clean" ]; then
 
@@ -192,5 +210,5 @@ elif [ "$first_arg" = "clean" ]; then
         cd rust_rayon && cargo clean
 
 else
-    echo "Valid args: go | rust | py | numpy | pandas | polars | all | clean. Unknown argument: $first_arg"
+    echo "Valid args: go | rust | py | numpy | pandas | polars | jq | all | clean. Unknown argument: $first_arg"
 fi
