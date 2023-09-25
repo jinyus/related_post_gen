@@ -1,7 +1,4 @@
-use std::{
-    collections::BinaryHeap,
-    time::{Duration, Instant},
-};
+use std::{collections::BinaryHeap, time::Instant};
 
 use rayon::prelude::*;
 use rustc_data_structures::fx::FxHashMap;
@@ -12,7 +9,7 @@ use mimalloc::MiMalloc;
 #[global_allocator]
 static GLOBAL: MiMalloc = MiMalloc;
 
-#[derive(Debug, Serialize, Deserialize, Clone, Eq, PartialEq, Hash)]
+#[derive(Serialize, Deserialize)]
 struct Post {
     _id: String,
     title: String,
@@ -22,7 +19,7 @@ struct Post {
 
 const NUM_TOP_ITEMS: usize = 5;
 
-#[derive(Debug, Serialize)]
+#[derive(Serialize)]
 struct RelatedPosts<'a> {
     _id: &'a String,
     tags: &'a Vec<String>,
@@ -49,22 +46,32 @@ impl std::cmp::PartialOrd for PostCount {
 
 impl std::cmp::Ord for PostCount {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering {
+        // reverse order
         other.count.cmp(&self.count)
     }
 }
 
 fn least_n<T: Ord>(n: usize, mut from: impl Iterator<Item = T>) -> impl Iterator<Item = T> {
     let mut h = BinaryHeap::from_iter(from.by_ref().take(n));
+
     for it in from {
+        // heap thinks the smallest is the greatest because of reverse order
         let mut greatest = h.peek_mut().unwrap();
+
         if it < *greatest {
+            // heap rebalances after the smart pointer is dropped
             *greatest = it;
         }
     }
     h.into_iter()
 }
 
-fn process(posts: &[Post]) -> Vec<RelatedPosts<'_>> {
+fn main() {
+    let json_str = std::fs::read_to_string("../posts.json").unwrap();
+    let posts: Vec<Post> = from_str(&json_str).unwrap();
+
+    let start = Instant::now();
+
     let mut post_tags_map: FxHashMap<&String, Vec<usize>> = FxHashMap::default();
 
     for (i, post) in posts.iter().enumerate() {
@@ -73,12 +80,12 @@ fn process(posts: &[Post]) -> Vec<RelatedPosts<'_>> {
         }
     }
 
-    posts
+    let related_posts: Vec<RelatedPosts<'_>> = posts
         .par_iter()
         .enumerate()
         .map(|(idx, post)| {
+            // faster than allocating outside the loop
             let mut tagged_post_count = vec![0; posts.len()];
-            tagged_post_count.fill(0);
 
             for tag in &post.tags {
                 if let Some(tag_posts) = post_tags_map.get(tag) {
@@ -97,7 +104,6 @@ fn process(posts: &[Post]) -> Vec<RelatedPosts<'_>> {
                     .enumerate()
                     .map(|(post, &count)| PostCount { post, count }),
             );
-
             let related = top.map(|it| &posts[it.post]).collect();
 
             RelatedPosts {
@@ -106,36 +112,8 @@ fn process(posts: &[Post]) -> Vec<RelatedPosts<'_>> {
                 related,
             }
         })
-        .collect()
-}
+        .collect();
 
-fn main() {
-    let json_str = std::fs::read_to_string("../posts.json").unwrap();
-    let posts: Vec<Post> = from_str(&json_str).unwrap();
-
-    let start = Instant::now();
-    let args: Vec<_> = std::env::args().collect();
-    match &args[..] {
-        [_progname] => {}
-        [_progname, secs] => {
-            let target = start + Duration::from_secs(secs.parse().unwrap());
-            let mut i = 0;
-            let mut now;
-            loop {
-                process(&posts);
-                i += 1;
-                now = Instant::now();
-                if now > target {
-                    break;
-                }
-            }
-            println!("{:?} per iteration", (now - start) / i);
-            return;
-        }
-        _ => panic!("invalid arguments"),
-    }
-
-    let related_posts = process(&posts);
     let end = Instant::now();
 
     print!(
