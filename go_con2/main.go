@@ -5,7 +5,6 @@ import (
 	"log"
 	"os"
 	"runtime"
-	"sort"
 	"time"
 
 	"github.com/goccy/go-json"
@@ -113,10 +112,9 @@ func main() {
 }
 
 func computeRelatedPost(i isize, posts []Post, tagMap map[string][]isize, taggedPostCount []isize) RelatedPosts {
-
 	// Zero out tagged post count
-	for i := range taggedPostCount {
-		taggedPostCount[i] = 0
+	for j := range taggedPostCount {
+		taggedPostCount[j] = 0
 	}
 
 	// Count the number of tags shared between posts
@@ -127,29 +125,35 @@ func computeRelatedPost(i isize, posts []Post, tagMap map[string][]isize, tagged
 	}
 	taggedPostCount[i] = 0 // Exclude the post itself
 
-	// Initialize top 5 posts
-	top5 := make([]PostWithSharedTags, 0, 5)
+	top5 := [5]PostWithSharedTags{}
+	minTags := isize(^uint32(0))
 
 	for j, count := range taggedPostCount {
-		if len(top5) < 5 {
-			top5 = append(top5, PostWithSharedTags{Post: isize(j), SharedTags: count})
-			sort.Slice(top5, func(m, n int) bool {
-				return top5[m].SharedTags > top5[n].SharedTags
-			})
-		} else {
-			if count > top5[4].SharedTags {
-				top5[4] = PostWithSharedTags{Post: isize(j), SharedTags: count}
-				sort.Slice(top5, func(m, n int) bool {
-					return top5[m].SharedTags > top5[n].SharedTags
-				})
+		if count > minTags {
+			// Find the position to insert
+			pos := 4
+			for pos >= 0 && top5[pos].SharedTags < count {
+				pos--
+			}
+			pos++
+
+			// Shift and insert
+			if pos < 4 {
+				copy(top5[pos+1:], top5[pos:4])
+			}
+			if pos <= 4 {
+				top5[pos] = PostWithSharedTags{Post: isize(j), SharedTags: count}
+				minTags = top5[4].SharedTags
 			}
 		}
 	}
 
 	// Convert indexes back to Post pointers
-	topPosts := make([]*Post, len(top5))
-	for i, t := range top5 {
-		topPosts[i] = &posts[t.Post]
+	topPosts := make([]*Post, 0, 5)
+	for _, t := range top5 {
+		if t.SharedTags > 0 {
+			topPosts = append(topPosts, &posts[t.Post])
+		}
 	}
 
 	return RelatedPosts{
