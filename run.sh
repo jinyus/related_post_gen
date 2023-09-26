@@ -108,6 +108,20 @@ run_crystal() {
 
 }
 
+run_crystal_con() {
+    echo "Running Crystal Concurrent" &&
+        cd ./crystal_con &&
+        crystal build --release src/crystal_con.cr &&
+        if [ $HYPER == 1 ]; then
+            command hyperfine -r 10 --show-output "./crystal_con"
+        else
+            command time -f '%es %Mk' ./crystal_con
+        fi
+
+    check_output "related_posts_cr_con.json"
+
+}
+
 check_output() {
     cd .. &&
         echo "Checking output" &&
@@ -141,6 +155,10 @@ elif [ "$first_arg" = "numpy" ]; then
 elif [ "$first_arg" = "cr" ]; then
 
     run_crystal
+
+elif [ "$first_arg" = "crcon" ]; then
+
+    run_crystal_con
 
 elif [ "$first_arg" = "all" ]; then
 
