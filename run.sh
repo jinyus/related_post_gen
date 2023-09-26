@@ -116,6 +116,7 @@ run_jq() {
         else
             command time -f '%es %Mk' jq -c -f ./related.jq ../posts.json > ../related_posts_jq.json
         fi
+    check_output "related_posts_jq.json"
 }
 
 check_output() {
@@ -154,8 +155,7 @@ elif [ "$first_arg" = "cr" ]; then
 
 elif [ "$first_arg" = "jq" ]; then
 
-    run_jq &&
-        check_output "related_posts_jq.json"
+    run_jq
 
 elif [ "$first_arg" = "all" ]; then
 
