@@ -3,5 +3,4 @@ go 1.21.1
 use (
 	./go
 	./go_con
-	./go_con2
 )

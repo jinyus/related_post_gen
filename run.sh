@@ -35,19 +35,6 @@ run_go_concurrent() {
     check_output "related_posts_go_con.json"
 }
 
-run_go_concurrent2() {
-    echo "Running Go with concurrency2" &&
-        cd ./go_con2 &&
-        go build &&
-        if [ $HYPER == 1 ]; then
-            command hyperfine --show-output -r 10 -w 3 "./related_concurrent2"
-        else
-            command time -f '%es %Mk' ./related_concurrent2
-        fi
-
-    check_output "related_posts_go_con2.json"
-}
-
 run_rust() {
     echo "Running Rust" &&
         cd ./rust &&
@@ -134,11 +121,6 @@ if [ "$first_arg" = "go" ]; then
 elif [ "$first_arg" = "go_con" ]; then
 
     run_go_concurrent
-
-elif [ "$first_arg" = "go_con2" ]; then
-
-    run_go_concurrent2 &&
-        check_output "related_posts_go_con2.json"
 
 elif [ "$first_arg" = "rust" ]; then
 

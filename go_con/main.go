@@ -8,7 +8,6 @@ import (
 	"time"
 
 	"github.com/goccy/go-json"
-	"github.com/ugurcsen/gods-generic/trees/binaryheap"
 )
 
 // custom type alias - for easier experiments with int size
@@ -71,13 +70,12 @@ func main() {
 	for ; w < concurrency; w++ {
 		// allocate taggedPostCount for each worker once, zero out for each task
 		taggedPostCount := make([]isize, postsLength)
-		t5 := binaryheap.NewWith[PostWithSharedTags](PostComparator)
 		go func(workerID isize) {
 			for i := workerID; i < postsLength; i += concurrency {
 				// provide taggedPostCount and binary heap for each task
 				resultsChan <- Result{
 					Index:       isize(i),
-					RelatedPost: computeRelatedPost(i, posts, tagMap, taggedPostCount, t5),
+					RelatedPost: computeRelatedPost(i, posts, tagMap, taggedPostCount),
 				}
 			}
 
@@ -113,38 +111,49 @@ func main() {
 	}
 }
 
-func computeRelatedPost(i isize, posts []Post, tagMap map[string][]isize, taggedPostCount []isize, t5 *binaryheap.Heap[PostWithSharedTags]) RelatedPosts {
-
-	// zero out tagged post count
-	for i := range taggedPostCount {
-		taggedPostCount[i] = 0
+func computeRelatedPost(i isize, posts []Post, tagMap map[string][]isize, taggedPostCount []isize) RelatedPosts {
+	// Zero out tagged post count
+	for j := range taggedPostCount {
+		taggedPostCount[j] = 0
 	}
 
+	// Count the number of tags shared between posts
 	for _, tag := range posts[i].Tags {
 		for _, otherPostIdx := range tagMap[tag] {
-			taggedPostCount[otherPostIdx]++
-		}
-	}
-	// zero out current post count - no need for branch in a for loop above
-	taggedPostCount[i] = 0
-
-	for v, count := range taggedPostCount {
-		if t5.Size() < 5 {
-			t5.Push(PostWithSharedTags{Post: isize(v), SharedTags: count})
-		} else {
-			if t, _ := t5.Peek(); t.SharedTags < count {
-				t5.Pop()
-				t5.Push(PostWithSharedTags{Post: isize(v), SharedTags: count})
+			if otherPostIdx != i { // Exclude the post itself
+				taggedPostCount[otherPostIdx]++
 			}
 		}
 	}
 
-	num := min(5, t5.Size())
-	topPosts := make([]*Post, num)
+	top5 := [5]PostWithSharedTags{}
+	minTags := isize(0) // Updated initialization
 
-	for i := 0; i < num; i++ {
-		if t, ok := t5.Pop(); ok {
-			topPosts[i] = &posts[t.Post]
+	for j, count := range taggedPostCount {
+		if count > minTags {
+			// Find the position to insert
+			pos := 4
+			for pos >= 0 && top5[pos].SharedTags < count {
+				pos--
+			}
+			pos++
+
+			// Shift and insert
+			if pos < 4 {
+				copy(top5[pos+1:], top5[pos:4])
+			}
+			if pos <= 4 {
+				top5[pos] = PostWithSharedTags{Post: isize(j), SharedTags: count}
+				minTags = top5[4].SharedTags
+			}
+		}
+	}
+
+	// Convert indexes back to Post pointers
+	topPosts := make([]*Post, 0, 5)
+	for _, t := range top5 {
+		if t.SharedTags > 0 {
+			topPosts = append(topPosts, &posts[t.Post])
 		}
 	}
 
@@ -153,14 +162,4 @@ func computeRelatedPost(i isize, posts []Post, tagMap map[string][]isize, tagged
 		Tags:    posts[i].Tags,
 		Related: topPosts,
 	}
-}
-
-func PostComparator(a, b PostWithSharedTags) int {
-	if a.SharedTags > b.SharedTags {
-		return 1
-	}
-	if a.SharedTags < b.SharedTags {
-		return -1
-	}
-	return 0
 }
