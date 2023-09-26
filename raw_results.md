@@ -7,18 +7,21 @@ Todo:
 Go:
 
     Benchmark 1: ./related
-    Processing time (w/o IO) 33.270987ms
-    Processing time (w/o IO) 32.847184ms
-    Processing time (w/o IO) 34.3474ms
-    Processing time (w/o IO) 33.041485ms
-    Processing time (w/o IO) 33.434698ms
-    Processing time (w/o IO) 32.572843ms
-    Processing time (w/o IO) 33.980587ms
-    Processing time (w/o IO) 35.250463ms
-    Processing time (w/o IO) 34.353546ms
-    Processing time (w/o IO) 34.508107ms
-    Time (mean ± σ):      56.5 ms ±   2.1 ms    [User: 52.2 ms, System: 12.5 ms]
-    Range (min … max):    54.0 ms …  60.7 ms    10 runs
+    Processing time (w/o IO) 27.487946ms
+    Processing time (w/o IO) 26.172395ms
+    Processing time (w/o IO) 25.250405ms
+    Processing time (w/o IO) 25.154513ms
+    Processing time (w/o IO) 25.10723ms
+    Processing time (w/o IO) 26.256557ms
+    Processing time (w/o IO) 25.22659ms
+    Processing time (w/o IO) 30.632673ms
+    Processing time (w/o IO) 25.225752ms
+    Processing time (w/o IO) 26.666182ms
+    Processing time (w/o IO) 31.793454ms
+    Processing time (w/o IO) 26.25502ms
+    Processing time (w/o IO) 26.40609ms
+    Time (mean ± σ):      50.7 ms ±   3.3 ms    [User: 45.6 ms, System: 13.4 ms]
+    Range (min … max):    48.4 ms …  53.3 ms    10 runs
 
 Rust:
 
