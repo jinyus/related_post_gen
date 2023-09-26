@@ -1,4 +1,2 @@
 github.com/goccy/go-json v0.10.2 h1:CrxCmQqYDkv1z7lO7Wbh2HN93uovUHgrECaO5ZrCXAU=
 github.com/goccy/go-json v0.10.2/go.mod h1:6MelG93GURQebXPDq3khkgXZkazVtN9CRI+MGFi0w8I=
-github.com/ugurcsen/gods-generic v0.10.4 h1:OomH3R2MdzZxpnEPijaD/ncLzV6rpDXd5ruEkWsw0vo=
-github.com/ugurcsen/gods-generic v0.10.4/go.mod h1:mGYOa88Y5sbw+ADXLpScxjJ7s5iHoWya/YHyeQ4f6c4=
