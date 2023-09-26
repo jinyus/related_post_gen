@@ -51,7 +51,7 @@ posts.each_with_index do |post, idx|
     end
   end
 
-  # size at 6 to avoid resizing
+  # size at 6 to avoid resizing. also faster than allocating outside loop
   top5Queue = Array({Int32, Int32}).new(6, {0, 0})
   min_tags = 0
 
