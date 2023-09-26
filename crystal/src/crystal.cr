@@ -51,7 +51,8 @@ posts.each_with_index do |post, idx|
     end
   end
 
-  top5Queue = Array({Int32, Int32}).new(5, {0, 0})
+  # size at 6 to avoid resizing
+  top5Queue = Array({Int32, Int32}).new(6, {0, 0})
   min_tags = 0
 
   tagged_post_count.each_with_index do |count, idx|
@@ -72,8 +73,6 @@ posts.each_with_index do |post, idx|
   end
 
   topPosts = top5Queue.map { |p| posts[p[0]] }
-
-  # min_heap.clear
 
   allRelatedPosts << RelatedPost.new(id: post.id, tags: post.tags, related: topPosts)
 end
