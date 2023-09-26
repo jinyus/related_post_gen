@@ -111,7 +111,7 @@ run_python_np() {
             python3 -m venv venv
         fi
     source venv/bin/activate &&
-        pip freeze | grep numpy || pip install numpy &&
+        pip freeze | grep numpy || pip install -r requirements.txt &&
         if [ $HYPER == 1 ]; then
             capture "Numpy" hyperfine -r 5 --show-output "python3 ./related_np.py"
         else
@@ -334,6 +334,8 @@ elif [ "$first_arg" = "clean" ]; then
         cd rust && cargo clean &&
         cd .. &&
         cd rust_rayon && cargo clean &&
+        cd .. &&
+        cd python && rm -rf venv/ &&
         cd .. &&
         cd zig && rm -f main main.o &&
         cd ..
