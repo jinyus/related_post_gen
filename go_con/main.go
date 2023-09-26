@@ -1,3 +1,11 @@
+// Program Overview
+// This program computes the 5 most related posts for each post in a dataset.
+// It uses Go's concurrency model to parallelize the computation.
+// Steps:
+// 1. Load a list of posts from a JSON file
+// 2. Create a tag map to quickly find posts sharing the same tags
+// 3. Use concurrent workers to compute related posts for each post
+// 4. Output the related posts into a new JSON file
 package main
 
 import (
@@ -12,11 +20,15 @@ import (
 	"github.com/goccy/go-json"
 )
 
-// custom type alias - for easier experiments with int size
-// using smaller than int64 integer size but still big enough for 4 billion posts
-var concurrency = isize(runtime.NumCPU())
-var a *arena.Arena
+// Constants and Configurable Variables
+const (
+	InputJSONFilePath    = "../posts.json"
+	OutputJSONFilePath   = "../related_posts_go_con.json"
+	InitialTagMapSize    = 100
+	InitialPostsSliceCap = 10000
+)
 
+// Type Definitions
 type isize uint32
 
 type Post struct {
@@ -36,91 +48,142 @@ type RelatedPosts struct {
 	Related []*Post  `json:"related"`
 }
 
-// Result struct to hold results from goroutines
 type Result struct {
 	Index       isize
 	RelatedPost RelatedPosts
 }
 
+// Global Variables
+var concurrency = isize(runtime.NumCPU())
+var a *arena.Arena
+var start time.Time
+
+// Entry Point
 func main() {
-	file, err := os.Open("../posts.json")
+	// Initialize
+	initializeResources()
+	// Read data and preprocess
+	posts, tagMap := loadDataAndPreprocess()
+
+	// Compute related posts
+	allRelatedPosts := computeAllRelatedPosts(posts, tagMap)
+
+	// Write result
+	writeResults(allRelatedPosts)
+
+	// Release memory
+	a.Free()
+}
+
+// Function Definitions
+func initializeResources() {
+	a = arena.NewArena() // Create a new arena
+}
+
+func loadDataAndPreprocess() ([]Post, map[string][]isize) {
+	file, err := openJSONFile(InputJSONFilePath)
 	if err != nil {
 		log.Panicln(err)
 	}
 	defer file.Close()
 
-	a = arena.NewArena() // Create a new arena
+	posts := decodeJSONFile(file)
+	tagMap := createTagMap(posts)
 
-	var posts []Post
-	posts = arena.MakeSlice[Post](a, 0, 10000)
+	return posts, tagMap
+}
 
-	err = json.NewDecoder(file).Decode(&posts)
+func openJSONFile(filePath string) (*os.File, error) {
+	return os.Open(filePath)
+}
+
+func decodeJSONFile(file *os.File) []Post {
+	posts := arena.MakeSlice[Post](a, 0, InitialPostsSliceCap)
+	err := json.NewDecoder(file).Decode(&posts)
 	if err != nil {
 		log.Panicln(err)
 	}
+	return posts
+}
 
-	start := time.Now()
-
-	postsLength := len(posts)
-	postsLengthISize := isize(postsLength)
-
-	tagMap := make(map[string][]isize, 100)
+func createTagMap(posts []Post) map[string][]isize {
+	start = time.Now()
+	tagMap := make(map[string][]isize, InitialTagMapSize)
 	for i, post := range posts {
 		for _, tag := range post.Tags {
 			tagMap[tag] = append(tagMap[tag], isize(i))
 		}
 	}
+	return tagMap
+}
 
-	resultsChan := make(chan Result, postsLengthISize)
+func computeAllRelatedPosts(posts []Post, tagMap map[string][]isize) []RelatedPosts {
+	// Initialize
+	resultsChan, wg := initializeConcurrency(len(posts))
 
-	// create wait group to wait for all workers to finish
-	wg := sync.WaitGroup{}
-	wg.Add(int(concurrency))
-	var w isize
-	for ; w < isize(concurrency); w++ {
-		// allocate taggedPostCount for each worker once, zero out for each task
-		taggedPostCount := arena.MakeSlice[isize](a, postsLength, postsLength)
-		go func(workerID isize) {
-			for i := workerID; i < postsLengthISize; i += concurrency {
-				// provide taggedPostCount and binary heap for each task
-				resultsChan <- Result{
-					Index:       i,
-					RelatedPost: computeRelatedPost(i, posts, tagMap, taggedPostCount),
-				}
-			}
-			wg.Done()
-		}(w)
-	}
+	// Launch workers
+	launchWorkers(posts, tagMap, resultsChan, wg)
+
+	// Wait for workers and close channel
 	wg.Wait()
 	close(resultsChan)
 
+	// Gather results
+	allRelatedPosts := gatherResults(len(posts), resultsChan)
+
+	// Print processing time
+	fmt.Println("Processing time (w/o IO)", time.Since(start))
+
+	return allRelatedPosts
+}
+
+func initializeConcurrency(postsLength int) (chan Result, *sync.WaitGroup) {
+	resultsChan := make(chan Result, isize(postsLength))
+	wg := &sync.WaitGroup{}
+	wg.Add(int(concurrency))
+	return resultsChan, wg
+}
+
+func launchWorkers(posts []Post, tagMap map[string][]isize, resultsChan chan Result, wg *sync.WaitGroup) {
+	for w := isize(0); w < concurrency; w++ {
+		taggedPostCount := arena.MakeSlice[isize](a, len(posts), len(posts))
+		go worker(w, posts, tagMap, taggedPostCount, resultsChan, wg)
+	}
+}
+
+func worker(workerID isize, posts []Post, tagMap map[string][]isize, taggedPostCount []isize, resultsChan chan Result, wg *sync.WaitGroup) {
+	for i := workerID; i < isize(len(posts)); i += concurrency {
+		resultsChan <- Result{
+			Index:       i,
+			RelatedPost: computeRelatedPost(i, posts, tagMap, taggedPostCount),
+		}
+	}
+	wg.Done()
+}
+
+func gatherResults(postsLength int, resultsChan chan Result) []RelatedPosts {
 	allRelatedPosts := arena.MakeSlice[RelatedPosts](a, postsLength, postsLength)
 	for r := range resultsChan {
 		allRelatedPosts[r.Index] = r.RelatedPost
 	}
+	return allRelatedPosts
+}
 
-	end := time.Now()
-
-	fmt.Println("Processing time (w/o IO)", end.Sub(start))
-
-	file, err = os.Create("../related_posts_go_con.json")
+func writeResults(allRelatedPosts []RelatedPosts) {
+	file, err := os.Create(OutputJSONFilePath)
 	if err != nil {
 		log.Panicln(err)
 	}
-
 	err = json.NewEncoder(file).Encode(allRelatedPosts)
 	if err != nil {
 		log.Panicln(err)
 	}
-	a.Free()
 }
 
 func computeRelatedPost(i isize, posts []Post, tagMap map[string][]isize, taggedPostCount []isize) RelatedPosts {
-	// Zero out tagged post count
 	for j := range taggedPostCount {
 		taggedPostCount[j] = 0
 	}
-
 	// Count the number of tags shared between posts
 	for _, tag := range posts[i].Tags {
 		for _, otherPostIdx := range tagMap[tag] {
@@ -129,7 +192,6 @@ func computeRelatedPost(i isize, posts []Post, tagMap map[string][]isize, tagged
 			}
 		}
 	}
-
 	top5 := [5]PostWithSharedTags{}
 	minTags := isize(0) // Updated initialization
 
@@ -152,7 +214,6 @@ func computeRelatedPost(i isize, posts []Post, tagMap map[string][]isize, tagged
 			}
 		}
 	}
-
 	// Convert indexes back to Post pointers
 	topPosts := make([]*Post, 0, 5)
 	for _, t := range top5 {
