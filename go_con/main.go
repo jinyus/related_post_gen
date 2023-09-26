@@ -47,6 +47,7 @@ func main() {
 	if err != nil {
 		log.Panicln(err)
 	}
+	defer file.Close()
 
 	a = arena.NewArena() // Create a new arena
 
