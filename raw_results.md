@@ -42,21 +42,21 @@ Rust:
 Go Concurrent:
 
     Benchmark 1: ./related_concurrent
-    Processing time (w/o IO) 8.138984ms
-    Processing time (w/o IO) 7.199389ms
-    Processing time (w/o IO) 6.864214ms
-    Processing time (w/o IO) 7.275378ms
-    Processing time (w/o IO) 7.411712ms
-    Processing time (w/o IO) 9.978153ms
-    Processing time (w/o IO) 9.259611ms
-    Processing time (w/o IO) 9.085912ms
-    Processing time (w/o IO) 11.104087ms
-    Processing time (w/o IO) 11.531385ms
-    Processing time (w/o IO) 7.610065ms
-    Processing time (w/o IO) 8.73139ms
-    Processing time (w/o IO) 10.155972ms
-    Time (mean ± σ):      33.6 ms ±   2.5 ms    [User: 118.9 ms, System: 21.4 ms]
-    Range (min … max):    29.9 ms …  36.9 ms    10 runs
+    Processing time (w/o IO) 5.874728ms
+    Processing time (w/o IO) 5.091445ms
+    Processing time (w/o IO) 5.714579ms
+    Processing time (w/o IO) 5.845463ms
+    Processing time (w/o IO) 5.734274ms
+    Processing time (w/o IO) 5.697398ms
+    Processing time (w/o IO) 6.057296ms
+    Processing time (w/o IO) 6.820045ms
+    Processing time (w/o IO) 6.158707ms
+    Processing time (w/o IO) 5.334357ms
+    Processing time (w/o IO) 5.588374ms
+    Processing time (w/o IO) 5.246285ms
+    Processing time (w/o IO) 5.800555ms
+    Time (mean ± σ):      29.0 ms ±   1.6 ms    [User: 53.4 ms, System: 20.8 ms]
+    Range (min … max):    26.9 ms …  32.9 ms    10 runs
 
 Rust Rayon:
 
