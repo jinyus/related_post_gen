@@ -108,6 +108,17 @@ run_crystal() {
 
 }
 
+run_jq() {
+    echo "Running jq" &&
+        cd ./jq &&
+        if [ $HYPER == 1 ]; then
+            command hyperfine -r 5 --show-output "jq -c -f ./related.jq ../posts.json > ../related_posts_jq.json"
+        else
+            command time -f '%es %Mk' jq -c -f ./related.jq ../posts.json > ../related_posts_jq.json
+        fi
+    check_output "related_posts_jq.json"
+}
+
 check_output() {
     cd .. &&
         echo "Checking output" &&
@@ -142,6 +153,10 @@ elif [ "$first_arg" = "cr" ]; then
 
     run_crystal
 
+elif [ "$first_arg" = "jq" ]; then
+
+    run_jq
+
 elif [ "$first_arg" = "all" ]; then
 
     echo "running all" &&
@@ -167,5 +182,5 @@ elif [ "$first_arg" = "clean" ]; then
         rm -f related_*.json
 
 else
-    echo "Valid args: go | go_con | rust | rust_ray | py | numpy | cr | all | clean. Unknown argument: $first_arg"
+    echo "Valid args: go | go_con | rust | rust_ray | py | numpy | cr | jq | all | clean. Unknown argument: $first_arg"
 fi
