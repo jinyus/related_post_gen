@@ -39,6 +39,25 @@ Rust:
     Time (mean ± σ):      38.4 ms ±   1.8 ms    [User: 30.9 ms, System: 7.2 ms]
     Range (min … max):    36.4 ms …  41.4 ms    10 runs
 
+Go Concurrent:
+
+    Benchmark 1: ./related_concurrent
+    Processing time (w/o IO) 8.138984ms
+    Processing time (w/o IO) 7.199389ms
+    Processing time (w/o IO) 6.864214ms
+    Processing time (w/o IO) 7.275378ms
+    Processing time (w/o IO) 7.411712ms
+    Processing time (w/o IO) 9.978153ms
+    Processing time (w/o IO) 9.259611ms
+    Processing time (w/o IO) 9.085912ms
+    Processing time (w/o IO) 11.104087ms
+    Processing time (w/o IO) 11.531385ms
+    Processing time (w/o IO) 7.610065ms
+    Processing time (w/o IO) 8.73139ms
+    Processing time (w/o IO) 10.155972ms
+    Time (mean ± σ):      33.6 ms ±   2.5 ms    [User: 118.9 ms, System: 21.4 ms]
+    Range (min … max):    29.9 ms …  36.9 ms    10 runs
+
 Rust Rayon:
 
     Benchmark 1: ./target/release/rust_rayon
