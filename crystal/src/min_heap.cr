@@ -14,30 +14,6 @@ class MinHeap(T)
     @comparator = block
   end
 
-  def parent(idx)
-    (idx - 1) // 2
-  end
-
-  def left_child(idx)
-    2 * idx + 1
-  end
-
-  def right_child(idx)
-    2 * idx + 2
-  end
-
-  def has_left_child(idx)
-    left_child(idx) < @heap.size
-  end
-
-  def has_right_child(idx)
-    right_child(idx) < @heap.size
-  end
-
-  def swap(i, j)
-    @heap[i], @heap[j] = @heap[j], @heap[i]
-  end
-
   def push(val : T)
     @heap << val
     sift_up(@heap.size - 1)
@@ -56,6 +32,30 @@ class MinHeap(T)
     sift_down(0)
 
     min
+  end
+
+  private def parent(idx)
+    (idx - 1) // 2
+  end
+
+  private def left_child(idx)
+    2 * idx + 1
+  end
+
+  private def right_child(idx)
+    2 * idx + 2
+  end
+
+  private def has_left_child(idx)
+    left_child(idx) < @heap.size
+  end
+
+  private def has_right_child(idx)
+    right_child(idx) < @heap.size
+  end
+
+  private def swap(i, j)
+    @heap[i], @heap[j] = @heap[j], @heap[i]
   end
 
   private def sift_up(idx)
