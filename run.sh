@@ -25,7 +25,7 @@ run_go() {
 run_go_concurrent() {
     echo "Running Go with concurrency" &&
         cd ./go_con &&
-        go build &&
+        GOEXPERIMENT=arenas go build  &&
         if [ $HYPER == 1 ]; then
             command hyperfine -r 10 -w 3 --show-output "./related_concurrent"
         else
@@ -33,7 +33,6 @@ run_go_concurrent() {
         fi
 
     check_output "related_posts_go_con.json"
-
 }
 
 run_rust() {
