@@ -112,7 +112,8 @@ run_jq() {
     echo "Running jq" &&
         cd ./jq &&
         if [ $HYPER == 1 ]; then
-            command hyperfine -r 5 --show-output "jq -c -f ./related.jq ../posts.json > ../related_posts_jq.json"
+            # run once as it's very slow. ~50s
+            command hyperfine -r 1 "jq -c -f ./related.jq ../posts.json > ../related_posts_jq.json"
         else
             command time -f '%es %Mk' jq -c -f ./related.jq ../posts.json > ../related_posts_jq.json
         fi
