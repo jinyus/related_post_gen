@@ -11,6 +11,7 @@ package main
 import (
 	"arena"
 	"bufio"
+	"bytes"
 	"fmt"
 	"log"
 	"os"
@@ -19,7 +20,6 @@ import (
 	"time"
 
 	"github.com/bytedance/sonic"
-	"github.com/goccy/go-json"
 )
 
 // Constants and Configurable Variables
@@ -50,11 +50,6 @@ type RelatedPosts struct {
 	Related []*Post  `json:"related"`
 }
 
-type Result struct {
-	Index       isize
-	RelatedPost RelatedPosts
-}
-
 // Global Variables
 var concurrency = isize(runtime.NumCPU())
 var a *arena.Arena
@@ -64,40 +59,16 @@ var wg = &sync.WaitGroup{}
 // Entry Point
 func main() {
 	// Add a dedicated goroutine for writing to JSON
-	go func() {
-		file, err := os.Create(OutputJSONFilePath)
-		if err != nil {
-			log.Panicln(err)
-		}
-		defer file.Close()
-
-		writer := bufio.NewWriter(file)
-		var enc = sonic.ConfigDefault.NewEncoder(writer)
-
-		// write starting bracket
-		writer.WriteString("[\n")
-
-		for res := range writeChannel {
-			if err := enc.Encode(res); err != nil {
-				log.Panicln(err)
-			}
-			// write comma next to each JSON object
-			writer.WriteString(",\n")
-			writer.Flush()
-		}
-
-		// write ending bracket
-		writer.WriteString("]\n")
-		writer.Flush()
-	}()
-
-	defer close(writeChannel)
+	go handleWriteChannel()
 
 	// Initialize
 	initializeResources()
 
 	// Read data and preprocess
-	posts := loadPosts()
+	file, _ := os.Open(InputJSONFilePath)
+	reader := bufio.NewReader(file)
+	posts := arena.MakeSlice[Post](a, 0, InitialPostsSliceCap)
+	sonic.ConfigFastest.NewDecoder(reader).Decode(&posts)
 
 	// Compute related posts
 	processTime := time.Now()
@@ -108,6 +79,43 @@ func main() {
 	a.Free()
 }
 
+func handleWriteChannel() {
+	file, err := os.Create(OutputJSONFilePath)
+	if err != nil {
+		log.Panicln(err)
+	}
+	defer file.Close()
+
+	writer := bufio.NewWriter(file)
+	reader := bufio.NewReader(file)
+	readWriter := bufio.NewReadWriter(reader, writer)
+
+	// write starting bracket
+	readWriter.WriteString("[\n")
+
+	for res := range writeChannel {
+		jsonStr, err := sonic.MarshalString(res)
+		if err != nil {
+			log.Panicln(err)
+		}
+		// remove the newline character and add comma
+		jsonStr = string(bytes.TrimSuffix([]byte(jsonStr), []byte("\n")))
+		// add comma
+		jsonStr += ","
+		// write to file
+		readWriter.WriteString(jsonStr + "\n")
+		readWriter.Flush()
+	}
+
+	// remove the last comma
+	readWriter.WriteString("\b")
+
+	// write ending bracket
+	readWriter.WriteString("]\n")
+	readWriter.Flush()
+	close(writeChannel)
+}
+
 // Function Definitions
 func initializeResources() *sync.WaitGroup {
 	a = arena.NewArena() // Create a new arena
@@ -116,38 +124,22 @@ func initializeResources() *sync.WaitGroup {
 	return wg
 }
 
-func loadPosts() []Post {
-	file, err := openJSONFile(InputJSONFilePath)
-	if err != nil {
-		log.Panicln(err)
-	}
-	posts := decodeJSONFile(file)
-	return posts
-}
-
-func createTagMap(posts []Post) map[string][]isize {
+func computeAllRelatedPosts(posts []Post) {
+	// Create tag map
 	tagMap := make(map[string][]isize, InitialTagMapSize)
 	for i, post := range posts {
 		for _, tag := range post.Tags {
 			tagMap[tag] = append(tagMap[tag], isize(i))
 		}
 	}
-	return tagMap
-}
-
-func computeAllRelatedPosts(posts []Post) {
-	// Create tag map
-	tagMap := createTagMap(posts)
 
 	// Launch workers
-	launchWorkers(posts, tagMap)
-}
-
-func launchWorkers(posts []Post, tagMap map[string][]isize) {
 	for w := isize(0); w < concurrency; w++ {
 		taggedPostCount := arena.MakeSlice[isize](a, len(posts), len(posts))
 		go worker(w, posts, tagMap, taggedPostCount)
 	}
+
+	// Wait for workers to finish
 	wg.Wait()
 }
 
@@ -157,25 +149,6 @@ func worker(workerID isize, posts []Post, tagMap map[string][]isize, taggedPostC
 		writeChannel <- computeRelatedPost(i, posts, tagMap, taggedPostCount) // Send data to write channel
 	}
 	wg.Done()
-}
-
-// Function to open JSON File and return a buffered reader
-func openJSONFile(filePath string) (*bufio.Reader, error) {
-	file, err := os.Open(filePath)
-	if err != nil {
-		return nil, err
-	}
-	return bufio.NewReader(file), nil
-}
-
-// Function to decode JSON File using buffered reader
-func decodeJSONFile(reader *bufio.Reader) []Post {
-	posts := arena.MakeSlice[Post](a, 0, InitialPostsSliceCap)
-	err := json.NewDecoder(reader).Decode(&posts)
-	if err != nil {
-		log.Panicln(err)
-	}
-	return posts
 }
 
 func computeRelatedPost(i isize, posts []Post, tagMap map[string][]isize, taggedPostCount []isize) *RelatedPosts {
