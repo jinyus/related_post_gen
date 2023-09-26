@@ -1,8 +1,12 @@
-use std::{cmp::Reverse, collections::BinaryHeap, time::Instant};
+use std::{collections::BinaryHeap, time::Instant};
 
 use rustc_data_structures::fx::FxHashMap;
 use serde::{Deserialize, Serialize};
 use serde_json::from_str;
+
+use mimalloc::MiMalloc;
+#[global_allocator]
+static GLOBAL: MiMalloc = MiMalloc;
 
 #[derive(Serialize, Deserialize)]
 struct Post {
@@ -12,11 +16,53 @@ struct Post {
     tags: Vec<String>,
 }
 
+const NUM_TOP_ITEMS: usize = 5;
+
 #[derive(Serialize)]
 struct RelatedPosts<'a> {
     _id: &'a String,
     tags: &'a Vec<String>,
     related: Vec<&'a Post>,
+}
+
+#[derive(Eq)]
+struct PostCount {
+    post: usize,
+    count: usize,
+}
+
+impl std::cmp::PartialEq for PostCount {
+    fn eq(&self, other: &Self) -> bool {
+        self.count == other.count
+    }
+}
+
+impl std::cmp::PartialOrd for PostCount {
+    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+        Some(self.cmp(other))
+    }
+}
+
+impl std::cmp::Ord for PostCount {
+    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
+        // reverse order
+        other.count.cmp(&self.count)
+    }
+}
+
+fn least_n<T: Ord>(n: usize, mut from: impl Iterator<Item = T>) -> impl Iterator<Item = T> {
+    let mut h = BinaryHeap::from_iter(from.by_ref().take(n));
+
+    for it in from {
+        // heap thinks the smallest is the greatest because of reverse order
+        let mut greatest = h.peek_mut().unwrap();
+
+        if it < *greatest {
+            // heap rebalances after the smart pointer is dropped
+            *greatest = it;
+        }
+    }
+    h.into_iter()
 }
 
 fn main() {
@@ -33,45 +79,39 @@ fn main() {
         }
     }
 
-    let mut related_posts: Vec<RelatedPosts> = Vec::with_capacity(posts.len());
+    let related_posts: Vec<RelatedPosts<'_>> = posts
+        .iter()
+        .enumerate()
+        .map(|(idx, post)| {
+            // faster than allocating outside the loop
+            let mut tagged_post_count = vec![0; posts.len()];
 
-    let mut tagged_post_count = vec![0; posts.len()];
-
-    for (idx, post) in posts.iter().enumerate() {
-        tagged_post_count.fill(0);
-
-        for tag in &post.tags {
-            if let Some(tag_posts) = post_tags_map.get(tag) {
-                for other_post_idx in tag_posts {
-                    if idx != *other_post_idx {
-                        tagged_post_count[*other_post_idx] += 1;
+            for tag in &post.tags {
+                if let Some(tag_posts) = post_tags_map.get(tag) {
+                    for &other_post_idx in tag_posts {
+                        if idx != other_post_idx {
+                            tagged_post_count[other_post_idx] += 1;
+                        }
                     }
                 }
             }
-        }
 
-        let mut top_five = BinaryHeap::new();
-        tagged_post_count
-            .iter()
-            .enumerate()
-            .for_each(|(post, count)| {
-                if top_five.len() < 5 {
-                    top_five.push((Reverse(count), post));
-                } else {
-                    let (Reverse(cnt), _) = top_five.peek().unwrap();
-                    if count > *cnt {
-                        top_five.pop();
-                        top_five.push((Reverse(count), post));
-                    }
-                }
-            });
+            let top = least_n(
+                NUM_TOP_ITEMS,
+                tagged_post_count
+                    .iter()
+                    .enumerate()
+                    .map(|(post, &count)| PostCount { post, count }),
+            );
+            let related = top.map(|it| &posts[it.post]).collect();
 
-        related_posts.push(RelatedPosts {
-            _id: &post._id,
-            tags: &post.tags,
-            related: top_five.into_iter().map(|(_, post)| &posts[post]).collect(),
-        });
-    }
+            RelatedPosts {
+                _id: &post._id,
+                tags: &post.tags,
+                related,
+            }
+        })
+        .collect();
 
     let end = Instant::now();
 

@@ -1,9 +1,4 @@
-use std::{
-    cmp::Reverse,
-    collections::BinaryHeap,
-    sync::{Arc, Mutex},
-    time::Instant,
-};
+use std::{collections::BinaryHeap, time::Instant};
 
 use rayon::prelude::*;
 use rustc_data_structures::fx::FxHashMap;
@@ -14,7 +9,7 @@ use mimalloc::MiMalloc;
 #[global_allocator]
 static GLOBAL: MiMalloc = MiMalloc;
 
-#[derive(Debug, Serialize, Deserialize, Clone, Eq, PartialEq, Hash)]
+#[derive(Serialize, Deserialize)]
 struct Post {
     _id: String,
     title: String,
@@ -22,11 +17,53 @@ struct Post {
     tags: Vec<String>,
 }
 
-#[derive(Debug, Serialize)]
+const NUM_TOP_ITEMS: usize = 5;
+
+#[derive(Serialize)]
 struct RelatedPosts<'a> {
     _id: &'a String,
     tags: &'a Vec<String>,
     related: Vec<&'a Post>,
+}
+
+#[derive(Eq)]
+struct PostCount {
+    post: usize,
+    count: usize,
+}
+
+impl std::cmp::PartialEq for PostCount {
+    fn eq(&self, other: &Self) -> bool {
+        self.count == other.count
+    }
+}
+
+impl std::cmp::PartialOrd for PostCount {
+    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+        Some(self.cmp(other))
+    }
+}
+
+impl std::cmp::Ord for PostCount {
+    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
+        // reverse order
+        other.count.cmp(&self.count)
+    }
+}
+
+fn least_n<T: Ord>(n: usize, mut from: impl Iterator<Item = T>) -> impl Iterator<Item = T> {
+    let mut h = BinaryHeap::from_iter(from.by_ref().take(n));
+
+    for it in from {
+        // heap thinks the smallest is the greatest because of reverse order
+        let mut greatest = h.peek_mut().unwrap();
+
+        if it < *greatest {
+            // heap rebalances after the smart pointer is dropped
+            *greatest = it;
+        }
+    }
+    h.into_iter()
 }
 
 fn main() {
@@ -43,45 +80,39 @@ fn main() {
         }
     }
 
-    let related_posts: Arc<Mutex<Vec<RelatedPosts>>> =
-        Arc::new(Mutex::new(Vec::with_capacity(posts.len())));
+    let related_posts: Vec<RelatedPosts<'_>> = posts
+        .par_iter()
+        .enumerate()
+        .map(|(idx, post)| {
+            // faster than allocating outside the loop
+            let mut tagged_post_count = vec![0; posts.len()];
 
-    posts.par_iter().enumerate().for_each(|(idx, post)| {
-        let mut tagged_post_count = vec![0; posts.len()];
-        tagged_post_count.fill(0);
-
-        for tag in &post.tags {
-            if let Some(tag_posts) = post_tags_map.get(tag) {
-                for other_post_idx in tag_posts {
-                    if idx != *other_post_idx {
-                        tagged_post_count[*other_post_idx] += 1;
+            for tag in &post.tags {
+                if let Some(tag_posts) = post_tags_map.get(tag) {
+                    for &other_post_idx in tag_posts {
+                        if idx != other_post_idx {
+                            tagged_post_count[other_post_idx] += 1;
+                        }
                     }
                 }
             }
-        }
 
-        let mut top_five = BinaryHeap::new();
-        tagged_post_count
-            .iter()
-            .enumerate()
-            .for_each(|(post, count)| {
-                if top_five.len() < 5 {
-                    top_five.push((Reverse(count), post));
-                } else {
-                    let (Reverse(cnt), _) = top_five.peek().unwrap();
-                    if count > *cnt {
-                        top_five.pop();
-                        top_five.push((Reverse(count), post));
-                    }
-                }
-            });
+            let top = least_n(
+                NUM_TOP_ITEMS,
+                tagged_post_count
+                    .iter()
+                    .enumerate()
+                    .map(|(post, &count)| PostCount { post, count }),
+            );
+            let related = top.map(|it| &posts[it.post]).collect();
 
-        related_posts.lock().unwrap().push(RelatedPosts {
-            _id: &post._id,
-            tags: &post.tags,
-            related: top_five.into_iter().map(|(_, post)| &posts[post]).collect(),
-        });
-    });
+            RelatedPosts {
+                _id: &post._id,
+                tags: &post.tags,
+                related,
+            }
+        })
+        .collect();
 
     let end = Instant::now();
 
@@ -90,6 +121,6 @@ fn main() {
         end.duration_since(start)
     );
 
-    let json_str = serde_json::to_string(related_posts.lock().unwrap().as_slice()).unwrap();
+    let json_str = serde_json::to_string(&related_posts).unwrap();
     std::fs::write("../related_posts_rust_rayon.json", json_str).unwrap();
 }

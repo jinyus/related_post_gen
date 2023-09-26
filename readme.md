@@ -19,23 +19,6 @@ Generate related posts based on tags. Sort by the number of shared tags.
 
 ### Results (on my machine)
 
-| Language     | Time (avg) |
-| ------------ | ---------- |
-| Go           | 0.08s      |
-| Rust         | 0.04s      |
-| Rust (Rayon) | 0.02s      |
-| Python       | 7.81s      |
-
-#### Special thanks these reddits users for optimizing the Rust code
-
-[RB5009](https://www.reddit.com/r/rust/comments/16plgok/comment/k1s5ea0/?utm_source=share&utm_medium=web2x&context=3) <br>
-[darth_chewbacca](https://www.reddit.com/r/rust/comments/16plgok/comment/k1s1214/?utm_source=share&utm_medium=web2x&context=3)<br>
-[Darksonn](https://www.reddit.com/r/rust/comments/16plgok/comment/k1rzwdx/?utm_source=share&utm_medium=web2x&context=3)<br>
-[vdrmn](https://www.reddit.com/r/rust/comments/16plgok/comment/k1rzo7g/?utm_source=share&utm_medium=web2x&context=3)<br>
-[phazer99](https://www.reddit.com/r/rust/comments/16plgok/comment/k1rtr4x/?utm_source=share&utm_medium=web2x&context=3)<br>
-
-### Notes
-
 | Language   | Time (avg) | Time (minus I/O) | Details                                                                                                                                                                                                                                                                                         |
 | ---------- | ---------- | ---------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Rust       | 4.5s       | -                | Initial                                                                                                                                                                                                                                                                                         |
@@ -43,9 +26,17 @@ Generate related posts based on tags. Sort by the number of shared tags.
 | Rust v3    | 1.28s      | -                | Preallocate and reuse map and unstable sort by [vdrmn](https://www.reddit.com/r/rust/comments/16plgok/comment/k1rzo7g/?utm_source=share&utm_medium=web2x&context=3) and [Darksonn](https://www.reddit.com/r/rust/comments/16plgok/comment/k1rzwdx/?utm_source=share&utm_medium=web2x&context=3) |
 | Rust v4    | 0.13s      | -                | Use Post index as key instead of Pointer and Binary Heap by [RB5009](https://www.reddit.com/r/rust/comments/16plgok/comment/k1s5ea0/?utm_source=share&utm_medium=web2x&context=3)                                                                                                               |
 | Rust v5    | 52ms       | 38ms             | Rm hashing from loop and use vec[count] instead of map[index]count by RB5009                                                                                                                                                                                                                    |
+| Rust v6    | 36ms       | 23ms             | Optimized Binary Heap Ops by [scottlamb](https://github.com/jinyus/related_post_gen/pull/12)                                                                                                                                                                                                    |
 | Rust Rayon | 22ms       | 9ms              | Parallelize by [masmullin2000](https://github.com/jinyus/related_post_gen/pull/4)                                                                                                                                                                                                               |
+| ⠀          | ⠀          | ⠀                | ⠀                                                                                                                                                                                                                                                                                               |
 | Go         | 1.5s       | -                | Initial                                                                                                                                                                                                                                                                                         |
 | Go v2      | 80ms       | -                | Add rust optimizations                                                                                                                                                                                                                                                                          |
 | Go v3      | 70ms       | 56ms             | Use goccy/go-json                                                                                                                                                                                                                                                                               |
 | Go v3      | 55ms       | 34ms             | Use generic binaryheap by [DrBlury](https://github.com/jinyus/related_post_gen/pull/7)                                                                                                                                                                                                          |
+| Go Con     | 33ms       | 10ms             | Go concurrency by [tirprox](https://github.com/jinyus/related_post_gen/pull/17) and [DrBlury](https://github.com/jinyus/related_post_gen/pull/8)                                                                                                                                                |
+| ⠀          | ⠀          | ⠀                | ⠀                                                                                                                                                                                                                                                                                               |
 | Python     | 7.81s      | -                | Initial                                                                                                                                                                                                                                                                                         |
+| Python v2  | 1.53s      | 1.35s            | Add rust optimizations by [dave-andersen](https://github.com/jinyus/related_post_gen/pull/10)                                                                                                                                                                                                   |
+| Numpy      | 0.85s      | 0.57s            | Numpy implementation by [Copper280z](https://github.com/jinyus/related_post_gen/pull/11)                                                                                                                                                                                                        |
+| ⠀          | ⠀          | ⠀                | ⠀                                                                                                                                                                                                                                                                                               |
+| Crystal    | 96ms       | 50ms             | Inital w/ previous optimizations                                                                                                                                                                                                                                                                |
