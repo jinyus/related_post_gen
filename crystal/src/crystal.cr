@@ -1,7 +1,5 @@
 require "json"
 require "time"
-require "crystalline"
-require "heap"
 require "./min_heap.cr"
 
 class Post
