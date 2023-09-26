@@ -1,0 +1,13 @@
+rust/target
+rust_max/target
+rust_rayon/target
+go/related
+go_con/related_concurrent
+odin/main
+related_*.json
+.DS_Store
+.vscode/settings.json
+venv/
+crystal/lib/
+crystal/.shards/
+*.dwarf
