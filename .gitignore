@@ -12,3 +12,4 @@ crystal/lib/
 crystal/.shards/
 *.dwarf
 crystal/crystal
+crystal_con/crystal_con
