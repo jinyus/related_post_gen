@@ -6,6 +6,7 @@ import (
 	"log"
 	"os"
 	"runtime"
+	"sync"
 	"time"
 
 	"github.com/goccy/go-json"
@@ -13,9 +14,10 @@ import (
 
 // custom type alias - for easier experiments with int size
 // using smaller than int64 integer size but still big enough for 4 billion posts
-type isize uint32
-
 var concurrency = isize(runtime.NumCPU())
+var a *arena.Arena
+
+type isize uint32
 
 type Post struct {
 	ID    string   `json:"_id"`
@@ -46,7 +48,7 @@ func main() {
 		log.Panicln(err)
 	}
 
-	a := arena.NewArena() // Create a new arena
+	a = arena.NewArena() // Create a new arena
 
 	var posts []Post
 	posts = arena.MakeSlice[Post](a, 0, 10000)
@@ -58,7 +60,8 @@ func main() {
 
 	start := time.Now()
 
-	postsLength := isize(len(posts))
+	postsLength := len(posts)
+	postsLengthISize := isize(postsLength)
 
 	tagMap := make(map[string][]isize, 100)
 	for i, post := range posts {
@@ -67,35 +70,30 @@ func main() {
 		}
 	}
 
-	resultsChan := make(chan Result, postsLength)
-	doneChan := make(chan bool, concurrency)
+	resultsChan := make(chan Result, postsLengthISize)
 
+	// create wait group to wait for all workers to finish
+	wg := sync.WaitGroup{}
+	wg.Add(int(concurrency))
 	var w isize
-	for ; w < concurrency; w++ {
+	for ; w < isize(concurrency); w++ {
 		// allocate taggedPostCount for each worker once, zero out for each task
-		taggedPostCount := make([]isize, postsLength)
+		taggedPostCount := arena.MakeSlice[isize](a, postsLength, postsLength)
 		go func(workerID isize) {
-			for i := workerID; i < postsLength; i += concurrency {
+			for i := workerID; i < postsLengthISize; i += concurrency {
 				// provide taggedPostCount and binary heap for each task
 				resultsChan <- Result{
-					Index:       isize(i),
+					Index:       i,
 					RelatedPost: computeRelatedPost(i, posts, tagMap, taggedPostCount),
 				}
 			}
-
-			doneChan <- true
+			wg.Done()
 		}(w)
 	}
-
-	var i isize
-	for ; i < concurrency; i++ {
-		<-doneChan
-	}
-
+	wg.Wait()
 	close(resultsChan)
-	close(doneChan)
 
-	allRelatedPosts := make([]RelatedPosts, len(posts))
+	allRelatedPosts := arena.MakeSlice[RelatedPosts](a, postsLength, postsLength)
 	for r := range resultsChan {
 		allRelatedPosts[r.Index] = r.RelatedPost
 	}
