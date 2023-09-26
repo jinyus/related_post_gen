@@ -1,6 +1,5 @@
 require "json"
 require "time"
-require "./min_heap.cr"
 
 class Post
   include JSON::Serializable
@@ -43,10 +42,6 @@ end
 allRelatedPosts = Array(RelatedPost).new(posts.size)
 tagged_post_count = Array(Int32).new(posts.size, 0)
 
-min_heap = MinHeap({Int32, Int32}).new(5) do |a, b|
-  a[1] <=> b[1]
-end
-
 posts.each_with_index do |post, idx|
   tagged_post_count.fill(0)
 
@@ -56,43 +51,27 @@ posts.each_with_index do |post, idx|
     end
   end
 
-  top5 = Array({Int32, Int32}).new(5, {0, 0})
+  top5Queue = Array({Int32, Int32}).new(5, {0, 0})
   min_tags = 0
 
   tagged_post_count.each_with_index do |count, idx|
     if count > min_tags
       pos = 4
 
-      while pos >= 0 && top5[pos][1] < count
+      while pos >= 0 && top5Queue[pos][1] < count
         pos -= 1
       end
       pos += 1
 
-      # if pos < 4
-      #   top5.rotate!
-      # end
-
       if pos <= 4
-        top5.insert(pos, {idx, count})
-        top5.truncate(0, 5)
-        min_tags = top5[4][1]
+        top5Queue.insert(pos, {idx, count})
+        top5Queue.truncate(0, 5)
+        min_tags = top5Queue[4][1]
       end
     end
   end
 
-  # tagged_post_count.each_with_index do |count, p_idx|
-  #   if p_idx < 5
-  #     min_heap.push({p_idx, count})
-  #   elsif min_heap.peek_min[1] < count
-  #     val = min_heap.pop.not_nil![1]
-  #     min_heap.push({p_idx, count})
-  #     # min_heap.replace_min({p_idx, count})
-  #   end
-  # end
-
-  # avoid popping the heap which would reorder it
-  # better to just iterate over it then clear it
-  topPosts = top5.map { |p| posts[p[0]] }
+  topPosts = top5Queue.map { |p| posts[p[0]] }
 
   # min_heap.clear
 
