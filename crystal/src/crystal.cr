@@ -56,22 +56,45 @@ posts.each_with_index do |post, idx|
     end
   end
 
-  tagged_post_count.each_with_index do |count, p_idx|
-    if p_idx < 5
-      min_heap.push({p_idx, count})
-    elsif min_heap.peek_min[1] < count
-      val = min_heap.pop.not_nil![1]
-      min_heap.push({p_idx, count})
+  top5 = Array({Int32, Int32}).new(5, {0, 0})
+  min_tags = 0
+
+  tagged_post_count.each_with_index do |count, idx|
+    if count > min_tags
+      pos = 4
+
+      while pos >= 0 && top5[pos][1] < count
+        pos -= 1
+      end
+      pos += 1
+
+      # if pos < 4
+      #   top5.rotate!
+      # end
+
+      if pos <= 4
+        top5.insert(pos, {idx, count})
+        top5.truncate(0, 5)
+        min_tags = top5[4][1]
+      end
     end
   end
 
+  # tagged_post_count.each_with_index do |count, p_idx|
+  #   if p_idx < 5
+  #     min_heap.push({p_idx, count})
+  #   elsif min_heap.peek_min[1] < count
+  #     val = min_heap.pop.not_nil![1]
+  #     min_heap.push({p_idx, count})
+  #     # min_heap.replace_min({p_idx, count})
+  #   end
+  # end
+
   # avoid popping the heap which would reorder it
   # better to just iterate over it then clear it
-  topPosts = min_heap.map do |p|
-    posts[p[0]]
-  end
+  topPosts = top5.map { |p| posts[p[0]] }
 
-  min_heap.clear
+  # min_heap.clear
 
   allRelatedPosts << RelatedPost.new(id: post.id, tags: post.tags, related: topPosts)
 end
