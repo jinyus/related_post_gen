@@ -2,15 +2,13 @@ package main
 
 import (
 	"arena"
-	"bufio"
-	"bytes"
 	"fmt"
 	"log"
 	"os"
 	"runtime"
 	"time"
 
-	"github.com/bytedance/sonic"
+	"github.com/goccy/go-json"
 )
 
 // custom type alias - for easier experiments with int size
@@ -47,17 +45,16 @@ func main() {
 	if err != nil {
 		log.Panicln(err)
 	}
-	defer file.Close()
-
-	reader := bufio.NewReader(file)
 
 	a := arena.NewArena() // Create a new arena
 
 	var posts []Post
 	posts = arena.MakeSlice[Post](a, 0, 10000)
 
-	var dec = sonic.ConfigDefault.NewDecoder(reader)
-	dec.Decode(&posts)
+	err = json.NewDecoder(file).Decode(&posts)
+	if err != nil {
+		log.Panicln(err)
+	}
 
 	start := time.Now()
 
@@ -112,12 +109,10 @@ func main() {
 		log.Panicln(err)
 	}
 
-	var writeBuf = bytes.NewBuffer(nil)
-	var enc = sonic.ConfigDefault.NewEncoder(writeBuf)
-	enc.Encode(allRelatedPosts)
-
-	file.Write(writeBuf.Bytes())
-
+	err = json.NewEncoder(file).Encode(allRelatedPosts)
+	if err != nil {
+		log.Panicln(err)
+	}
 	a.Free()
 }
 
