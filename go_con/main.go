@@ -10,6 +10,7 @@ package main
 
 import (
 	"arena"
+	"bufio"
 	"fmt"
 	"log"
 	"os"
@@ -17,6 +18,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/bytedance/sonic"
 	"github.com/goccy/go-json"
 )
 
@@ -24,8 +26,8 @@ import (
 const (
 	InputJSONFilePath    = "../posts.json"
 	OutputJSONFilePath   = "../related_posts_go_con.json"
-	InitialTagMapSize    = 100
-	InitialPostsSliceCap = 10000
+	InitialTagMapSize    = 0
+	InitialPostsSliceCap = 0
 )
 
 // Type Definitions
@@ -56,58 +58,74 @@ type Result struct {
 // Global Variables
 var concurrency = isize(runtime.NumCPU())
 var a *arena.Arena
-var start time.Time
+var writeChannel = make(chan *RelatedPosts)
+var wg = &sync.WaitGroup{}
 
 // Entry Point
 func main() {
+	// Add a dedicated goroutine for writing to JSON
+	go func() {
+		file, err := os.Create(OutputJSONFilePath)
+		if err != nil {
+			log.Panicln(err)
+		}
+		defer file.Close()
+
+		writer := bufio.NewWriter(file)
+		var enc = sonic.ConfigDefault.NewEncoder(writer)
+
+		// write starting bracket
+		writer.WriteString("[\n")
+
+		for res := range writeChannel {
+			if err := enc.Encode(res); err != nil {
+				log.Panicln(err)
+			}
+			// write comma next to each JSON object
+			writer.WriteString(",\n")
+			writer.Flush()
+		}
+
+		// write ending bracket
+		writer.WriteString("]\n")
+		writer.Flush()
+	}()
+
+	defer close(writeChannel)
+
 	// Initialize
 	initializeResources()
+
 	// Read data and preprocess
-	posts, tagMap := loadDataAndPreprocess()
+	posts := loadPosts()
 
 	// Compute related posts
-	allRelatedPosts := computeAllRelatedPosts(posts, tagMap)
-
-	// Write result
-	writeResults(allRelatedPosts)
+	processTime := time.Now()
+	computeAllRelatedPosts(posts)
+	fmt.Println("Processing time (w/o IO)", time.Since(processTime))
 
 	// Release memory
 	a.Free()
 }
 
 // Function Definitions
-func initializeResources() {
+func initializeResources() *sync.WaitGroup {
 	a = arena.NewArena() // Create a new arena
+	// Initialize concurrency
+	wg.Add(int(concurrency))
+	return wg
 }
 
-func loadDataAndPreprocess() ([]Post, map[string][]isize) {
+func loadPosts() []Post {
 	file, err := openJSONFile(InputJSONFilePath)
 	if err != nil {
 		log.Panicln(err)
 	}
-	defer file.Close()
-
 	posts := decodeJSONFile(file)
-	tagMap := createTagMap(posts)
-
-	return posts, tagMap
-}
-
-func openJSONFile(filePath string) (*os.File, error) {
-	return os.Open(filePath)
-}
-
-func decodeJSONFile(file *os.File) []Post {
-	posts := arena.MakeSlice[Post](a, 0, InitialPostsSliceCap)
-	err := json.NewDecoder(file).Decode(&posts)
-	if err != nil {
-		log.Panicln(err)
-	}
 	return posts
 }
 
 func createTagMap(posts []Post) map[string][]isize {
-	start = time.Now()
 	tagMap := make(map[string][]isize, InitialTagMapSize)
 	for i, post := range posts {
 		for _, tag := range post.Tags {
@@ -117,70 +135,50 @@ func createTagMap(posts []Post) map[string][]isize {
 	return tagMap
 }
 
-func computeAllRelatedPosts(posts []Post, tagMap map[string][]isize) []RelatedPosts {
-	// Initialize
-	resultsChan, wg := initializeConcurrency(len(posts))
+func computeAllRelatedPosts(posts []Post) {
+	// Create tag map
+	tagMap := createTagMap(posts)
 
 	// Launch workers
-	launchWorkers(posts, tagMap, resultsChan, wg)
-
-	// Wait for workers and close channel
-	wg.Wait()
-	close(resultsChan)
-
-	// Gather results
-	allRelatedPosts := gatherResults(len(posts), resultsChan)
-
-	// Print processing time
-	fmt.Println("Processing time (w/o IO)", time.Since(start))
-
-	return allRelatedPosts
+	launchWorkers(posts, tagMap)
 }
 
-func initializeConcurrency(postsLength int) (chan Result, *sync.WaitGroup) {
-	resultsChan := make(chan Result, isize(postsLength))
-	wg := &sync.WaitGroup{}
-	wg.Add(int(concurrency))
-	return resultsChan, wg
-}
-
-func launchWorkers(posts []Post, tagMap map[string][]isize, resultsChan chan Result, wg *sync.WaitGroup) {
+func launchWorkers(posts []Post, tagMap map[string][]isize) {
 	for w := isize(0); w < concurrency; w++ {
 		taggedPostCount := arena.MakeSlice[isize](a, len(posts), len(posts))
-		go worker(w, posts, tagMap, taggedPostCount, resultsChan, wg)
+		go worker(w, posts, tagMap, taggedPostCount)
 	}
+	wg.Wait()
 }
 
-func worker(workerID isize, posts []Post, tagMap map[string][]isize, taggedPostCount []isize, resultsChan chan Result, wg *sync.WaitGroup) {
+func worker(workerID isize, posts []Post, tagMap map[string][]isize, taggedPostCount []isize) {
+	// Compute related posts for each post
 	for i := workerID; i < isize(len(posts)); i += concurrency {
-		resultsChan <- Result{
-			Index:       i,
-			RelatedPost: computeRelatedPost(i, posts, tagMap, taggedPostCount),
-		}
+		writeChannel <- computeRelatedPost(i, posts, tagMap, taggedPostCount) // Send data to write channel
 	}
 	wg.Done()
 }
 
-func gatherResults(postsLength int, resultsChan chan Result) []RelatedPosts {
-	allRelatedPosts := arena.MakeSlice[RelatedPosts](a, postsLength, postsLength)
-	for r := range resultsChan {
-		allRelatedPosts[r.Index] = r.RelatedPost
+// Function to open JSON File and return a buffered reader
+func openJSONFile(filePath string) (*bufio.Reader, error) {
+	file, err := os.Open(filePath)
+	if err != nil {
+		return nil, err
 	}
-	return allRelatedPosts
+	return bufio.NewReader(file), nil
 }
 
-func writeResults(allRelatedPosts []RelatedPosts) {
-	file, err := os.Create(OutputJSONFilePath)
+// Function to decode JSON File using buffered reader
+func decodeJSONFile(reader *bufio.Reader) []Post {
+	posts := arena.MakeSlice[Post](a, 0, InitialPostsSliceCap)
+	err := json.NewDecoder(reader).Decode(&posts)
 	if err != nil {
 		log.Panicln(err)
 	}
-	err = json.NewEncoder(file).Encode(allRelatedPosts)
-	if err != nil {
-		log.Panicln(err)
-	}
+	return posts
 }
 
-func computeRelatedPost(i isize, posts []Post, tagMap map[string][]isize, taggedPostCount []isize) RelatedPosts {
+func computeRelatedPost(i isize, posts []Post, tagMap map[string][]isize, taggedPostCount []isize) *RelatedPosts {
 	for j := range taggedPostCount {
 		taggedPostCount[j] = 0
 	}
@@ -222,7 +220,7 @@ func computeRelatedPost(i isize, posts []Post, tagMap map[string][]isize, tagged
 		}
 	}
 
-	return RelatedPosts{
+	return &RelatedPosts{
 		ID:      posts[i].ID,
 		Tags:    posts[i].Tags,
 		Related: topPosts,
