@@ -1,6 +1,7 @@
 package main
 
 import (
+	"arena"
 	"fmt"
 	"log"
 	"os"
@@ -45,7 +46,10 @@ func main() {
 		log.Panicln(err)
 	}
 
+	a := arena.NewArena() // Create a new arena
+
 	var posts []Post
+	posts = arena.MakeSlice[Post](a, 0, 10000)
 
 	err = json.NewDecoder(file).Decode(&posts)
 	if err != nil {
@@ -109,6 +113,7 @@ func main() {
 	if err != nil {
 		log.Panicln(err)
 	}
+	a.Free()
 }
 
 func computeRelatedPost(i isize, posts []Post, tagMap map[string][]isize, taggedPostCount []isize) RelatedPosts {

@@ -35,7 +35,6 @@ func main() {
 
 	var posts []Post
 	err = json.NewDecoder(file).Decode(&posts)
-
 	if err != nil {
 		log.Panicln(err)
 	}
