@@ -17,6 +17,9 @@ run_go() {
         else
             command time -f '%es %Mk' ./related
         fi
+
+    check_output "related_posts_go.json"
+
 }
 
 run_go_concurrent() {
@@ -28,6 +31,9 @@ run_go_concurrent() {
         else
             command time -f '%es %Mk' ./related_concurrent
         fi
+
+    check_output "related_posts_go_con.json"
+
 }
 
 run_rust() {
@@ -39,6 +45,9 @@ run_rust() {
         else
             command time -f '%es %Mk' ./target/release/rust
         fi
+
+    check_output "related_posts_rust.json"
+
 }
 
 run_rust_rayon() {
@@ -50,6 +59,9 @@ run_rust_rayon() {
         else
             command time -f '%es %Mk' ./target/release/rust_rayon
         fi
+
+    check_output "related_posts_rust_rayon.json"
+
 }
 
 run_python_np() {
@@ -65,7 +77,9 @@ run_python_np() {
         else
             command time -f '%es %Mk' python3 ./related_np.py
         fi
-    deactivate
+    deactivate &&
+        check_output "related_posts_python_np.json"
+
 }
 
 run_python() {
@@ -76,6 +90,23 @@ run_python() {
         else
             command time -f '%es %Mk' python3 ./related.py
         fi
+
+    check_output "related_posts_python.json"
+
+}
+
+run_crystal() {
+    echo "Running Crystal" &&
+        cd ./crystal &&
+        crystal build --release src/crystal.cr &&
+        if [ $HYPER == 1 ]; then
+            command hyperfine -r 10 --show-output "./crystal"
+        else
+            command time -f '%es %Mk' ./crystal
+        fi
+
+    check_output "related_posts_cr.json"
+
 }
 
 check_output() {
@@ -86,49 +117,42 @@ check_output() {
 
 if [ "$first_arg" = "go" ]; then
 
-    run_go &&
-        check_output "related_posts_go.json"
+    run_go
 
 elif [ "$first_arg" = "go_con" ]; then
 
-    run_go_concurrent &&
-        check_output "related_posts_go_con.json"
+    run_go_concurrent
 
 elif [ "$first_arg" = "rust" ]; then
 
-    run_rust &&
-        check_output "related_posts_rust.json"
+    run_rust
 
 elif [ "$first_arg" = "rust_ray" ]; then
 
-    run_rust_rayon &&
-        check_output "related_posts_rust_rayon.json"
+    run_rust_rayon
 
 elif [ "$first_arg" = "py" ]; then
 
-    run_python &&
-        check_output "related_posts_python.json"
+    run_python
 
 elif [ "$first_arg" = "numpy" ]; then
 
-    run_python_np &&
-        check_output "related_posts_python_np.json"
+    run_python_np
+
+elif [ "$first_arg" = "cr" ]; then
+
+    run_crystal
 
 elif [ "$first_arg" = "all" ]; then
 
     echo "running all" &&
         run_go &&
-        cd .. &&
         run_go_concurrent &&
-        cd ..
         run_rust &&
-        cd .. &&
         run_rust_rayon &&
-        cd .. &&
-        run_python
-        cd .. &&
-        run_python_np
-        cd ..
+        run_python &&
+        run_python_np &&
+        run_crystal
 
 elif [ "$first_arg" = "clean" ]; then
 
@@ -139,10 +163,10 @@ elif [ "$first_arg" = "clean" ]; then
         cd .. &&
         cd rust && cargo clean &&
         cd .. &&
-        cd rust_rayon && cargo clean
-        cd ..
+        cd rust_rayon && cargo clean &&
+        cd .. &&
         rm -f related_*.json
 
 else
-    echo "Valid args: go | go_con | rust | rust_ray | py | numpy | all | clean. Unknown argument: $first_arg"
+    echo "Valid args: go | go_con | rust | rust_ray | py | numpy | cr | all | clean. Unknown argument: $first_arg"
 fi
