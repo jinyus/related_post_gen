@@ -94,3 +94,19 @@ Numpy:
     Processing time (w/o IO): 0.579s
     Time (mean ± σ): 877.5 ms ± 11.4 ms [User: 972.4 ms, System: 1236.1 ms]
     Range (min … max): 864.6 ms … 895.9 ms 5 runs
+
+Crystal:
+
+    Benchmark 1: ./crystal
+    Processing time (w/o IO): 44.66993ms
+    Processing time (w/o IO): 45.962796ms
+    Processing time (w/o IO): 53.485252ms
+    Processing time (w/o IO): 50.532493ms
+    Processing time (w/o IO): 52.428944ms
+    Processing time (w/o IO): 58.231513ms
+    Processing time (w/o IO): 48.994757ms
+    Processing time (w/o IO): 48.623889ms
+    Processing time (w/o IO): 54.294663ms
+    Processing time (w/o IO): 51.416846ms
+    Time (mean ± σ):      96.0 ms ±   7.1 ms    [User: 83.3 ms, System: 11.7 ms]
+    Range (min … max):    87.7 ms … 107.3 ms    10 runs

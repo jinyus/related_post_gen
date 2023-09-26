@@ -11,3 +11,4 @@ venv/
 crystal/lib/
 crystal/.shards/
 *.dwarf
+crystal/crystal
