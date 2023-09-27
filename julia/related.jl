@@ -1,7 +1,5 @@
 using JSON3
-using BenchmarkTools
 using StatsBase: countmap
-using ProfileView
 using StructTypes
 
 function relatedIO()
@@ -31,7 +29,6 @@ end
 
 StructTypes.StructType(::Type{PostData}) = StructTypes.Struct()
 
-
 function related(posts)
     tag_map = Dict{String, Vector{Int64}}()
     for (idx, post) in enumerate(posts)
@@ -59,7 +56,6 @@ function related(posts)
 
     return all_related_posts
 end
-
 
 
 relatedIO()

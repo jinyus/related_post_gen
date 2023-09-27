@@ -112,7 +112,8 @@ run_crystal() {
 
 run_julia_v1() {
     echo "Running Julia v1" &&
-        cd ./julia
+        cd ./julia &&
+        julia -e 'using Pkg; Pkg.add.(["JSON3", "StatsBase", "StructTypes", "LinearAlgebra"])' &&
         if [ $HYPER == 1 ]; then
             command hyperfine -r 5 --warmup 1  --show-output "julia related.jl"
         else
@@ -125,7 +126,8 @@ run_julia_v1() {
 
 run_julia_v2() {
     echo "Running Julia v2" &&
-        cd ./julia
+        cd ./julia &&
+        julia -e 'using Pkg; Pkg.add.(["JSON3", "StatsBase", "StructTypes", "LinearAlgebra"])' &&
         if [ $HYPER == 1 ]; then
             command hyperfine -r 5 --warmup 1 --show-output "julia related_v2.jl"
         else
@@ -205,5 +207,6 @@ elif [ "$first_arg" = "clean" ]; then
         rm -f related_*.json
 
 else
-    echo "Valid args: go | go_con | rust | rust_ray | py | numpy | cr | all | clean. Unknown argument: $first_arg"
+    echo "Valid args: go | go_con | rust | rust_ray | py | numpy | cr | all | ju_v1 | ju_v2 | clean. Unknown argument: $first_arg"
 fi
+

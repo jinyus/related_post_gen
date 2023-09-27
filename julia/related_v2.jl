@@ -1,7 +1,4 @@
 using JSON3
-using BenchmarkTools
-using StatsBase: countmap
-using ProfileView
 using LinearAlgebra
 using StructTypes
 
@@ -30,10 +27,7 @@ struct RelatedPost
     related::Vector{PostData}
 end
 
-
 StructTypes.StructType(::Type{PostData}) = StructTypes.Struct()
-
-
 
 function related(posts)
     tags = reduce(vcat, [p.tags for p in posts])
