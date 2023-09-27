@@ -44,16 +44,31 @@ if __name__ == "__main__":
         correct_file: Dict[str, int] = json.load(f)
 
     for post in target_file:
+        if "_id" not in post:
+            print(f"Invalid post! _id not found: \n{post}")
+            sys.exit(1)
+        elif "tags" not in post:
+            print(f"Invalid post! tags not found: \n{post}")
+            sys.exit(1)
+        elif "related" not in post:
+            print(f"Invalid post! related not found: \n{post}")
+            sys.exit(1)
+
         tag_set = set(post["tags"])
         shared_tag_count = 0
 
         for related_post in post["related"]:
             shared_tag_count += len(set(related_post["tags"]) & tag_set)
 
-        correct_count = correct_file[post["_id"]]
+        post_id = post["_id"]
+
+        if post_id not in correct_file:
+            print(f"Post {post_id} not found in correct file!\n{post}")
+            sys.exit(1)
+
+        correct_count = correct_file[post_id]
 
         if shared_tag_count != correct_count:
-            post_id = post["_id"]
             print(
                 f"Post {post_id} is invalid!\nexpected: {correct_count} shared tag count\nactual: {shared_tag_count}"
             )

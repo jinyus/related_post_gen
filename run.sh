@@ -25,7 +25,7 @@ run_go() {
 run_go_concurrent() {
     echo "Running Go with concurrency" &&
         cd ./go_con &&
-        go build &&
+        GOEXPERIMENT=arenas go build &&
         if [ $HYPER == 1 ]; then
             command hyperfine -r 10 -w 3 --show-output "./related_concurrent"
         else
@@ -33,7 +33,6 @@ run_go_concurrent() {
         fi
 
     check_output "related_posts_go_con.json"
-
 }
 
 run_rust() {
@@ -64,6 +63,19 @@ run_rust_rayon() {
 
 }
 
+run_python() {
+    echo "Running Python" &&
+        cd ./python &&
+        if [ $HYPER == 1 ]; then
+            command hyperfine -r 5 --show-output "python3 ./related.py"
+        else
+            command time -f '%es %Mk' python3 ./related.py
+        fi
+
+    check_output "related_posts_python.json"
+
+}
+
 run_python_np() {
     echo "Running Python with Numpy" &&
         cd ./python &&
@@ -79,19 +91,6 @@ run_python_np() {
         fi
     deactivate &&
         check_output "related_posts_python_np.json"
-
-}
-
-run_python() {
-    echo "Running Python" &&
-        cd ./python &&
-        if [ $HYPER == 1 ]; then
-            command hyperfine -r 5 --show-output "python3 ./related.py"
-        else
-            command time -f '%es %Mk' python3 ./related.py
-        fi
-
-    check_output "related_posts_python.json"
 
 }
 
@@ -136,6 +135,30 @@ run_julia_v2() {
 
     check_output "related_posts_julia_v2.json"
 
+run_odin() {
+    echo "Running Odin" &&
+        cd ./odin &&
+        odin build related.odin -file -no-bounds-check &&
+        if [ $HYPER == 1 ]; then
+            command hyperfine -r 10 --show-output "./related"
+        else
+            command time -f '%es %Mk' ./related
+        fi
+
+    check_output "related_posts_odin.json"
+}
+
+run_jq() {
+    echo "Running jq" &&
+        cd ./jq &&
+        if [ $HYPER == 1 ]; then
+            # run once as it's very slow. ~50s
+            command hyperfine -r 1 "jq -c -f ./related.jq ../posts.json > ../related_posts_jq.json"
+        else
+            command time -f '%es %Mk' jq -c -f ./related.jq ../posts.json > ../related_posts_jq.json
+        fi
+    check_output "related_posts_jq.json"
+
 }
 
 check_output() {
@@ -172,6 +195,7 @@ elif [ "$first_arg" = "cr" ]; then
 
     run_crystal
 
+
 elif [ "$first_arg" = "ju_v1" ]; then
 
     run_julia_v1
@@ -179,6 +203,14 @@ elif [ "$first_arg" = "ju_v1" ]; then
 elif [ "$first_arg" = "ju_v2" ]; then
 
     run_julia_v2
+
+elif [ "$first_arg" = "odin" ]; then
+
+    run_odin
+
+elif [ "$first_arg" = "jq" ]; then
+
+    run_jq
 
 elif [ "$first_arg" = "all" ]; then
 
@@ -207,6 +239,8 @@ elif [ "$first_arg" = "clean" ]; then
         rm -f related_*.json
 
 else
-    echo "Valid args: go | go_con | rust | rust_ray | py | numpy | cr | all | ju_v1 | ju_v2 | clean. Unknown argument: $first_arg"
+
+    echo "Valid args: go | go_con | rust | rust_ray | py | numpy | cr | odin | jq | ju_v1 | ju_v2 | all | clean. Unknown argument: $first_arg"
+    
 fi
 

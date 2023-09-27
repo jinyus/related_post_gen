@@ -1,6 +1,5 @@
 require "json"
 require "time"
-require "./min_heap.cr"
 
 class Post
   include JSON::Serializable
@@ -43,10 +42,6 @@ end
 allRelatedPosts = Array(RelatedPost).new(posts.size)
 tagged_post_count = Array(Int32).new(posts.size, 0)
 
-min_heap = MinHeap({Int32, Int32}).new(5) do |a, b|
-  a[1] <=> b[1]
-end
-
 posts.each_with_index do |post, idx|
   tagged_post_count.fill(0)
 
@@ -56,22 +51,28 @@ posts.each_with_index do |post, idx|
     end
   end
 
-  tagged_post_count.each_with_index do |count, p_idx|
-    if p_idx < 5
-      min_heap.push({p_idx, count})
-    elsif min_heap.peek_min[1] < count
-      val = min_heap.pop.not_nil![1]
-      min_heap.push({p_idx, count})
+  # size at 6 to avoid resizing. also faster than allocating outside loop
+  top5Queue = Array({Int32, Int32}).new(6, {0, 0})
+  min_tags = 0
+
+  tagged_post_count.each_with_index do |count, idx|
+    if count > min_tags
+      pos = 4
+
+      while pos >= 0 && top5Queue[pos][1] < count
+        pos -= 1
+      end
+      pos += 1
+
+      if pos <= 4
+        top5Queue.insert(pos, {idx, count})
+        top5Queue.truncate(0, 5)
+        min_tags = top5Queue[4][1]
+      end
     end
   end
 
-  # avoid popping the heap which would reorder it
-  # better to just iterate over it then clear it
-  topPosts = min_heap.map do |p|
-    posts[p[0]]
-  end
-
-  min_heap.clear
+  topPosts = top5Queue.map { |p| posts[p[0]] }
 
   allRelatedPosts << RelatedPost.new(id: post.id, tags: post.tags, related: topPosts)
 end
