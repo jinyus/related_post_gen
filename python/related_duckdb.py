@@ -19,18 +19,20 @@ STATEMENTS = [
             FROM tag_related
             GROUP BY source_post, related_post);""",
     """COPY (
-        SELECT
-            p._id,
-            p.tags,
-            ARRAY(
-                SELECT rc.related_post
-                FROM related_counts rc
-                WHERE rc.source_post = p._id
-                ORDER BY rc.relation_count DESC
-                LIMIT 5
-            ) AS related
-        FROM posts p
-    ) TO '../related_posts_duckdb.json';""",
+            SELECT
+                p._id,
+                p.tags,
+                ARRAY(
+                    SELECT
+                        JSON_OBJECT('_id', rp._id, 'title', rp.title, 'tags', rp.tags)
+                    FROM related_counts rc
+                    JOIN posts rp ON rp._id = rc.related_post
+                    WHERE rc.source_post = p._id
+                    ORDER BY rc.relation_count DESC
+                    LIMIT 5
+                ) AS related
+            FROM posts p
+        ) TO '../related_posts_duckdb.jsonl';""",
 ]
 
 
