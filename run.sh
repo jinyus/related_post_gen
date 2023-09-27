@@ -63,6 +63,19 @@ run_rust_rayon() {
 
 }
 
+run_python() {
+    echo "Running Python" &&
+        cd ./python &&
+        if [ $HYPER == 1 ]; then
+            command hyperfine -r 5 --show-output "python3 ./related.py"
+        else
+            command time -f '%es %Mk' python3 ./related.py
+        fi
+
+    check_output "related_posts_python.json"
+
+}
+
 run_python_np() {
     echo "Running Python with Numpy" &&
         cd ./python &&
@@ -81,19 +94,6 @@ run_python_np() {
 
 }
 
-run_python() {
-    echo "Running Python" &&
-        cd ./python &&
-        if [ $HYPER == 1 ]; then
-            command hyperfine -r 5 --show-output "python3 ./related.py"
-        else
-            command time -f '%es %Mk' python3 ./related.py
-        fi
-
-    check_output "related_posts_python.json"
-
-}
-
 run_crystal() {
     echo "Running Crystal" &&
         cd ./crystal &&
@@ -108,7 +108,6 @@ run_crystal() {
 
 }
 
-
 run_odin() {
     echo "Running Odin" &&
         cd ./odin &&
@@ -120,7 +119,7 @@ run_odin() {
         fi
 
     check_output "related_posts_odin.json"
-
+}
 
 run_jq() {
     echo "Running jq" &&
