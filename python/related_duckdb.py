@@ -1,9 +1,8 @@
-import duckdb
 from datetime import datetime
+import duckdb
 
 
-PREP = [
-    """CREATE TABLE posts AS (SELECT * FROM '../posts.json');""",
+CALCULATE = [
     """CREATE TABLE tags AS (SELECT _id AS post_id, UNNEST(tags) AS tag FROM posts);""",
     """CREATE TABLE tag_related AS (
             SELECT
@@ -19,16 +18,7 @@ PREP = [
                 COUNT(*) as relation_count
             FROM tag_related
             GROUP BY source_post, related_post);""",
-]
-
-
-def main():
-    for q in PREP:
-        duckdb.execute(q)
-
-    start = datetime.now()
-    duckdb.execute(
-        """COPY (
+    """CREATE TABLE results AS (
             SELECT
                 p._id,
                 p.tags,
@@ -42,10 +32,22 @@ def main():
                     LIMIT 5
                 ) AS related
             FROM posts p
-        ) TO '../related_posts_duckdb.jsonl';"""
-    )
+        );""",
+]
 
+
+def main():
+    # read in
+    duckdb.execute("""CREATE TABLE posts AS (SELECT * FROM '../posts.json');""")
+
+    # time the calculations
+    start = datetime.now()
+    for q in CALCULATE:
+        duckdb.execute(q)
     end = datetime.now()
+
+    # write out
+    duckdb.execute("""COPY results TO '../related_posts_duckdb.jsonl';""")
 
     print(f"Processing time (w/o IO): {end - start}")
 
