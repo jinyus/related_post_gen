@@ -113,3 +113,19 @@ Crystal:
     Processing time (w/o IO): 33.953733ms
     Time (mean ± σ):      72.3 ms ±   2.9 ms    [User: 62.4 ms, System: 9.0 ms]
     Range (min … max):    69.3 ms …  79.8 ms    10 runs
+
+Odin:
+
+    Benchmark 1: ./related
+    Processing time (w/o IO):  109.823395ms
+    Processing time (w/o IO):  111.083283ms
+    Processing time (w/o IO):  108.994925ms
+    Processing time (w/o IO):  110.026847ms
+    Processing time (w/o IO):  108.80663ms
+    Processing time (w/o IO):  112.385774ms
+    Processing time (w/o IO):  109.242098ms
+    Processing time (w/o IO):  111.419993ms
+    Processing time (w/o IO):  110.349589ms
+    Processing time (w/o IO):  110.501355ms
+    Time (mean ± σ):     397.7 ms ±   4.6 ms    [User: 386.2 ms, System: 11.3 ms]
+    Range (min … max):   393.7 ms … 406.3 ms    10 runs

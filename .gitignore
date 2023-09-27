@@ -12,3 +12,5 @@ crystal/lib/
 crystal/.shards/
 *.dwarf
 crystal/crystal
+ols.json
+odin/related
