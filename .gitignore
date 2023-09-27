@@ -14,3 +14,4 @@ crystal/.shards/
 crystal/crystal
 ols.json
 odin/related
+.dart_tool/
