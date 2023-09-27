@@ -70,11 +70,11 @@ main :: proc() {
 
 		for tag in post.Tags {
 			for item in tagMap[tag] {
-				if item != i {
-					taggedPostCount[item] += 1
-				}
+				taggedPostCount[item] += 1
 			}
 		}
+
+		taggedPostCount[i] = 0 // don't count self
 
 		top5 := [5]PostWithSharedTags{}
 		minTags := 0

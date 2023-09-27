@@ -120,15 +120,15 @@ Crystal:
 Odin:
 
     Benchmark 1: ./related
-    Processing time (w/o IO):  109.823395ms
-    Processing time (w/o IO):  111.083283ms
-    Processing time (w/o IO):  108.994925ms
-    Processing time (w/o IO):  110.026847ms
-    Processing time (w/o IO):  108.80663ms
-    Processing time (w/o IO):  112.385774ms
-    Processing time (w/o IO):  109.242098ms
-    Processing time (w/o IO):  111.419993ms
-    Processing time (w/o IO):  110.349589ms
-    Processing time (w/o IO):  110.501355ms
-    Time (mean ± σ):     397.7 ms ±   4.6 ms    [User: 386.2 ms, System: 11.3 ms]
-    Range (min … max):   393.7 ms … 406.3 ms    10 runs
+    Processing time (w/o IO):  102.817098ms
+    Processing time (w/o IO):  108.400743ms
+    Processing time (w/o IO):  103.016007ms
+    Processing time (w/o IO):  106.131512ms
+    Processing time (w/o IO):  102.349716ms
+    Processing time (w/o IO):  102.549184ms
+    Processing time (w/o IO):  106.453693ms
+    Processing time (w/o IO):  103.57565ms
+    Processing time (w/o IO):  102.969981ms
+    Processing time (w/o IO):  106.170902ms
+    Time (mean ± σ):     404.8 ms ±   5.4 ms    [User: 391.5 ms, System: 13.1 ms]
+    Range (min … max):   400.4 ms … 418.3 ms    10 runs
