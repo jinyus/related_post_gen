@@ -11,7 +11,6 @@ package main
 import (
 	"arena"
 	"bufio"
-	"bytes"
 	"fmt"
 	"log"
 	"os"
@@ -55,14 +54,15 @@ var concurrency = isize(runtime.NumCPU())
 var a *arena.Arena
 var writeChannel = make(chan *RelatedPosts)
 var wg = &sync.WaitGroup{}
+var readWriter *bufio.ReadWriter
 
 // Entry Point
 func main() {
-	// Add a dedicated goroutine for writing to JSON
-	go handleWriteChannel()
-
 	// Initialize
 	initializeResources()
+
+	// Add a dedicated goroutine for writing to JSON
+	go handleWriteChannel()
 
 	// Read data and preprocess
 	file, _ := os.Open(InputJSONFilePath)
@@ -70,7 +70,7 @@ func main() {
 	posts := arena.MakeSlice[Post](a, 0, InitialPostsSliceCap)
 	sonic.ConfigFastest.NewDecoder(reader).Decode(&posts)
 
-	// Compute related posts
+	// Compute related posts and measure time
 	processTime := time.Now()
 	computeAllRelatedPosts(posts)
 	fmt.Println("Processing time (w/o IO)", time.Since(processTime))
@@ -80,38 +80,19 @@ func main() {
 }
 
 func handleWriteChannel() {
-	file, err := os.Create(OutputJSONFilePath)
-	if err != nil {
-		log.Panicln(err)
-	}
-	defer file.Close()
-
-	writer := bufio.NewWriter(file)
-	reader := bufio.NewReader(file)
-	readWriter := bufio.NewReadWriter(reader, writer)
-
 	// write starting bracket
 	readWriter.WriteString("[\n")
-
 	for res := range writeChannel {
 		jsonStr, err := sonic.MarshalString(res)
 		if err != nil {
 			log.Panicln(err)
 		}
-		// remove the newline character and add comma
-		jsonStr = string(bytes.TrimSuffix([]byte(jsonStr), []byte("\n")))
-		// add comma
-		jsonStr += ","
 		// write to file
-		readWriter.WriteString(jsonStr + "\n")
+		readWriter.WriteString(jsonStr + ",\n")
 		readWriter.Flush()
 	}
-
-	// remove the last comma
-	readWriter.WriteString("\b")
-
 	// write ending bracket
-	readWriter.WriteString("]\n")
+	readWriter.WriteString("\n]")
 	readWriter.Flush()
 	close(writeChannel)
 }
@@ -121,6 +102,12 @@ func initializeResources() *sync.WaitGroup {
 	a = arena.NewArena() // Create a new arena
 	// Initialize concurrency
 	wg.Add(int(concurrency))
+	// Initialize output file writer
+	file, err := os.Create(OutputJSONFilePath)
+	if err != nil {
+		log.Panicln(err)
+	}
+	readWriter = bufio.NewReadWriter(bufio.NewReader(file), bufio.NewWriter(file))
 	return wg
 }
 
