@@ -36,7 +36,7 @@ STATEMENTS = [
 
 def main():
 
-    for idx, q in enumerate(STATEMENTS):
+    for q in STATEMENTS:
         duckdb.execute(q)
 
 
