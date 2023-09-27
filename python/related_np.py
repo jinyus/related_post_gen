@@ -1,7 +1,7 @@
 from timing import lap, finish
 
 lap()
-import json
+import ujson as json
 import numpy as np
 
 

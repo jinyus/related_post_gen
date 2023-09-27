@@ -1,7 +1,7 @@
 from timing import lap, finish
 
 lap()
-import json
+import ujson as json
 from collections import Counter, defaultdict
 
 
