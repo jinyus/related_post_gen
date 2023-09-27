@@ -132,3 +132,14 @@ Odin:
     Processing time (w/o IO):  106.170902ms
     Time (mean ± σ):     404.8 ms ±   5.4 ms    [User: 391.5 ms, System: 13.1 ms]
     Range (min … max):   400.4 ms … 418.3 ms    10 runs
+
+vlang:
+
+    Benchmark 1: ./related
+    Processing time (w/o IO): 339.234ms
+    Processing time (w/o IO): 332.728ms
+    Processing time (w/o IO): 339.477ms
+    Processing time (w/o IO): 339.862ms
+    Processing time (w/o IO): 341.234ms
+    Time (mean ± σ): 559.0 ms ± 5.3 ms [User: 701.2 ms, System: 84.5 ms]
+    Range (min … max): 551.4 ms … 565.4 ms 5 runs
