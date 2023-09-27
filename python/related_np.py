@@ -13,7 +13,7 @@ def main():
 
     unique_tags = set(tag for post in posts for tag in post["tags"])
 
-    tag_map = np.zeros((len(posts), len(unique_tags)), dtype=np.uint16)
+    tag_map = np.zeros((len(posts), len(unique_tags)), dtype=np.uint8)
 
     for i, post in enumerate(posts):
         for j, utag in enumerate(unique_tags):
