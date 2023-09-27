@@ -1,13 +1,16 @@
-import json
-import time
+from timing import lap, finish
 
+lap()
+import json
 import numpy as np
 
 
 def main():
+    lap()
     with open("../posts.json") as f:
         posts = json.load(f)
-    t0 = time.monotonic()
+    lap()
+
     tags = []
     for post in posts:
         tags.extend(post["tags"])
@@ -41,11 +44,11 @@ def main():
             }
         )
 
-    t1 = time.monotonic()
-    print(f"Processing time (w/o IO):  {t1-t0:.3f}s")
-
+    lap()
     with open("../related_posts_python_np.json", "w") as f:
         json.dump(all_related, f)
+    lap()
+    finish()
 
 
 if __name__ == "__main__":
