@@ -108,6 +108,7 @@ run_crystal() {
 
 }
 
+
 run_odin() {
     echo "Running Odin" &&
         cd ./odin &&
@@ -119,6 +120,18 @@ run_odin() {
         fi
 
     check_output "related_posts_odin.json"
+
+
+run_jq() {
+    echo "Running jq" &&
+        cd ./jq &&
+        if [ $HYPER == 1 ]; then
+            # run once as it's very slow. ~50s
+            command hyperfine -r 1 "jq -c -f ./related.jq ../posts.json > ../related_posts_jq.json"
+        else
+            command time -f '%es %Mk' jq -c -f ./related.jq ../posts.json > ../related_posts_jq.json
+        fi
+    check_output "related_posts_jq.json"
 
 }
 
@@ -160,6 +173,10 @@ elif [ "$first_arg" = "odin" ]; then
 
     run_odin
 
+elif [ "$first_arg" = "jq" ]; then
+
+    run_jq
+
 elif [ "$first_arg" = "all" ]; then
 
     echo "running all" &&
@@ -185,5 +202,7 @@ elif [ "$first_arg" = "clean" ]; then
         rm -f related_*.json
 
 else
-    echo "Valid args: go | go_con | rust | rust_ray | py | numpy | cr | odin | all | clean. Unknown argument: $first_arg"
+
+    echo "Valid args: go | go_con | rust | rust_ray | py | numpy | cr | odin | jq | all | clean. Unknown argument: $first_arg"
+
 fi
