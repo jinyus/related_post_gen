@@ -11,6 +11,7 @@ package main
 import (
 	"arena"
 	"bufio"
+	"bytes"
 	"fmt"
 	"log"
 	"os"
@@ -55,14 +56,15 @@ var a *arena.Arena
 var writeChannel = make(chan *RelatedPosts)
 var wg = &sync.WaitGroup{}
 var readWriter *bufio.ReadWriter
+var doneWriting = make(chan bool)
+var finishedFileProcessing = make(chan bool)
+var outputJSONFile *os.File
 
 // Entry Point
 func main() {
 	// Initialize
 	initializeResources()
-
-	// Add a dedicated goroutine for writing to JSON
-	go handleWriteChannel()
+	defer outputJSONFile.Close()
 
 	// Read data and preprocess
 	file, _ := os.Open(InputJSONFilePath)
@@ -77,38 +79,49 @@ func main() {
 
 	// Release memory
 	a.Free()
+
 }
 
 func handleWriteChannel() {
-	// write starting bracket
+	buf := bytes.Buffer{}
+
 	readWriter.WriteString("[\n")
-	for res := range writeChannel {
-		jsonStr, err := sonic.MarshalString(res)
-		if err != nil {
-			log.Panicln(err)
+	for {
+		select {
+		case res, ok := <-writeChannel:
+			if ok {
+				jsonStr, err := sonic.MarshalString(res)
+				if err != nil {
+					log.Panicln(err)
+				}
+				buf.WriteString(jsonStr + ",\n")
+			}
+		case <-doneWriting:
+			bufferBytes := buf.Bytes()
+			// Remove the second last character (should be ',')
+			bufferBytes = bufferBytes[:len(bufferBytes)-2]
+			readWriter.Write(bufferBytes)
+			readWriter.WriteString("]\n")
+			readWriter.Flush()
+			finishedFileProcessing <- true
 		}
-		// write to file
-		readWriter.WriteString(jsonStr + ",\n")
-		readWriter.Flush()
 	}
-	// write ending bracket
-	readWriter.WriteString("\n]")
-	readWriter.Flush()
-	close(writeChannel)
 }
 
 // Function Definitions
-func initializeResources() *sync.WaitGroup {
+func initializeResources() {
 	a = arena.NewArena() // Create a new arena
 	// Initialize concurrency
 	wg.Add(int(concurrency))
 	// Initialize output file writer
-	file, err := os.Create(OutputJSONFilePath)
+	outputJSONFile, err := os.Create(OutputJSONFilePath)
 	if err != nil {
 		log.Panicln(err)
 	}
-	readWriter = bufio.NewReadWriter(bufio.NewReader(file), bufio.NewWriter(file))
-	return wg
+	readWriter = bufio.NewReadWriter(bufio.NewReader(outputJSONFile), bufio.NewWriter(outputJSONFile))
+
+	// Add a dedicated goroutine for writing to JSON
+	go handleWriteChannel()
 }
 
 func computeAllRelatedPosts(posts []Post) {
@@ -128,6 +141,11 @@ func computeAllRelatedPosts(posts []Post) {
 
 	// Wait for workers to finish
 	wg.Wait()
+	// Signal that writing can be completed
+	doneWriting <- true
+
+	// do not exit until writing is done
+	<-finishedFileProcessing
 }
 
 func worker(workerID isize, posts []Post, tagMap map[string][]isize, taggedPostCount []isize) {
