@@ -59,7 +59,5 @@ function related(posts)
     return all_related_posts
 end
 
-@benchmark relatedIO()
+relatedIO()
 
-#@profview relatedIO()
-#@profview relatedIO()

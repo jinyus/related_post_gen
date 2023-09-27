@@ -62,7 +62,4 @@ end
 
 
 
-@benchmark relatedIO()
-
-#@profview relatedIO()
-#@profview relatedIO()
+relatedIO()
