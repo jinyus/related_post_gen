@@ -11,11 +11,7 @@ def main():
         posts = json.load(f)
     lap()
 
-    tags = []
-    for post in posts:
-        tags.extend(post["tags"])
-    tags = np.asarray(tags)
-    unique_tags = np.unique(tags)
+    unique_tags = set(tag for post in posts for tag in post["tags"])
 
     tag_map = np.zeros((len(posts), len(unique_tags)), dtype=np.uint16)
 
