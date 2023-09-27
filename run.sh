@@ -63,6 +63,19 @@ run_rust_rayon() {
 
 }
 
+run_python() {
+    echo "Running Python" &&
+        cd ./python &&
+        if [ $HYPER == 1 ]; then
+            command hyperfine -r 5 --show-output "python3 ./related.py"
+        else
+            command time -f '%es %Mk' python3 ./related.py
+        fi
+
+    check_output "related_posts_python.json"
+
+}
+
 run_python_np() {
     echo "Running Python with Numpy" &&
         cd ./python &&
@@ -78,19 +91,6 @@ run_python_np() {
         fi
     deactivate &&
         check_output "related_posts_python_np.json"
-
-}
-
-run_python() {
-    echo "Running Python" &&
-        cd ./python &&
-        if [ $HYPER == 1 ]; then
-            command hyperfine -r 5 --show-output "python3 ./related.py"
-        else
-            command time -f '%es %Mk' python3 ./related.py
-        fi
-
-    check_output "related_posts_python.json"
 
 }
 
