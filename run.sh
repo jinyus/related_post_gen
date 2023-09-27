@@ -194,11 +194,11 @@ elif [ "$first_arg" = "cr" ]; then
 
     run_crystal
 
-elif [ "$first_arg" = "ju_v1" ]; then
+elif [ "$first_arg" = "jul1" ]; then
 
     run_julia_v1
 
-elif [ "$first_arg" = "ju_v2" ]; then
+elif [ "$first_arg" = "jul2" ]; then
 
     run_julia_v2
 
@@ -238,6 +238,6 @@ elif [ "$first_arg" = "clean" ]; then
 
 else
 
-    echo "Valid args: go | go_con | rust | rust_ray | py | numpy | cr | odin | jq | ju_v1 | ju_v2 | all | clean. Unknown argument: $first_arg"
+    echo "Valid args: go | go_con | rust | rust_ray | py | numpy | cr | odin | jq | jul1 | jul2 | all | clean. Unknown argument: $first_arg"
 
 fi
