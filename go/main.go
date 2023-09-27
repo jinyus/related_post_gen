@@ -60,11 +60,11 @@ func main() {
 
 		for _, tag := range posts[i].Tags {
 			for _, otherPostIdx := range tagMap[tag] {
-				if otherPostIdx != i {
-					taggedPostCount[otherPostIdx]++
-				}
+				taggedPostCount[otherPostIdx]++
 			}
 		}
+
+		taggedPostCount[i] = 0 // Don't count self
 
 		top5 := [5]PostWithSharedTags{}
 		minTags := 0 // Updated initialization
