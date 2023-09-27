@@ -140,6 +140,24 @@ run_python_np() {
 
 }
 
+run_python_numba() {
+    echo "Running Numba" &&
+        cd ./python &&
+        if [ ! -d "venv" ]; then
+            python3 -m venv venv
+        fi
+    source venv/bin/activate &&
+        (pip freeze | grep numpy && pip freeze | grep orjson) || pip install -r requirements.txt &&
+        if [ $HYPER == 1 ]; then
+            capture "Numba" hyperfine -r 10 -w 3 --show-output "python3 ./related_numba.py"
+        else
+            command time -f '%es %Mk' python3 ./related_numba.py
+        fi
+    deactivate &&
+        check_output "related_posts_python_numba.json"
+
+}
+
 run_crystal() {
     echo "Running Crystal" &&
         cd ./crystal &&
@@ -460,6 +478,10 @@ elif [ "$first_arg" = "numpy" ]; then
 
     run_python_np
 
+elif [ "$first_arg" = "numba" ]; then
+
+    run_python_numba
+
 elif [ "$first_arg" = "cr" ]; then
 
     run_crystal
@@ -553,6 +575,7 @@ elif [ "$first_arg" = "all" ]; then
         run_rust_con || echo -e "\n" &&
         run_python || echo -e "\n" &&
         run_python_np || echo -e "\n" &&
+        run_python_numba || echo -e "\n" &&
         run_crystal || echo -e "\n" &&
         run_zig || echo -e "\n" &&
         run_julia || echo -e "\n" &&
@@ -600,6 +623,6 @@ elif [ "$first_arg" = "clean" ]; then
 
 else
 
-    echo "Valid args: go | go_con | rust | rust_con | py | numpy | cr | zig | odin | jq | julia | v | dart | swift | swift_con | node | bun | deno | java | java_graal | nim | luajit | lua | all | clean. Unknown argument: $first_arg"
+    echo "Valid args: go | go_con | rust | rust_con | py | numpy | numba | cr | zig | odin | jq | julia | v | dart | swift | swift_con | node | bun | deno | java | java_graal | nim | luajit | lua | all | clean. Unknown argument: $first_arg"
 
 fi
