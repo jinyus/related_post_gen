@@ -108,6 +108,20 @@ run_crystal() {
 
 }
 
+run_odin() {
+    echo "Running Odin" &&
+        cd ./odin &&
+        odin build related.odin -file -no-bounds-check &&
+        if [ $HYPER == 1 ]; then
+            command hyperfine -r 10 --show-output "./related"
+        else
+            command time -f '%es %Mk' ./related
+        fi
+
+    check_output "related_posts_odin.json"
+
+}
+
 check_output() {
     cd .. &&
         echo "Checking output" &&
@@ -142,6 +156,10 @@ elif [ "$first_arg" = "cr" ]; then
 
     run_crystal
 
+elif [ "$first_arg" = "odin" ]; then
+
+    run_odin
+
 elif [ "$first_arg" = "all" ]; then
 
     echo "running all" &&
@@ -167,5 +185,5 @@ elif [ "$first_arg" = "clean" ]; then
         rm -f related_*.json
 
 else
-    echo "Valid args: go | go_con | rust | rust_ray | py | numpy | cr | all | clean. Unknown argument: $first_arg"
+    echo "Valid args: go | go_con | rust | rust_ray | py | numpy | cr | odin | all | clean. Unknown argument: $first_arg"
 fi
