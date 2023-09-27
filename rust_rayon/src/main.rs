@@ -1,28 +1,31 @@
-use std::{collections::BinaryHeap, time::Instant};
+use std::{collections::BinaryHeap, time::Instant, cell::RefCell};
 
 use rayon::prelude::*;
 use rustc_data_structures::fx::FxHashMap;
 use serde::{Deserialize, Serialize};
 use serde_json::from_str;
+use smallstr::SmallString;
 
 use mimalloc::MiMalloc;
 #[global_allocator]
 static GLOBAL: MiMalloc = MiMalloc;
 
+type SString = SmallString<[u8; 16]>;
+
 #[derive(Serialize, Deserialize)]
 struct Post {
-    _id: String,
+    _id: SString,
     title: String,
     // #[serde(skip_serializing)]
-    tags: Vec<String>,
+    tags: Vec<SString>,
 }
 
 const NUM_TOP_ITEMS: usize = 5;
 
 #[derive(Serialize)]
 struct RelatedPosts<'a> {
-    _id: &'a String,
-    tags: &'a Vec<String>,
+    _id: &'a SString,
+    tags: &'a Vec<SString>,
     related: Vec<&'a Post>,
 }
 
@@ -72,7 +75,7 @@ fn main() {
 
     let start = Instant::now();
 
-    let mut post_tags_map: FxHashMap<&String, Vec<usize>> = FxHashMap::default();
+    let mut post_tags_map: FxHashMap<&str, Vec<usize>> = FxHashMap::default();
 
     for (i, post) in posts.iter().enumerate() {
         for tag in &post.tags {
@@ -84,33 +87,45 @@ fn main() {
         .par_iter()
         .enumerate()
         .map(|(idx, post)| {
-            // faster than allocating outside the loop
-            let mut tagged_post_count = vec![0; posts.len()];
+            thread_local! {
+                static POST_COUNT: RefCell<Vec<usize>> = RefCell::new(Vec::with_capacity(10_000));
+            }
 
-            for tag in &post.tags {
-                if let Some(tag_posts) = post_tags_map.get(tag) {
-                    for &other_post_idx in tag_posts {
-                        tagged_post_count[other_post_idx] += 1;
+            let ret = POST_COUNT.with(|tpc| {
+                let mut tagged_post_count = tpc.borrow_mut();
+
+                if tagged_post_count.is_empty() {
+                    tagged_post_count.resize(posts.len(), 0);
+                } else {
+                    tagged_post_count.fill(0);
+                }
+
+                for tag in &post.tags {
+                    if let Some(tag_posts) = post_tags_map.get(tag.as_str()) {
+                        for &other_post_idx in tag_posts {
+                            tagged_post_count[other_post_idx] += 1;
+                        }
                     }
                 }
-            }
 
-            tagged_post_count[idx] = 0; // don't recommend the same post
+                tagged_post_count[idx] = 0; // don't recommend the same post
 
-            let top = least_n(
-                NUM_TOP_ITEMS,
-                tagged_post_count
-                    .iter()
-                    .enumerate()
-                    .map(|(post, &count)| PostCount { post, count }),
-            );
-            let related = top.map(|it| &posts[it.post]).collect();
+                let top = least_n(
+                    NUM_TOP_ITEMS,
+                    tagged_post_count
+                        .iter()
+                        .enumerate()
+                        .map(|(post, &count)| PostCount { post, count }),
+                );
+                let related = top.map(|it| &posts[it.post]).collect();
 
-            RelatedPosts {
-                _id: &post._id,
-                tags: &post.tags,
-                related,
-            }
+                RelatedPosts {
+                    _id: &post._id,
+                    tags: &post.tags,
+                    related,
+                }
+            });
+            ret
         })
         .collect();
 
