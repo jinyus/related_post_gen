@@ -1,14 +1,16 @@
+from timing import lap, finish
+
+lap()
 import heapq
 import json
-import time
 from collections import Counter
 
 
 def main():
+    lap()
     with open("../posts.json") as f:
         posts = json.load(f)
-
-    start = time.monotonic()
+    lap()
 
     tag_map = {}
     for idx, post in enumerate(posts):
@@ -35,12 +37,11 @@ def main():
             }
         )
 
-    end = time.monotonic()
-
-    print(f"Processing time (w/o IO): {end - start:.3f}s")
-
+    lap()
     with open("../related_posts_python.json", "w") as f:
         json.dump(all_related_posts, f)
+    lap()
+    finish()
 
 
 if __name__ == "__main__":
