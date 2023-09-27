@@ -1,5 +1,4 @@
 import duckdb
-from loguru import logger
 
 
 STATEMENTS = [
@@ -38,9 +37,7 @@ STATEMENTS = [
 def main():
 
     for idx, q in enumerate(STATEMENTS):
-        logger.trace(f"<{idx=}>")
         duckdb.execute(q)
-        logger.trace(f"</{idx=}>")
 
 
 if __name__ == "__main__":
