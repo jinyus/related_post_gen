@@ -89,12 +89,12 @@ fn main() {
             for tag in &post.tags {
                 if let Some(tag_posts) = post_tags_map.get(tag) {
                     for &other_post_idx in tag_posts {
-                        if idx != other_post_idx {
-                            tagged_post_count[other_post_idx] += 1;
-                        }
+                        tagged_post_count[other_post_idx] += 1;
                     }
                 }
             }
+
+            tagged_post_count[idx] = 0; // don't recommend the same post
 
             let top = least_n(
                 NUM_TOP_ITEMS,

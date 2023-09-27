@@ -64,18 +64,21 @@ Go Concurrent:
 Rust Rayon:
 
     Benchmark 1: ./target/release/rust_rayon
-    Processing time (w/o IO): 9.559824ms
-    Processing time (w/o IO): 8.554372ms
-    Processing time (w/o IO): 9.599494ms
-    Processing time (w/o IO): 9.137207ms
-    Processing time (w/o IO): 9.359376ms
-    Processing time (w/o IO): 9.258732ms
-    Processing time (w/o IO): 10.617308ms
-    Processing time (w/o IO): 9.055352ms
-    Processing time (w/o IO): 9.117372ms
-    Processing time (w/o IO): 9.468889ms
-    Time (mean ± σ):      24.2 ms ±   0.8 ms    [User: 89.3 ms, System: 33.7 ms]
-    Range (min … max):    23.4 ms …  25.8 ms    10 runs
+    Processing time (w/o IO): 8.131963ms
+    Processing time (w/o IO): 8.091036ms
+    Processing time (w/o IO): 8.650181ms
+    Processing time (w/o IO): 7.957012ms
+    Processing time (w/o IO): 7.388579ms
+    Processing time (w/o IO): 7.807204ms
+    Processing time (w/o IO): 7.146582ms
+    Processing time (w/o IO): 8.190769ms
+    Processing time (w/o IO): 8.300209ms
+    Processing time (w/o IO): 8.856909ms
+    Processing time (w/o IO): 7.753077ms
+    Processing time (w/o IO): 7.66899ms
+    Processing time (w/o IO): 7.69483ms
+    Time (mean ± σ):      23.1 ms ±   0.8 ms    [User: 69.2 ms, System: 27.1 ms]
+    Range (min … max):    22.1 ms …  25.1 ms    10 runs
 
 Python:
 
