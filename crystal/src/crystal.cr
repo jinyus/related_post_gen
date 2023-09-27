@@ -47,9 +47,11 @@ posts.each_with_index do |post, idx|
 
   post.tags.each do |tag|
     tag_map[tag].each do |other_post_idx|
-      tagged_post_count[other_post_idx] += 1 unless other_post_idx == idx
+      tagged_post_count[other_post_idx] += 1
     end
   end
+
+  tagged_post_count[idx] = 0 # don't count self
 
   # size at 6 to avoid resizing. also faster than allocating outside loop
   top5Queue = Array({Int32, Int32}).new(6, {0, 0})
