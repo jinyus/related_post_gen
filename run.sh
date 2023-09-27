@@ -147,6 +147,19 @@ run_odin() {
     check_output "related_posts_odin.json"
 }
 
+run_vlang() {
+    echo "Running Vlang" &&
+        cd ./v &&
+        v related.v &&
+        if [ $HYPER == 1 ]; then
+            command hyperfine -r 5 --show-output "./related"
+        else
+            command time -f '%es %Mk' ./related
+        fi
+
+    check_output "related_posts_v.json"
+}
+
 run_jq() {
     echo "Running jq" &&
         cd ./jq &&
@@ -210,6 +223,10 @@ elif [ "$first_arg" = "jq" ]; then
 
     run_jq
 
+elif [ "$first_arg" = "v" ]; then
+
+    run_vlang
+
 elif [ "$first_arg" = "all" ]; then
 
     echo "running all" &&
@@ -238,6 +255,6 @@ elif [ "$first_arg" = "clean" ]; then
 
 else
 
-    echo "Valid args: go | go_con | rust | rust_ray | py | numpy | cr | odin | jq | jul1 | jul2 | all | clean. Unknown argument: $first_arg"
+    echo "Valid args: go | go_con | rust | rust_ray | py | numpy | cr | odin | jq | jul1 | jul2 | v | all | clean. Unknown argument: $first_arg"
 
 fi
