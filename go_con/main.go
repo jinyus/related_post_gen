@@ -20,6 +20,7 @@ import (
 	"time"
 
 	"github.com/bytedance/sonic"
+	"github.com/goccy/go-json"
 )
 
 // Constants and Configurable Variables
@@ -63,14 +64,31 @@ var outputJSONFile *os.File
 // Entry Point
 func main() {
 	// Initialize
+	// measure initialization time
+	initTime := time.Now()
 	initializeResources()
 	defer outputJSONFile.Close()
+	fmt.Println("Initialization time", time.Since(initTime))
 
+	// measure preprocessing time
+	preprocessTime := time.Now()
 	// Read data and preprocess
 	file, _ := os.Open(InputJSONFilePath)
 	reader := bufio.NewReader(file)
 	posts := arena.MakeSlice[Post](a, 0, InitialPostsSliceCap)
-	sonic.ConfigFastest.NewDecoder(reader).Decode(&posts)
+
+	// check cpu architecture
+	if runtime.GOARCH == "arm64" {
+		// use fastest decoder for arm64
+		err := json.NewDecoder(file).Decode(&posts)
+		if err != nil {
+			log.Panicln(err)
+		}
+	} else {
+		// use fastest decoder for amd64
+		sonic.ConfigFastest.NewDecoder(reader).Decode(&posts)
+	}
+	fmt.Println("Preprocessing time", time.Since(preprocessTime))
 
 	// Compute related posts and measure time
 	processTime := time.Now()
@@ -79,7 +97,6 @@ func main() {
 
 	// Release memory
 	a.Free()
-
 }
 
 func handleWriteChannel() {
@@ -90,10 +107,15 @@ func handleWriteChannel() {
 		select {
 		case res, ok := <-writeChannel:
 			if ok {
-				jsonStr, err := sonic.MarshalString(res)
-				if err != nil {
-					log.Panicln(err)
+				var jsonStr string
+				if runtime.GOARCH == "arm64" {
+					jsonStrBytes, _ := json.Marshal(res)
+					jsonStr = string(jsonStrBytes)
+
+				} else {
+					jsonStr, _ = sonic.MarshalString(res)
 				}
+
 				buf.WriteString(jsonStr + ",\n")
 			}
 		case <-doneWriting:
@@ -135,25 +157,27 @@ func computeAllRelatedPosts(posts []Post) {
 
 	// Launch workers
 	for w := isize(0); w < concurrency; w++ {
-		taggedPostCount := arena.MakeSlice[isize](a, len(posts), len(posts))
-		go worker(w, posts, tagMap, taggedPostCount)
+		go worker(w, posts, tagMap)
 	}
 
 	// Wait for workers to finish
 	wg.Wait()
-	// Signal that writing can be completed
+	// Signal that writing can be completed and wait for it to finish
 	doneWriting <- true
-
-	// do not exit until writing is done
 	<-finishedFileProcessing
 }
 
-func worker(workerID isize, posts []Post, tagMap map[string][]isize, taggedPostCount []isize) {
+func worker(workerID isize, posts []Post, tagMap map[string][]isize) {
+	// measure work time
+	workTime := time.Now()
+	taggedPostCount := arena.MakeSlice[isize](a, len(posts), len(posts))
 	// Compute related posts for each post
 	for i := workerID; i < isize(len(posts)); i += concurrency {
 		writeChannel <- computeRelatedPost(i, posts, tagMap, taggedPostCount) // Send data to write channel
 	}
 	wg.Done()
+	// print work time for each worker
+	fmt.Println("Worker", workerID, "time", time.Since(workTime))
 }
 
 func computeRelatedPost(i isize, posts []Post, tagMap map[string][]isize, taggedPostCount []isize) *RelatedPosts {
