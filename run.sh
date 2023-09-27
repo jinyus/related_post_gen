@@ -108,20 +108,18 @@ run_crystal() {
 
 }
 
-
 run_julia_v1() {
     echo "Running Julia v1" &&
         cd ./julia &&
         julia -e 'using Pkg; Pkg.add.(["JSON3", "StatsBase", "StructTypes", "LinearAlgebra"])' &&
         if [ $HYPER == 1 ]; then
-            command hyperfine -r 5 --warmup 1  --show-output "julia related.jl"
+            command hyperfine -r 5 --warmup 1 --show-output "julia related.jl"
         else
             command time -f '%es %Mk' julia related.jl
         fi
 
     check_output "related_posts_julia_v1.json"
 }
-
 
 run_julia_v2() {
     echo "Running Julia v2" &&
@@ -134,6 +132,7 @@ run_julia_v2() {
         fi
 
     check_output "related_posts_julia_v2.json"
+}
 
 run_odin() {
     echo "Running Odin" &&
@@ -155,7 +154,7 @@ run_jq() {
             # run once as it's very slow. ~50s
             command hyperfine -r 1 "jq -c -f ./related.jq ../posts.json > ../related_posts_jq.json"
         else
-            command time -f '%es %Mk' jq -c -f ./related.jq ../posts.json > ../related_posts_jq.json
+            command time -f '%es %Mk' jq -c -f ./related.jq ../posts.json >../related_posts_jq.json
         fi
     check_output "related_posts_jq.json"
 
@@ -194,7 +193,6 @@ elif [ "$first_arg" = "numpy" ]; then
 elif [ "$first_arg" = "cr" ]; then
 
     run_crystal
-
 
 elif [ "$first_arg" = "ju_v1" ]; then
 
@@ -241,6 +239,5 @@ elif [ "$first_arg" = "clean" ]; then
 else
 
     echo "Valid args: go | go_con | rust | rust_ray | py | numpy | cr | odin | jq | ju_v1 | ju_v2 | all | clean. Unknown argument: $first_arg"
-    
-fi
 
+fi
