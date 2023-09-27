@@ -108,7 +108,6 @@ run_crystal() {
 
 }
 
-
 run_odin() {
     echo "Running Odin" &&
         cd ./odin &&
@@ -120,7 +119,7 @@ run_odin() {
         fi
 
     check_output "related_posts_odin.json"
-
+}
 
 run_jq() {
     echo "Running jq" &&
