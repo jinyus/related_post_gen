@@ -7,7 +7,6 @@ import (
 	"time"
 
 	"github.com/goccy/go-json"
-	"github.com/ugurcsen/gods-generic/trees/binaryheap"
 )
 
 type Post struct {
@@ -52,7 +51,6 @@ func main() {
 
 	allRelatedPosts := make([]RelatedPosts, 0, len(posts))
 	taggedPostCount := make([]int, len(posts))
-	t5 := binaryheap.NewWith[PostWithSharedTags](PostComparator)
 
 	for i := range posts {
 		// optimized to a memset
@@ -62,29 +60,40 @@ func main() {
 
 		for _, tag := range posts[i].Tags {
 			for _, otherPostIdx := range tagMap[tag] {
-				if otherPostIdx != i {
-					taggedPostCount[otherPostIdx]++
+				taggedPostCount[otherPostIdx]++
+			}
+		}
+
+		taggedPostCount[i] = 0 // Don't count self
+
+		top5 := [5]PostWithSharedTags{}
+		minTags := 0 // Updated initialization
+
+		for j, count := range taggedPostCount {
+			if count > minTags {
+				// Find the position to insert
+				pos := 4
+				for pos >= 0 && top5[pos].SharedTags < count {
+					pos--
+				}
+				pos++
+
+				// Shift and insert
+				if pos < 4 {
+					copy(top5[pos+1:], top5[pos:4])
+				}
+				if pos <= 4 {
+					top5[pos] = PostWithSharedTags{Post: j, SharedTags: count}
+					minTags = top5[4].SharedTags
 				}
 			}
 		}
 
-		for v, count := range taggedPostCount {
-			if t5.Size() < 5 {
-				t5.Push(PostWithSharedTags{Post: v, SharedTags: count})
-			} else {
-				if t, _ := t5.Peek(); t.SharedTags < count {
-					t5.Pop()
-					t5.Push(PostWithSharedTags{Post: v, SharedTags: count})
-				}
-			}
-		}
-
-		num := min(5, t5.Size())
-		topPosts := make([]*Post, num)
-
-		for j := 0; j < num; j++ {
-			if t, ok := t5.Pop(); ok {
-				topPosts[j] = &posts[t.Post]
+		// Convert indexes back to Post pointers
+		topPosts := make([]*Post, 0, 5)
+		for _, t := range top5 {
+			if t.SharedTags > 0 {
+				topPosts = append(topPosts, &posts[t.Post])
 			}
 		}
 

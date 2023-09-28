@@ -63,6 +63,19 @@ run_rust_rayon() {
 
 }
 
+run_python() {
+    echo "Running Python" &&
+        cd ./python &&
+        if [ $HYPER == 1 ]; then
+            command hyperfine -r 5 --show-output "python3 ./related.py"
+        else
+            command time -f '%es %Mk' python3 ./related.py
+        fi
+
+    check_output "related_posts_python.json"
+
+}
+
 run_python_np() {
     echo "Running Python with Numpy" &&
         cd ./python &&
@@ -78,19 +91,6 @@ run_python_np() {
         fi
     deactivate &&
         check_output "related_posts_python_np.json"
-
-}
-
-run_python() {
-    echo "Running Python" &&
-        cd ./python &&
-        if [ $HYPER == 1 ]; then
-            command hyperfine -r 5 --show-output "python3 ./related.py"
-        else
-            command time -f '%es %Mk' python3 ./related.py
-        fi
-
-    check_output "related_posts_python.json"
 
 }
 
@@ -119,6 +119,70 @@ run_zig() {
         fi
 
     check_output "related_posts_zig.json"
+}
+
+run_julia_v1() {
+    echo "Running Julia v1" &&
+        cd ./julia &&
+        julia -e 'using Pkg; Pkg.add.(["JSON3", "StatsBase", "StructTypes", "LinearAlgebra"])' &&
+        if [ $HYPER == 1 ]; then
+            command hyperfine -r 5 --warmup 1 --show-output "julia related.jl"
+        else
+            command time -f '%es %Mk' julia related.jl
+        fi
+
+    check_output "related_posts_julia_v1.json"
+}
+
+run_julia_v2() {
+    echo "Running Julia v2" &&
+        cd ./julia &&
+        julia -e 'using Pkg; Pkg.add.(["JSON3", "StatsBase", "StructTypes", "LinearAlgebra"])' &&
+        if [ $HYPER == 1 ]; then
+            command hyperfine -r 5 --warmup 1 --show-output "julia related_v2.jl"
+        else
+            command time -f '%es %Mk' julia related_v2.jl
+        fi
+
+    check_output "related_posts_julia_v2.json"
+}
+
+run_odin() {
+    echo "Running Odin" &&
+        cd ./odin &&
+        odin build related.odin -file -no-bounds-check &&
+        if [ $HYPER == 1 ]; then
+            command hyperfine -r 10 --show-output "./related"
+        else
+            command time -f '%es %Mk' ./related
+        fi
+
+    check_output "related_posts_odin.json"
+}
+
+run_vlang() {
+    echo "Running Vlang" &&
+        cd ./v &&
+        v related.v &&
+        if [ $HYPER == 1 ]; then
+            command hyperfine -r 5 --show-output "./related"
+        else
+            command time -f '%es %Mk' ./related
+        fi
+
+    check_output "related_posts_v.json"
+}
+
+run_jq() {
+    echo "Running jq" &&
+        cd ./jq &&
+        if [ $HYPER == 1 ]; then
+            # run once as it's very slow. ~50s
+            command hyperfine -r 1 "jq -c -f ./related.jq ../posts.json > ../related_posts_jq.json"
+        else
+            command time -f '%es %Mk' jq -c -f ./related.jq ../posts.json >../related_posts_jq.json
+        fi
+    check_output "related_posts_jq.json"
 
 }
 
@@ -159,6 +223,26 @@ elif [ "$first_arg" = "cr" ]; then
 elif [ "$first_arg" = "zig" ]; then
     
     run_zig
+        
+elif [ "$first_arg" = "jul1" ]; then
+
+    run_julia_v1
+
+elif [ "$first_arg" = "jul2" ]; then
+
+    run_julia_v2
+
+elif [ "$first_arg" = "odin" ]; then
+
+    run_odin
+
+elif [ "$first_arg" = "jq" ]; then
+
+    run_jq
+
+elif [ "$first_arg" = "v" ]; then
+
+    run_vlang
 
 elif [ "$first_arg" = "all" ]; then
 
@@ -171,8 +255,10 @@ elif [ "$first_arg" = "all" ]; then
         run_python_np || echo -e "\n" &&
         run_crystal || echo -e "\n" &&
         run_zig || echo -e "\n" &&
+        run_julia_v1 || echo -e "\n" &&
+        run_julia_v2 || echo -e "\n" &&
         echo -e "Finished running all\n"
-        
+    
 
 elif [ "$first_arg" = "clean" ]; then
 
@@ -190,5 +276,7 @@ elif [ "$first_arg" = "clean" ]; then
         rm -f related_*.json
 
 else
-    echo "Valid args: go | go_con | rust | rust_ray | py | numpy | cr | zig | all | clean. Unknown argument: $first_arg"
+
+    echo "Valid args: go | go_con | rust | rust_ray | py | numpy | cr | zig | odin | jq | jul1 | jul2 | v | all | clean. Unknown argument: $first_arg"
+
 fi

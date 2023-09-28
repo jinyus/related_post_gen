@@ -12,6 +12,10 @@ crystal/lib/
 crystal/.shards/
 *.dwarf
 crystal/crystal
+ols.json
+odin/related
+.dart_tool/
+v/related
 
 # Zig
 zig-cache
