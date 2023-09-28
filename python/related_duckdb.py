@@ -1,6 +1,6 @@
-from datetime import datetime
-import duckdb
+import time
 
+import duckdb
 
 CALCULATE = [
     """CREATE TABLE tags AS (SELECT _id AS post_id, UNNEST(tags) AS tag FROM posts);""",
@@ -41,15 +41,15 @@ def main():
     duckdb.execute("""CREATE TABLE posts AS (SELECT * FROM '../posts.json');""")
 
     # time the calculations
-    start = datetime.now()
+    start = time.monotonic()
     for q in CALCULATE:
         duckdb.execute(q)
-    end = datetime.now()
+    end = time.monotonic()
 
     # write out
     duckdb.execute("""COPY results TO '../related_posts_duckdb.jsonl';""")
 
-    print(f"Processing time (w/o IO): {end - start}")
+    print(f"Processing time (w/o IO): {end - start:.3f}s")
 
 
 if __name__ == "__main__":
