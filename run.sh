@@ -112,11 +112,11 @@ run_zig() {
     echo "Running Zig" &&
         cd ./zig &&
         zig build-exe -lc -O ReleaseFast main.zig
-        if [ $HYPER == 1 ]; then
-            command hyperfine -r 10 -w 3 --show-output "./main"
-        else
-            command time -f '%es %Mk' ./main
-        fi
+    if [ $HYPER == 1 ]; then
+        command hyperfine -r 10 -w 3 --show-output "./main"
+    else
+        command time -f '%es %Mk' ./main
+    fi
 
     check_output "related_posts_zig.json"
 }
@@ -221,9 +221,9 @@ elif [ "$first_arg" = "cr" ]; then
     run_crystal
 
 elif [ "$first_arg" = "zig" ]; then
-    
+
     run_zig
-        
+
 elif [ "$first_arg" = "jul1" ]; then
 
     run_julia_v1
@@ -258,10 +258,8 @@ elif [ "$first_arg" = "all" ]; then
         run_julia_v1 || echo -e "\n" &&
         run_julia_v2 || echo -e "\n" &&
         run_odin || echo -e "\n" &&
-        run_jq || echo -e "\n" &&
         run_vlang || echo -e "\n" &&
         echo -e "Finished running all\n"
-    
 
 elif [ "$first_arg" = "clean" ]; then
 
@@ -276,7 +274,7 @@ elif [ "$first_arg" = "clean" ]; then
         cd .. &&
         cd zig && rm -f main main.o &&
         cd ..
-        rm -f related_*.json
+    rm -f related_*.json
 
 else
 
