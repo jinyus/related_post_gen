@@ -21,3 +21,6 @@ v/related
 zig-cache
 zig/main
 zig/main.o
+
+extract/
+action.log
