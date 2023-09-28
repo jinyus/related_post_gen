@@ -162,15 +162,16 @@ elif [ "$first_arg" = "zig" ]; then
 
 elif [ "$first_arg" = "all" ]; then
 
-    echo "running all" &&
-        run_go &&
-        run_go_concurrent &&
-        run_rust &&
-        run_rust_rayon &&
-        run_python &&
-        run_python_np &&
-        run_crystal &&
-        run_zig
+    echo -e "Running all\n" &&
+        (run_go 2>/dev/null || echo "GO DIDN'T FINISH. Run individually to debug the error. ./run.sh go") && echo -e "\n" &&
+        (run_go_concurrent 2>/dev/null || echo "GO CONCURRENT DIDN'T FINISH. Run individually to debug the error. ./run.sh go_con") && echo -e "\n" &&
+        (run_rust 2>/dev/null || echo "RUST DIDN'T FINISH. Run individually to debug the error. ./run.sh rust") && echo -e "\n" &&
+        (run_rust_rayon 2>/dev/null || echo "RUST RAYON DIDN'T FINISH. Run individually to debug the error. ./run.sh rust_ray") && echo -e "\n" &&
+        (run_python 2>/dev/null || echo "PYTHON DIDN'T FINISH. Run individually to debug the error. ./run.sh py") && echo -e "\n\n" &&
+        (run_python_np 2>/dev/null || echo "PYTHON NUMPY DIDN'T FINISH. Run individually to debug the error. ./run.sh numpy") && echo -e "\n"  &&
+        (run_crystal 2>/dev/null || echo "CRYSTAL DIDN'T FINISH. Run individually to debug the error. ./run.sh cr") && echo -e "\n" &&
+        (run_zig 2>/dev/null || echo "ZIG DIDN'T FINISH. Run individually to debug the error. ./run.sh zig")
+        
 
 elif [ "$first_arg" = "clean" ]; then
 

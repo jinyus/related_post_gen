@@ -1,11 +1,10 @@
 const std = @import("std");
-
 var allocator = std.heap.c_allocator;
 const post = struct { _id: []const u8, title: []const u8, tags: [][]const u8 };
 const posts = []post;
 const constop_posts = struct { _id: *const []const u8, tags: *const [][]const u8, related: []*post };
-// const op_posts = []constop_posts;
-// const ana_type = struct { *const post, usize };
+const stdout = std.io.getStdOut().writer();
+
 fn lessthan(context: void, lhs: usize, rhs: usize) bool {
     _ = context;
     return lhs < rhs;
@@ -14,7 +13,6 @@ fn lessthan(context: void, lhs: usize, rhs: usize) bool {
 pub fn main() !void {
     const file = try std.fs.cwd().openFile("../posts.json", .{});
     defer file.close();
-    // const allocator = gen_alloc.allocator();
     const arr_posts = std.ArrayList(usize);
     var map = std.StringHashMap(arr_posts).init(allocator);
     defer map.deinit();
@@ -48,23 +46,16 @@ pub fn main() !void {
             }
         }
         var n: usize = 5;
-        // std.debug.print("{}\n\n", .{post_ele});
-        // std.debug.print("{}\n\n", .{parsed.value[1]});
         while (n > 0) : (n -= 1) {
-            // const high = std.sort.max(usize, &rel_posts_tags, {}, lessthan).?;
-            // std.debug.print("{d}--", .{high});
             const index = std.sort.argMax(usize, &rel_posts_tags, {}, lessthan).?;
             try top_5.append(&parsed.value[index]);
-            // std.debug.print("{}\n\n", .{&parsed.value[index]});
             rel_posts_tags[index] = 0;
         }
 
         try op.append(.{ ._id = &parsed.value[post_index]._id, .tags = &parsed.value[post_index].tags, .related = try top_5.toOwnedSlice() });
-        // std.debug.print("\n", .{});
-        // break;
     }
     const end = try std.time.Instant.now();
-    std.debug.print("Processing time (w/o IO): {d}ms\n", .{@divFloor(end.since(start), std.time.ns_per_ms)});
+    try stdout.print("Processing time (w/o IO): {d}ms\n", .{@divFloor(end.since(start), std.time.ns_per_ms)});
     const op_file = try std.fs.cwd().createFile("../related_posts_zig.json", .{});
     defer op_file.close();
     try std.json.stringify(try op.toOwnedSlice(), .{}, op_file.writer());

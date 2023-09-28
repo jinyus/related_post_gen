@@ -14,5 +14,6 @@ crystal/.shards/
 crystal/crystal
 
 # Zig
+zig-cache
 zig/main
 zig/main.o
