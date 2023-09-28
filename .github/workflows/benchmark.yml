@@ -17,5 +17,9 @@ jobs:
               uses: actions/setup-go@v4
             - name: Install crystal
               uses: crystal-lang/install-crystal@v1
+            - name: Install zig
+              uses: goto-bus-stop/setup-zig@v2
+            - name: Install hyperfine for benchmarking
+              run: cargo install hyperfine
             - name: Run Benchmark
               run: ./run.sh all
