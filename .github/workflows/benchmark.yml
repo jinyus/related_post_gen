@@ -1,0 +1,21 @@
+name: Benchmark
+
+on:
+    push:
+        branches:
+            - main
+
+jobs:
+    run-becnhmarks:
+        runs-on:  ubuntu-22.04
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v4
+            - name: Install  Rust
+              uses: dtolnay/rust-toolchain@stable
+            - name: Install Go
+              uses: actions/setup-go@v4
+            - name: Install crystal
+              uses: crystal-lang/install-crystal@v1
+            - name: Run Benchmark
+              run: ./run.sh all
