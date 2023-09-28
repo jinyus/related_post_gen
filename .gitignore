@@ -22,5 +22,5 @@ zig-cache
 zig/main
 zig/main.o
 
-extract/
+extract/extract
 action.log
