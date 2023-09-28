@@ -54,12 +54,11 @@ type RelatedPosts struct {
 // Global Variables
 var concurrency = isize(runtime.NumCPU())
 var a *arena.Arena
-var writeChannel = make(chan *RelatedPosts)
 var wg = &sync.WaitGroup{}
 var readWriter *bufio.ReadWriter
-var doneWriting = make(chan bool)
-var finishedFileProcessing = make(chan bool)
 var outputJSONFile *os.File
+var buf = bytes.NewBuffer(make([]byte, 0, 1024*1024*10)) // 10MB
+var workerResults = make([]*bytes.Buffer, concurrency)
 
 // Entry Point
 func main() {
@@ -95,39 +94,25 @@ func main() {
 	computeAllRelatedPosts(posts)
 	fmt.Println("Processing time (w/o IO)", time.Since(processTime))
 
+	// measure write time
+	writeTime := time.Now()
+	// write result to file
+	readWriter.WriteString("[\n")
+	// write all worker results to file
+	for _, workerResult := range workerResults {
+		if workerResult == nil {
+			continue
+		}
+		buf.Write(workerResult.Bytes())
+	}
+	// Remove the second last character (should be ',')
+	readWriter.Write(buf.Bytes()[:len(buf.Bytes())-2])
+	readWriter.WriteString("\n]\n")
+	readWriter.Flush()
+	fmt.Println("Write time", time.Since(writeTime))
+
 	// Release memory
 	a.Free()
-}
-
-func handleWriteChannel() {
-	buf := bytes.Buffer{}
-
-	readWriter.WriteString("[\n")
-	for {
-		select {
-		case res, ok := <-writeChannel:
-			if ok {
-				var jsonStr string
-				if runtime.GOARCH == "arm64" {
-					jsonStrBytes, _ := json.Marshal(res)
-					jsonStr = string(jsonStrBytes)
-
-				} else {
-					jsonStr, _ = sonic.MarshalString(res)
-				}
-
-				buf.WriteString(jsonStr + ",\n")
-			}
-		case <-doneWriting:
-			bufferBytes := buf.Bytes()
-			// Remove the second last character (should be ',')
-			bufferBytes = bufferBytes[:len(bufferBytes)-2]
-			readWriter.Write(bufferBytes)
-			readWriter.WriteString("]\n")
-			readWriter.Flush()
-			finishedFileProcessing <- true
-		}
-	}
 }
 
 // Function Definitions
@@ -141,9 +126,6 @@ func initializeResources() {
 		log.Panicln(err)
 	}
 	readWriter = bufio.NewReadWriter(bufio.NewReader(outputJSONFile), bufio.NewWriter(outputJSONFile))
-
-	// Add a dedicated goroutine for writing to JSON
-	go handleWriteChannel()
 }
 
 func computeAllRelatedPosts(posts []Post) {
@@ -162,9 +144,6 @@ func computeAllRelatedPosts(posts []Post) {
 
 	// Wait for workers to finish
 	wg.Wait()
-	// Signal that writing can be completed and wait for it to finish
-	doneWriting <- true
-	<-finishedFileProcessing
 }
 
 func worker(workerID isize, posts []Post, tagMap map[string][]isize) {
@@ -172,15 +151,17 @@ func worker(workerID isize, posts []Post, tagMap map[string][]isize) {
 	workTime := time.Now()
 	taggedPostCount := arena.MakeSlice[isize](a, len(posts), len(posts))
 	// Compute related posts for each post
+	workerBuf := bytes.NewBuffer(make([]byte, 0, 1024*1024*10)) // 10MB
 	for i := workerID; i < isize(len(posts)); i += concurrency {
-		writeChannel <- computeRelatedPost(i, posts, tagMap, taggedPostCount) // Send data to write channel
+		computeRelatedPost(i, posts, tagMap, taggedPostCount, workerBuf) // Send data to write channel
 	}
+	workerResults = append(workerResults, workerBuf)
 	wg.Done()
 	// print work time for each worker
 	fmt.Println("Worker", workerID, "time", time.Since(workTime))
 }
 
-func computeRelatedPost(i isize, posts []Post, tagMap map[string][]isize, taggedPostCount []isize) *RelatedPosts {
+func computeRelatedPost(i isize, posts []Post, tagMap map[string][]isize, taggedPostCount []isize, workerBuf *bytes.Buffer) {
 	for j := range taggedPostCount {
 		taggedPostCount[j] = 0
 	}
@@ -222,9 +203,19 @@ func computeRelatedPost(i isize, posts []Post, tagMap map[string][]isize, tagged
 		}
 	}
 
-	return &RelatedPosts{
+	relPost := &RelatedPosts{
 		ID:      posts[i].ID,
 		Tags:    posts[i].Tags,
 		Related: topPosts,
 	}
+
+	var jsonStr string
+	if runtime.GOARCH == "arm64" {
+		jsonStrBytes, _ := json.Marshal(relPost)
+		jsonStr = string(jsonStrBytes)
+	} else {
+		jsonStr, _ = sonic.MarshalString(relPost)
+	}
+
+	workerBuf.WriteString(jsonStr + ",\n")
 }
