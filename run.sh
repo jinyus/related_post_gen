@@ -257,6 +257,9 @@ elif [ "$first_arg" = "all" ]; then
         run_zig || echo -e "\n" &&
         run_julia_v1 || echo -e "\n" &&
         run_julia_v2 || echo -e "\n" &&
+        run_odin || echo -e "\n" &&
+        run_jq || echo -e "\n" &&
+        run_vlang || echo -e "\n" &&
         echo -e "Finished running all\n"
     
 
