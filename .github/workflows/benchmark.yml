@@ -6,7 +6,7 @@ on:
             - main
 
 jobs:
-    run-becnhmarks:
+    run-benchmarks:
         runs-on:  ubuntu-22.04
         steps:
             - name: Checkout
