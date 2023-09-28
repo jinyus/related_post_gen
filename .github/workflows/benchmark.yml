@@ -19,6 +19,8 @@ jobs:
               uses: crystal-lang/install-crystal@v1
             - name: Install zig
               uses: goto-bus-stop/setup-zig@v2
+            - name: Install Julia
+              uses: julia-actions/setup-julia@v1
             - name: Install hyperfine for benchmarking
               run: cargo install hyperfine
             - name: Run Benchmark
