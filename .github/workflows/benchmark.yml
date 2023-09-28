@@ -31,6 +31,8 @@ jobs:
             - name: Install odin
               run: wget -O odin.zip https://github.com/odin-lang/Odin/releases/download/dev-2023-08/odin-ubuntu-amd64-dev-2023-08.zip && mkdir odin_exe && unzip odin.zip -d odin_exe && echo -e "export PATH=$(pwd)/odin_exe:"$PATH"\n" >> ~/.bashrc && chmod +x odin_exe/odin
             - name: Install hyperfine for benchmarking
-              run: cargo install hyperfine
+              run: |
+                  wget https://github.com/sharkdp/hyperfine/releases/download/v1.17.0/hyperfine_1.17.0_amd64.deb
+                  sudo dpkg -i hyperfine_1.16.1_amd64.deb
             - name: Run Benchmark
               run: ./run.sh all
