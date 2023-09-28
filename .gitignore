@@ -16,3 +16,8 @@ ols.json
 odin/related
 .dart_tool/
 v/related
+
+# Zig
+zig-cache
+zig/main
+zig/main.o

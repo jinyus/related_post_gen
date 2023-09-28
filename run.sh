@@ -108,6 +108,19 @@ run_crystal() {
 
 }
 
+run_zig() {
+    echo "Running Zig" &&
+        cd ./zig &&
+        zig build-exe -lc -O ReleaseFast main.zig
+        if [ $HYPER == 1 ]; then
+            command hyperfine -r 10 -w 3 --show-output "./main"
+        else
+            command time -f '%es %Mk' ./main
+        fi
+
+    check_output "related_posts_zig.json"
+}
+
 run_julia_v1() {
     echo "Running Julia v1" &&
         cd ./julia &&
@@ -207,6 +220,10 @@ elif [ "$first_arg" = "cr" ]; then
 
     run_crystal
 
+elif [ "$first_arg" = "zig" ]; then
+    
+    run_zig
+        
 elif [ "$first_arg" = "jul1" ]; then
 
     run_julia_v1
@@ -229,16 +246,22 @@ elif [ "$first_arg" = "v" ]; then
 
 elif [ "$first_arg" = "all" ]; then
 
-    echo "running all" &&
-        run_go &&
-        run_go_concurrent &&
-        run_rust &&
-        run_rust_rayon &&
-        run_python &&
-        run_python_np &&
-        run_crystal &&
-        run_julia_v1 &&
-        run_julia_v2
+    echo -e "Running all\n" &&
+        run_go || echo -e "\n" &&
+        run_go_concurrent || echo -e "\n" &&
+        run_rust || echo -e "\n" &&
+        run_rust_rayon || echo -e "\n" &&
+        run_python || echo -e "\n" &&
+        run_python_np || echo -e "\n" &&
+        run_crystal || echo -e "\n" &&
+        run_zig || echo -e "\n" &&
+        run_julia_v1 || echo -e "\n" &&
+        run_julia_v2 || echo -e "\n" &&
+        run_odin || echo -e "\n" &&
+        run_jq || echo -e "\n" &&
+        run_vlang || echo -e "\n" &&
+        echo -e "Finished running all\n"
+    
 
 elif [ "$first_arg" = "clean" ]; then
 
@@ -251,10 +274,12 @@ elif [ "$first_arg" = "clean" ]; then
         cd .. &&
         cd rust_rayon && cargo clean &&
         cd .. &&
+        cd zig && rm -f main main.o &&
+        cd ..
         rm -f related_*.json
 
 else
 
-    echo "Valid args: go | go_con | rust | rust_ray | py | numpy | cr | odin | jq | jul1 | jul2 | v | all | clean. Unknown argument: $first_arg"
+    echo "Valid args: go | go_con | rust | rust_ray | py | numpy | cr | zig | odin | jq | jul1 | jul2 | v | all | clean. Unknown argument: $first_arg"
 
 fi

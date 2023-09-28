@@ -1,0 +1,38 @@
+name: Benchmark
+
+on:
+    pull_request:
+      branches:
+          - main
+    push:
+      branches:
+          - main
+
+jobs:
+    run-benchmarks:
+        runs-on:  ubuntu-22.04
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v4
+            - name: Install  Rust
+              uses: dtolnay/rust-toolchain@stable
+            - name: Install Go
+              uses: actions/setup-go@v4
+              with:
+                go-version: '1.21.1'
+            - name: Install crystal
+              uses: crystal-lang/install-crystal@v1
+            - name: Install zig
+              uses: goto-bus-stop/setup-zig@v2
+            - name: Install Julia
+              uses: julia-actions/setup-julia@v1
+            - name: Install Vlang
+              uses: vlang/setup-v@v1.3
+            - name: Install jq
+              run: sudo apt-get install -y jq
+            - name: Install odin
+              run: wget -O odin.zip https://github.com/odin-lang/Odin/releases/download/dev-2023-08/odin-ubuntu-amd64-dev-2023-08.zip && mkdir odin_exe && unzip odin.zip -d odin_exe && echo -e 'export PATH=$(pwd)/odin_exe:"$PATH"\n' >> ~/.bashrc && chmod +x odin_exe/odin
+            - name: Install hyperfine for benchmarking
+              run: cargo install hyperfine
+            - name: Run Benchmark
+              run: ./run.sh all
