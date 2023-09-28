@@ -12,3 +12,7 @@ crystal/lib/
 crystal/.shards/
 *.dwarf
 crystal/crystal
+
+# Zig
+zig/main
+zig/main.o

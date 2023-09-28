@@ -108,6 +108,20 @@ run_crystal() {
 
 }
 
+run_zig() {
+    echo "Running Zig" &&
+        cd ./zig &&
+        zig build-exe -lc -O ReleaseFast main.zig
+        if [ $HYPER == 1 ]; then
+            command hyperfine -r 10 -w 3 --show-output "./main"
+        else
+            command time -f '%es %Mk' ./main
+        fi
+
+    check_output "related_posts_zig.json"
+
+}
+
 check_output() {
     cd .. &&
         echo "Checking output" &&
@@ -142,6 +156,10 @@ elif [ "$first_arg" = "cr" ]; then
 
     run_crystal
 
+elif [ "$first_arg" = "zig" ]; then
+    
+    run_zig
+
 elif [ "$first_arg" = "all" ]; then
 
     echo "running all" &&
@@ -151,7 +169,8 @@ elif [ "$first_arg" = "all" ]; then
         run_rust_rayon &&
         run_python &&
         run_python_np &&
-        run_crystal
+        run_crystal &&
+        run_zig
 
 elif [ "$first_arg" = "clean" ]; then
 
@@ -164,8 +183,10 @@ elif [ "$first_arg" = "clean" ]; then
         cd .. &&
         cd rust_rayon && cargo clean &&
         cd .. &&
+        cd zig && rm -f main main.o &&
+        cd ..
         rm -f related_*.json
 
 else
-    echo "Valid args: go | go_con | rust | rust_ray | py | numpy | cr | all | clean. Unknown argument: $first_arg"
+    echo "Valid args: go | go_con | rust | rust_ray | py | numpy | cr | zig | all | clean. Unknown argument: $first_arg"
 fi
