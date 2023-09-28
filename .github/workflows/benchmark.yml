@@ -35,6 +35,6 @@ jobs:
             - name: Install hyperfine for benchmarking
               run: |
                   wget https://github.com/sharkdp/hyperfine/releases/download/v1.17.0/hyperfine_1.17.0_amd64.deb
-                  sudo dpkg -i hyperfine_1.16.1_amd64.deb
+                  sudo dpkg -i hyperfine_1.17.0_amd64.deb
             - name: Run Benchmark
               run: ./run.sh all
