@@ -1,14 +1,16 @@
 using JSON3
 using LinearAlgebra
 using StructTypes
+using Dates
 
 function relatedIO()
     json_string = read("../posts.json", String)
     posts = JSON3.read(json_string, Vector{PostData})
 
-    @time "Without I/O" begin
-        all_related_posts = related(posts)
-    end
+    start = now()
+    all_related_posts = related(posts)
+    println("Processing time (w/o IO): $(now() - start)")
+    
 
     open("../related_posts_julia_v2.json", "w") do f
         JSON3.write(f, all_related_posts)
