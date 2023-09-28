@@ -63,14 +63,9 @@ var workerResults = make([]*bytes.Buffer, concurrency)
 // Entry Point
 func main() {
 	// Initialize
-	// measure initialization time
-	initTime := time.Now()
 	initializeResources()
 	defer outputJSONFile.Close()
-	fmt.Println("Initialization time", time.Since(initTime))
 
-	// measure preprocessing time
-	preprocessTime := time.Now()
 	// Read data and preprocess
 	file, _ := os.Open(InputJSONFilePath)
 	reader := bufio.NewReader(file)
@@ -87,15 +82,12 @@ func main() {
 		// use fastest decoder for amd64
 		sonic.ConfigFastest.NewDecoder(reader).Decode(&posts)
 	}
-	fmt.Println("Preprocessing time", time.Since(preprocessTime))
 
 	// Compute related posts and measure time
 	processTime := time.Now()
 	computeAllRelatedPosts(posts)
 	fmt.Println("Processing time (w/o IO)", time.Since(processTime))
 
-	// measure write time
-	writeTime := time.Now()
 	// write result to file
 	readWriter.WriteString("[\n")
 	// write all worker results to file
@@ -109,7 +101,6 @@ func main() {
 	readWriter.Write(buf.Bytes()[:len(buf.Bytes())-2])
 	readWriter.WriteString("\n]\n")
 	readWriter.Flush()
-	fmt.Println("Write time", time.Since(writeTime))
 
 	// Release memory
 	a.Free()
@@ -137,31 +128,26 @@ func computeAllRelatedPosts(posts []Post) {
 		}
 	}
 
-	// Launch workers
+	// Launch workers and give them buffers to write to
 	for w := isize(0); w < concurrency; w++ {
+		// initialize worker result buffer
+		workerResults[w] = bytes.NewBuffer(make([]byte, 0, 1024*1024*10)) // 10MB
 		go worker(w, posts, tagMap)
 	}
-
 	// Wait for workers to finish
 	wg.Wait()
 }
 
 func worker(workerID isize, posts []Post, tagMap map[string][]isize) {
-	// measure work time
-	workTime := time.Now()
 	taggedPostCount := arena.MakeSlice[isize](a, len(posts), len(posts))
 	// Compute related posts for each post
-	workerBuf := bytes.NewBuffer(make([]byte, 0, 1024*1024*10)) // 10MB
 	for i := workerID; i < isize(len(posts)); i += concurrency {
-		computeRelatedPost(i, posts, tagMap, taggedPostCount, workerBuf) // Send data to write channel
+		computeRelatedPost(i, posts, tagMap, taggedPostCount, workerID)
 	}
-	workerResults = append(workerResults, workerBuf)
 	wg.Done()
-	// print work time for each worker
-	fmt.Println("Worker", workerID, "time", time.Since(workTime))
 }
 
-func computeRelatedPost(i isize, posts []Post, tagMap map[string][]isize, taggedPostCount []isize, workerBuf *bytes.Buffer) {
+func computeRelatedPost(i isize, posts []Post, tagMap map[string][]isize, taggedPostCount []isize, workerID isize) {
 	for j := range taggedPostCount {
 		taggedPostCount[j] = 0
 	}
@@ -217,5 +203,5 @@ func computeRelatedPost(i isize, posts []Post, tagMap map[string][]isize, tagged
 		jsonStr, _ = sonic.MarshalString(relPost)
 	}
 
-	workerBuf.WriteString(jsonStr + ",\n")
+	workerResults[workerID].WriteString(jsonStr + ",\n")
 }
