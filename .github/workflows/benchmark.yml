@@ -60,6 +60,7 @@ jobs:
               with:
                   commit-message: Update benchmark results
                   title: "[IGNORE] Update benchmark results"
+                  body: "New benchmark results"
                   labels: automated pr
                   branch: benchmark-results
                   add-paths: |
