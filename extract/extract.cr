@@ -54,7 +54,7 @@ result_lines.each do |line|
   if line.starts_with?(/^\n[a-zA-Z]/)
     # print "processing #{line}..."
     current_score = LangaugeScore.new
-    name = line.gsub("\n", "").strip
+    name = line.gsub(/\n|:/, "").strip
     current_score.name = name
     scores[name] = current_score
     next
