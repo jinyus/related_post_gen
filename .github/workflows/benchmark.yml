@@ -53,7 +53,8 @@ jobs:
             #       files: raw_results.md
             #       push-branch: main
             #       github-token: ${{ secrets.GITHUB_TOKEN }}
-
+            - name: Modify Readme
+              run: dart extract/extract.dart raw_results.md
             - name: Create Pull Request
               uses: peter-evans/create-pull-request@v5
               with:
@@ -61,4 +62,4 @@ jobs:
                   title: "[IGNORE] Update benchmark results"
                   labels: automated pr
                   branch: benchmark-results
-                  add-paths: raw_results.md
+                  add-paths: raw_results.md, readme.md
