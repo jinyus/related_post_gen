@@ -1,3 +1,4 @@
+# extract benchmark results from github action log
 filename = ARGV[0]
 
 if !File.exists?(filename)
