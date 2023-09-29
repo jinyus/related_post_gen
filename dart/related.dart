@@ -1,22 +1,24 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'models.dart';
+
 void main() {
-  final posts = jsonDecode(File('../posts.json').readAsStringSync()) as List<dynamic>;
+  final postsJson = jsonDecode(File('../posts.json').readAsStringSync()) as List<dynamic>;
+
+  final posts = postsJson.map(Post.fromJson).toList();
 
   final sw = Stopwatch()..start();
 
-  // takes 3ms
   final (_, tagMap) = posts.fold<(int, Map<String, List<int>>)>(
     (0, {}),
     (state, post) {
-      final tags = post['tags'];
-      for (final tag in tags) {
-        if (state.$2.containsKey(tag)) {
-          state.$2[tag]!.add(state.$1);
-        } else {
-          state.$2[tag] = [state.$1];
-        }
+      for (final tag in post.tags) {
+        state.$2.update(
+          tag,
+          (list) => list..add(state.$1),
+          ifAbsent: () => [state.$1],
+        );
       }
 
       return (state.$1 + 1, state.$2);
@@ -30,8 +32,7 @@ void main() {
     final post = posts[i];
     taggedPostCount.fillRange(0, posts.length, 0);
 
-    final tags = post['tags'] as List<dynamic>;
-    for (final tag in tags) {
+    for (final tag in post.tags) {
       for (var otherPostIdx in tagMap[tag]!) {
         taggedPostCount[otherPostIdx] += 1;
       }
@@ -62,8 +63,8 @@ void main() {
     }
 
     return {
-      "_id": post['_id'],
-      "tags": post['tags'],
+      "_id": post.iD,
+      "tags": post.tags,
       "related": top5.map((v) => posts[v.idx]).toList(),
     };
   });
