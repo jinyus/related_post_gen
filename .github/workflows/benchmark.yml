@@ -41,5 +41,7 @@ jobs:
               run: |
                   wget https://github.com/sharkdp/hyperfine/releases/download/v1.17.0/hyperfine_1.17.0_amd64.deb
                   sudo dpkg -i hyperfine_1.17.0_amd64.deb
+            - name: Install dart
+              uses: dart-lang/setup-dart@v1
             - name: Run Benchmark
               run: ./run.sh all
