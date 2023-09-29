@@ -2,18 +2,40 @@
 
 # Read the first arg passed to the script
 first_arg=$1
+outfile=${2:-/dev/stdout}
+
+tab=""
+if [[ $outfile != "/dev/stdout" ]]; then
+    tab="\t"
+    if [ -f "$outfile" ]; then
+        truncate -s 0 "$outfile"
+    fi
+fi
 
 HYPER=0
 if command -v hyperfine &>/dev/null; then
     HYPER=1
 fi
 
+capture() {
+    title=$1
+    command=$2
+
+    # remove the first two args
+    shift 2
+
+    (
+        echo -e "$title:\n"
+        $command "$@" | awk -v tab="$tab" '{print tab$0}'
+    ) >>"../$outfile"
+}
+
 run_go() {
     echo "Running Go" &&
         cd ./go &&
         go build &&
         if [ $HYPER == 1 ]; then
-            command hyperfine -r 10 -w 3 --show-output "./related"
+            capture "Go" hyperfine -r 10 -w 3 --show-output "./related"
         else
             command time -f '%es %Mk' ./related
         fi
@@ -27,7 +49,7 @@ run_go_concurrent() {
         cd ./go_con &&
         GOEXPERIMENT=arenas go build &&
         if [ $HYPER == 1 ]; then
-            command hyperfine -r 10 -w 3 --show-output "./related_concurrent"
+            capture "Go Concurrent" hyperfine -r 10 -w 3 --show-output "./related_concurrent"
         else
             command time -f '%es %Mk' ./related_concurrent
         fi
@@ -40,7 +62,7 @@ run_rust() {
         cd ./rust &&
         cargo build --release &&
         if [ $HYPER == 1 ]; then
-            command hyperfine -r 10 -w 3 --show-output "./target/release/rust"
+            capture "Rust" hyperfine -r 10 -w 3 --show-output "./target/release/rust"
         else
             command time -f '%es %Mk' ./target/release/rust
         fi
@@ -54,7 +76,7 @@ run_rust_rayon() {
         cd ./rust_rayon &&
         cargo build --release &&
         if [ $HYPER == 1 ]; then
-            command hyperfine -r 10 -w 3 --show-output "./target/release/rust_rayon"
+            capture "Rust Rayon" hyperfine -r 10 -w 3 --show-output "./target/release/rust_rayon"
         else
             command time -f '%es %Mk' ./target/release/rust_rayon
         fi
@@ -67,7 +89,7 @@ run_python() {
     echo "Running Python" &&
         cd ./python &&
         if [ $HYPER == 1 ]; then
-            command hyperfine -r 5 --show-output "python3 ./related.py"
+            capture "Python" hyperfine -r 5 --show-output "python3 ./related.py"
         else
             command time -f '%es %Mk' python3 ./related.py
         fi
@@ -85,7 +107,7 @@ run_python_np() {
     source venv/bin/activate &&
         pip freeze | grep numpy || pip install numpy &&
         if [ $HYPER == 1 ]; then
-            command hyperfine -r 5 --show-output "python3 ./related_np.py"
+            capture "Numpy" hyperfine -r 5 --show-output "python3 ./related_np.py"
         else
             command time -f '%es %Mk' python3 ./related_np.py
         fi
@@ -99,7 +121,7 @@ run_crystal() {
         cd ./crystal &&
         crystal build --release src/crystal.cr &&
         if [ $HYPER == 1 ]; then
-            command hyperfine -r 10 --show-output "./crystal"
+            capture "Crystal" hyperfine -r 10 --show-output "./crystal"
         else
             command time -f '%es %Mk' ./crystal
         fi
@@ -113,7 +135,7 @@ run_zig() {
         cd ./zig &&
         zig build-exe -lc -O ReleaseFast main.zig
     if [ $HYPER == 1 ]; then
-        command hyperfine -r 10 -w 3 --show-output "./main"
+        capture "Zig" hyperfine -r 10 -w 3 --show-output "./main"
     else
         command time -f '%es %Mk' ./main
     fi
@@ -126,7 +148,7 @@ run_julia_v1() {
         cd ./julia &&
         julia -e 'using Pkg; Pkg.add.(["JSON3", "StatsBase", "StructTypes", "LinearAlgebra"])' &&
         if [ $HYPER == 1 ]; then
-            command hyperfine -r 5 --warmup 1 --show-output "julia related.jl"
+            capture "Julia v1" hyperfine -r 5 --warmup 1 --show-output "julia related.jl"
         else
             command time -f '%es %Mk' julia related.jl
         fi
@@ -139,7 +161,7 @@ run_julia_v2() {
         cd ./julia &&
         julia -e 'using Pkg; Pkg.add.(["JSON3", "StatsBase", "StructTypes", "LinearAlgebra"])' &&
         if [ $HYPER == 1 ]; then
-            command hyperfine -r 5 --warmup 1 --show-output "julia related_v2.jl"
+            capture "Julia v2" hyperfine -r 5 --warmup 1 --show-output "julia related_v2.jl"
         else
             command time -f '%es %Mk' julia related_v2.jl
         fi
@@ -152,7 +174,7 @@ run_odin() {
         cd ./odin &&
         odin build related.odin -file -no-bounds-check &&
         if [ $HYPER == 1 ]; then
-            command hyperfine -r 10 --show-output "./related"
+            capture "Odin" hyperfine -r 10 --show-output "./related"
         else
             command time -f '%es %Mk' ./related
         fi
@@ -165,7 +187,7 @@ run_vlang() {
         cd ./v &&
         v related.v &&
         if [ $HYPER == 1 ]; then
-            command hyperfine -r 5 --show-output "./related"
+            capture "Vlang" hyperfine -r 5 --show-output "./related"
         else
             command time -f '%es %Mk' ./related
         fi
@@ -178,7 +200,7 @@ run_jq() {
         cd ./jq &&
         if [ $HYPER == 1 ]; then
             # run once as it's very slow. ~50s
-            command hyperfine -r 1 "jq -c -f ./related.jq ../posts.json > ../related_posts_jq.json"
+            capture "JQ" hyperfine -r 1 "jq -c -f ./related.jq ../posts.json > ../related_posts_jq.json"
         else
             command time -f '%es %Mk' jq -c -f ./related.jq ../posts.json >../related_posts_jq.json
         fi
@@ -190,7 +212,7 @@ run_dart() {
     echo "Running Dart VM" &&
         cd ./dart &&
         if [ $HYPER == 1 ]; then
-            command hyperfine -r 5 --warmup 3 --show-output "dart related.dart"
+            capture "Dart VM" hyperfine -r 5 --warmup 3 --show-output "dart related.dart"
         else
             command time -f '%es %Mk' dart related.dart
         fi
