@@ -1,0 +1,5 @@
+import db.sqlite
+
+fn main() {
+	_ := &C.sqlite3{}
+}

@@ -1,199 +1,193 @@
-Device: Github Actions
-
 Go:
 
 	Benchmark 1: ./related
-	Processing time (w/o IO) 47.131939ms
-	Processing time (w/o IO) 48.524534ms
-	Processing time (w/o IO) 47.279938ms
-	Processing time (w/o IO) 45.622345ms
-	Processing time (w/o IO) 49.706331ms
-	Processing time (w/o IO) 48.023736ms
-	Processing time (w/o IO) 52.823219ms
-	Processing time (w/o IO) 48.909033ms
-	Processing time (w/o IO) 44.930347ms
-	Processing time (w/o IO) 47.437238ms
-	Processing time (w/o IO) 59.328397ms
-	Processing time (w/o IO) 51.241525ms
-	Processing time (w/o IO) 47.175439ms
-	  Time (mean ± σ):      89.2 ms ±   4.7 ms    [User: 82.7 ms, System: 15.4 ms]
-	  Range (min … max):    83.7 ms …  99.3 ms    10 runs
-
+	Processing time (w/o IO) 30.892111ms
+	Processing time (w/o IO) 31.011913ms
+	Processing time (w/o IO) 30.771408ms
+	Processing time (w/o IO) 30.565604ms
+	Processing time (w/o IO) 30.990613ms
+	Processing time (w/o IO) 30.717307ms
+	Processing time (w/o IO) 30.691207ms
+	Processing time (w/o IO) 30.3271ms
+	Processing time (w/o IO) 30.924911ms
+	Processing time (w/o IO) 30.469702ms
+	Processing time (w/o IO) 30.743707ms
+	Processing time (w/o IO) 30.779208ms
+	Processing time (w/o IO) 30.717007ms
+	  Time (mean ± σ):      61.6 ms ±   1.0 ms    [User: 56.8 ms, System: 12.5 ms]
+	  Range (min … max):    59.0 ms …  62.7 ms    10 runs
+	 
 Go Concurrent:
 
 	Benchmark 1: ./related_concurrent
-	Processing time (w/o IO) 19.42525ms
-	Processing time (w/o IO) 20.197051ms
-	Processing time (w/o IO) 19.029348ms
-	Processing time (w/o IO) 31.073679ms
-	Processing time (w/o IO) 32.043881ms
-	Processing time (w/o IO) 28.690773ms
-	Processing time (w/o IO) 18.403146ms
-	Processing time (w/o IO) 19.450749ms
-	Processing time (w/o IO) 19.56625ms
-	Processing time (w/o IO) 19.216149ms
-	Processing time (w/o IO) 21.140354ms
-	Processing time (w/o IO) 19.441749ms
-	Processing time (w/o IO) 22.765558ms
-	  Time (mean ± σ):      66.2 ms ±  10.0 ms    [User: 64.8 ms, System: 19.2 ms]
-	  Range (min … max):    56.6 ms …  86.2 ms    10 runs
-
+	Processing time (w/o IO) 16.530319ms
+	Processing time (w/o IO) 16.344115ms
+	Processing time (w/o IO) 15.956408ms
+	Processing time (w/o IO) 16.328915ms
+	Processing time (w/o IO) 16.04211ms
+	Processing time (w/o IO) 15.953308ms
+	Processing time (w/o IO) 16.878626ms
+	Processing time (w/o IO) 16.164012ms
+	Processing time (w/o IO) 16.06811ms
+	Processing time (w/o IO) 16.502518ms
+	Processing time (w/o IO) 16.405616ms
+	Processing time (w/o IO) 17.397236ms
+	Processing time (w/o IO) 15.998908ms
+	  Time (mean ± σ):      48.6 ms ±   1.4 ms    [User: 54.4 ms, System: 13.6 ms]
+	  Range (min … max):    47.4 ms …  51.5 ms    10 runs
+	 
 Rust:
 
 	Benchmark 1: ./target/release/rust
-	Processing time (w/o IO): 50.848876ms
-	Processing time (w/o IO): 50.502476ms
-	Processing time (w/o IO): 55.091874ms
-	Processing time (w/o IO): 51.320577ms
-	Processing time (w/o IO): 49.974176ms
-	Processing time (w/o IO): 50.908176ms
-	Processing time (w/o IO): 50.511177ms
-	Processing time (w/o IO): 51.205576ms
-	Processing time (w/o IO): 53.569875ms
-	Processing time (w/o IO): 57.036473ms
-	Processing time (w/o IO): 47.491978ms
-	Processing time (w/o IO): 50.878176ms
-	Processing time (w/o IO): 53.502775ms
-	  Time (mean ± σ):      75.4 ms ±   2.5 ms    [User: 66.1 ms, System: 9.1 ms]
-	  Range (min … max):    71.7 ms …  80.5 ms    10 runs
-
+	Processing time (w/o IO): 33.222074ms
+	Processing time (w/o IO): 33.477778ms
+	Processing time (w/o IO): 33.221074ms
+	Processing time (w/o IO): 33.210474ms
+	Processing time (w/o IO): 33.166674ms
+	Processing time (w/o IO): 33.210874ms
+	Processing time (w/o IO): 33.308775ms
+	Processing time (w/o IO): 33.150573ms
+	Processing time (w/o IO): 33.277275ms
+	Processing time (w/o IO): 33.168673ms
+	Processing time (w/o IO): 33.129673ms
+	Processing time (w/o IO): 33.182374ms
+	Processing time (w/o IO): 33.238674ms
+	  Time (mean ± σ):      52.2 ms ±   0.3 ms    [User: 44.5 ms, System: 7.7 ms]
+	  Range (min … max):    51.7 ms …  52.7 ms    10 runs
+	 
 Rust Rayon:
 
 	Benchmark 1: ./target/release/rust_rayon
-	Processing time (w/o IO): 26.757777ms
-	Processing time (w/o IO): 29.892674ms
-	Processing time (w/o IO): 30.068574ms
-	Processing time (w/o IO): 33.773671ms
-	Processing time (w/o IO): 34.483271ms
-	Processing time (w/o IO): 28.566975ms
-	Processing time (w/o IO): 29.999874ms
-	Processing time (w/o IO): 29.546275ms
-	Processing time (w/o IO): 28.993375ms
-	Processing time (w/o IO): 28.619976ms
-	Processing time (w/o IO): 32.853072ms
-	Processing time (w/o IO): 27.800376ms
-	Processing time (w/o IO): 26.328978ms
-	  Time (mean ± σ):      52.7 ms ±   3.5 ms    [User: 67.4 ms, System: 10.8 ms]
-	  Range (min … max):    47.0 ms …  58.2 ms    10 runs
-
+	Processing time (w/o IO): 22.151218ms
+	Processing time (w/o IO): 21.262002ms
+	Processing time (w/o IO): 21.1963ms
+	Processing time (w/o IO): 20.935995ms
+	Processing time (w/o IO): 21.1484ms
+	Processing time (w/o IO): 21.240701ms
+	Processing time (w/o IO): 21.035897ms
+	Processing time (w/o IO): 21.021897ms
+	Processing time (w/o IO): 21.010696ms
+	Processing time (w/o IO): 21.491605ms
+	Processing time (w/o IO): 21.109098ms
+	Processing time (w/o IO): 20.940695ms
+	Processing time (w/o IO): 20.993796ms
+	  Time (mean ± σ):      39.2 ms ±   0.2 ms    [User: 50.4 ms, System: 8.5 ms]
+	  Range (min … max):    38.9 ms …  39.7 ms    10 runs
+	 
 Python:
 
 	Benchmark 1: python3 ./related.py
-	Processing time (w/o IO): 3.152s
-	Processing time (w/o IO): 3.131s
-	Processing time (w/o IO): 3.062s
-	Processing time (w/o IO): 3.114s
-	Processing time (w/o IO): 3.086s
-	  Time (mean ± σ):      3.450 s ±  0.040 s    [User: 3.425 s, System: 0.022 s]
-	  Range (min … max):    3.403 s …  3.509 s    5 runs
-
+	Processing time (w/o IO): 2.720s
+	Processing time (w/o IO): 2.723s
+	Processing time (w/o IO): 2.719s
+	Processing time (w/o IO): 2.720s
+	Processing time (w/o IO): 2.724s
+	  Time (mean ± σ):      3.012 s ±  0.004 s    [User: 2.996 s, System: 0.016 s]
+	  Range (min … max):    3.008 s …  3.018 s    5 runs
+	 
 Numpy:
 
 	Benchmark 1: python3 ./related_np.py
-	Processing time (w/o IO):  1.105s
-	Processing time (w/o IO):  1.077s
-	Processing time (w/o IO):  1.092s
-	Processing time (w/o IO):  1.092s
-	Processing time (w/o IO):  1.089s
-	  Time (mean ± σ):      1.544 s ±  0.011 s    [User: 1.493 s, System: 0.167 s]
-	  Range (min … max):    1.528 s …  1.554 s    5 runs
-
+	Processing time (w/o IO):  0.913s
+	Processing time (w/o IO):  0.913s
+	Processing time (w/o IO):  0.918s
+	Processing time (w/o IO):  0.917s
+	Processing time (w/o IO):  0.919s
+	  Time (mean ± σ):      1.308 s ±  0.008 s    [User: 1.259 s, System: 0.151 s]
+	  Range (min … max):    1.301 s …  1.321 s    5 runs
+	 
 Crystal:
 
 	Benchmark 1: ./crystal
-	Processing time (w/o IO): 64.556189ms
-	Processing time (w/o IO): 62.173189ms
-	Processing time (w/o IO): 63.763023ms
-	Processing time (w/o IO): 63.379038ms
-	Processing time (w/o IO): 66.122323ms
-	Processing time (w/o IO): 62.945357ms
-	Processing time (w/o IO): 60.750849ms
-	Processing time (w/o IO): 61.087735ms
-	Processing time (w/o IO): 63.080251ms
-	Processing time (w/o IO): 60.357865ms
-	  Time (mean ± σ):     124.4 ms ±   2.9 ms    [User: 112.0 ms, System: 12.1 ms]
-	  Range (min … max):   121.3 ms … 130.3 ms    10 runs
-
+	Processing time (w/o IO): 56.125278ms
+	Processing time (w/o IO): 55.964975ms
+	Processing time (w/o IO): 56.315281ms
+	Processing time (w/o IO): 56.348283ms
+	Processing time (w/o IO): 56.016275ms
+	Processing time (w/o IO): 55.69707ms
+	Processing time (w/o IO): 56.657788ms
+	Processing time (w/o IO): 56.637588ms
+	Processing time (w/o IO): 56.625488ms
+	Processing time (w/o IO): 56.119078ms
+	  Time (mean ± σ):     113.1 ms ±   0.9 ms    [User: 103.5 ms, System: 9.6 ms]
+	  Range (min … max):   111.5 ms … 114.3 ms    10 runs
+	 
 Zig:
 
 	Benchmark 1: ./main
-	Processing time (w/o IO): 221ms
-	Processing time (w/o IO): 222ms
-	Processing time (w/o IO): 221ms
-	Processing time (w/o IO): 224ms
-	Processing time (w/o IO): 218ms
-	Processing time (w/o IO): 233ms
-	Processing time (w/o IO): 225ms
-	Processing time (w/o IO): 235ms
-	Processing time (w/o IO): 227ms
-	Processing time (w/o IO): 235ms
-	Processing time (w/o IO): 224ms
-	Processing time (w/o IO): 230ms
-	Processing time (w/o IO): 234ms
-	  Time (mean ± σ):     278.2 ms ±   6.1 ms    [User: 265.4 ms, System: 12.7 ms]
-	  Range (min … max):   266.3 ms … 285.9 ms    10 runs
-
+	Processing time (w/o IO): 179ms
+	Processing time (w/o IO): 179ms
+	Processing time (w/o IO): 179ms
+	Processing time (w/o IO): 179ms
+	Processing time (w/o IO): 179ms
+	Processing time (w/o IO): 179ms
+	Processing time (w/o IO): 179ms
+	Processing time (w/o IO): 179ms
+	Processing time (w/o IO): 179ms
+	Processing time (w/o IO): 179ms
+	Processing time (w/o IO): 179ms
+	Processing time (w/o IO): 179ms
+	Processing time (w/o IO): 179ms
+	  Time (mean ± σ):     221.4 ms ±   0.2 ms    [User: 212.9 ms, System: 8.4 ms]
+	  Range (min … max):   220.9 ms … 221.7 ms    10 runs
+	 
 Julia v1:
 
 	Benchmark 1: julia related.jl
-	Processing time (w/o IO): 1855 milliseconds
-	Processing time (w/o IO): 1789 milliseconds
-	Processing time (w/o IO): 1836 milliseconds
-	Processing time (w/o IO): 1820 milliseconds
-	Processing time (w/o IO): 1907 milliseconds
-	Processing time (w/o IO): 1911 milliseconds
-	  Time (mean ± σ):      5.677 s ±  0.112 s    [User: 5.399 s, System: 0.275 s]
-	  Range (min … max):    5.546 s …  5.803 s    5 runs
-
+	Processing time (w/o IO): 1422 milliseconds
+	Processing time (w/o IO): 1424 milliseconds
+	Processing time (w/o IO): 1410 milliseconds
+	Processing time (w/o IO): 1359 milliseconds
+	Processing time (w/o IO): 1366 milliseconds
+	Processing time (w/o IO): 1463 milliseconds
+	  Time (mean ± σ):      4.553 s ±  0.061 s    [User: 4.286 s, System: 0.263 s]
+	  Range (min … max):    4.493 s …  4.651 s    5 runs
+	 
 Julia v2:
 
 	Benchmark 1: julia related_v2.jl
-	Processing time (w/o IO): 823 milliseconds
-	Processing time (w/o IO): 801 milliseconds
-	Processing time (w/o IO): 808 milliseconds
-	Processing time (w/o IO): 823 milliseconds
-	Processing time (w/o IO): 805 milliseconds
-	Processing time (w/o IO): 795 milliseconds
-	  Time (mean ± σ):      6.404 s ±  0.077 s    [User: 6.130 s, System: 0.265 s]
-	  Range (min … max):    6.339 s …  6.490 s    5 runs
-
+	Processing time (w/o IO): 663 milliseconds
+	Processing time (w/o IO): 682 milliseconds
+	Processing time (w/o IO): 699 milliseconds
+	Processing time (w/o IO): 682 milliseconds
+	Processing time (w/o IO): 700 milliseconds
+	Processing time (w/o IO): 694 milliseconds
+	  Time (mean ± σ):      5.204 s ±  0.034 s    [User: 4.973 s, System: 0.222 s]
+	  Range (min … max):    5.151 s …  5.236 s    5 runs
+	 
 Odin:
 
 	Benchmark 1: ./related
-	Processing time (w/o IO):  365.944397ms
-	Processing time (w/o IO):  342.510962ms
-	Processing time (w/o IO):  345.361454ms
-	Processing time (w/o IO):  357.0066ms
-	Processing time (w/o IO):  391.49418ms
-	Processing time (w/o IO):  360.134876ms
-	Processing time (w/o IO):  353.177689ms
-	Processing time (w/o IO):  357.74748ms
-	Processing time (w/o IO):  351.064092ms
-	Processing time (w/o IO):  349.466795ms
-	  Time (mean ± σ):     924.0 ms ±  21.9 ms    [User: 912.3 ms, System: 11.5 ms]
-	  Range (min … max):   891.4 ms … 957.4 ms    10 runs
-
+	Processing time (w/o IO):  261.04278ms
+	Processing time (w/o IO):  260.604472ms
+	Processing time (w/o IO):  260.333869ms
+	Processing time (w/o IO):  261.837391ms
+	Processing time (w/o IO):  260.639273ms
+	Processing time (w/o IO):  260.400469ms
+	Processing time (w/o IO):  260.904177ms
+	Processing time (w/o IO):  261.015679ms
+	Processing time (w/o IO):  261.195519ms
+	Processing time (w/o IO):  260.525709ms
+	  Time (mean ± σ):     725.3 ms ±   1.0 ms    [User: 713.5 ms, System: 11.6 ms]
+	  Range (min … max):   724.0 ms … 727.0 ms    10 runs
+	 
 Vlang:
 
 	Benchmark 1: ./related
-	Processing time (w/o IO): 575.100ms
-	Processing time (w/o IO): 580.739ms
-	Processing time (w/o IO): 617.184ms
-	Processing time (w/o IO): 609.815ms
-	Processing time (w/o IO): 604.416ms
-	  Time (mean ± σ):      1.379 s ±  0.022 s    [User: 1.372 s, System: 0.055 s]
-	  Range (min … max):    1.359 s …  1.414 s    5 runs
-
+	  Time (mean ± σ):     971.1 ms ±   3.9 ms    [User: 1002.4 ms, System: 30.3 ms]
+	  Range (min … max):   966.2 ms … 976.6 ms    5 runs
+	 
 Dart VM:
 
 	Benchmark 1: dart related.dart
-	Processing time (w/o IO): 204ms
-	Processing time (w/o IO): 249ms
-	Processing time (w/o IO): 210ms
-	Processing time (w/o IO): 220ms
+	Processing time (w/o IO): 238ms
+	Processing time (w/o IO): 238ms
+	Processing time (w/o IO): 238ms
 	Processing time (w/o IO): 216ms
-	Processing time (w/o IO): 217ms
-	Processing time (w/o IO): 214ms
-	Processing time (w/o IO): 212ms
-	  Time (mean ± σ):     839.8 ms ±   8.6 ms    [User: 924.4 ms, System: 222.1 ms]
-	  Range (min … max):   833.3 ms … 854.8 ms    5 runs
+	Processing time (w/o IO): 239ms
+	Processing time (w/o IO): 222ms
+	Processing time (w/o IO): 236ms
+	Processing time (w/o IO): 218ms
+	  Time (mean ± σ):     732.1 ms ±   9.6 ms    [User: 817.1 ms, System: 146.2 ms]
+	  Range (min … max):   720.3 ms … 744.2 ms    5 runs
+	 
