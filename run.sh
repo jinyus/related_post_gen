@@ -190,7 +190,7 @@ run_dart() {
     echo "Running Dart VM" &&
         cd ./dart &&
         if [ $HYPER == 1 ]; then
-            command hyperfine -r 5 --warmup 1 --show-output "dart related.dart"
+            command hyperfine -r 5 --warmup 2 --show-output "dart related.dart"
         else
             command time -f '%es %Mk' dart related.dart
         fi
