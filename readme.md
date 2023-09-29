@@ -19,21 +19,21 @@ Generate related posts based on tags. Sort by the number of shared tags.
 
 ### Updated Results from github workflow ([raw data](https://github.com/jinyus/related_post_gen/blob/main/raw_results.md))
 
-| Language   | Processing Time | Total (PT + I/O) |
-| ---------- | --------------- | ---------------- |
-| Go Con     | 16ms            | 49ms             |
-| Rust Rayon | 20ms            | 37ms             |
-| Go         | 30ms            | 63ms             |
-| Rust       | 33ms            | 51ms             |
-| Crystal    | 109ms           | 55ms             |
-| Zig        | 177ms           | 218ms            |
-| Dart VM    | 240ms           | 682ms            |
-| Odin       | 260ms           | 722ms            |
-| Vlang      | 520ms           | 958ms            |
-| Julia v2   | 660ms           | 5s               |
-| Numpy      | 912ms           | 1.29s            |
-| Julia v1   | 1.27s           | 4.32s            |
-| Python     | 2.71s           | 3s               |
+| Language             | Processing Time | Total (PT + I/O) |
+| -------------------- | --------------- | ---------------- |
+| Go with concurrency: | 16.17ms         | 49.3 ms          |
+| Rust w/ Rayon:       | 20.88ms         | 37.7 ms          |
+| Go:                  | 30.97ms         | 63.1 ms          |
+| Rust:                | 33.6ms          | 51.6 ms          |
+| Crystal:             | 55.63ms         | 108.7 ms         |
+| Zig:                 | 177.23ms        | 218.4 ms         |
+| Dart VM:             | 230.33ms        | 682.5 ms         |
+| Odin:                | 260.95ms        | 722.7 ms         |
+| Vlang:               | 522.85ms        | 958.8 ms         |
+| Julia v2:            | 660.17ms        | 5.006 s          |
+| Python with Numpy:   | 0.91s           | 1.295 s          |
+| Julia v1:            | 1284.33ms       | 4.324 s          |
+| Python:              | 2.72s           | 3.009 s          |
 
 ### Old Results (on my machine)
 

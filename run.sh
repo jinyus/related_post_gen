@@ -23,7 +23,7 @@ run_go() {
 }
 
 run_go_concurrent() {
-    echo "Running Go with concurrency" &&
+    echo "Running Go Concurrent" &&
         cd ./go_con &&
         GOEXPERIMENT=arenas go build &&
         if [ $HYPER == 1 ]; then
@@ -50,7 +50,7 @@ run_rust() {
 }
 
 run_rust_rayon() {
-    echo "Running Rust w/ Rayon" &&
+    echo "Running Rust Rayon" &&
         cd ./rust_rayon &&
         cargo build --release &&
         if [ $HYPER == 1 ]; then
@@ -77,7 +77,7 @@ run_python() {
 }
 
 run_python_np() {
-    echo "Running Python with Numpy" &&
+    echo "Running Numpy" &&
         cd ./python &&
         if [ ! -d "venv" ]; then
             python3 -m venv venv
