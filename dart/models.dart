@@ -19,19 +19,3 @@ class Post {
     };
   }
 }
-
-class RelatedPost {
-  String iD;
-  List<String> tags;
-  List<Post> related;
-
-  RelatedPost({required this.iD, required this.tags, required this.related});
-
-  Map<String, dynamic> toJson() {
-    return {
-      '_id': iD,
-      'tags': tags,
-      'related': related.map((v) => v.toJson()).toList(),
-    };
-  }
-}
