@@ -56,7 +56,11 @@ pub fn main() !void {
     }
     const end = try std.time.Instant.now();
     try stdout.print("Processing time (w/o IO): {d}ms\n", .{@divFloor(end.since(start), std.time.ns_per_ms)});
+
     const op_file = try std.fs.cwd().createFile("../related_posts_zig.json", .{});
     defer op_file.close();
-    try std.json.stringify(try op.toOwnedSlice(), .{}, op_file.writer());
+    var buffered_writer = std.io.bufferedWriter(op_file.writer());
+    const writer = buffered_writer.writer();
+    try std.json.stringify(try op.toOwnedSlice(), .{}, writer);
+    try buffered_writer.flush();
 }
