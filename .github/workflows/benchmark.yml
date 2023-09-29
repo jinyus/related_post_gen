@@ -11,7 +11,7 @@ on:
 
 jobs:
     run-benchmarks:
-        if: github.event_name == 'workflow_dispatch' || (github.event_name == 'pull_request' && github.event.pull_request.merged == true)
+        if: github.event_name == 'workflow_dispatch' || (github.event_name == 'pull_request' && github.event.pull_request.merged == true && !contains(github.event.pull_request.title, '[IGNORE]'))
         runs-on: ubuntu-22.04
         steps:
             - name: Checkout
@@ -46,10 +46,18 @@ jobs:
               run: ./run.sh all raw_results.md
             - name: Clean up
               run: rm -rf odin_exe && rm hyperfine.deb
-            - name: Push results to repo
-              uses: github-actions-x/commit@v2.9
+            # - name: Push results to repo
+            #   uses: github-actions-x/commit@v2.9
+            #   with:
+            #       commit-message: "Update benchmark results"
+            #       files: raw_results.md
+            #       push-branch: main
+            #       github-token: ${{ secrets.GITHUB_TOKEN }}
+
+            - name: Create Pull Request
+              uses: peter-evans/create-pull-request@v5
               with:
-                  commit-message: "Update benchmark results"
-                  files: raw_results.md
-                  push-branch: main
-                  github-token: ${{ secrets.GH_REPO_TOKEN }}
+                  commit-message: Update benchmark results
+                  title: "[IGNORE] Update benchmark results"
+                  labels: automated pr
+                  branch: benchmark-results
