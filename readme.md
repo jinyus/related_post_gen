@@ -17,7 +17,7 @@ Generate related posts based on tags. Sort by the number of shared tags.
 ./run.sh go | rust | python | all
 ```
 
-### Updated Results (from github workflow)
+### Updated Results from github workflow ([raw data](https://github.com/jinyus/related_post_gen/blob/main/raw_results.md))
 
 | Language   | Processing Time | Total (PT + I/O) |
 | ---------- | --------------- | ---------------- |
