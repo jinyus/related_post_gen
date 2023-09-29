@@ -60,7 +60,6 @@ pub fn main() !void {
     const op_file = try std.fs.cwd().createFile("../related_posts_zig.json", .{});
     defer op_file.close();
     var buffered_writer = std.io.bufferedWriter(op_file.writer());
-    const writer = buffered_writer.writer();
-    try std.json.stringify(try op.toOwnedSlice(), .{}, writer);
+    try std.json.stringify(try op.toOwnedSlice(), .{}, buffered_writer.writer());
     try buffered_writer.flush();
 }
