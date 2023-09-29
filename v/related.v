@@ -93,7 +93,7 @@ fn main() {
 
 	end := time.now()
 
-	eprintln('Processing time (w/o IO): ${end - start}')
+	println('Processing time (w/o IO): ${end - start}')
 
 	json_str_out := json.encode(all_related_posts)
 
