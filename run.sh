@@ -10,6 +10,10 @@ if [[ $outfile != "/dev/stdout" ]]; then
     if [ -f "$outfile" ]; then
         truncate -s 0 "$outfile"
     fi
+
+    # this will be used in langauge directories
+    # so we need to go up one level
+    outfile="../$outfile"
 fi
 
 HYPER=0
@@ -27,7 +31,7 @@ capture() {
     (
         echo -e "$title:\n"
         $command "$@" | awk -v tab="$tab" '{print tab$0}'
-    ) >>"../$outfile"
+    ) >>"$outfile"
 }
 
 run_go() {
