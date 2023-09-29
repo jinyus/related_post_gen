@@ -32,8 +32,7 @@ void main() {
 
     final tags = post['tags'] as List<dynamic>;
     for (final tag in tags) {
-      final tagString = tag as String;
-      for (var otherPostIdx in tagMap[tagString]!) {
+      for (var otherPostIdx in tagMap[tag]!) {
         taggedPostCount[otherPostIdx] += 1;
       }
     }
