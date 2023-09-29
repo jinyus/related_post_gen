@@ -116,14 +116,7 @@ void main(List<String> args) {
         shouldReplace = false;
         replaced = true;
 
-        final lines = sortedScores
-            .map(
-              (e) => e.toString(),
-            )
-            .toList()
-          ..add('\n');
-
-        return lines.join('\n');
+        return sortedScores.map((e) => e.toString()).join('\n') + '\n';
       })
       .whereType<String>()
       .join('\n');
