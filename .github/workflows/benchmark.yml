@@ -62,4 +62,6 @@ jobs:
                   title: "[IGNORE] Update benchmark results"
                   labels: automated pr
                   branch: benchmark-results
-                  add-paths: raw_results.md, readme.md
+                  add-paths: |
+                      raw_results.md
+                      readme.md
