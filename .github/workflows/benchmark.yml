@@ -31,7 +31,6 @@ jobs:
             - name: Install Vlang
               uses: vlang/setup-v@v1.3
             - name: Install odin
-              # run: wget -O odin.zip https://github.com/odin-lang/Odin/releases/download/dev-2023-08/odin-ubuntu-amd64-dev-2023-08.zip && mkdir odin_exe && unzip odin.zip -d odin_exe && echo -e "export PATH=$(pwd)/odin_exe:"$PATH"\n" >> ~/.bashrc && chmod +x odin_exe/odin
               run: |
                   wget https://github.com/odin-lang/Odin/releases/download/dev-2023-08/odin-ubuntu-amd64-dev-2023-08.zip -O odin.zip
                   unzip odin.zip -d odin_exe
@@ -39,9 +38,18 @@ jobs:
                   echo "$GITHUB_WORKSPACE/odin_exe" >> $GITHUB_PATH
             - name: Install hyperfine for benchmarking
               run: |
-                  wget https://github.com/sharkdp/hyperfine/releases/download/v1.17.0/hyperfine_1.17.0_amd64.deb
-                  sudo dpkg -i hyperfine_1.17.0_amd64.deb
+                  wget https://github.com/sharkdp/hyperfine/releases/download/v1.17.0/hyperfine_1.17.0_amd64.deb -O hyperfine.deb
+                  sudo dpkg -i hyperfine.deb
             - name: Install dart
               uses: dart-lang/setup-dart@v1
             - name: Run Benchmark
-              run: ./run.sh all
+              run: ./run.sh all raw_results.md
+            - name: Clean up
+              run: rm -rf odin_exe && rm hyperfine.deb
+            - name: Push results to repo
+              uses: github-actions-x/commit@v2.9
+              with:
+                  commit_message: "Update benchmark results"
+                  files: raw_results.md
+                  push-branch: main
+                  github_token: ${{ secrets.GITHUB_TOKEN }}
