@@ -52,4 +52,4 @@ jobs:
                   commit-message: "Update benchmark results"
                   files: raw_results.md
                   push-branch: main
-                  github-token: ${{ secrets.GITHUB_TOKEN }}
+                  github-token: ${{ secrets.GH_REPO_TOKEN }}
