@@ -85,7 +85,7 @@ void main(List<String> args) {
 
   sortedScores.forEach(print);
 
-  final readmePathList = file.absolute.path.split('/')
+  final readmePathList = file.absolute.path.split(Platform.pathSeparator)
     ..removeLast()
     ..add('readme.md');
 
