@@ -91,9 +91,7 @@ void main(List<String> args) {
 
   final readmeFile = File(readmePathList.join('/'));
 
-  if (!readmeFile.existsSync()) {
-    return print('$readmeFile not found');
-  }
+  if (!readmeFile.existsSync()) return print('$readmeFile not found');
 
   final readmeLines = readmeFile.readAsLinesSync();
 
@@ -109,6 +107,7 @@ void main(List<String> args) {
 
         if (!shouldReplace) return line;
 
+        // removes each result line until it finds an empty line
         if (line.trim().isNotEmpty) return null;
 
         shouldReplace = false;
