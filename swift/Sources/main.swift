@@ -70,10 +70,11 @@ if let data = try? encoder.encode(allRelatedPosts) {
 
 } else {
 
-    print("Failed to encode data")
+    fatalError("Failed to encode data")
 
 }
 
+// types
 
 class Post: Codable {
     var id: String
