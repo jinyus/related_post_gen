@@ -314,7 +314,7 @@ elif [ "$first_arg" = "all" ]; then
         run_python_np || echo -e "\n" &&
         run_crystal || echo -e "\n" &&
         run_zig || echo -e "\n" &&
-        run_julia_v1 || echo -e "\n" &&
+        # run_julia_v1 || echo -e "\n" &&
         run_julia_v2 || echo -e "\n" &&
         run_odin || echo -e "\n" &&
         run_vlang || echo -e "\n" &&
