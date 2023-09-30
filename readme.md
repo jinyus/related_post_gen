@@ -21,19 +21,20 @@ Generate related posts based on tags. Sort by the number of shared tags.
 
 | Language      | Processing Time | Total (PT + I/O) |
 | ------------- | --------------- | ---------------- |
-| Go Concurrent | 16.15ms | 48.5 ms |
-| Rust Rayon | 18.34ms | 35.3 ms |
-| Go | 30.74ms | 59.7 ms |
-| Rust | 33.13ms | 50.6 ms |
-| Crystal | 55.82ms | 110.4 ms |
-| Vlang | 120.63ms | 475.4 ms |
-| Zig | 178.85ms | 220.8 ms |
-| Dart VM | 225.00ms | 722.3 ms |
-| Odin | 328.17ms | 863.1 ms |
-| Julia v2 | 624.83 ms | 5.056 s |
-| Numpy | 0.92s | 1.302 s |
-| Julia v1 | 1387.67 ms | 4.459 s |
-| Python | 2.72s | 3.007 s |
+| Go Concurrent | 16.29ms | 50.3 ms |
+| Rust Rayon | 18.76ms | 37.5 ms |
+| Go | 30.78ms | 62.9 ms |
+| Rust | 33.22ms | 52.4 ms |
+| Crystal | 56.30ms | 114.9 ms |
+| Swift | 57.82ms | 485.2 ms |
+| Vlang | 137.19ms | 474.3 ms |
+| Zig | 177.69ms | 219.9 ms |
+| Dart VM | 228.25ms | 730.3 ms |
+| Odin | 328.69ms | 864.1 ms |
+| Julia v2 | 686.33 ms | 5.318 s |
+| Numpy | 0.96s | 1.355 s |
+| Julia v1 | 1382.17 ms | 4.611 s |
+| Python | 2.73s | 3.024 s |
 
 ### Old Results (on my machine)
 
