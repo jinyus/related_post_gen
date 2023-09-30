@@ -38,11 +38,11 @@ fn main() {
 		}
 	}
 
-	mut all_related_posts := []RelatedPosts{len: 0, cap: posts.len}
+	mut all_related_posts := []RelatedPosts{cap: posts.len}
 
 	for i, post in posts {
 		// slower when preallocated
-		mut tagged_post_count := []int{len: posts.len, cap: posts.len, init: 0}
+		mut tagged_post_count := []int{len: posts.len, cap: posts.len}
 
 		for tag in post.tags {
 			for post_index in tag_map[tag] {
@@ -78,7 +78,7 @@ fn main() {
 			}
 		}
 
-		mut top_posts := []Post{len: 0, cap: 5}
+		mut top_posts := []Post{cap: 5}
 
 		for p in top5 {
 			top_posts << posts[p.post]
