@@ -42,10 +42,12 @@ jobs:
                   sudo dpkg -i hyperfine.deb
             - name: Install dart
               uses: dart-lang/setup-dart@v1
+            - name: Install swift
+              uses: swift-actions/setup-swift@v1
             - name: Run Benchmark
               run: ./run.sh all raw_results.md
             - name: Clean up
-              run: rm -rf odin_exe && rm hyperfine.deb
+              run: rm -rf odin_exe && rm hyperfine.deb && rm odin.zip && rm -rf vlang
             # - name: Push results to repo
             #   uses: github-actions-x/commit@v2.9
             #   with:
