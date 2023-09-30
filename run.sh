@@ -259,6 +259,40 @@ run_js() {
     check_output "related_posts_$1.json"
 }
 
+run_java() {
+    echo "Running Java (JIT)" &&
+        cd ./java &&
+        mvn -q -B -Pjvm clean package &&
+        if [ $HYPER == 1 ]; then
+            capture "Java (JIT)" hyperfine -r 10 -w 3 --show-output "java -jar ./target/main.jar"
+        else
+            command time -f '%es %Mk' java -jar ./target/main.jar
+        fi
+
+    check_output "related_posts_java.json"
+
+}
+
+run_java_with_jmh() {
+    echo "Running Java JMH" &&
+        cd ./java &&
+        mvn -q -B -PJMH clean package &&
+        if [ $HYPER == 1 ]; then
+            java -jar ./target/benchmark.jar > ./benchmark_result.txt
+            score=$(cat ./benchmark_result.txt | grep -E "BenchmarkRunner.init.*avgt" | awk -F ' +' '{print $3}' | sed -e "s/,/./")
+            echo "Time $score s" >> ./benchmark_result.txt
+            capture "Java JMH" cat ./benchmark_result.txt
+            rm ./benchmark_result.txt
+        else
+            command time -f '%es %Mk' java -jar ./target/benchmark.jar
+        fi
+
+    check_output "related_posts_java.json"
+
+}
+
+
+
 check_output() {
     cd .. &&
         echo "Checking output" &&
@@ -337,6 +371,14 @@ elif [ "$first_arg" = "deno" ]; then
 
     run_js "deno"
 
+elif [ "$first_arg" = "java" ]; then
+
+    run_java
+
+elif [ "$first_arg" = "java_with_jmh" ]; then
+
+    run_java_with_jmh
+
 elif [ "$first_arg" = "all" ]; then
 
     echo -e "Running all\n" &&
@@ -357,6 +399,8 @@ elif [ "$first_arg" = "all" ]; then
         run_js "node" || echo -e "\n" &&
         run_js "bun" || echo -e "\n" &&
         run_js "deno" || echo -e "\n" &&
+        run_java || echo -e "\n" &&
+        run_java_with_jmh || echo -e "\n" &&
         echo -e "Finished running all\n"
 
 elif [ "$first_arg" = "clean" ]; then
@@ -372,10 +416,12 @@ elif [ "$first_arg" = "clean" ]; then
         cd .. &&
         cd zig && rm -f main main.o &&
         cd ..
+        cd java && mvn -q -B clean &&
+        cd ..
     rm -f related_*.json
 
 else
 
-    echo "Valid args: go | go_con | rust | rust_ray | py | numpy | cr | zig | odin | jq | jul1 | jul2 | v | dart | swift | node | bun | deno |  all | clean. Unknown argument: $first_arg"
+    echo "Valid args: go | go_con | rust | rust_ray | py | numpy | cr | zig | odin | jq | jul1 | jul2 | v | dart | swift | node | bun | deno | java | java_with_jmh | all | clean. Unknown argument: $first_arg"
 
 fi

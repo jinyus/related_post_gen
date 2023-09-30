@@ -70,6 +70,12 @@ jobs:
               with:
                   deno-version: v1.x
 
+            - name: Install Java
+              uses: actions/setup-java@3.9.0
+              with:
+                distribution: 'temurin'
+                java-version: '17'
+
             - name: Run Benchmark
               run: ./run.sh all raw_results.md
 

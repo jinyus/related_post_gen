@@ -17,6 +17,12 @@ odin/related
 .dart_tool/
 v/related
 
+# Java
+java/target
+java/.idea
+java/*.iml
+.idea/
+
 # Zig
 zig-cache
 zig/main
