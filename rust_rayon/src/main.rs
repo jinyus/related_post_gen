@@ -9,20 +9,22 @@ use mimalloc::MiMalloc;
 #[global_allocator]
 static GLOBAL: MiMalloc = MiMalloc;
 
+type SString = smallstr::SmallString<[u8; 16]>;
+
 #[derive(Serialize, Deserialize)]
 struct Post {
-    _id: String,
+    _id: SString,
     title: String,
     // #[serde(skip_serializing)]
-    tags: Vec<String>,
+    tags: Vec<SString>,
 }
 
 const NUM_TOP_ITEMS: usize = 5;
 
 #[derive(Serialize)]
 struct RelatedPosts<'a> {
-    _id: &'a String,
-    tags: &'a Vec<String>,
+    _id: &'a SString,
+    tags: &'a Vec<SString>,
     related: Vec<&'a Post>,
 }
 
@@ -69,10 +71,11 @@ fn least_n<T: Ord>(n: usize, mut from: impl Iterator<Item = T>) -> impl Iterator
 fn main() {
     let json_str = std::fs::read_to_string("../posts.json").unwrap();
     let posts: Vec<Post> = from_str(&json_str).unwrap();
+    let num_cpus = num_cpus::get_physical(); // does IO to get num_cpus
 
     let start = Instant::now();
 
-    let mut post_tags_map: FxHashMap<&String, Vec<usize>> = FxHashMap::default();
+    let mut post_tags_map: FxHashMap<&str, Vec<usize>> = FxHashMap::default();
 
     for (i, post) in posts.iter().enumerate() {
         for tag in &post.tags {
@@ -80,47 +83,54 @@ fn main() {
         }
     }
 
-    let related_posts: Vec<RelatedPosts<'_>> = posts
-        .par_iter()
-        .enumerate()
-        .map(|(idx, post)| {
-            // faster than allocating outside the loop
-            let mut tagged_post_count = vec![0; posts.len()];
+    let pool = rayon::ThreadPoolBuilder::new()
+        .num_threads(num_cpus)
+        .build()
+        .unwrap();
 
-            for tag in &post.tags {
-                if let Some(tag_posts) = post_tags_map.get(tag) {
-                    for &other_post_idx in tag_posts {
-                        tagged_post_count[other_post_idx] += 1;
+    pool.install(|| {
+        let related_posts: Vec<RelatedPosts<'_>> = posts
+            .par_iter()
+            .enumerate()
+            .map(|(idx, post)| {
+                // faster than allocating outside the loop
+                let mut tagged_post_count = vec![0; posts.len()];
+
+                for tag in &post.tags {
+                    if let Some(tag_posts) = post_tags_map.get(tag.as_str()) {
+                        for &other_post_idx in tag_posts {
+                            tagged_post_count[other_post_idx] += 1;
+                        }
                     }
                 }
-            }
 
-            tagged_post_count[idx] = 0; // don't recommend the same post
+                tagged_post_count[idx] = 0; // don't recommend the same post
 
-            let top = least_n(
-                NUM_TOP_ITEMS,
-                tagged_post_count
-                    .iter()
-                    .enumerate()
-                    .map(|(post, &count)| PostCount { post, count }),
-            );
-            let related = top.map(|it| &posts[it.post]).collect();
+                let top = least_n(
+                    NUM_TOP_ITEMS,
+                    tagged_post_count
+                        .into_iter()
+                        .enumerate()
+                        .map(|(post, count)| PostCount { post, count }),
+                );
+                let related = top.map(|it| &posts[it.post]).collect();
 
-            RelatedPosts {
-                _id: &post._id,
-                tags: &post.tags,
-                related,
-            }
-        })
-        .collect();
+                RelatedPosts {
+                    _id: &post._id,
+                    tags: &post.tags,
+                    related,
+                }
+            })
+            .collect();
 
-    let end = Instant::now();
+        let end = Instant::now();
 
-    print!(
-        "Processing time (w/o IO): {:?}\n",
-        end.duration_since(start)
-    );
+        print!(
+            "Processing time (w/o IO): {:?}\n",
+            end.duration_since(start)
+        );
 
-    let json_str = serde_json::to_string(&related_posts).unwrap();
-    std::fs::write("../related_posts_rust_rayon.json", json_str).unwrap();
+        let json_str = serde_json::to_string(&related_posts).unwrap();
+        std::fs::write("../related_posts_rust_rayon.json", json_str).unwrap();
+    });
 }
