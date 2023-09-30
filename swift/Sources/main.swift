@@ -58,7 +58,7 @@ for (idx, post) in posts.enumerated() {
 
 let timeInterval =  Date().timeIntervalSince(t1)
 
-print("Processing time (w/o IO): \(timeInterval * 1000) ms")
+print("Processing time (w/o IO): \(timeInterval * 1000)ms")
 
 
 let encoder = JSONEncoder()

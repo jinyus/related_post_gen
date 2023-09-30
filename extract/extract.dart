@@ -2,7 +2,7 @@ import 'dart:io';
 
 final langRegex = RegExp(r'^[a-zA-Z]');
 final colonOrNewLineRegex = RegExp(r'[:\n]');
-final pTimeRegex = RegExp(r'Processing time[^0-9]*([\d.]+)(ms|s| milliseconds)');
+final pTimeRegex = RegExp(r'Processing time[^0-9]*([\d.]+)\s?(ms|s| milliseconds)');
 final tTimeRegex = RegExp(r'Time[^0-9]*([\d.]+ (ms|s))');
 
 class Score {
