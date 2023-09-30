@@ -1,17 +1,17 @@
 name: Benchmark
 
 on:
-    pull_request:
-        branches:
-            - main
-        types:
-            - closed
+    # pull_request:
+    #     branches:
+    #         - main
+    #     types:
+    #         - closed
 
     workflow_dispatch:
 
 jobs:
     run-benchmarks:
-        if: github.event_name == 'workflow_dispatch' || (github.event_name == 'pull_request' && github.event.pull_request.merged == true && !contains(github.event.pull_request.title, '[IGNORE]'))
+        # if: github.event_name == 'workflow_dispatch' || (github.event_name == 'pull_request' && github.event.pull_request.merged == true && !contains(github.event.pull_request.title, '[IGNORE]'))
         runs-on: ubuntu-22.04
         steps:
             - name: Checkout
