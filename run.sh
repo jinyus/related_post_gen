@@ -189,7 +189,7 @@ run_odin() {
 run_vlang() {
     echo "Running Vlang" &&
         cd ./v &&
-        v related.v &&
+        v -prod related.v &&
         if [ $HYPER == 1 ]; then
             capture "Vlang" hyperfine -r 5 --show-output "./related"
         else
