@@ -58,6 +58,7 @@ jobs:
             - name: Create Pull Request
               uses: peter-evans/create-pull-request@v5
               with:
+                  token: ${{ secrets.GH_REPO_TOKEN }}
                   commit-message: Update benchmark results
                   title: "[IGNORE] Update benchmark results"
                   body: "New benchmark results"
