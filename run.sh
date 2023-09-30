@@ -224,6 +224,19 @@ run_dart() {
     check_output "related_posts_dart.json"
 }
 
+run_swift() {
+    echo "Running Swift" &&
+        cd ./swift &&
+        swift build -c release &&
+        if [ $HYPER == 1 ]; then
+            capture "Swift" hyperfine -r 10 --show-output "./.build/release/related"
+        else
+            command time -f '%es %Mk' ./related
+        fi
+
+    check_output "related_posts_swift.json"
+}
+
 check_output() {
     cd .. &&
         echo "Checking output" &&
@@ -286,6 +299,10 @@ elif [ "$first_arg" = "dart" ]; then
 
     run_dart
 
+elif [ "$first_arg" = "swift" ]; then
+
+    run_swift
+
 elif [ "$first_arg" = "all" ]; then
 
     echo -e "Running all\n" &&
@@ -302,6 +319,7 @@ elif [ "$first_arg" = "all" ]; then
         run_odin || echo -e "\n" &&
         run_vlang || echo -e "\n" &&
         run_dart || echo -e "\n" &&
+        run_swift || echo -e "\n" &&
         echo -e "Finished running all\n"
 
 elif [ "$first_arg" = "clean" ]; then
@@ -321,6 +339,6 @@ elif [ "$first_arg" = "clean" ]; then
 
 else
 
-    echo "Valid args: go | go_con | rust | rust_ray | py | numpy | cr | zig | odin | jq | jul1 | jul2 | v | dart | all | clean. Unknown argument: $first_arg"
+    echo "Valid args: go | go_con | rust | rust_ray | py | numpy | cr | zig | odin | jq | jul1 | jul2 | v | dart | swift |  all | clean. Unknown argument: $first_arg"
 
 fi
