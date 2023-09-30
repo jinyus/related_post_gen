@@ -39,10 +39,10 @@ fn main() {
 	}
 
 	mut all_related_posts := []RelatedPosts{cap: posts.len}
+	mut tagged_post_count := []int{len: posts.len, cap: posts.len}
 
 	for i, post in posts {
-		// slower when preallocated
-		mut tagged_post_count := []int{len: posts.len, cap: posts.len}
+		unsafe { vmemset(tagged_post_count.data, 0, posts.len * tagged_post_count.element_size) }
 
 		for tag in post.tags {
 			for post_index in tag_map[tag] {
