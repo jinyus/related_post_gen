@@ -176,7 +176,7 @@ run_julia_v2() {
 run_odin() {
     echo "Running Odin" &&
         cd ./odin &&
-        odin build related.odin -file -no-bounds-check &&
+        odin build related.odin -file &&
         if [ $HYPER == 1 ]; then
             capture "Odin" hyperfine -r 10 --show-output "./related"
         else
