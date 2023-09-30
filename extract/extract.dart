@@ -83,9 +83,7 @@ void main(List<String> args) {
 
   final sortedScores = scores.values.toList()..sort((a, b) => a.avgTime().compareTo(b.avgTime()));
 
-  for (final score in sortedScores) {
-    print(score);
-  }
+  sortedScores.forEach(print);
 
   final readmePathList = file.absolute.path.split('/')
     ..removeLast()
