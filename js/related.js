@@ -1,6 +1,7 @@
 
 export function genRelatedPosts(posts) {
 
+  // build a map of tags to post indices tag -> [idx1, idx2, ...]
   const tagMap = posts.reduce(
     (acc, post) => {
       post.tags.forEach((tag) => {
@@ -35,7 +36,7 @@ export function genRelatedPosts(posts) {
 
       });
 
-      taggedPostCount[i] = 0;
+      taggedPostCount[i] = 0; // exclude self
 
       let top5 = Array(5).fill({
         idx: 0,
@@ -44,6 +45,7 @@ export function genRelatedPosts(posts) {
 
       let minTags = 0;
 
+      // custom priority queue to find top 5
       taggedPostCount.forEach((count, i2) => {
 
         if (count > minTags) {
