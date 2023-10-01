@@ -239,6 +239,19 @@ run_swift() {
     check_output "related_posts_swift.json"
 }
 
+run_arturo() {
+    echo "Running Arturo" &&
+        cd ./arturo &&
+        # arturo -c related.art &&
+        if [ $HYPER == 1 ]; then
+            capture "Arturo" hyperfine -r 2 --show-output "arturo related.art"
+        else
+            command time -f '%es %Mk' "arturo related.art"
+        fi
+
+    check_output "related_posts_arturo.json"
+}
+
 check_output() {
     cd .. &&
         echo "Checking output" &&
@@ -304,6 +317,10 @@ elif [ "$first_arg" = "dart" ]; then
 elif [ "$first_arg" = "swift" ]; then
 
     run_swift
+
+elif [ "$first_arg" = "art" ]; then
+
+    run_arturo
 
 elif [ "$first_arg" = "all" ]; then
 

@@ -1,0 +1,86 @@
+posts: read.json "../posts.json"
+
+start: now
+st: to :date .format:"dd/MM/yyyy hh:mm:ss" now
+
+tagMap: fold.with:'i posts .seed:#[] [tMap, post] [
+
+    loop get post 'tags [t] [
+    
+        if not? contains? keys tMap t [
+            set tMap t []
+        ]
+        
+        lst: get tMap t
+        lst: append lst i
+        set tMap t lst
+
+    ]
+
+    tMap
+]
+
+allRelated: map 0..(size posts)-1 [i] [
+
+    post: get posts i
+    taggedPostCount: repeat 0 (size posts)
+    tags: get post 'tags
+
+    loop tags [t] [
+        loop get tagMap t [otherIdx][
+
+            val: taggedPostCount\[otherIdx] + 1
+            set taggedPostCount otherIdx val
+        ]
+        
+    ]
+
+    set taggedPostCount i 0 ; dont count self
+
+    top5: repeat [[0,0]] 5
+    minTags: 0
+
+
+    loop.with:'idx taggedPostCount [count] [
+        if count > minTags [
+
+            pos: 4
+
+            while [pos >= 0 and? count > top5\[pos]\[1]]  [
+                    pos: pos - 1
+
+                    ; its running the second branch even if the first is false
+                    if pos < 0 [
+                        break
+                    ]
+
+            ]
+
+            pos: pos + 1
+
+
+            ; [idx count] literal not working
+            top5: chop (insert top5 pos (insert insert [] 0 idx 1 count))
+
+            minTags: top5\[4]\[1]
+
+        ]
+    ]
+
+
+    #[
+        "_id": get post "_id"
+        "title": get post "title"
+        "tags": get post "tags"
+        "related": map top5 [x] -> get posts x\0
+        
+    ]
+]
+
+
+et: to :date .format:"dd/MM/yyyy hh:mm:ss" now
+
+
+print ~"Processing time (w/o IO): |(to :integer et) - (to :integer st)|s" 
+
+write.json "../related_posts_arturo.json" allRelated
