@@ -94,17 +94,12 @@ run_rust_rayon() {
 run_python() {
     echo "Running Python" &&
         cd ./python &&
-        if [ ! -d "venv" ]; then
-            python3 -m venv venv
-        fi
-    source venv/bin/activate &&
-        pip freeze | grep ujson || pip install -r requirements.txt &&
         if [ $HYPER == 1 ]; then
             capture "Python" hyperfine -r 5 --show-output "python3 ./related.py"
         else
             command time -f '%es %Mk' python3 ./related.py
         fi
-    deactivate
+
     check_output "related_posts_python.json"
 
 }
@@ -116,7 +111,7 @@ run_python_np() {
             python3 -m venv venv
         fi
     source venv/bin/activate &&
-        (pip freeze | grep numpy && pip freeze | grep ujson) || pip install -r requirements.txt &&
+        pip freeze | grep numpy || pip install numpy &&
         if [ $HYPER == 1 ]; then
             capture "Numpy" hyperfine -r 5 --show-output "python3 ./related_np.py"
         else
@@ -339,8 +334,6 @@ elif [ "$first_arg" = "clean" ]; then
         cd rust && cargo clean &&
         cd .. &&
         cd rust_rayon && cargo clean &&
-        cd .. &&
-        cd python && rm -rf venv/ &&
         cd .. &&
         cd zig && rm -f main main.o &&
         cd ..
