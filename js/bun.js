@@ -6,6 +6,6 @@ const start = Date.now();
 
 const allRelatedPosts = genRelatedPosts(posts);
 
-console.log(`Processing time (w/o IO): ${Date.now() - start}`);
+console.log(`Processing time (w/o IO): ${Date.now() - start}ms`);
 
 await Bun.write('../related_posts_bun.json', JSON.stringify(allRelatedPosts));
