@@ -33,11 +33,11 @@ void main(List<String> args) {
       continue;
     }
 
-    final ptMatch = pTimeRegex.firstMatch(line);
+    final processTimeMatch = pTimeRegex.firstMatch(line);
 
-    if (ptMatch != null) {
-      final unit = ptMatch.group(2)!.replaceFirst('milliseconds', 'ms');
-      final time = double.parse(ptMatch.group(1)!.trim());
+    if (processTimeMatch != null) {
+      final unit = processTimeMatch.group(2)!.replaceFirst('milliseconds', 'ms');
+      final time = double.parse(processTimeMatch.group(1)!.trim());
       currentScore.addTime(time, unit);
       continue;
     }
