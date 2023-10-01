@@ -244,6 +244,21 @@ run_swift() {
     check_output "related_posts_swift.json"
 }
 
+run_js() {
+    echo "Running $1" &&
+        cd ./js &&
+        if [ $HYPER == 1 ]; then
+
+            title=$(echo "$1" | sed 's/\b\(.\)/\u\1/g')
+
+            capture $title hyperfine -r 5 --show-output "$1 $1.js"
+        else
+            command time -f '%es %Mk' "$1 $1.js"
+        fi
+
+    check_output "related_posts_$1.json"
+}
+
 check_output() {
     cd .. &&
         echo "Checking output" &&
@@ -310,6 +325,14 @@ elif [ "$first_arg" = "swift" ]; then
 
     run_swift
 
+elif [ "$first_arg" = "node" ]; then
+
+    run_js "node"
+
+elif [ "$first_arg" = "bun" ]; then
+
+    run_js "bun"
+
 elif [ "$first_arg" = "all" ]; then
 
     echo -e "Running all\n" &&
@@ -327,6 +350,8 @@ elif [ "$first_arg" = "all" ]; then
         run_vlang || echo -e "\n" &&
         run_dart || echo -e "\n" &&
         run_swift || echo -e "\n" &&
+        run_js "node" || echo -e "\n" &&
+        run_js "bun" || echo -e "\n" &&
         echo -e "Finished running all\n"
 
 elif [ "$first_arg" = "clean" ]; then
