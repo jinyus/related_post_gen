@@ -30,6 +30,8 @@ capture() {
 
     (
         echo -e "$title:\n"
+
+        # use awk to intent the output so it shows up as a codeblock in markdown
         $command "$@" | awk -v tab="$tab" '{print tab$0}'
     ) >>"$outfile"
 }
