@@ -20,9 +20,8 @@ tagMap: fold.with:'i posts .seed:#[] [tMap, post] [
     tMap
 ]
 
-allRelated: map 0..(size posts)-1 [i] [
+allRelated: map.with:'i posts 'post [
 
-    post: get posts i
     taggedPostCount: repeat 0 (size posts)
     tags: get post 'tags
 
