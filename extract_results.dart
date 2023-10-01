@@ -7,40 +7,6 @@ final colonOrNewLineRegex = RegExp(r'[:\n]');
 final pTimeRegex = RegExp(r'Processing time[^0-9]*([\d.]+)\s?(ms|s| milliseconds)');
 final tTimeRegex = RegExp(r'Time[^0-9]*([\d.]+ (ms|s))');
 
-class Score {
-  final String name;
-  final List<double> processingTimes = [];
-  String unit = "";
-  String totalTime = "";
-
-  Score({
-    required this.name,
-  });
-
-  double _avgAbsoluteTime() {
-    if (processingTimes.isEmpty) throw Exception('No processing times found for $name');
-    return processingTimes.reduce((a, b) => a + b) / processingTimes.length;
-  }
-
-  double avgTime() {
-    return _avgAbsoluteTime() * (unit == 's' ? 1000 : 1);
-  }
-
-  String avgTimeString() {
-    return _avgAbsoluteTime().toStringAsFixed(2) + unit;
-  }
-
-  void addTime(double time, String unit) {
-    processingTimes.add(time);
-    this.unit = unit;
-  }
-
-  @override
-  String toString() {
-    return '| $name | ${avgTimeString()} | $totalTime |';
-  }
-}
-
 void main(List<String> args) {
   final filename = args.firstOrNull;
 
@@ -121,4 +87,38 @@ void main(List<String> args) {
       .join('\n');
 
   readmeFile.writeAsStringSync(newReadmeContent);
+}
+
+class Score {
+  final String name;
+  final List<double> processingTimes = [];
+  String unit = "";
+  String totalTime = "";
+
+  Score({
+    required this.name,
+  });
+
+  double _avgAbsoluteTime() {
+    if (processingTimes.isEmpty) throw Exception('No processing times found for $name');
+    return processingTimes.reduce((a, b) => a + b) / processingTimes.length;
+  }
+
+  double avgTime() {
+    return _avgAbsoluteTime() * (unit == 's' ? 1000 : 1);
+  }
+
+  String avgTimeString() {
+    return _avgAbsoluteTime().toStringAsFixed(2) + unit;
+  }
+
+  void addTime(double time, String unit) {
+    processingTimes.add(time);
+    this.unit = unit;
+  }
+
+  @override
+  String toString() {
+    return '| $name | ${avgTimeString()} | $totalTime |';
+  }
 }
