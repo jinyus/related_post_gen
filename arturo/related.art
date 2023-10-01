@@ -1,6 +1,7 @@
 posts: read.json "../posts.json"
 
 start: now
+st: to :date .format:"dd/MM/yyyy hh:mm:ss" now
 
 tagMap: fold.with:'i posts .seed:#[] [tMap, post] [
 
@@ -77,9 +78,9 @@ allRelated: map 0..(size posts)-1 [i] [
 ]
 
 
-end: now
-totalTime: abs (end\nanosecond - start\nanosecond) / 100000
+et: to :date .format:"dd/MM/yyyy hh:mm:ss" now
 
-print ~"Time taken: |totalTime|ms"
 
-write.json "../related_arturo.json" allRelated
+print ~"Processing time (w/o IO): |(to :integer et) - (to :integer st)|s" 
+
+write.json "../related_posts_arturo.json" allRelated
