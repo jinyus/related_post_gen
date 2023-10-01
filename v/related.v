@@ -42,7 +42,9 @@ fn main() {
 	mut tagged_post_count := []int{len: posts.len, cap: posts.len}
 
 	for i, post in posts {
-		unsafe { vmemset(tagged_post_count.data, 0, posts.len * tagged_post_count.element_size) }
+		for j in 0 .. tagged_post_count.len {
+			tagged_post_count[j] = 0
+		}
 
 		for tag in post.tags {
 			for post_index in tag_map[tag] {
