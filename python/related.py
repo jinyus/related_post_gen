@@ -2,7 +2,7 @@ from timing import lap, finish
 
 lap()
 import heapq
-import json
+import ujson as json
 from collections import Counter, defaultdict
 
 
