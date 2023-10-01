@@ -1,7 +1,7 @@
 
 export function genRelatedPosts(posts) {
 
-  // build a map of tags to post indices tag -> [idx1, idx2, ...]
+  // build a map of tags to post indices. tag -> [idx1, idx2, ...]
   const tagMap = posts.reduce(
     (acc, post) => {
       post.tags.forEach((tag) => {
