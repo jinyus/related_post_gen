@@ -1,5 +1,7 @@
 import 'dart:io';
 
+// script to extract benchmark results and update readme.md
+
 final langRegex = RegExp(r'^[a-zA-Z]');
 final colonOrNewLineRegex = RegExp(r'[:\n]');
 final pTimeRegex = RegExp(r'Processing time[^0-9]*([\d.]+)\s?(ms|s| milliseconds)');
