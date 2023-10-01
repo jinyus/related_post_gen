@@ -1,7 +1,6 @@
 import * as fs from "fs";
 import { genRelatedPosts } from "./related.js";
 
-
 const start = Date.now();
 
 const posts = JSON.parse(

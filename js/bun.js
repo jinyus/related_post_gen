@@ -1,6 +1,5 @@
 import { genRelatedPosts } from "./related.js";
 
-
 const posts = await Bun.file('../posts.json').json();
 
 const start = Date.now();
