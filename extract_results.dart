@@ -1,43 +1,11 @@
 import 'dart:io';
 
+// script to extract benchmark results and update readme.md
+
 final langRegex = RegExp(r'^[a-zA-Z]');
 final colonOrNewLineRegex = RegExp(r'[:\n]');
 final pTimeRegex = RegExp(r'Processing time[^0-9]*([\d.]+)\s?(ms|s| milliseconds)');
 final tTimeRegex = RegExp(r'Time[^0-9]*([\d.]+ (ms|s))');
-
-class Score {
-  final String name;
-  final List<double> processingTimes = [];
-  String unit = "";
-  String totalTime = "";
-
-  Score({
-    required this.name,
-  });
-
-  double _avgAbsoluteTime() {
-    if (processingTimes.isEmpty) throw Exception('No processing times found for $name');
-    return processingTimes.reduce((a, b) => a + b) / processingTimes.length;
-  }
-
-  double avgTime() {
-    return _avgAbsoluteTime() * (unit == 's' ? 1000 : 1);
-  }
-
-  String avgTimeString() {
-    return _avgAbsoluteTime().toStringAsFixed(2) + unit;
-  }
-
-  void addTime(double time, String unit) {
-    processingTimes.add(time);
-    this.unit = unit;
-  }
-
-  @override
-  String toString() {
-    return '| $name | ${avgTimeString()} | $totalTime |';
-  }
-}
 
 void main(List<String> args) {
   final filename = args.firstOrNull;
@@ -65,11 +33,11 @@ void main(List<String> args) {
       continue;
     }
 
-    final ptMatch = pTimeRegex.firstMatch(line);
+    final processTimeMatch = pTimeRegex.firstMatch(line);
 
-    if (ptMatch != null) {
-      final unit = ptMatch.group(2)!.replaceFirst('milliseconds', 'ms');
-      final time = double.parse(ptMatch.group(1)!.trim());
+    if (processTimeMatch != null) {
+      final unit = processTimeMatch.group(2)!.replaceFirst('milliseconds', 'ms');
+      final time = double.parse(processTimeMatch.group(1)!.trim());
       currentScore.addTime(time, unit);
       continue;
     }
@@ -119,4 +87,38 @@ void main(List<String> args) {
       .join('\n');
 
   readmeFile.writeAsStringSync(newReadmeContent);
+}
+
+class Score {
+  final String name;
+  final List<double> processingTimes = [];
+  String unit = "";
+  String totalTime = "";
+
+  Score({
+    required this.name,
+  });
+
+  double _avgAbsoluteTime() {
+    if (processingTimes.isEmpty) throw Exception('No processing time found for $name');
+    return processingTimes.reduce((a, b) => a + b) / processingTimes.length;
+  }
+
+  double avgTime() {
+    return _avgAbsoluteTime() * (unit == 's' ? 1000 : 1);
+  }
+
+  String avgTimeString() {
+    return _avgAbsoluteTime().toStringAsFixed(2) + unit;
+  }
+
+  void addTime(double time, String unit) {
+    processingTimes.add(time);
+    this.unit = unit;
+  }
+
+  @override
+  String toString() {
+    return '| $name | ${avgTimeString()} | $totalTime |';
+  }
 }

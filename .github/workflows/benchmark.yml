@@ -56,7 +56,7 @@ jobs:
             #       push-branch: main
             #       github-token: ${{ secrets.GITHUB_TOKEN }}
             - name: Modify Readme
-              run: dart extract/extract.dart raw_results.md
+              run: dart extract_results.dart raw_results.md
             - name: Create Pull Request
               uses: peter-evans/create-pull-request@v5
               with:
