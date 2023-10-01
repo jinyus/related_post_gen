@@ -39,7 +39,7 @@ fn main() {
 	}
 
 	mut all_related_posts := []RelatedPosts{cap: posts.len}
-	mut tagged_post_count := []int{len: posts.len, cap: posts.len}
+	mut tagged_post_count := []int{len: posts.len}
 
 	for i, post in posts {
 		for j in 0 .. tagged_post_count.len {
