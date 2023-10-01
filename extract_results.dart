@@ -100,7 +100,7 @@ class Score {
   });
 
   double _avgAbsoluteTime() {
-    if (processingTimes.isEmpty) throw Exception('No processing times found for $name');
+    if (processingTimes.isEmpty) throw Exception('No processing time found for $name');
     return processingTimes.reduce((a, b) => a + b) / processingTimes.length;
   }
 
