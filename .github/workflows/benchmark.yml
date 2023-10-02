@@ -65,6 +65,11 @@ jobs:
               with:
                   bun-version: latest
 
+            - name: Install deno
+              uses: denoland/setup-deno@v1
+              with:
+                  deno-version: v1.x
+
             - name: Run Benchmark
               run: ./run.sh all raw_results.md
 
