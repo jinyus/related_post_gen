@@ -75,7 +75,7 @@
                     <version>3.11.0</version>
                     <configuration>
                         <compilerArgs>
-                            <arg>-proc:full</arg>
+                            <!-- <arg>-proc:full</arg>  for JAVA 21-->
                         </compilerArgs>
                     </configuration>
                 </plugin>
