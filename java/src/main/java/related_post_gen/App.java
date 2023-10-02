@@ -119,8 +119,5 @@ public class App {
         try (OutputStream out = Files.newOutputStream(Paths.get(outputFile))) {
             dslJson.serialize(allRelatedPosts, out);
         }
-
-        long mainEnd = System.nanoTime();
-        System.out.println("Processing (with IO) time " + TimeUnit.NANOSECONDS.toMillis(mainEnd - mainStart) + " ms");
     }
 }
