@@ -7,20 +7,20 @@ import "core:time"
 // import "core:slice"
 
 Post :: struct {
-	ID:    string `json:"_id"`,
-	Title: string `json:"title"`,
-	Tags:  []string `json:"tags"`,
+	id:    string `json:"_id"`,
+	title: string,
+	tags:  []string,
 }
 
 RelatedPosts :: struct {
-	ID:      string `json:"_id"`,
-	Tags:    []string `json:"tags"`,
-	Related: [5]Post `json:"related"`,
+	id:      string `json:"_id"`,
+	tags:    []string,
+	related: [5]Post,
 }
 
 PostWithSharedTags :: struct {
-	Post:       int,
-	SharedTags: int,
+	post:        int,
+	shared_tags: int,
 }
 
 main :: proc() {
@@ -42,49 +42,49 @@ main :: proc() {
 
 	start := time.now()
 
-	tagMap := make(map[string][dynamic]int)
+	tag_map := make(map[string][dynamic]int)
 
 	for post, i in posts {
-		for tag in post.Tags {
-			_, ok := tagMap[tag]
+		for tag in post.tags {
+			_, ok := tag_map[tag]
 
 			if !ok {
-				tagMap[tag] = make([dynamic]int)
+				tag_map[tag] = make([dynamic]int)
 			}
 
-			append_elem(&tagMap[tag], i)
+			append_elem(&tag_map[tag], i)
 		}
 	}
 
 
-	postCount := len(posts)
-	allRelatedPosts := make([]RelatedPosts, postCount)
+	post_count := len(posts)
+	all_related_posts := make([]RelatedPosts, post_count)
 
-	taggedPostCount := make([]int, postCount)
+	tagged_post_count := make([]int, post_count)
 
 	for post, i in posts {
 
-		for item, j in taggedPostCount {
-			taggedPostCount[j] = 0
+		for item, j in tagged_post_count {
+			tagged_post_count[j] = 0
 		}
 
-		for tag in post.Tags {
-			for item in tagMap[tag] {
-				taggedPostCount[item] += 1
+		for tag in post.tags {
+			for item in tag_map[tag] {
+				tagged_post_count[item] += 1
 			}
 		}
 
-		taggedPostCount[i] = 0 // don't count self
+		tagged_post_count[i] = 0 // don't count self
 
 		top5 := [5]PostWithSharedTags{}
-		minTags := 0
+		min_tags := 0
 
-		for count, pIdx in taggedPostCount {
-			if count > minTags {
+		for count, pIdx in tagged_post_count {
+			if count > min_tags {
 
 				pos := 4
 
-				for pos >= 0 && top5[pos].SharedTags < count {
+				for pos >= 0 && top5[pos].shared_tags < count {
 					pos -= 1
 				}
 
@@ -96,24 +96,24 @@ main :: proc() {
 
 				if pos < 5 {
 					top5[pos] = PostWithSharedTags{pIdx, count}
-					minTags = top5[4].SharedTags
+					min_tags = top5[4].shared_tags
 				}
 			}
 		}
 
-		topPosts := [5]Post{}
+		top_posts := [5]Post{}
 
 		for val, i in top5 {
-			topPosts[i] = posts[val.Post]
+			top_posts[i] = posts[val.post]
 		}
 
 
-		allRelatedPosts[i] = RelatedPosts{post.ID, post.Tags, topPosts}
+		all_related_posts[i] = RelatedPosts{post.id, post.tags, top_posts}
 	}
 
 	fmt.println("Processing time (w/o IO): ", time.since(start))
 
-	jsonStr, err3 := json.marshal(allRelatedPosts)
+	jsonStr, err3 := json.marshal(all_related_posts)
 
 	if err3 != nil {
 		fmt.println("Error marshaling json: ", err3)
