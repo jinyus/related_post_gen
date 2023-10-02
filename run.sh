@@ -447,6 +447,7 @@ elif [ "$first_arg" = "all" ]; then
         run_swift || echo -e "\n" &&
         run_js "node" || echo -e "\n" &&
         run_js "bun" || echo -e "\n" &&
+        run_bun_ffi || echo -e "\n" &&
         run_js "deno" || echo -e "\n" &&
         run_java || echo -e "\n" &&
         run_java_graal || echo -e "\n" &&
