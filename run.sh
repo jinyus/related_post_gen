@@ -43,7 +43,7 @@ run_go() {
         if [ $HYPER == 1 ]; then
             capture "Go" hyperfine -r 10 -w 3 --show-output "./related"
         else
-            command time -f '%es %Mk' ./related
+            command ../cmdtime.sh ./related
         fi
 
     check_output "related_posts_go.json"
@@ -57,7 +57,7 @@ run_go_concurrent() {
         if [ $HYPER == 1 ]; then
             capture "Go Concurrent" hyperfine -r 10 -w 3 --show-output "./related_concurrent"
         else
-            command time -f '%es %Mk' ./related_concurrent
+            command ../cmdtime.sh ./related_concurrent
         fi
 
     check_output "related_posts_go_con.json"
@@ -70,7 +70,7 @@ run_rust() {
         if [ $HYPER == 1 ]; then
             capture "Rust" hyperfine -r 10 -w 3 --show-output "./target/release/rust"
         else
-            command time -f '%es %Mk' ./target/release/rust
+            command ../cmdtime.sh ./target/release/rust
         fi
 
     check_output "related_posts_rust.json"
@@ -84,7 +84,7 @@ run_rust_rayon() {
         if [ $HYPER == 1 ]; then
             capture "Rust Rayon" hyperfine -r 10 -w 3 --show-output "./target/release/rust_rayon"
         else
-            command time -f '%es %Mk' ./target/release/rust_rayon
+            command ../cmdtime.sh ./target/release/rust_rayon
         fi
 
     check_output "related_posts_rust_rayon.json"
@@ -97,7 +97,7 @@ run_python() {
         if [ $HYPER == 1 ]; then
             capture "Python" hyperfine -r 5 --show-output "python3 ./related.py"
         else
-            command time -f '%es %Mk' python3 ./related.py
+            command ../cmdtime.sh python3 ./related.py
         fi
 
     check_output "related_posts_python.json"
@@ -115,7 +115,7 @@ run_python_np() {
         if [ $HYPER == 1 ]; then
             capture "Numpy" hyperfine -r 5 --show-output "python3 ./related_np.py"
         else
-            command time -f '%es %Mk' python3 ./related_np.py
+            command ../cmdtime.sh python3 ./related_np.py
         fi
     deactivate &&
         check_output "related_posts_python_np.json"
@@ -129,7 +129,7 @@ run_crystal() {
         if [ $HYPER == 1 ]; then
             capture "Crystal" hyperfine -r 10 --show-output "./crystal"
         else
-            command time -f '%es %Mk' ./crystal
+            command ../cmdtime.sh ./crystal
         fi
 
     check_output "related_posts_cr.json"
@@ -143,7 +143,7 @@ run_zig() {
     if [ $HYPER == 1 ]; then
         capture "Zig" hyperfine -r 10 -w 3 --show-output "./main"
     else
-        command time -f '%es %Mk' ./main
+        command ../cmdtime.sh ./main
     fi
 
     check_output "related_posts_zig.json"
@@ -156,7 +156,7 @@ run_julia_v1() {
         if [ $HYPER == 1 ]; then
             capture "Julia v1" hyperfine -r 5 --warmup 1 --show-output "julia related.jl"
         else
-            command time -f '%es %Mk' julia related.jl
+            command ../cmdtime.sh julia related.jl
         fi
 
     check_output "related_posts_julia_v1.json"
@@ -169,7 +169,7 @@ run_julia_v2() {
         if [ $HYPER == 1 ]; then
             capture "Julia v2" hyperfine -r 5 --warmup 1 --show-output "julia related_v2.jl"
         else
-            command time -f '%es %Mk' julia related_v2.jl
+            command ../cmdtime.sh julia related_v2.jl
         fi
 
     check_output "related_posts_julia_v2.json"
@@ -182,7 +182,7 @@ run_odin() {
         if [ $HYPER == 1 ]; then
             capture "Odin" hyperfine -r 10 --show-output "./related"
         else
-            command time -f '%es %Mk' ./related
+            command ../cmdtime.sh ./related
         fi
 
     check_output "related_posts_odin.json"
@@ -195,7 +195,7 @@ run_vlang() {
         if [ $HYPER == 1 ]; then
             capture "Vlang" hyperfine -r 5 --show-output "./related"
         else
-            command time -f '%es %Mk' ./related
+            command ../cmdtime.sh ./related
         fi
 
     check_output "related_posts_v.json"
@@ -208,7 +208,7 @@ run_jq() {
             # run once as it's very slow. ~50s
             capture "JQ" hyperfine -r 1 "jq -c -f ./related.jq ../posts.json > ../related_posts_jq.json"
         else
-            command time -f '%es %Mk' jq -c -f ./related.jq ../posts.json >../related_posts_jq.json
+            command ../cmdtime.sh jq -c -f ./related.jq ../posts.json >../related_posts_jq.json
         fi
     check_output "related_posts_jq.json"
 
@@ -220,7 +220,7 @@ run_dart() {
         if [ $HYPER == 1 ]; then
             capture "Dart VM" hyperfine -r 5 --warmup 3 --show-output "dart related.dart"
         else
-            command time -f '%es %Mk' dart related.dart
+            command ../cmdtime.sh dart related.dart
         fi
 
     check_output "related_posts_dart.json"
@@ -233,7 +233,7 @@ run_dart_aot() {
         if [ $HYPER == 1 ]; then
             capture "Dart AOT" hyperfine -r 5 --warmup 3 --show-output "./related"
         else
-            command time -f '%es %Mk' ./related
+            command ../cmdtime.sh ./related
         fi
 
     check_output "related_posts_dart.json"
@@ -246,7 +246,7 @@ run_swift() {
         if [ $HYPER == 1 ]; then
             capture "Swift" hyperfine -r 10 --show-output "./.build/release/related"
         else
-            command time -f '%es %Mk' ./related
+            command ../cmdtime.sh ./related
         fi
 
     check_output "related_posts_swift.json"
@@ -266,10 +266,23 @@ run_js() {
             fi
 
         else
-            command time -f '%es %Mk' "$1 $1.js"
+            command ../cmdtime.sh "$1 $1.js"
         fi
 
     check_output "related_posts_$1.json"
+}
+
+run_bun_ffi() {
+    echo "Running bun Rust FFI" &&
+        cd ./js_ffi &&
+        cargo build --quiet --release &&
+        if [ $HYPER == 1 ]; then
+            capture "JS FFI" hyperfine -r 5 --show-output "bun run bun.js"
+        else
+            command ../cmdtime.sh "bun run bun.js"
+        fi
+
+    check_output "related_posts_bun_rust_ffi.json"
 }
 
 run_java() {
@@ -279,7 +292,7 @@ run_java() {
         if [ $HYPER == 1 ]; then
             capture "Java (JIT)" hyperfine -r 10 -w 3 --show-output "java -jar ./target/main.jar"
         else
-            command time -f '%es %Mk' java -jar ./target/main.jar
+            command ../cmdtime.sh java -jar ./target/main.jar
         fi
 
     check_output "related_posts_java.json"
@@ -295,7 +308,7 @@ run_java_graal() {
         if [ $HYPER == 1 ]; then
             capture "Java (GraalVM)" hyperfine -r 10 -w 3 --show-output "./target/related"
         else
-            command time -f '%es %Mk' ./target/related
+            command ../cmdtime.sh ./target/related
         fi
 
     check_output "related_posts_java.json"
@@ -313,7 +326,7 @@ run_java_with_jmh() {
             capture "Java JMH" cat ./benchmark_result.txt
             # rm ./benchmark_result.txt
         else
-            command time -f '%es %Mk' java -jar ./target/benchmark.jar
+            command ../cmdtime.sh java -jar ./target/benchmark.jar
         fi
 
     check_output "related_posts_java.json"
@@ -397,6 +410,10 @@ elif [ "$first_arg" = "node" ]; then
 elif [ "$first_arg" = "bun" ]; then
 
     run_js "bun"
+
+elif [ "$first_arg" = "bun_ffi" ]; then
+
+    run_bun_ffi
 
 elif [ "$first_arg" = "deno" ]; then
 

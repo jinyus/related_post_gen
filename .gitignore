@@ -30,3 +30,4 @@ zig/main.o
 
 .vscode
 dart/related
+js_ffi/target

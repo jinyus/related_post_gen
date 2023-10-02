@@ -14,6 +14,7 @@ Generate related posts based on tags. Sort by the number of shared tags.
 ### Run Benchmark
 
 ```rust
+chmod +x cmdtime.sh
 ./run.sh go | rust | python | all
 ```
 
