@@ -30,10 +30,10 @@ Generate related posts based on tags. Sort by the number of shared tags.
 | Crystal | 64.83ms | 127.3 ms |
 | Dart VM | 226.38ms | 872.0 ms |
 | Zig | 239.31ms | 292.5 ms |
-| JavaScript (Node) | 287.40ms | 381.9 ms |
-| JavaScript (Deno) | 347.60ms | 439.2 ms |
+| JS (Node) | 287.40ms | 381.9 ms |
+| JS (Deno) | 347.60ms | 439.2 ms |
 | Odin | 448.90ms | 1.158 s |
-| Bun | 853.00ms | 921.9 ms |
+| JS (Bun) | 853.00ms | 921.9 ms |
 | Julia v2 | 868.83ms | 6.919 s |
 | Numpy | 1.21s | 1.697 s |
 | Python | 3.28s | 3.640 s |
