@@ -33,6 +33,7 @@ for (idx, post) in posts.enumerated() {
     var top5Queue = Array(repeating: (0, 0), count: 5)
     var min_tags = 0
 
+    // custom priority queue
     for (idx, count) in tagged_post_count.enumerated() {
         if count > min_tags {
             var pos = 4
