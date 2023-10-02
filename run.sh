@@ -226,6 +226,19 @@ run_dart() {
     check_output "related_posts_dart.json"
 }
 
+run_dart_aot() {
+    echo "Running Dart AOT" &&
+        cd ./dart &&
+        dart compile exe related.dart -o related &&
+        if [ $HYPER == 1 ]; then
+            capture "Dart AOT" hyperfine -r 5 --warmup 3 --show-output "./related"
+        else
+            command time -f '%es %Mk' ./related
+        fi
+
+    check_output "related_posts_dart.json"
+}
+
 run_swift() {
     echo "Running Swift" &&
         cd ./swift &&
@@ -369,6 +382,10 @@ elif [ "$first_arg" = "dart" ]; then
 
     run_dart
 
+elif [ "$first_arg" = "dart_aot" ]; then
+
+    run_dart_aot
+
 elif [ "$first_arg" = "swift" ]; then
 
     run_swift
@@ -409,6 +426,7 @@ elif [ "$first_arg" = "all" ]; then
         run_odin || echo -e "\n" &&
         run_vlang || echo -e "\n" &&
         run_dart || echo -e "\n" &&
+        run_dart_aot || echo -e "\n" &&
         run_swift || echo -e "\n" &&
         run_js "node" || echo -e "\n" &&
         run_js "bun" || echo -e "\n" &&
