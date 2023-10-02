@@ -351,6 +351,7 @@ elif [ "$first_arg" = "all" ]; then
         run_swift || echo -e "\n" &&
         run_js "node" || echo -e "\n" &&
         run_js "bun" || echo -e "\n" &&
+        run_js "deno" || echo -e "\n" &&
         echo -e "Finished running all\n"
 
 elif [ "$first_arg" = "clean" ]; then
