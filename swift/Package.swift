@@ -10,8 +10,8 @@ let package = Package(
     ],
     targets: [
         .executableTarget(
-            name: "related",
-            dependencies:  [.product(name: "FoundationPreview", package: "swift-foundation")]
+            name: "related"
+            // dependencies:  [.product(name: "FoundationPreview", package: "swift-foundation")]
             ),
             
     ]
