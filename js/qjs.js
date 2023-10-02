@@ -1,6 +1,8 @@
 import * as std from 'std';
 import { genRelatedPosts } from "./related.js";
 
+// QuickJS Runtime - exlcuded from charts because it's too slow (1.6s)
+
 const file = std.open('../posts.json', 'r');
 const content = file.readAsString();
 const posts = JSON.parse(content);
