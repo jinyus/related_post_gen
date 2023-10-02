@@ -328,6 +328,10 @@ elif [ "$first_arg" = "bun" ]; then
 
     run_js "bun"
 
+elif [ "$first_arg" = "deno" ]; then
+
+    run_js "deno"
+
 elif [ "$first_arg" = "all" ]; then
 
     echo -e "Running all\n" &&
@@ -347,6 +351,7 @@ elif [ "$first_arg" = "all" ]; then
         run_swift || echo -e "\n" &&
         run_js "node" || echo -e "\n" &&
         run_js "bun" || echo -e "\n" &&
+        run_js "deno" || echo -e "\n" &&
         echo -e "Finished running all\n"
 
 elif [ "$first_arg" = "clean" ]; then
@@ -366,6 +371,6 @@ elif [ "$first_arg" = "clean" ]; then
 
 else
 
-    echo "Valid args: go | go_con | rust | rust_ray | py | numpy | cr | zig | odin | jq | jul1 | jul2 | v | dart | swift | node | bun |  all | clean. Unknown argument: $first_arg"
+    echo "Valid args: go | go_con | rust | rust_ray | py | numpy | cr | zig | odin | jq | jul1 | jul2 | v | dart | swift | node | bun | deno |  all | clean. Unknown argument: $first_arg"
 
 fi
