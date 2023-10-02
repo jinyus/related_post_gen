@@ -273,16 +273,32 @@ run_java() {
 
 }
 
+run_java_graal() {
+    echo "Running Java (GraalVM)" &&
+        cd ./java &&
+        mvn clean package &&
+        mvn -Pnative -Dagent exec:exec@java-agent &&
+        mvn -Pnative -Dagent package &&
+        if [ $HYPER == 1 ]; then
+            capture "Java (GraalVM)" hyperfine -r 10 -w 3 --show-output "./target/related"
+        else
+            command time -f '%es %Mk' ./target/related
+        fi
+
+    check_output "related_posts_java.json"
+
+}
+
 run_java_with_jmh() {
     echo "Running Java JMH" &&
         cd ./java &&
         mvn -q -B -PJMH clean package &&
         if [ $HYPER == 1 ]; then
-            java -jar ./target/benchmark.jar > ./benchmark_result.txt
+            java -jar ./target/benchmark.jar >./benchmark_result.txt
             score=$(cat ./benchmark_result.txt | grep -E "BenchmarkRunner.init.*avgt" | awk -F ' +' '{print $3}' | sed -e "s/,/./")
-            echo "Time $score s" >> ./benchmark_result.txt
+            echo "Time $score s" >>./benchmark_result.txt
             capture "Java JMH" cat ./benchmark_result.txt
-            rm ./benchmark_result.txt
+            # rm ./benchmark_result.txt
         else
             command time -f '%es %Mk' java -jar ./target/benchmark.jar
         fi
@@ -290,8 +306,6 @@ run_java_with_jmh() {
     check_output "related_posts_java.json"
 
 }
-
-
 
 check_output() {
     cd .. &&
@@ -375,9 +389,9 @@ elif [ "$first_arg" = "java" ]; then
 
     run_java
 
-elif [ "$first_arg" = "java_with_jmh" ]; then
+elif [ "$first_arg" = "java_graal" ]; then
 
-    run_java_with_jmh
+    run_java_graal
 
 elif [ "$first_arg" = "all" ]; then
 
@@ -400,7 +414,7 @@ elif [ "$first_arg" = "all" ]; then
         run_js "bun" || echo -e "\n" &&
         run_js "deno" || echo -e "\n" &&
         run_java || echo -e "\n" &&
-        run_java_with_jmh || echo -e "\n" &&
+        run_java_graal || echo -e "\n" &&
         echo -e "Finished running all\n"
 
 elif [ "$first_arg" = "clean" ]; then
@@ -416,12 +430,12 @@ elif [ "$first_arg" = "clean" ]; then
         cd .. &&
         cd zig && rm -f main main.o &&
         cd ..
-        cd java && mvn -q -B clean &&
+    cd java && mvn -q -B clean &&
         cd ..
     rm -f related_*.json
 
 else
 
-    echo "Valid args: go | go_con | rust | rust_ray | py | numpy | cr | zig | odin | jq | jul1 | jul2 | v | dart | swift | node | bun | deno | java | java_with_jmh | all | clean. Unknown argument: $first_arg"
+    echo "Valid args: go | go_con | rust | rust_ray | py | numpy | cr | zig | odin | jq | jul1 | jul2 | v | dart | swift | node | bun | deno | java | java_graal | all | clean. Unknown argument: $first_arg"
 
 fi
