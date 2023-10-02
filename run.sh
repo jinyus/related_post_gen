@@ -247,9 +247,9 @@ run_js() {
             title=$(echo "$1" | sed 's/\b\(.\)/\u\1/g')
 
             if [ "$1" = "deno" ]; then
-                capture $title hyperfine -r 5 --show-output "deno run --allow-read --allow-write deno.js"
+                capture "JS ($title)" hyperfine -r 5 --show-output "deno run --allow-read --allow-write deno.js"
             else
-                capture $title hyperfine -r 5 --show-output "$1 $1.js"
+                capture "JS ($title)" hyperfine -r 5 --show-output "$1 $1.js"
             fi
 
         else
