@@ -106,7 +106,7 @@ func main() {
 
 	end := time.Now()
 
-	fmt.Println("Processing time (w/o IO)", end.Sub(start))
+	fmt.Println("Processing time (w/o IO):", end.Sub(start))
 
 	file, err = os.Create("../related_posts_go.json")
 	if err != nil {
