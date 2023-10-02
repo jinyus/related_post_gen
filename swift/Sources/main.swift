@@ -14,7 +14,6 @@ let t1 = Date()
 var tag_map = [String: [Int]]()
 for (index, post) in posts.enumerated() {
     for tag in post.tags {
-        // if tag_map[tag] == nil { tag_map[tag] = [Int]() }
         tag_map[tag, default:[]].append(index)
     }
 }
