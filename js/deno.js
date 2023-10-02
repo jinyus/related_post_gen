@@ -8,4 +8,4 @@ const allRelatedPosts = genRelatedPosts(posts);
 
 console.log(`Processing time (w/o IO): ${Date.now() - start}ms`);
 
-await Deno.writeTextFile('../related_posts_bun.json', JSON.stringify(allRelatedPosts));
+await Deno.writeTextFile('../related_posts_deno.json', JSON.stringify(allRelatedPosts));
