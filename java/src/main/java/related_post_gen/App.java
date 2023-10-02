@@ -114,7 +114,7 @@ public class App {
 
         long end = System.nanoTime();
 
-        System.out.println("Processing time (w/o IO) " + TimeUnit.NANOSECONDS.toMillis(end - start) + " ms");
+        System.out.println("Processing time (w/o IO): " + TimeUnit.NANOSECONDS.toMillis(end - start) + " ms");
 
         try (OutputStream out = Files.newOutputStream(Paths.get(outputFile))) {
             dslJson.serialize(allRelatedPosts, out);
