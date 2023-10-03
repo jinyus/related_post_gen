@@ -22,36 +22,42 @@ Generate related posts based on tags. Sort by the number of shared tags.
 
 <h3>No:</h3>
 
--   FFI
+-   FFI (including assembly inlining)
 -   Unsafe code blocks
 -   Custom benchmarking
 -   Disabling runtime checks (bounds etc)
+
+<h3>Must:</h3>
+
+-   Parse json at runtime
+-   Not hardcore number of posts
+-   Support up to 100 tags
 </details>
 
 ### Updated Results from github workflow ([raw data](https://github.com/jinyus/related_post_gen/blob/main/raw_results.md))
 
 | Language       | Processing Time | Total (PT + I/O) |
 | -------------- | --------------- | ---------------- |
-| Go Concurrent | 16.18 ms | 49.7 ms |
-| Rust Rayon | 18.34 ms | 36.0 ms |
-| Go | 30.75 ms | 60.8 ms |
-| Rust | 33.15 ms | 51.1 ms |
-| Java (GraalVM) | 47.00 ms | 81.8 ms |
-| Crystal | 55.77 ms | 108.6 ms |
-| Vlang | 58.42 ms | 377.5 ms |
-| Odin | 63.42 ms | 311.5 ms |
-| Swift | 64.37 ms | 481.2 ms |
-| Zig | 179.15 ms | 220.2 ms |
-| JS (Deno) | 182.40 ms | 284.8 ms |
-| Dart VM | 185.00 ms | 660.9 ms |
-| Nim | 200.83 ms | 303.2 ms |
-| JS (Node) | 205.00 ms | 279.7 ms |
-| Dart AOT | 226.75 ms | 369.2 ms |
-| Java (JIT) | 243.08 ms | 518.5 ms |
-| Julia v2 | 616.50 ms | 5.037 s |
-| JS (Bun) | 773.80 ms | 853.3 ms |
-| Numpy | 0.95 s | 1.335 s |
-| Python | 2.72 s | 3.005 s |
+| Go Concurrent  | 16.18 ms        | 49.7 ms          |
+| Rust Rayon     | 18.34 ms        | 36.0 ms          |
+| Go             | 30.75 ms        | 60.8 ms          |
+| Rust           | 33.15 ms        | 51.1 ms          |
+| Java (GraalVM) | 47.00 ms        | 81.8 ms          |
+| Crystal        | 55.77 ms        | 108.6 ms         |
+| Vlang          | 58.42 ms        | 377.5 ms         |
+| Odin           | 63.42 ms        | 311.5 ms         |
+| Swift          | 64.37 ms        | 481.2 ms         |
+| Zig            | 179.15 ms       | 220.2 ms         |
+| JS (Deno)      | 182.40 ms       | 284.8 ms         |
+| Dart VM        | 185.00 ms       | 660.9 ms         |
+| Nim            | 200.83 ms       | 303.2 ms         |
+| JS (Node)      | 205.00 ms       | 279.7 ms         |
+| Dart AOT       | 226.75 ms       | 369.2 ms         |
+| Java (JIT)     | 243.08 ms       | 518.5 ms         |
+| Julia v2       | 616.50 ms       | 5.037 s          |
+| JS (Bun)       | 773.80 ms       | 853.3 ms         |
+| Numpy          | 0.95 s          | 1.335 s          |
+| Python         | 2.72 s          | 3.005 s          |
 
 <details>
 <summary> Old Results with details (on my machine) </summary>
