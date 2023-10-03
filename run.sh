@@ -278,13 +278,15 @@ run_js() {
 }
 
 run_java() {
+    VM_OPTIONS="-Xms10m -Xmx10m -XX:+UseSerialGC"
     echo "Running Java (JIT)" &&
         cd ./java &&
+        java -version &&
         mvn -q -B -Pjvm clean package &&
         if [ $HYPER == 1 ]; then
-            capture "Java (JIT)" hyperfine -r 10 -w 3 --show-output "java -jar ./target/main.jar"
+            capture "Java (JIT)" hyperfine -r 10 -w 3 --show-output "java $VM_OPTIONS -jar ./target/main.jar"
         else
-            command time -f '%es %Mk' java -jar ./target/main.jar
+            command time -f '%es %Mk' java $VM_OPTIONS -jar ./target/main.jar
         fi
 
     check_output "related_posts_java.json"
@@ -292,11 +294,15 @@ run_java() {
 }
 
 run_java_graal() {
+    export JAVA_HOME="$GRAALVM_HOME"
     echo "Running Java (GraalVM)" &&
         cd ./java &&
-        mvn clean package &&
-        mvn -Pnative -Dagent exec:exec@java-agent &&
-        mvn -Pnative -Dagent package &&
+        java -version &&
+        mvn -q -B clean package &&
+        mvn -q -B -Pnative -Dagent exec:exec@java-agent && # First run: The agent generates the reflection config files
+        mvn -q -B -Pnative,pgo-instrument -Dagent package && # build a PGO instrumented executable
+        ./target/related && # Second run: generate a PGO file to ./default.iprof
+        mvn -q -B -Pnative,pgo -Dagent package && # build an optimized executable
         if [ $HYPER == 1 ]; then
             capture "Java (GraalVM)" hyperfine -r 10 -w 3 --show-output "./target/related"
         else
