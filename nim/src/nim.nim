@@ -1,7 +1,5 @@
 # This is just an example to get you started. A typical binary package
 # uses this file as the main entry point of the application.
-import std/os
-import strformat
 import json
 import std/tables
 import std/sequtils
@@ -48,10 +46,11 @@ for i ,post in posts.pairs:
   taggedPostCount.apply(proc(x: int): int = 0)
 
   for tag in post.tags:
-    for idx in tagMap[tag]:
-      taggedPostCount[idx] += 1
+    for otherIDX in tagMap[tag]:
+      taggedPostCount[otherIDX] += 1
 
   taggedPostCount[i] = 0 # remove self
+
 
   var top5 : array[5, tuple[ idx: int,count: int]]
   var minTags = 0
@@ -68,20 +67,19 @@ for i ,post in posts.pairs:
       if pos < 4:
         for i in countdown(3, pos):
           top5[i + 1] = top5[i]
-      if pos <= 4:
-        top5[pos] = (idx: i, count: count)
-        minTags = top5[4].count
 
-  var topPosts = newSeq[Post](5)
+      top5[pos] = (idx: i, count: count)
+      minTags = top5[4].count
 
-  for idx, _ in top5:
-    topPosts.add(posts[idx])
 
-  allRelatedPosts[i] = RelatedPosts(`"_id"`: post.`"_id"`, tags: post.tags, related: topPosts)
+  allRelatedPosts[i] = RelatedPosts(
+    `"_id"`: post.`"_id"`, 
+    tags: post.tags, 
+    related: top5.map(proc(x: tuple[idx: int, count: int]): Post = posts[x.idx]),
+    )
 
 
 let total = getTime() - start
-
 
 echo "Processing time (w/o IO): ", total.inMilliseconds, "ms"
 
