@@ -84,6 +84,9 @@ jobs:
             - name: Install Nim
               uses: iffy/install-nim@v5
 
+            - name: Install Dotnet
+              uses: actions/setup-dotnet@v3
+
             - name: Run Benchmark
               run: ./run.sh all raw_results.md
 

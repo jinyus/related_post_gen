@@ -35,3 +35,5 @@ zig/main.o
 dart/related
 nim/src/nim
 nim/src/related
+
+.fake
