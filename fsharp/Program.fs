@@ -70,7 +70,7 @@ let allRelatedPosts: RelatedPosts[] =
     )
 
 
-printf "Processing time (w/o IO): %dms" (DateTime.Now - start).Milliseconds
+printfn "Processing time (w/o IO): %dms" (DateTime.Now - start).Milliseconds
 let json = Json.serialize allRelatedPosts
 
 File.WriteAllText("../related_posts_fsharp.json", json)

@@ -339,6 +339,20 @@ run_nim() {
     check_output "related_posts_nim.json"
 }
 
+run_fsharp() {
+    echo "Running FSharp" &&
+        cd ./fsharp &&
+        dotnet add package FSharp.Json &&
+        dotnet publish -c release &&
+        if [ $HYPER == 1 ]; then
+            capture "Fsharp" hyperfine -r 5 -w 2 --show-output "./bin/release/net7.0/fsharp"
+        else
+            command time -f '%es %Mk' ./bin/release/net7.0/fsharp
+        fi
+
+    check_output "related_posts_fsharp.json"
+}
+
 check_output() {
     cd .. &&
         echo "Checking output" &&
@@ -432,6 +446,10 @@ elif [ "$first_arg" = "java_graal" ]; then
 elif [ "$first_arg" = "nim" ]; then
 
     run_nim
+
+elif [ "$first_arg" = "fsharp" ]; then
+
+    run_fsharp
 
 elif [ "$first_arg" = "all" ]; then
 
