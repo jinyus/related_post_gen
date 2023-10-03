@@ -32,11 +32,12 @@ void main() {
     final post = posts[i];
     taggedPostCount.fillRange(0, posts.length, 0);
 
-    for (final tag in post.tags) {
-      for (var otherPostIdx in tagMap[tag]!) {
+    // faster than for in
+    post.tags.forEach((tag) {
+      tagMap[tag]!.forEach((otherPostIdx) {
         taggedPostCount[otherPostIdx] += 1;
-      }
-    }
+      });
+    });
 
     taggedPostCount[i] = 0; // don't include self
 
