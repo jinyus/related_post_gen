@@ -39,26 +39,25 @@ Generate related posts based on tags. Sort by the number of shared tags.
 
 | Language       | Processing Time | Total (PT + I/O) |
 | -------------- | --------------- | ---------------- |
-| Go Concurrent  | 16.18 ms        | 49.7 ms          |
-| Rust Rayon     | 18.34 ms        | 36.0 ms          |
-| Go             | 30.75 ms        | 60.8 ms          |
-| Rust           | 33.15 ms        | 51.1 ms          |
-| Java (GraalVM) | 47.00 ms        | 81.8 ms          |
-| Crystal        | 55.77 ms        | 108.6 ms         |
-| Vlang          | 58.42 ms        | 377.5 ms         |
-| Odin           | 63.42 ms        | 311.5 ms         |
-| Swift          | 64.37 ms        | 481.2 ms         |
-| Zig            | 179.15 ms       | 220.2 ms         |
-| JS (Deno)      | 182.40 ms       | 284.8 ms         |
-| Dart VM        | 185.00 ms       | 660.9 ms         |
-| Nim            | 200.83 ms       | 303.2 ms         |
-| JS (Node)      | 205.00 ms       | 279.7 ms         |
-| Dart AOT       | 226.75 ms       | 369.2 ms         |
-| Java (JIT)     | 243.08 ms       | 518.5 ms         |
-| Julia v2       | 616.50 ms       | 5.037 s          |
-| JS (Bun)       | 773.80 ms       | 853.3 ms         |
-| Numpy          | 0.95 s          | 1.335 s          |
-| Python         | 2.72 s          | 3.005 s          |
+| Go Concurrent | 17.92 ms | 57.7 ms |
+| Rust Rayon | 18.24 ms | 38.1 ms |
+| Rust | 31.82 ms | 49.7 ms |
+| Go | 33.19 ms | 68.5 ms |
+| Swift | 49.20 ms | 463.5 ms |
+| Vlang | 52.11 ms | 385.6 ms |
+| Java (GraalVM) | 53.00 ms | 85.4 ms |
+| Crystal | 58.32 ms | 110.8 ms |
+| Odin | 65.38 ms | 350.7 ms |
+| Dart VM | 79.50 ms | 566.8 ms |
+| Dart AOT | 117.00 ms | 252.8 ms |
+| JS (Deno) | 150.20 ms | 246.0 ms |
+| JS (Node) | 167.00 ms | 249.5 ms |
+| Zig | 231.46 ms | 274.9 ms |
+| Java (JIT) | 242.62 ms | 540.1 ms |
+| JS (Bun) | 582.20 ms | 655.5 ms |
+| Julia v2 | 628.67 ms | 5.245 s |
+| Numpy | 1.08 s | 1.255 s |
+| Python | 2.30 s | 2.376 s |
 
 <details>
 <summary> Old Results with details (on my machine) </summary>
