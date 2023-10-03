@@ -38,12 +38,13 @@ let allRelatedPosts: RelatedPosts[] =
                 taggedPostCount[oIDX] <- taggedPostCount[oIDX] + 1
 
 
-        taggedPostCount[i] <- 0
+        taggedPostCount[i] <- 0 // ignore self
 
         let topN = 5
         let mutable top5 = Array.zeroCreate (topN * 2) // flattened list of (count, id)
         let mutable minTags = 0
 
+        // custom priority queue to find topN
         for i in 0 .. taggedPostCount.Length - 1 do
             let count = taggedPostCount.[i]
 
