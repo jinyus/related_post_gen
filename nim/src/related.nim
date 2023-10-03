@@ -1,9 +1,9 @@
 # This is just an example to get you started. A typical binary package
 # uses this file as the main entry point of the application.
-import json
 import std/tables
 import std/sequtils
 import times
+import jsony
 
 type
   Post = object
@@ -21,7 +21,8 @@ const
     output = "../related_posts_nim.json"
 
 
-let posts = to(parseFile(input), seq[Post])
+let content = readFile(input)
+let posts = content.fromJson(seq[Post])
 
 let start = getTime()
 
@@ -78,10 +79,7 @@ let total = getTime() - start
 
 echo "Processing time (w/o IO): ", total.inMilliseconds, "ms"
 
-let jsonObject = %* allRelatedPosts
-
-
-writeFile(output, $jsonObject)
+writeFile(output, allRelatedPosts.toJson)
 
 
 
