@@ -10,20 +10,17 @@ void main() {
 
   final sw = Stopwatch()..start();
 
-  final (_, tagMap) = posts.fold<(int, Map<String, List<int>>)>(
-    (0, {}),
-    (state, post) {
-      for (final tag in post.tags) {
-        state.$2.update(
-          tag,
-          (list) => list..add(state.$1),
-          ifAbsent: () => [state.$1],
-        );
-      }
+  final tagMap = <String, List<int>>{};
 
-      return (state.$1 + 1, state.$2);
-    },
-  );
+  for (var i = 0; i < posts.length; i++) {
+    posts[i].tags.forEach((tag) {
+      tagMap.update(
+        tag,
+        (list) => list..add(i),
+        ifAbsent: () => [i],
+      );
+    });
+  }
 
   // preallocate and reuse
   final taggedPostCount = List.filled(posts.length, 0);
