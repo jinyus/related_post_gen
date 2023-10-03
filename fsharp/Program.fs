@@ -20,8 +20,6 @@ type RelatedPosts =
 
 let posts = Json.deserialize<Post[]> (File.ReadAllText "../posts.json")
 
-printfn "Found %d posts" posts.Length
-
 let start = DateTime.Now
 
 let tagMap: Map<string, int array> =
@@ -53,9 +51,8 @@ let allRelatedPosts: RelatedPosts[] =
         let mutable top5 = Array.zeroCreate (topN * 2) // flattened list of (count, id)
         let mutable minTags = 0
 
-        for i in 0 .. taggedPostCount.Length - 1 do
-            let count = taggedPostCount.[i]
-
+        taggedPostCount
+        |> Array.iteri (fun i count ->
             if count > minTags then
                 // Find upper bound: pos at which count is larger than current one.
                 let mutable upperBound = (topN - 2) * 2
@@ -72,12 +69,13 @@ let allRelatedPosts: RelatedPosts[] =
                 minTags <- top5.[topN * 2 - 2]
             |> ignore
 
+        )
+
         { _id = post._id
           tags = post.tags
           related = Array.init topN (fun i -> posts.[top5.[i * 2 + 1]]) }
 
     )
-
 
 
 printf "Processing time (w/o IO): %dms" (DateTime.Now - start).Milliseconds
