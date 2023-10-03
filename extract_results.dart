@@ -109,7 +109,7 @@ class Score {
   }
 
   String avgTimeString() {
-    return _avgAbsoluteTime().toStringAsFixed(2) + unit;
+    return _avgAbsoluteTime().toStringAsFixed(2) + ' $unit';
   }
 
   void addTime(double time, String unit) {
