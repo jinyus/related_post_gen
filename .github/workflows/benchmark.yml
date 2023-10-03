@@ -81,6 +81,9 @@ jobs:
               with:
                   java-version: "17"
 
+            - name: Install Nim
+              uses: iffy/install-nim@v5
+
             - name: Run Benchmark
               run: ./run.sh all raw_results.md
 
