@@ -33,14 +33,10 @@ for i, post in posts.pairs:
     lst.add(i)
     tagMap[tag] = lst
 
-echo "Loaded ", posts.len, " posts"
-
-echo "Count of tags: ", tagMap.len
-echo "redis count", tagMap["redis"].len
-
 # seq of table
 var allRelatedPosts  = newSeq[RelatedPosts](posts.len)
 var taggedPostCount  = newSeq[int](posts.len)
+
 
 for i ,post in posts.pairs:
   taggedPostCount.apply(proc(x: int): int = 0)
@@ -50,7 +46,6 @@ for i ,post in posts.pairs:
       taggedPostCount[otherIDX] += 1
 
   taggedPostCount[i] = 0 # remove self
-
 
   var top5 : array[5, tuple[ idx: int,count: int]]
   var minTags = 0
@@ -82,8 +77,6 @@ for i ,post in posts.pairs:
 let total = getTime() - start
 
 echo "Processing time (w/o IO): ", total.inMilliseconds, "ms"
-
-echo "R count: ", allRelatedPosts.len
 
 let jsonObject = %* allRelatedPosts
 
