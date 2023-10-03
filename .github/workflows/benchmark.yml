@@ -11,7 +11,7 @@ on:
 
 jobs:
     run-benchmarks:
-        # if: github.event_name == 'workflow_dispatch' || (github.event_name == 'pull_request' && github.event.pull_request.merged == true && !contains(github.event.pull_request.title, '[IGNORE]'))
+        # if: github.event_name == 'workflow_dispatch' || (github.event_name == 'pull_request' && github.event.pull_request.merged == true && !contains(github.event.pull_request.title, '[SKIPCI]'))
         runs-on: ubuntu-22.04
         steps:
             - name: Checkout
@@ -103,7 +103,7 @@ jobs:
               with:
                   token: ${{ secrets.GH_REPO_TOKEN }}
                   commit-message: Update benchmark results
-                  title: "[IGNORE] Update benchmark results"
+                  title: "[SKIPCI] Update benchmark results"
                   body: "New benchmark results"
                   labels: automated pr
                   branch: benchmark-results
