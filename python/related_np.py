@@ -11,17 +11,15 @@ def main():
         posts = json.load(f)
     lap()
 
-    tags = []
-    for post in posts:
-        tags.extend(post["tags"])
-    tags = np.asarray(tags)
-    unique_tags = np.unique(tags)
+    unique_tags = set(tag for post in posts for tag in post["tags"])
+    tag_dict = {tag: i for i, tag in enumerate(unique_tags)}
 
-    tag_map = np.zeros((len(posts), len(unique_tags)), dtype=np.uint16)
+    tag_map = np.zeros((len(posts), len(unique_tags)), dtype=np.uint8)
 
     for i, post in enumerate(posts):
-        for j, utag in enumerate(unique_tags):
-            tag_map[i, j] = int(utag in post["tags"])
+        for tag in post["tags"]:
+            j = tag_dict[tag]
+            tag_map[i, j] = 1
 
     # This it the linear algebra, because tag_map is arranged as a matrix,
     # a matmul with a vector accomplishes the same thing as the nested for
