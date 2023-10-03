@@ -32,25 +32,26 @@ Generate related posts based on tags. Sort by the number of shared tags.
 
 | Language       | Processing Time | Total (PT + I/O) |
 | -------------- | --------------- | ---------------- |
-| Go Concurrent  | 20.39ms         | 64.3 ms          |
-| Rust Rayon     | 29.68ms         | 53.5 ms          |
-| Go             | 49.57ms         | 90.8 ms          |
-| Rust           | 53.42ms         | 78.3 ms          |
-| Java (GraalVM) | 58.23ms         | 100.7 ms         |
-| Vlang          | 59.22ms         | 713.4 ms         |
-| Swift          | 64.30ms         | 590.3 ms         |
-| Crystal        | 64.71ms         | 132.9 ms         |
-| Odin           | 66.48ms         | 377.4 ms         |
-| Dart VM        | 172.50ms        | 832.7 ms         |
-| JS (Deno)      | 175.40ms        | 299.1 ms         |
-| JS (Node)      | 203.60ms        | 305.6 ms         |
-| Zig            | 250.38ms        | 305.2 ms         |
-| Dart AOT       | 256.00ms        | 423.3 ms         |
-| Java (JIT)     | 306.85ms        | 660.8 ms         |
-| JS (Bun)       | 914.40ms        | 1.041 s          |
-| Julia v2       | 1068.17ms       | 7.095 s          |
-| Numpy          | 1.19s           | 1.673 s          |
-| Python         | 3.24s           | 3.603 s          |
+| Go Concurrent | 16.18 ms | 49.7 ms |
+| Rust Rayon | 18.34 ms | 36.0 ms |
+| Go | 30.75 ms | 60.8 ms |
+| Rust | 33.15 ms | 51.1 ms |
+| Java (GraalVM) | 47.00 ms | 81.8 ms |
+| Crystal | 55.77 ms | 108.6 ms |
+| Vlang | 58.42 ms | 377.5 ms |
+| Odin | 63.42 ms | 311.5 ms |
+| Swift | 64.37 ms | 481.2 ms |
+| Zig | 179.15 ms | 220.2 ms |
+| JS (Deno) | 182.40 ms | 284.8 ms |
+| Dart VM | 185.00 ms | 660.9 ms |
+| Nim | 200.83 ms | 303.2 ms |
+| JS (Node) | 205.00 ms | 279.7 ms |
+| Dart AOT | 226.75 ms | 369.2 ms |
+| Java (JIT) | 243.08 ms | 518.5 ms |
+| Julia v2 | 616.50 ms | 5.037 s |
+| JS (Bun) | 773.80 ms | 853.3 ms |
+| Numpy | 0.95 s | 1.335 s |
+| Python | 2.72 s | 3.005 s |
 
 <details>
 <summary> Old Results with details (on my machine) </summary>
