@@ -1,12 +1,7 @@
 ﻿open System.IO
-open FSharp.Data
 open System
 open FSharp.Json
-open System.Collections.Generic
-// [<Literal>]
-// let ResolutionFolder = __SOURCE_DIRECTORY__
 
-// type Post = JsonProvider<"../posts.json", SampleIsList=true, ResolutionFolder=ResolutionFolder>
 
 type Post =
     { _id: string
@@ -22,7 +17,7 @@ let posts = Json.deserialize<Post[]> (File.ReadAllText "../posts.json")
 
 let start = DateTime.Now
 
-let tagMap =
+let tagMap: Map<string, int array> =
     posts
     |> Array.mapi (fun i p -> i, p)
     |> Array.collect (fun (i, p) -> p.tags |> Array.map (fun t -> t, [| i |]))
