@@ -454,6 +454,7 @@ elif [ "$first_arg" = "fsharp" ]; then
 elif [ "$first_arg" = "all" ]; then
 
     echo -e "Running all\n" &&
+        run_fsharp || echo -e "\n" &&
         run_go || echo -e "\n" &&
         run_go_concurrent || echo -e "\n" &&
         run_rust || echo -e "\n" &&
