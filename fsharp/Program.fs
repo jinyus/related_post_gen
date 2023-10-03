@@ -2,7 +2,7 @@
 open FSharp.Data
 open System
 open FSharp.Json
-
+open System.Collections.Generic
 // [<Literal>]
 // let ResolutionFolder = __SOURCE_DIRECTORY__
 
@@ -22,14 +22,14 @@ let posts = Json.deserialize<Post[]> (File.ReadAllText "../posts.json")
 
 let start = DateTime.Now
 
-// let tagMap: Map<string, int array> =
-let tagMap =
-    posts
-    |> Array.mapi (fun i p -> i, p)
-    |> Array.collect (fun (i, p) -> p.tags |> Array.map (fun t -> t, [| i |]))
-    |> Array.groupBy fst
-    |> Array.map (fun (t, is) -> t, is |> Array.collect snd)
-    |> Map.ofArray
+let mutable tagMap = Dictionary<string, int array>()
+
+for i in 0 .. posts.Length - 1 do
+    for tag in posts.[i].tags do
+        match tagMap.TryGetValue tag with
+        | true, l -> tagMap.[tag] <- Array.append l [| i |]
+        | false, _ -> tagMap.[tag] <- [| i |]
+
 
 // printf "tagmap took: %dms" (DateTime.Now - start).Milliseconds
 
