@@ -20,9 +20,12 @@ Generate related posts based on tags. Sort by the number of shared tags.
 <details>
 <summary> Rules </summary>
 
--   No FFI
--   No unsafe code blocks
--   No custom benchmarking
+<h3>No:</h3>
+
+-   FFI
+-   Unsafe code blocks
+-   Custom benchmarking
+-   Disabling runtime checks (bounds etc)
 </details>
 
 ### Updated Results from github workflow ([raw data](https://github.com/jinyus/related_post_gen/blob/main/raw_results.md))
