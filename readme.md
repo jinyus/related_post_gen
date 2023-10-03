@@ -32,6 +32,7 @@ Generate related posts based on tags. Sort by the number of shared tags.
 -   Parse json at runtime
 -   Not hardcore number of posts
 -   Support up to 100 tags
+-   Use a stable release of the compiler/runtime
 </details>
 
 ### Updated Results from github workflow ([raw data](https://github.com/jinyus/related_post_gen/blob/main/raw_results.md))
