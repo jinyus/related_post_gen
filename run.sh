@@ -328,6 +328,7 @@ run_java_with_jmh() {
 run_nim() {
     echo "Running Nim" &&
         cd ./nim &&
+        nimble install jsony &&
         nim compile -d:release --threads:off src/related.nim &&
         if [ $HYPER == 1 ]; then
             capture "Nim" hyperfine -r 10 -w 2 --show-output "./src/related"
