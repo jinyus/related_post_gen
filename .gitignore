@@ -31,3 +31,4 @@ zig/main.o
 .vscode
 dart/related
 nim/src/nim
+nim/src/related
