@@ -46,13 +46,12 @@ allRelated: map.with:'i posts 'post [
 
             pos: 4
 
-            while [pos >= 0 and? count > top5\[pos]\[1]]  [
+            while [
+                and? 
+                [pos >= 0] 
+                [count > top5\[pos]\[1]]
+                ] [
                     pos: pos - 1
-
-                    ; its running the second branch even if the first is false
-                    if pos < 0 [
-                        break
-                    ]
 
             ]
 
