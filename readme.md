@@ -29,27 +29,28 @@ Generate related posts based on tags. Sort by the number of shared tags.
 
 | Language       | Processing Time | Total (PT + I/O) |
 | -------------- | --------------- | ---------------- |
-| Go Concurrent | 20.39ms | 64.3 ms |
-| Rust Rayon | 29.68ms | 53.5 ms |
-| Go | 49.57ms | 90.8 ms |
-| Rust | 53.42ms | 78.3 ms |
-| Java (GraalVM) | 58.23ms | 100.7 ms |
-| Vlang | 59.22ms | 713.4 ms |
-| Swift | 64.30ms | 590.3 ms |
-| Crystal | 64.71ms | 132.9 ms |
-| Odin | 66.48ms | 377.4 ms |
-| Dart VM | 172.50ms | 832.7 ms |
-| JS (Deno) | 175.40ms | 299.1 ms |
-| JS (Node) | 203.60ms | 305.6 ms |
-| Zig | 250.38ms | 305.2 ms |
-| Dart AOT | 256.00ms | 423.3 ms |
-| Java (JIT) | 306.85ms | 660.8 ms |
-| JS (Bun) | 914.40ms | 1.041 s |
-| Julia v2 | 1068.17ms | 7.095 s |
-| Numpy | 1.19s | 1.673 s |
-| Python | 3.24s | 3.603 s |
+| Go Concurrent  | 20.39ms         | 64.3 ms          |
+| Rust Rayon     | 29.68ms         | 53.5 ms          |
+| Go             | 49.57ms         | 90.8 ms          |
+| Rust           | 53.42ms         | 78.3 ms          |
+| Java (GraalVM) | 58.23ms         | 100.7 ms         |
+| Vlang          | 59.22ms         | 713.4 ms         |
+| Swift          | 64.30ms         | 590.3 ms         |
+| Crystal        | 64.71ms         | 132.9 ms         |
+| Odin           | 66.48ms         | 377.4 ms         |
+| Dart VM        | 172.50ms        | 832.7 ms         |
+| JS (Deno)      | 175.40ms        | 299.1 ms         |
+| JS (Node)      | 203.60ms        | 305.6 ms         |
+| Zig            | 250.38ms        | 305.2 ms         |
+| Dart AOT       | 256.00ms        | 423.3 ms         |
+| Java (JIT)     | 306.85ms        | 660.8 ms         |
+| JS (Bun)       | 914.40ms        | 1.041 s          |
+| Julia v2       | 1068.17ms       | 7.095 s          |
+| Numpy          | 1.19s           | 1.673 s          |
+| Python         | 3.24s           | 3.603 s          |
 
-### Old Results (on my machine)
+<details>
+<summary> Old Results with details (on my machine) </summary>
 
 | Language   | Processing Time | Total (+ I/O) | Details                                                                                                                                                                                                                                                                                         |
 | ---------- | --------------- | ------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -87,3 +88,5 @@ Generate related posts based on tags. Sort by the number of shared tags.
 | Vlang      | 339ms           | 560ms         | Ported from golang code                                                                                                                                                                                                                                                                         |
 | ⠀          | ⠀               | ⠀             | ⠀                                                                                                                                                                                                                                                                                               |
 | Zig        | 80ms            | 110ms         | Provided by [akhildevelops](https://github.com/jinyus/related_post_gen/pull/30)                                                                                                                                                                                                                 |
+
+</details>
