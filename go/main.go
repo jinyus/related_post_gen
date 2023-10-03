@@ -118,13 +118,3 @@ func main() {
 		log.Panicln(err)
 	}
 }
-
-func PostComparator(a, b PostWithSharedTags) int {
-	if a.SharedTags > b.SharedTags {
-		return 1
-	}
-	if a.SharedTags < b.SharedTags {
-		return -1
-	}
-	return 0
-}
