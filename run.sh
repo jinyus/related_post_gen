@@ -328,7 +328,7 @@ run_java_with_jmh() {
 run_nim() {
     echo "Running Nim" &&
         cd ./nim &&
-        nimble install jsony &&
+        nimble install -y jsony &&
         nim compile -d:release --threads:off src/related.nim &&
         if [ $HYPER == 1 ]; then
             capture "Nim" hyperfine -r 10 -w 2 --show-output "./src/related"
@@ -454,7 +454,6 @@ elif [ "$first_arg" = "fsharp" ]; then
 elif [ "$first_arg" = "all" ]; then
 
     echo -e "Running all\n" &&
-        run_fsharp || echo -e "\n" &&
         run_go || echo -e "\n" &&
         run_go_concurrent || echo -e "\n" &&
         run_rust || echo -e "\n" &&
@@ -476,6 +475,7 @@ elif [ "$first_arg" = "all" ]; then
         run_java || echo -e "\n" &&
         run_java_graal || echo -e "\n" &&
         run_nim || echo -e "\n" &&
+        run_fsharp || echo -e "\n" &&
         echo -e "Finished running all\n"
 
 elif [ "$first_arg" = "clean" ]; then
