@@ -299,10 +299,7 @@ run_java_graal() {
         cd ./java &&
         java -version &&
         mvn -q -B clean package &&
-        mvn -q -B -Pnative -Dagent exec:exec@java-agent && # First run: The agent generates the reflection config files
-        mvn -q -B -Pnative,pgo-instrument -Dagent package && # build a PGO instrumented executable
-        ./target/related && # Second run: generate a PGO file to ./default.iprof
-        mvn -q -B -Pnative,pgo -Dagent package && # build an optimized executable
+        mvn -q -B -Pnative,pgo package &&
         if [ $HYPER == 1 ]; then
             capture "Java (GraalVM)" hyperfine -r 10 -w 3 --show-output "./target/related"
         else

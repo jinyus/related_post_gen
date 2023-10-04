@@ -2,7 +2,7 @@ package related_post_gen;
 
 import com.dslplatform.json.CompiledJson;
 import com.dslplatform.json.DslJson;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.dslplatform.json.JsonAttribute;
 import org.eclipse.collections.impl.list.mutable.primitive.IntArrayList;
 
 import java.io.IOException;
@@ -20,7 +20,7 @@ import java.util.concurrent.TimeUnit;
 
 public class App {
     @CompiledJson
-    record Post(@JsonProperty("_id") String id,
+    record Post(@JsonAttribute(name = "_id") String id,
                 String title,
                 List<String> tags) {
     }
@@ -29,7 +29,7 @@ public class App {
     }
 
     @CompiledJson
-    record RelatedPosts(@JsonProperty("_id") String id,
+    record RelatedPosts(@JsonAttribute(name = "_id") String id,
                         List<String> tags,
                         List<Post> related) {
     }
