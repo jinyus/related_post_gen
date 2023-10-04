@@ -34,10 +34,8 @@ let tagPosts = Dictionary<string, Stack<int>>()
 
 posts
 |> Array.iteri (fun postId post ->
-    let postTagsStack = Stack()
 
     for tag in post.tags do
-        postTagsStack.Push tag
 
         match tagPosts.TryGetValue tag with
         | true, s -> s.Push postId
