@@ -377,7 +377,7 @@ run_fsharp_con() {
         dotnet add package FSharp.Json &&
         dotnet publish -c release &&
         if [ $HYPER == 1 ]; then
-            capture "Fsharp" hyperfine -r 5 -w 2 --show-output "./bin/release/net7.0/fsharp"
+            capture "Fsharp Concurrent" hyperfine -r 5 -w 2 --show-output "./bin/release/net7.0/fsharp"
         else
             command time -f '%es %Mk' ./bin/release/net7.0/fsharp
         fi
