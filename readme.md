@@ -41,29 +41,30 @@ Given a list of posts, compute the top 5 related posts for each post based on th
 
 | Language       | Processing Time | Total (PT + I/O) |
 | -------------- | --------------- | ---------------- |
-| Go Concurrent  | 17.55 ms        | 51.0 ms          |
-| Rust Rayon     | 17.99 ms        | 36.5 ms          |
-| Rust           | 32.41 ms        | 50.5 ms          |
-| Go             | 33.03 ms        | 65.3 ms          |
-| Java (GraalVM) | 36.31 ms        | 63.4 ms          |
-| Vlang          | 48.40 ms        | 353.2 ms         |
-| Swift          | 51.25 ms        | 464.2 ms         |
-| Crystal        | 59.20 ms        | 110.7 ms         |
-| Odin           | 65.33 ms        | 346.5 ms         |
-| Nim            | 77.17 ms        | 104.0 ms         |
-| Dart VM        | 82.25 ms        | 532.2 ms         |
-| LuaJIT         | 103.24 ms       | 358.6 ms         |
-| Dart AOT       | 117.63 ms       | 249.8 ms         |
-| JS (Deno)      | 151.20 ms       | 240.5 ms         |
-| Fsharp         | 160.00 ms       | 912.1 ms         |
-| JS (Node)      | 168.60 ms       | 242.3 ms         |
-| Zig            | 232.31 ms       | 274.7 ms         |
-| Java (JIT)     | 234.69 ms       | 505.5 ms         |
-| Julia v2       | 588.83 ms       | 4.905 s          |
-| JS (Bun)       | 648.60 ms       | 714.4 ms         |
-| Numpy          | 0.90 s          | 1.067 s          |
-| Lua            | 1943.84 ms      | 2.539 s          |
-| Python         | 2.31 s          | 2.382 s          |
+| Go Concurrent | 19.98 ms | 59.2 ms |
+| Rust Concurrent | 21.21 ms | 40.9 ms |
+| Go | 34.48 ms | 70.2 ms |
+| Java (GraalVM) | 36.77 ms | 67.8 ms |
+| Rust | 40.22 ms | 62.0 ms |
+| Swift Concurrent | 44.97 ms | 442.6 ms |
+| Vlang | 62.03 ms | 379.3 ms |
+| Crystal | 63.27 ms | 125.8 ms |
+| Odin | 65.58 ms | 326.6 ms |
+| Swift | 71.36 ms | 477.3 ms |
+| Nim | 100.92 ms | 133.2 ms |
+| Dart VM | 104.75 ms | 597.7 ms |
+| LuaJIT | 131.00 ms | 421.2 ms |
+| Fsharp | 132.00 ms | 1.004 s |
+| Dart AOT | 148.50 ms | 303.7 ms |
+| JS (Deno) | 185.60 ms | 292.4 ms |
+| Zig | 198.46 ms | 244.5 ms |
+| JS (Node) | 217.20 ms | 297.3 ms |
+| Java (JIT) | 272.92 ms | 576.9 ms |
+| Numpy | 0.42 s | 682.8 ms |
+| Julia v2 | 631.00 ms | 5.224 s |
+| JS (Bun) | 745.20 ms | 836.6 ms |
+| Lua | 2585.88 ms | 3.221 s |
+| Python | 2.87 s | 2.946 s |
 
 <details>
 <summary> Old Results with details (on my machine) </summary>
