@@ -1,4 +1,6 @@
-Generate related posts based on tags. Sort by the number of shared tags.
+### Problem:
+
+#### Given a list of posts, compute the top 5 related posts for each post based on the number of shared tags.
 
 ## Steps:
 
@@ -39,29 +41,29 @@ Generate related posts based on tags. Sort by the number of shared tags.
 
 | Language       | Processing Time | Total (PT + I/O) |
 | -------------- | --------------- | ---------------- |
-| Go Concurrent | 17.55 ms | 51.0 ms |
-| Rust Rayon | 17.99 ms | 36.5 ms |
-| Rust | 32.41 ms | 50.5 ms |
-| Go | 33.03 ms | 65.3 ms |
-| Java (GraalVM) | 36.31 ms | 63.4 ms |
-| Vlang | 48.40 ms | 353.2 ms |
-| Swift | 51.25 ms | 464.2 ms |
-| Crystal | 59.20 ms | 110.7 ms |
-| Odin | 65.33 ms | 346.5 ms |
-| Nim | 77.17 ms | 104.0 ms |
-| Dart VM | 82.25 ms | 532.2 ms |
-| LuaJIT | 103.24 ms | 358.6 ms |
-| Dart AOT | 117.63 ms | 249.8 ms |
-| JS (Deno) | 151.20 ms | 240.5 ms |
-| Fsharp | 160.00 ms | 912.1 ms |
-| JS (Node) | 168.60 ms | 242.3 ms |
-| Zig | 232.31 ms | 274.7 ms |
-| Java (JIT) | 234.69 ms | 505.5 ms |
-| Julia v2 | 588.83 ms | 4.905 s |
-| JS (Bun) | 648.60 ms | 714.4 ms |
-| Numpy | 0.90 s | 1.067 s |
-| Lua | 1943.84 ms | 2.539 s |
-| Python | 2.31 s | 2.382 s |
+| Go Concurrent  | 17.55 ms        | 51.0 ms          |
+| Rust Rayon     | 17.99 ms        | 36.5 ms          |
+| Rust           | 32.41 ms        | 50.5 ms          |
+| Go             | 33.03 ms        | 65.3 ms          |
+| Java (GraalVM) | 36.31 ms        | 63.4 ms          |
+| Vlang          | 48.40 ms        | 353.2 ms         |
+| Swift          | 51.25 ms        | 464.2 ms         |
+| Crystal        | 59.20 ms        | 110.7 ms         |
+| Odin           | 65.33 ms        | 346.5 ms         |
+| Nim            | 77.17 ms        | 104.0 ms         |
+| Dart VM        | 82.25 ms        | 532.2 ms         |
+| LuaJIT         | 103.24 ms       | 358.6 ms         |
+| Dart AOT       | 117.63 ms       | 249.8 ms         |
+| JS (Deno)      | 151.20 ms       | 240.5 ms         |
+| Fsharp         | 160.00 ms       | 912.1 ms         |
+| JS (Node)      | 168.60 ms       | 242.3 ms         |
+| Zig            | 232.31 ms       | 274.7 ms         |
+| Java (JIT)     | 234.69 ms       | 505.5 ms         |
+| Julia v2       | 588.83 ms       | 4.905 s          |
+| JS (Bun)       | 648.60 ms       | 714.4 ms         |
+| Numpy          | 0.90 s          | 1.067 s          |
+| Lua            | 1943.84 ms      | 2.539 s          |
+| Python         | 2.31 s          | 2.382 s          |
 
 <details>
 <summary> Old Results with details (on my machine) </summary>
