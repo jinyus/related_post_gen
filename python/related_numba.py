@@ -16,12 +16,28 @@ def count_relations(n_posts, t_to_pp, tt, current_p):
     return relation_count
 
 
+@njit
+def get_top5(relation_count):
+    max_i = np.zeros(5, dtype=np.uint16)
+    max_r = np.zeros(5, dtype=np.uint8)
+    for i, r in enumerate(relation_count):
+        for j in range(4, -1, -1):
+            if r > max_r[j]:
+                max_r[:j] = max_r[1:j + 1]
+                max_i[:j] = max_i[1:j + 1]
+                max_r[j] = r
+                max_i[j] = i
+                break
+    return max_i
+
+
 def precompile():
     lap()
     # JIT compile by running with the arguments of the correct type
     # 1) measure compile time
     # 2) get correct processing (without compilation) time using the cached machine code
     count_relations(1, typed.List([np.empty(0, dtype=np.uint16)]), np.empty(0, dtype=np.uint8), 0)
+    get_top5(np.empty(0, dtype=np.uint8))
 
 
 def main():
@@ -43,7 +59,7 @@ def main():
     for p, post in enumerate(posts):
         tt = np.array([tag_to_t[tag] for tag in post["tags"]], dtype=np.uint8)
         relation_count = count_relations(len(posts), t_to_pp, tt, p)
-        top5 = np.flip(np.argsort(relation_count, kind="stable")[-5:])
+        top5 = get_top5(relation_count)
         all_related_posts.append(
             {
                 "_id": post["_id"],
