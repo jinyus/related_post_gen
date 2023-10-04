@@ -60,7 +60,7 @@ let allRelatedPosts: RelatedPosts[] =
         let mutable minTags = 0
 
         // custom priority queue to find topN
-        for i in 0.. taggedPostCount.Length - 1 do
+        for i in 0 .. taggedPostCount.Length - 1 do
             let count = taggedPostCount[i]
 
             if count > minTags then
