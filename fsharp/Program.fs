@@ -1,13 +1,23 @@
-﻿open System.IO
-open System
+﻿open System
+open System.IO
+open FSharp.NativeInterop
 open FSharp.Json
+open System.Collections.Generic
+
+#nowarn "9"
+
+let inline stackalloc<'a when 'a: unmanaged> (length: int): Span<'a> =
+  let p = NativePtr.stackalloc<'a> length |> NativePtr.toVoidPtr
+  Span<'a>(p, length)
 
 
+[<Struct>]
 type Post =
     { _id: string
       title: string
       tags: string[] }
 
+[<Struct>]
 type RelatedPosts =
     { _id: string
       tags: string[]
@@ -16,33 +26,41 @@ type RelatedPosts =
 let srcDir = __SOURCE_DIRECTORY__
 let posts = Json.deserialize<Post[]> (File.ReadAllText $"{srcDir}/../posts.json")
 
-let start = DateTime.Now
+let stopwatch = Diagnostics.Stopwatch()
+stopwatch.Start()
 
-// very slow, 50ms. needs improvement
-let tagMap: Map<string, int array> =
-    posts
-    |> Array.mapi (fun i p -> i, p)
-    |> Array.collect (fun (i, p) -> p.tags |> Array.map (fun t -> t, [| i |]))
-    |> Array.groupBy fst
-    |> Array.map (fun (t, is) -> t, is |> Array.collect snd)
-    |> Map.ofArray
+// Start work
+let tagPosts = Dictionary<string, Stack<int>>()
 
-let mutable taggedPostCount = Array.create posts.Length 0
+posts
+|> Array.iteri (fun postId post ->
+    let postTagsStack = Stack()
+
+    for tag in post.tags do
+        postTagsStack.Push tag
+        match tagPosts.TryGetValue tag with
+        | true, s -> s.Push postId
+        | false, _ ->
+            let newStack = Stack()
+            newStack.Push postId
+            tagPosts[tag] <- newStack
+    )
+
+
+let topN = 5
 
 let allRelatedPosts: RelatedPosts[] =
     posts
-    |> Array.mapi (fun i post ->
-        Array.fill taggedPostCount 0 posts.Length 0
+    |> Array.Parallel.mapi (fun postId post ->
+        let taggedPostCount = stackalloc posts.Length
+        let top5 = stackalloc (topN * 2) // flattened list of (count, id)
 
-        for tag in post.tags do
-            for oIDX in tagMap[tag] do
-                taggedPostCount[oIDX] <- taggedPostCount[oIDX] + 1
+        for tagId in post.tags do
+            for relatedPostId in tagPosts[tagId] do
+                taggedPostCount[relatedPostId] <- taggedPostCount[relatedPostId] + 1
 
+        taggedPostCount[postId] <- 0 // ignore self
 
-        taggedPostCount[i] <- 0 // ignore self
-
-        let topN = 5
-        let mutable top5 = Array.zeroCreate (topN * 2) // flattened list of (count, id)
         let mutable minTags = 0
 
         // custom priority queue to find topN
@@ -64,14 +82,19 @@ let allRelatedPosts: RelatedPosts[] =
 
                 minTags <- top5[topN * 2 - 2]
 
+        let related = Array.zeroCreate topN
+        for i in 0 .. related.Length - 1 do
+            related[i] <- posts[top5[i * 2 + 1]]
+
         { _id = post._id
           tags = post.tags
-          related = Array.init topN (fun i -> posts[top5[i * 2 + 1]]) }
+          related = related }
 
     )
 
 
-printfn "Processing time (w/o IO): %dms" (DateTime.Now - start).Milliseconds
+stopwatch.Stop()
+printfn "Processing time (w/o IO): %dms" stopwatch.ElapsedMilliseconds
 let json = Json.serialize allRelatedPosts
 
 File.WriteAllText($"{srcDir}/../related_posts_fsharp.json", json)
