@@ -1,37 +1,32 @@
 use std::{collections::BinaryHeap, time::Instant};
+use std::borrow::Cow;
 
 use rayon::prelude::*;
 use rustc_data_structures::fx::FxHashMap;
 use serde::{Deserialize, Serialize};
 use serde_json::from_str;
 
-use mimalloc::MiMalloc;
-#[global_allocator]
-static GLOBAL: MiMalloc = MiMalloc;
-
-type SString = smallstr::SmallString<[u8; 16]>;
-
 #[derive(Serialize, Deserialize)]
-struct Post {
-    _id: SString,
-    title: String,
+struct Post<'a> {
+    _id: Cow<'a,str>,
+    title: Cow<'a,str>,
     // #[serde(skip_serializing)]
-    tags: Vec<SString>,
+    tags: Vec<Cow<'a,str>>,
 }
 
 const NUM_TOP_ITEMS: usize = 5;
 
 #[derive(Serialize)]
 struct RelatedPosts<'a> {
-    _id: &'a SString,
-    tags: &'a Vec<SString>,
-    related: Vec<&'a Post>,
+    _id: &'a Cow<'a,str>,
+    tags: &'a Vec<Cow<'a,str>>,
+    related: Vec<&'a Post<'a>>,
 }
 
 #[derive(Eq)]
 struct PostCount {
-    post: usize,
-    count: usize,
+    post: u32,
+    count: u32,
 }
 
 impl std::cmp::PartialEq for PostCount {
@@ -71,15 +66,15 @@ fn least_n<T: Ord>(n: usize, mut from: impl Iterator<Item = T>) -> impl Iterator
 fn main() {
     let json_str = std::fs::read_to_string("../posts.json").unwrap();
     let posts: Vec<Post> = from_str(&json_str).unwrap();
-    let num_cpus = num_cpus::get_physical(); // does IO to get num_cpus
+    let num_cpus = num_cpus::get_physical() ; // does IO to get num_cpus
 
     let start = Instant::now();
 
-    let mut post_tags_map: FxHashMap<&str, Vec<usize>> = FxHashMap::default();
+    let mut post_tags_map: FxHashMap<&str, Vec<u32>> = FxHashMap::default();
 
     for (i, post) in posts.iter().enumerate() {
         for tag in &post.tags {
-            post_tags_map.entry(tag).or_default().push(i);
+            post_tags_map.entry(tag.as_ref()).or_default().push(i as u32);
         }
     }
 
@@ -97,9 +92,9 @@ fn main() {
                 let mut tagged_post_count = vec![0; posts.len()];
 
                 for tag in &post.tags {
-                    if let Some(tag_posts) = post_tags_map.get(tag.as_str()) {
+                    if let Some(tag_posts) = post_tags_map.get(tag.as_ref()) {
                         for &other_post_idx in tag_posts {
-                            tagged_post_count[other_post_idx] += 1;
+                            tagged_post_count[other_post_idx as usize] += 1;
                         }
                     }
                 }
@@ -111,9 +106,9 @@ fn main() {
                     tagged_post_count
                         .into_iter()
                         .enumerate()
-                        .map(|(post, count)| PostCount { post, count }),
+                        .map(|(post, count)| PostCount { post:post as u32, count }),
                 );
-                let related = top.map(|it| &posts[it.post]).collect();
+                let related = top.map(|it| &posts[it.post as usize]).collect();
 
                 RelatedPosts {
                     _id: &post._id,
