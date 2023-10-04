@@ -356,7 +356,7 @@ run_fsharp() {
 run_luajit() {
     echo "Running LuaJIT" &&
         cd ./lua &&
-        sudo luarocks install luasocket &&
+        sudo luarocks --lua-version 5.1 install luasocket &&
         if [ $HYPER == 1 ]; then
             capture "LuaJIT" hyperfine -r 5 -w 2 --show-output "luajit only_lua.lua"
         else
