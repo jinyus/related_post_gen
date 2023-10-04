@@ -32,18 +32,18 @@ def main():
 
     relatedness = tag_map @ tag_map.T
     relatedness.setdiag(0)
-    relatedness = relatedness.todense()
-    related_posts = np.flip(
-        np.argsort(relatedness, axis=1, kind="stable")[:, -5:], axis=1
-    )
 
     all_related = []
     for i, post in enumerate(posts):
+        data = relatedness.data[relatedness.indptr[i]: relatedness.indptr[i + 1]]
+        top5_among_nonzeros = np.flip(np.argsort(data, kind="stable")[-5:])
+        top5 = relatedness.indices[relatedness.indptr[i]: relatedness.indptr[i + 1]][top5_among_nonzeros]
+
         all_related.append(
             {
                 "_id": post["_id"],
                 "tags": post["tags"],
-                "related": [posts[idx].copy() for idx in related_posts[i, :]],
+                "related": [posts[idx].copy() for idx in top5],
             }
         )
 
