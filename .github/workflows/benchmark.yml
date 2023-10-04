@@ -87,6 +87,10 @@ jobs:
             - name: Install Dotnet
               uses: actions/setup-dotnet@v3
 
+            - name: Install LuaJit
+              run: |
+                sudo apt install luajit lua5.1 luarocks lua-socket:amd64
+
             - name: Run Benchmark
               run: ./run.sh all raw_results.md
 
