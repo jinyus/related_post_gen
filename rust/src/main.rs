@@ -1,34 +1,31 @@
 use std::{collections::BinaryHeap, time::Instant};
+use std::borrow::Cow;
 
 use rustc_data_structures::fx::FxHashMap;
 use serde::{Deserialize, Serialize};
 use serde_json::from_str;
 
-use mimalloc::MiMalloc;
-#[global_allocator]
-static GLOBAL: MiMalloc = MiMalloc;
-
 #[derive(Serialize, Deserialize)]
-struct Post {
-    _id: String,
-    title: String,
+struct Post<'a> {
+    _id: Cow<'a,str>,
+    title: Cow<'a,str>,
     // #[serde(skip_serializing)]
-    tags: Vec<String>,
+    tags: Vec<Cow<'a,str>>,
 }
 
 const NUM_TOP_ITEMS: usize = 5;
 
 #[derive(Serialize)]
 struct RelatedPosts<'a> {
-    _id: &'a String,
-    tags: &'a Vec<String>,
-    related: Vec<&'a Post>,
+    _id: &'a Cow<'a,str>,
+    tags: &'a Vec<Cow<'a,str>>,
+    related: Vec<&'a Post<'a>>,
 }
 
 #[derive(Eq)]
 struct PostCount {
-    post: usize,
-    count: usize,
+    post: u32,
+    count: u32,
 }
 
 impl std::cmp::PartialEq for PostCount {
@@ -71,39 +68,42 @@ fn main() {
 
     let start = Instant::now();
 
-    let mut post_tags_map: FxHashMap<&String, Vec<usize>> = FxHashMap::default();
+    let mut post_tags_map: FxHashMap<&Cow<'_,str>, Vec<u32>> = FxHashMap::default();
 
-    for (i, post) in posts.iter().enumerate() {
-        for tag in &post.tags {
-            post_tags_map.entry(tag).or_default().push(i);
+    for (post_idx, post) in posts.iter().enumerate() {
+        for tag in post.tags.iter() {
+            post_tags_map.entry(tag).or_default().push(post_idx as u32);
         }
     }
 
     let related_posts: Vec<RelatedPosts<'_>> = posts
         .iter()
         .enumerate()
-        .map(|(idx, post)| {
+        .map(|(post_idx, post)| {
             // faster than allocating outside the loop
-            let mut tagged_post_count = vec![0; posts.len()];
+            let mut tagged_post_count = vec![0u32; posts.len()];
+            // tagged_post_count.fill(0u32);
+            // tagged_post_count.clear();
+            // tagged_post_count.extend(std::iter::repeat(0).take(0));
 
-            for tag in &post.tags {
+            for tag in post.tags.iter() {
                 if let Some(tag_posts) = post_tags_map.get(tag) {
-                    for &other_post_idx in tag_posts {
-                        tagged_post_count[other_post_idx] += 1;
+                    for other_post_idx in tag_posts.iter() {
+                        tagged_post_count[*other_post_idx as usize] += 1;
                     }
                 }
             }
 
-            tagged_post_count[idx] = 0; // don't recommend the same post
+            tagged_post_count[post_idx] = 0; // don't recommend the same post
 
             let top = least_n(
                 NUM_TOP_ITEMS,
                 tagged_post_count
                     .iter()
                     .enumerate()
-                    .map(|(post, &count)| PostCount { post, count }),
+                    .map(|(post, &count)| PostCount { post: post as u32, count }),
             );
-            let related = top.map(|it| &posts[it.post]).collect();
+            let related = top.map(|it| &posts[it.post as usize]).collect();
 
             RelatedPosts {
                 _id: &post._id,
