@@ -69,7 +69,7 @@ let encoder = JSONEncoder()
 if let data = try? encoder.encode(allRelatedPosts) {
 
     let fileURL = URL(fileURLWithPath: "../related_posts_swift.json", isDirectory: false) 
-    try! data.write(to: fileURL, options: .atomic)
+    try! data.write(to: fileURL)
 
 } else {
 
