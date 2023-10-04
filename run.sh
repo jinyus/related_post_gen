@@ -251,10 +251,23 @@ run_swift() {
         if [ $HYPER == 1 ]; then
             capture "Swift" hyperfine -r 10 --show-output "./.build/release/related"
         else
-            command time -f '%es %Mk' ./related
+            command time -f '%es %Mk' "./.build/release/related"
         fi
 
     check_output "related_posts_swift.json"
+}
+
+run_swift_dispatch() {
+    echo "Running Swift with Dispatch" &&
+        cd ./swift_dispatch &&
+        swift build -c release &&
+        if [ $HYPER == 1 ]; then
+            capture "Swift Dispatch" hyperfine -r 10 --show-output "./.build/release/related"
+        else
+            command time -f '%es %Mk' "./.build/release/related"
+        fi
+
+    check_output "related_posts_swift_dispatch.json"
 }
 
 run_js() {
@@ -377,7 +390,7 @@ run_lua() {
         sudo luarocks install luasocket &&
         cd ./lua &&
         if [ $HYPER == 1 ]; then
-            capture "LuaJIT" hyperfine -r 5 -w 2 --show-output "lua only_lua.lua"
+            capture "Lua" hyperfine -r 5 -w 2 --show-output "lua only_lua.lua"
         else
             command time -f '%es %Mk' lua only_lua.lua
         fi
@@ -455,6 +468,10 @@ elif [ "$first_arg" = "swift" ]; then
 
     run_swift
 
+elif [ "$first_arg" = "swift_dispatch" ]; then
+
+    run_swift_dispatch
+
 elif [ "$first_arg" = "node" ]; then
 
     run_js "node"
@@ -509,6 +526,7 @@ elif [ "$first_arg" = "all" ]; then
         run_dart || echo -e "\n" &&
         run_dart_aot || echo -e "\n" &&
         run_swift || echo -e "\n" &&
+        run_swift_dispatch || echo -e "\n" &&
         run_js "node" || echo -e "\n" &&
         run_js "bun" || echo -e "\n" &&
         run_js "deno" || echo -e "\n" &&
@@ -533,6 +551,10 @@ elif [ "$first_arg" = "clean" ]; then
         cd .. &&
         cd python && rm -rf venv/ &&
         cd .. &&
+        cd swift && swift package reset &&
+        cd .. &&
+        cd swift_dispatch && swift package reset &&
+        cd .. &&
         cd zig && rm -f main main.o &&
         cd ..
     cd java && mvn -q -B clean &&
@@ -541,6 +563,6 @@ elif [ "$first_arg" = "clean" ]; then
 
 else
 
-    echo "Valid args: go | go_con | rust | rust_ray | py | numpy | cr | zig | odin | jq | jul1 | jul2 | v | dart | swift | node | bun | deno | java | java_graal | nim | luajit | lua | all | clean. Unknown argument: $first_arg"
+    echo "Valid args: go | go_con | rust | rust_ray | py | numpy | cr | zig | odin | jq | jul1 | jul2 | v | dart | swift | swift_dispatch | node | bun | deno | java | java_graal | nim | luajit | lua | all | clean. Unknown argument: $first_arg"
 
 fi

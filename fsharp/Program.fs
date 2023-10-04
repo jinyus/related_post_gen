@@ -44,7 +44,6 @@ let postTagsStacks =
 
 let topN = 5
 
-
 let allRelatedPosts: RelatedPosts[] =
     posts
     |> Array.Parallel.mapi (fun postId post ->

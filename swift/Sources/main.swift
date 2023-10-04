@@ -18,7 +18,7 @@ for (index, post) in posts.enumerated() {
     }
 }
 
-var allRelatedPosts = [RelatedPost]()
+var allRelatedPosts = [RelatedPosts]()
 
 for (idx, post) in posts.enumerated() {
     // how to preallocate and empty on each iteration?
@@ -55,7 +55,7 @@ for (idx, post) in posts.enumerated() {
 
     let topPosts = top5Queue.map { posts[$0.0] }
 
-    allRelatedPosts.append(RelatedPost(id: post.id, tags: post.tags, related: topPosts))
+    allRelatedPosts.append(RelatedPosts(_id: post._id, tags: post.tags, related: topPosts))
 }
 
 
@@ -79,30 +79,14 @@ if let data = try? encoder.encode(allRelatedPosts) {
 
 // types
 
-class Post: Codable {
-    var id: String
-    var title: String
-    var tags: [String]
-
-    private enum CodingKeys: String, CodingKey {
-        case id = "_id"
-        case title, tags
-    }
+struct Post: Codable {
+    let _id: String
+    let title: String
+    let tags: [String]
 }
 
-class RelatedPost: Codable {
-    var id: String
-    var tags: [String]
-    var related: [Post]
-
-    init(id: String, tags: [String], related: [Post]) {
-        self.id = id
-        self.tags = tags
-        self.related = related
-    }
-
-    private enum CodingKeys: String, CodingKey {
-        case id = "_id"
-        case tags, related
-    }
+struct RelatedPosts: Codable {
+    let _id: String
+    let tags: [String]
+    let related: [Post]
 }
