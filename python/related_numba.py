@@ -3,14 +3,16 @@ from timing import lap, finish
 lap()
 import numpy as np
 import orjson
-from numba import njit
+from numba import njit, typed
 
 
 @njit
-def count_relations(n_posts, related_pp):
+def count_relations(n_posts, t_to_pp, tt, current_p):
     relation_count = np.zeros(n_posts, dtype=np.uint8)
-    for p in related_pp:
-        relation_count[p] += 1
+    for t in tt:
+        for p in t_to_pp[t]:
+            relation_count[p] += 1
+    relation_count[current_p] = 0
     return relation_count
 
 
@@ -19,7 +21,7 @@ def precompile():
     # JIT compile by running with the arguments of the correct type
     # 1) measure compile time
     # 2) get correct processing (without compilation) time using the cached machine code
-    count_relations(0, np.empty(0, dtype=np.uint16))
+    count_relations(1, typed.List([np.empty(0, dtype=np.uint16)]), np.empty(0, dtype=np.uint8), 0)
 
 
 def main():
@@ -35,14 +37,12 @@ def main():
     for p, post in enumerate(posts):
         for tag in post["tags"]:
             t_to_pp[tag_to_t[tag]].append(p)
-    t_to_pp = np.array([np.array(tp, dtype=np.uint16) for tp in t_to_pp], dtype=object)
+    t_to_pp = typed.List(np.array(tp, dtype=np.uint16) for tp in t_to_pp)
 
     all_related_posts = []
     for p, post in enumerate(posts):
         tt = np.array([tag_to_t[tag] for tag in post["tags"]], dtype=np.uint8)
-        related_idx = np.concatenate(t_to_pp[tt])
-        relation_count = count_relations(len(posts), related_idx)
-        relation_count[p] = 0
+        relation_count = count_relations(len(posts), t_to_pp, tt, p)
         top5 = np.flip(np.argsort(relation_count, kind="stable")[-5:])
         all_related_posts.append(
             {
