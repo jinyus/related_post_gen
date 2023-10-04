@@ -1,4 +1,4 @@
-import Collections
+import struct Collections.TreeDictionary
 import Foundation
 import Dispatch
 
