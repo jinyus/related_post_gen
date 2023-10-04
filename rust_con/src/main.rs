@@ -131,6 +131,6 @@ fn main() {
         );
 
         let json_str = serde_json::to_string(&related_posts).unwrap();
-        std::fs::write("../related_posts_rust_rayon.json", json_str).unwrap();
+        std::fs::write("../related_posts_rust_con.json", json_str).unwrap();
     });
 }

@@ -1,6 +1,5 @@
 rust/target
-rust_max/target
-rust_rayon/target
+rust_con/target
 go/related
 go_con/related_concurrent
 odin/main

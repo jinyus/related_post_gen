@@ -77,9 +77,9 @@ run_rust() {
 
 }
 
-run_rust_rayon() {
+run_rust_con() {
     echo "Running Rust Rayon" &&
-        cd ./rust_rayon &&
+        cd ./rust_con &&
         cargo build --release &&
         if [ $HYPER == 1 ]; then
             capture "Rust Rayon" hyperfine -r 10 -w 3 --show-output "./target/release/rust_rayon"
@@ -87,7 +87,7 @@ run_rust_rayon() {
             command time -f '%es %Mk' ./target/release/rust_rayon
         fi
 
-    check_output "related_posts_rust_rayon.json"
+    check_output "related_posts_rust_con.json"
 
 }
 
@@ -257,17 +257,17 @@ run_swift() {
     check_output "related_posts_swift.json"
 }
 
-run_swift_dispatch() {
+run_swift_con() {
     echo "Running Swift with Dispatch" &&
-        cd ./swift_dispatch &&
+        cd ./swift_con &&
         swift build -c release &&
         if [ $HYPER == 1 ]; then
-            capture "Swift Dispatch" hyperfine -r 10 --show-output "./.build/release/related"
+            capture "Swift Concurrent" hyperfine -r 10 --show-output "./.build/release/related"
         else
             command time -f '%es %Mk' "./.build/release/related"
         fi
 
-    check_output "related_posts_swift_dispatch.json"
+    check_output "related_posts_swift_con.json"
 }
 
 run_js() {
@@ -416,9 +416,9 @@ elif [ "$first_arg" = "rust" ]; then
 
     run_rust
 
-elif [ "$first_arg" = "rust_ray" ]; then
+elif [ "$first_arg" = "rust_con" ]; then
 
-    run_rust_rayon
+    run_rust_con
 
 elif [ "$first_arg" = "py" ]; then
 
@@ -468,9 +468,9 @@ elif [ "$first_arg" = "swift" ]; then
 
     run_swift
 
-elif [ "$first_arg" = "swift_dispatch" ]; then
+elif [ "$first_arg" = "swift_con" ]; then
 
-    run_swift_dispatch
+    run_swift_con
 
 elif [ "$first_arg" = "node" ]; then
 
@@ -514,7 +514,7 @@ elif [ "$first_arg" = "all" ]; then
         run_go || echo -e "\n" &&
         run_go_concurrent || echo -e "\n" &&
         run_rust || echo -e "\n" &&
-        run_rust_rayon || echo -e "\n" &&
+        run_rust_con || echo -e "\n" &&
         run_python || echo -e "\n" &&
         run_python_np || echo -e "\n" &&
         run_crystal || echo -e "\n" &&
@@ -526,7 +526,7 @@ elif [ "$first_arg" = "all" ]; then
         run_dart || echo -e "\n" &&
         run_dart_aot || echo -e "\n" &&
         run_swift || echo -e "\n" &&
-        run_swift_dispatch || echo -e "\n" &&
+        run_swift_con || echo -e "\n" &&
         run_js "node" || echo -e "\n" &&
         run_js "bun" || echo -e "\n" &&
         run_js "deno" || echo -e "\n" &&
@@ -547,13 +547,13 @@ elif [ "$first_arg" = "clean" ]; then
         cd .. &&
         cd rust && cargo clean &&
         cd .. &&
-        cd rust_rayon && cargo clean &&
+        cd rust_con && cargo clean &&
         cd .. &&
         cd python && rm -rf venv/ &&
         cd .. &&
         cd swift && swift package reset &&
         cd .. &&
-        cd swift_dispatch && swift package reset &&
+        cd swift_con && swift package reset &&
         cd .. &&
         cd zig && rm -f main main.o &&
         cd ..
@@ -563,6 +563,6 @@ elif [ "$first_arg" = "clean" ]; then
 
 else
 
-    echo "Valid args: go | go_con | rust | rust_ray | py | numpy | cr | zig | odin | jq | jul1 | jul2 | v | dart | swift | swift_dispatch | node | bun | deno | java | java_graal | nim | luajit | lua | all | clean. Unknown argument: $first_arg"
+    echo "Valid args: go | go_con | rust | rust_con | py | numpy | cr | zig | odin | jq | jul1 | jul2 | v | dart | swift | swift_con | node | bun | deno | java | java_graal | nim | luajit | lua | all | clean. Unknown argument: $first_arg"
 
 fi

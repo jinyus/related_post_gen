@@ -1,4 +1,4 @@
-import struct Collections.TreeDictionary
+// import struct Collections.TreeDictionary
 import Foundation
 import Dispatch
 
@@ -33,7 +33,7 @@ func main() {
 
     let start = DispatchTime.now()
 
-    var tagMap: TreeDictionary<String, [Int]> = [:]
+    var tagMap =  [String: [Int]]()
 
     for (i, post) in posts.enumerated() {
         for tag in post.tags {
@@ -89,7 +89,7 @@ func main() {
     let processingTime = Double(nanoTime) / 1_000_000
     print("Processing time (w/o IO): \(processingTime)ms")
 
-    let fileURL = URL(fileURLWithPath: "../related_posts_swift_dispatch.json", isDirectory: false)
+    let fileURL = URL(fileURLWithPath: "../related_posts_swift_con.json", isDirectory: false)
     if let data = try? JSONEncoder().encode(allRelatedPosts) {
         try! data.write(to: fileURL, options: .atomic)
     }
