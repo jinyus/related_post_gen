@@ -12,7 +12,7 @@ public class BenchmarkRunner {
     @Warmup(iterations = 1, batchSize = 1, time = 3)
     @Measurement(iterations = 1, batchSize = 1, time = 3)
     public void init(Blackhole blackhole) throws IOException {
-        App.main(null);
+        App.main(new String[]{});
     }
 
 

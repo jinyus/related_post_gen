@@ -79,7 +79,8 @@ jobs:
             - name: Install GraalVM
               uses: graalvm/setup-graalvm@v1
               with:
-                  java-version: "17"
+                  java-version: "21"
+                  set-java-home: false
 
             - name: Install Nim
               uses: iffy/install-nim@v5
