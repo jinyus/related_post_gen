@@ -7,6 +7,13 @@ final colonOrNewLineRegex = RegExp(r'[:\n]');
 final pTimeRegex = RegExp(r'Processing time[^0-9]*([\d.]+)\s?(ms|s|milliseconds)');
 final tTimeRegex = RegExp(r'Time[^0-9]*([\d.]+ (ms|s))');
 
+const multiCoreHeading = '''
+### Multicore Results
+
+| Language       | Processing Time | Total (PT + I/O) |
+| -------------- | --------------- | ---------------- |
+''';
+
 void main(List<String> args) {
   final filename = args.firstOrNull;
 
@@ -51,6 +58,10 @@ void main(List<String> args) {
 
   final sortedScores = scores.values.toList()..sort((a, b) => a.avgTime().compareTo(b.avgTime()));
 
+  final multiCoreScores = sortedScores.where((s) => s.name.contains('Concurrent')).toList();
+
+  sortedScores..removeWhere((s) => s.name.contains('Concurrent'));
+
   sortedScores.forEach(print);
 
   final readmePathList = file.absolute.path.split(Platform.pathSeparator)
@@ -68,20 +79,24 @@ void main(List<String> args) {
 
   final newReadmeContent = readmeLines
       .map((line) {
-        if (line.startsWith('| -----') && !replaced) {
+        if (line.startsWith('| -----') && !replaced && !shouldReplace) {
           shouldReplace = true;
           return line;
         }
 
         if (!shouldReplace) return line;
 
-        // removes each result line until it finds an empty line
-        if (line.trim().isNotEmpty) return null;
+        // removes every line between the table heading and details open tag
+        if (!line.trim().contains('<details>')) return null;
 
         shouldReplace = false;
         replaced = true;
 
-        return sortedScores.map((e) => e.toString()).join('\n') + '\n';
+        final sCoreLines = sortedScores.map((e) => e.toString()).join('\n') + '\n\n';
+        final mCoreLines = multiCoreScores.map((e) => e.toString()).join('\n') + '\n\n';
+
+        // add back the line with detail opening tag
+        return sCoreLines + multiCoreHeading + mCoreLines + line;
       })
       .whereType<String>()
       .join('\n');
