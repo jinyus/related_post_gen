@@ -32,21 +32,19 @@ stopwatch.Start()
 // Start work
 let tagPosts = Dictionary<string, Stack<int>>()
 
-let postTagsStacks =
-    posts
-    |> Array.mapi (fun postId post ->
-        let postTagsStack = Stack()
+posts
+|> Array.iteri (fun postId post ->
+    let postTagsStack = Stack()
 
-        for tag in post.tags do
-            postTagsStack.Push tag
-            match tagPosts.TryGetValue tag with
-            | true, s -> s.Push postId
-            | false, _ ->
-                let newStack = Stack()
-                newStack.Push postId
-                tagPosts[tag] <- newStack
-
-        postTagsStack)
+    for tag in post.tags do
+        postTagsStack.Push tag
+        match tagPosts.TryGetValue tag with
+        | true, s -> s.Push postId
+        | false, _ ->
+            let newStack = Stack()
+            newStack.Push postId
+            tagPosts[tag] <- newStack
+    )
 
 
 let topN = 5
@@ -57,7 +55,7 @@ let allRelatedPosts: RelatedPosts[] =
         let taggedPostCount = stackalloc posts.Length
         let top5 = stackalloc (topN * 2) // flattened list of (count, id)
 
-        for tagId in postTagsStacks[postId] do
+        for tagId in post.tags do
             for relatedPostId in tagPosts[tagId] do
                 taggedPostCount[relatedPostId] <- taggedPostCount[relatedPostId] + 1
 
