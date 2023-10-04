@@ -1,4 +1,5 @@
 use std::{collections::BinaryHeap, time::Instant};
+use std::borrow::Cow;
 
 use rustc_data_structures::fx::FxHashMap;
 use serde::{Deserialize, Serialize};
@@ -9,20 +10,22 @@ use mimalloc::MiMalloc;
 static GLOBAL: MiMalloc = MiMalloc;
 
 #[derive(Serialize, Deserialize)]
-struct Post {
-    _id: String,
-    title: String,
-    // #[serde(skip_serializing)]
-    tags: Vec<String>,
+struct Post<'a> {
+    #[serde(borrow)]
+    _id: Cow<'a, str>,
+    #[serde(borrow)]
+    title: Cow<'a, str>,
+    #[serde(borrow)]
+    tags: Vec<Cow<'a, str>>,
 }
 
 const NUM_TOP_ITEMS: usize = 5;
 
 #[derive(Serialize)]
 struct RelatedPosts<'a> {
-    _id: &'a String,
-    tags: &'a Vec<String>,
-    related: Vec<&'a Post>,
+    _id: &'a str,
+    tags: &'a Vec<Cow<'a, str>>,
+    related: Vec<&'a Post<'a>>,
 }
 
 #[derive(Eq)]
@@ -71,7 +74,7 @@ fn main() {
 
     let start = Instant::now();
 
-    let mut post_tags_map: FxHashMap<&String, Vec<usize>> = FxHashMap::default();
+    let mut post_tags_map: FxHashMap<&Cow<'_, str>, Vec<usize>> = FxHashMap::default();
 
     for (i, post) in posts.iter().enumerate() {
         for tag in &post.tags {
