@@ -13,7 +13,8 @@ type RelatedPosts =
       tags: string[]
       related: Post[] }
 
-let posts = Json.deserialize<Post[]> (File.ReadAllText "../posts.json")
+let srcDir = __SOURCE_DIRECTORY__
+let posts = Json.deserialize<Post[]> (File.ReadAllText $"{srcDir}/../posts.json")
 
 let start = DateTime.Now
 
@@ -73,4 +74,4 @@ let allRelatedPosts: RelatedPosts[] =
 printfn "Processing time (w/o IO): %dms" (DateTime.Now - start).Milliseconds
 let json = Json.serialize allRelatedPosts
 
-File.WriteAllText("../related_posts_fsharp.json", json)
+File.WriteAllText($"{srcDir}/../related_posts_fsharp.json", json)
