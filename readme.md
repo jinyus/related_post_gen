@@ -41,30 +41,31 @@ Given a list of posts, compute the top 5 related posts for each post based on th
 
 | Language       | Processing Time | Total (PT + I/O) |
 | -------------- | --------------- | ---------------- |
-| Go Concurrent | 19.98 ms | 59.2 ms |
-| Rust Concurrent | 21.21 ms | 40.9 ms |
-| Go | 34.48 ms | 70.2 ms |
-| Java (GraalVM) | 36.77 ms | 67.8 ms |
-| Rust | 40.22 ms | 62.0 ms |
-| Swift Concurrent | 44.97 ms | 442.6 ms |
-| Vlang | 62.03 ms | 379.3 ms |
-| Crystal | 63.27 ms | 125.8 ms |
-| Odin | 65.58 ms | 326.6 ms |
-| Swift | 71.36 ms | 477.3 ms |
-| Nim | 100.92 ms | 133.2 ms |
-| Dart VM | 104.75 ms | 597.7 ms |
-| LuaJIT | 131.00 ms | 421.2 ms |
-| Fsharp | 132.00 ms | 1.004 s |
-| Dart AOT | 148.50 ms | 303.7 ms |
-| JS (Deno) | 185.60 ms | 292.4 ms |
-| Zig | 198.46 ms | 244.5 ms |
-| JS (Node) | 217.20 ms | 297.3 ms |
-| Java (JIT) | 272.92 ms | 576.9 ms |
-| Numpy | 0.42 s | 682.8 ms |
-| Julia v2 | 631.00 ms | 5.224 s |
-| JS (Bun) | 745.20 ms | 836.6 ms |
-| Lua | 2585.88 ms | 3.221 s |
-| Python | 2.87 s | 2.946 s |
+| Go Concurrent | 16.69 ms | 52.3 ms |
+| Rust Concurrent | 19.28 ms | 39.3 ms |
+| Go | 32.28 ms | 68.3 ms |
+| Rust | 34.12 ms | 55.8 ms |
+| Java (GraalVM) | 35.15 ms | 65.5 ms |
+| Swift Concurrent | 41.23 ms | 445.0 ms |
+| Fsharp Concurrent | 42.57 ms | 906.2 ms |
+| Fsharp | 49.00 ms | 900.4 ms |
+| Crystal | 56.56 ms | 116.5 ms |
+| Vlang | 63.38 ms | 413.3 ms |
+| Swift | 66.49 ms | 456.4 ms |
+| Odin | 70.88 ms | 321.7 ms |
+| Nim | 91.67 ms | 122.5 ms |
+| Dart VM | 108.13 ms | 623.4 ms |
+| LuaJIT | 123.92 ms | 435.7 ms |
+| Dart AOT | 142.00 ms | 292.1 ms |
+| Zig | 178.00 ms | 221.2 ms |
+| JS (Deno) | 184.80 ms | 290.7 ms |
+| JS (Node) | 208.20 ms | 292.5 ms |
+| Java (JIT) | 278.54 ms | 567.3 ms |
+| Numpy | 0.41 s | 669.3 ms |
+| Julia v2 | 666.17 ms | 5.523 s |
+| JS (Bun) | 743.80 ms | 831.4 ms |
+| Lua | 2375.23 ms | 3.095 s |
+| Python | 2.71 s | 2.789 s |
 
 <details>
 <summary> Old Results with details (on my machine) </summary>
