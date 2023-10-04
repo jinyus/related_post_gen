@@ -1,5 +1,6 @@
 import json
 import sys
+from pathlib import Path
 from typing import Dict, List
 
 
@@ -59,7 +60,7 @@ if __name__ == "__main__":
     with open(filepath) as f:
         target_file: List[Dict] = json.load(f)
 
-    with open("correct_related.json") as f:
+    with open(Path(filepath).with_name("correct_related.json")) as f:
         correct_file: Dict[str, int] = json.load(f)
 
     if len(target_file) != len(correct_file):
