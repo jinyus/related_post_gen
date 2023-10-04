@@ -116,7 +116,7 @@ run_python_np() {
             python3 -m venv venv
         fi
     source venv/bin/activate &&
-        (pip freeze | grep numpy && pip freeze | grep ujson) || pip install -r requirements.txt &&
+        (pip freeze | grep numpy && pip freeze | grep scipy && pip freeze | grep ujson) || pip install -r requirements.txt &&
         if [ $HYPER == 1 ]; then
             capture "Numpy" hyperfine -r 5 --show-output "python3 ./related_np.py"
         else
