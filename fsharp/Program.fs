@@ -74,7 +74,7 @@ let allRelatedPosts: RelatedPosts[] =
 
                 let insertionPos = upperBound + 2
                 top5[insertionPos] <- count
-                top5[insertionPos + 1] <- int i
+                top5[insertionPos + 1] <- i
 
                 minTags <- top5[topN * 2 - 2]
 
