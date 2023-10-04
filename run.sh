@@ -360,7 +360,7 @@ run_nim() {
 run_fsharp() {
     echo "Running FSharp" &&
         cd ./fsharp &&
-        dotnet add package FSharp.Json &&
+        dotnet restore &&
         dotnet publish -c release &&
         if [ $HYPER == 1 ]; then
             capture "Fsharp" hyperfine -r 5 -w 2 --show-output "./bin/release/net7.0/fsharp"
@@ -374,12 +374,12 @@ run_fsharp() {
 run_fsharp_con() {
     echo "Running FSharp" &&
         cd ./fsharp_con &&
-        dotnet add package FSharp.Json &&
+        dotnet restore &&
         dotnet publish -c release &&
         if [ $HYPER == 1 ]; then
-            capture "Fsharp Concurrent" hyperfine -r 5 -w 2 --show-output "./bin/release/net7.0/fsharp"
+            capture "Fsharp Concurrent" hyperfine -r 5 -w 2 --show-output "./bin/release/net7.0/fsharp_con"
         else
-            command time -f '%es %Mk' ./bin/release/net7.0/fsharp
+            command time -f '%es %Mk' ./bin/release/net7.0/fsharp_con
         fi
 
     check_output "related_posts_fsharp_con.json"
