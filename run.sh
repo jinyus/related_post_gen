@@ -373,6 +373,7 @@ run_lua() {
     echo "Running Lua" &&
         sudo luarocks install luasocket &&
         cd ./lua &&
+        if [ $HYPER == 1 ]; then
             capture "LuaJIT" hyperfine -r 5 -w 2 --show-output "lua only_lua.lua"
         else
             command time -f '%es %Mk' lua only_lua.lua
