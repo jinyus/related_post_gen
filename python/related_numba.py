@@ -50,14 +50,16 @@ def main():
     unique_tags = set(tag for post in posts for tag in post["tags"])
     tag_to_t = {t: np.uint8(i) for i, t in enumerate(unique_tags)}
     t_to_pp = [[] for _ in unique_tags]
+    p_to_tt = []
     for p, post in enumerate(posts):
         for tag in post["tags"]:
             t_to_pp[tag_to_t[tag]].append(p)
+        p_to_tt.append(np.array([tag_to_t[tag] for tag in post["tags"]], dtype=np.uint8))
     t_to_pp = typed.List(np.array(tp, dtype=np.uint16) for tp in t_to_pp)
 
     all_related_posts = []
     for p, post in enumerate(posts):
-        tt = np.array([tag_to_t[tag] for tag in post["tags"]], dtype=np.uint8)
+        tt = p_to_tt[p]
         relation_count = count_relations(len(posts), t_to_pp, tt, p)
         top5 = get_top5(relation_count)
         all_related_posts.append(
