@@ -89,7 +89,7 @@ func main() {
     let processingTime = Double(nanoTime) / 1_000_000
     print("Processing time (w/o IO): \(processingTime)ms")
 
-    let fileURL = URL(fileURLWithPath: "../related_posts_swift.json", isDirectory: false)
+    let fileURL = URL(fileURLWithPath: "../related_posts_swift_dispatch.json", isDirectory: false)
     if let data = try? JSONEncoder().encode(allRelatedPosts) {
         try! data.write(to: fileURL, options: .atomic)
     }
