@@ -1,3 +1,4 @@
+use std::borrow::Cow;
 use std::{collections::BinaryHeap, time::Instant};
 
 use rayon::prelude::*;
@@ -9,23 +10,23 @@ use mimalloc::MiMalloc;
 #[global_allocator]
 static GLOBAL: MiMalloc = MiMalloc;
 
-type SString = smallstr::SmallString<[u8; 16]>;
-
 #[derive(Serialize, Deserialize)]
-struct Post {
-    _id: SString,
-    title: String,
-    // #[serde(skip_serializing)]
-    tags: Vec<SString>,
+struct Post<'a> {
+    #[serde(borrow)]
+    _id: Cow<'a, str>,
+    #[serde(borrow)]
+    title: Cow<'a, str>,
+    #[serde(borrow)]
+    tags: Vec<Cow<'a, str>>,
 }
 
 const NUM_TOP_ITEMS: usize = 5;
 
 #[derive(Serialize)]
 struct RelatedPosts<'a> {
-    _id: &'a SString,
-    tags: &'a Vec<SString>,
-    related: Vec<&'a Post>,
+    _id: &'a str,
+    tags: &'a Vec<Cow<'a, str>>,
+    related: Vec<&'a Post<'a>>,
 }
 
 #[derive(Eq)]
@@ -75,7 +76,7 @@ fn main() {
 
     let start = Instant::now();
 
-    let mut known_tag_idx: FxHashMap<&SString, usize> = FxHashMap::default();
+    let mut known_tag_idx: FxHashMap<&str, usize> = FxHashMap::default();
     // Indexed by TagIdx
     let mut post_idx_for_tag: Vec<Vec<usize>> = Vec::new();
     // Indexed by PostIdx, contains TagIdx values for each post
