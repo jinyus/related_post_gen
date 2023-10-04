@@ -329,7 +329,9 @@ run_nim() {
     echo "Running Nim" &&
         cd ./nim &&
         nimble install -y jsony &&
-        nim compile -d:release --threads:off src/related.nim &&
+        nim compile -d:release --threads:off --passL:"-flto -fprofile-generate" --passC:"-flto -fprofile-generate" src/related.nim &&
+        ./src/related &&
+        nim compile -d:release --threads:off --passL:"-flto -fprofile-use" --passC:"-flto -fprofile-use" src/related.nim &&
         if [ $HYPER == 1 ]; then
             capture "Nim" hyperfine -r 10 -w 2 --show-output "./src/related"
         else

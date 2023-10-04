@@ -1,46 +1,38 @@
 # This is just an example to get you started. A typical binary package
 # uses this file as the main entry point of the application.
-import std/tables
-import std/sequtils
-import times
+import std/[tables, sequtils, monotimes, times]
 import jsony
 
 type
-  Post = object
+  Post = ref object
     `"_id"`: string
     title: string
     tags : seq[string]
 
-  RelatedPosts = object
+  RelatedPosts = ref object
     `"_id"`: string
     tags : seq[string]
     related : seq[Post]
 
-const 
+const
     input = "../posts.json"
     output = "../related_posts_nim.json"
 
+let posts = readFile(input).fromJson(seq[Post])
 
-let content = readFile(input)
-let posts = content.fromJson(seq[Post])
+let start = getMonotime()
 
-let start = getTime()
-
-var tagMap = initTable[string, var seq[int]]()
-
-for i, post in posts.pairs:
+var tagMap: Table[string, seq[int]]
+for i, post in posts:
   for tag in post.tags:
-    var lst = tagMap.getOrDefault(tag, @[])
-    lst.add(i)
-    tagMap[tag] = lst
+    if tagMap.hasKeyOrPut(tag, @[i]):
+      tagMap[tag].add i
 
-# seq of table
 var allRelatedPosts  = newSeq[RelatedPosts](posts.len)
-var taggedPostCount  = newSeq[int](posts.len)
-
+var taggedPostCount: seq[int]
 
 for i ,post in posts.pairs:
-  taggedPostCount.apply(proc(x: int): int = 0)
+  taggedPostCount  = newSeq[int](posts.len)
 
   for tag in post.tags:
     for otherIDX in tagMap[tag]:
@@ -48,34 +40,27 @@ for i ,post in posts.pairs:
 
   taggedPostCount[i] = 0 # remove self
 
-  var top5 : array[5, tuple[ idx: int,count: int]]
-  var minTags = 0
+  var top5: array[5, tuple[idx, count: int]]
 
-  for i , count in taggedPostCount.pairs:
-    if count > minTags:
-      var pos = 4
-
-      while pos >= 0 and count > top5[pos].count:
-        pos -= 1
-
-      pos += 1
-
-      if pos < 4:
-        for i in countdown(3, pos):
-          top5[i + 1] = top5[i]
-
-      top5[pos] = (idx: i, count: count)
-      minTags = top5[4].count
-
+  for i, count in taggedPostCount:
+    if count > top5[4].count:
+      top5[4] = top5[3]
+      block loop:
+        for pos in countdown(3, 1):
+          if count > top5[pos - 1].count:
+            top5[pos] = top5[pos - 1]
+          else:
+            top5[pos] = (idx: i, count: count)
+            break loop
+        top5[0] = (idx: i, count: count)
 
   allRelatedPosts[i] = RelatedPosts(
-    `"_id"`: post.`"_id"`, 
-    tags: post.tags, 
-    related: top5.map(proc(x: tuple[idx: int, count: int]): Post = posts[x.idx]),
+    `"_id"`: post.`"_id"`,
+    tags: post.tags,
+    related: top5.map(proc(x: auto): Post = posts[x.idx]),
     )
 
-
-let total = getTime() - start
+let total = getMonotime() - start
 
 echo "Processing time (w/o IO): ", total.inMilliseconds, "ms"
 
