@@ -21,6 +21,7 @@ if command -v hyperfine &>/dev/null; then
     HYPER=1
 fi
 
+# capture the output of a command and write it to stout or to a file
 capture() {
     title=$1
     command=$2
