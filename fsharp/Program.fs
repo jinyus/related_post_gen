@@ -81,7 +81,7 @@ let allRelatedPosts: RelatedPosts[] =
         { _id = post._id
           tags = post.tags
           related = Array.init topN (fun i -> posts[top5[i * 2 + 1]]) }
-          
+
     )
 
 
