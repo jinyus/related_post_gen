@@ -50,6 +50,7 @@ Generate related posts based on tags. Sort by the number of shared tags.
 | Odin | 65.33 ms | 346.5 ms |
 | Nim | 77.17 ms | 104.0 ms |
 | Dart VM | 82.25 ms | 532.2 ms |
+| LuaJIT | 103.24 ms | 358.6 ms |
 | Dart AOT | 117.63 ms | 249.8 ms |
 | JS (Deno) | 151.20 ms | 240.5 ms |
 | Fsharp | 160.00 ms | 912.1 ms |
@@ -59,7 +60,7 @@ Generate related posts based on tags. Sort by the number of shared tags.
 | Julia v2 | 588.83 ms | 4.905 s |
 | JS (Bun) | 648.60 ms | 714.4 ms |
 | Numpy | 0.90 s | 1.067 s |
-| LuaJIT | 1023.54 ms | 2.539 s |
+| Lua | 1943.84 ms | 2.539 s |
 | Python | 2.31 s | 2.382 s |
 
 <details>
