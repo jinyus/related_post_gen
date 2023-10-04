@@ -7,7 +7,8 @@ from numba import njit, typed
 
 
 @njit
-def count_relations(n_posts, t_to_pp, tt, current_p):
+def count_relations(n_posts, t_to_pp, p_to_tt, current_p):
+    tt = p_to_tt[current_p]
     relation_count = np.zeros(n_posts, dtype=np.uint8)
     for t in tt:
         for p in t_to_pp[t]:
@@ -36,7 +37,11 @@ def precompile():
     # JIT compile by running with the arguments of the correct type
     # 1) measure compile time
     # 2) get correct processing (without compilation) time using the cached machine code
-    count_relations(1, typed.List([np.empty(0, dtype=np.uint16)]), np.empty(0, dtype=np.uint8), 0)
+    count_relations(
+        1,
+        typed.List([np.empty(0, dtype=np.uint16)]),
+        typed.List([np.empty(0, dtype=np.uint8)]),
+        0)
     get_top5(np.empty(0, dtype=np.uint8))
 
 
@@ -54,13 +59,13 @@ def main():
     for p, post in enumerate(posts):
         for tag in post["tags"]:
             t_to_pp[tag_to_t[tag]].append(p)
-        p_to_tt.append(np.array([tag_to_t[tag] for tag in post["tags"]], dtype=np.uint8))
+        p_to_tt.append([tag_to_t[tag] for tag in post["tags"]])
     t_to_pp = typed.List(np.array(tp, dtype=np.uint16) for tp in t_to_pp)
+    p_to_tt = typed.List(np.array(tp, dtype=np.uint8) for tp in p_to_tt)
 
     all_related_posts = []
     for p, post in enumerate(posts):
-        tt = p_to_tt[p]
-        relation_count = count_relations(len(posts), t_to_pp, tt, p)
+        relation_count = count_relations(len(posts), t_to_pp, p_to_tt, p)
         top5 = get_top5(relation_count)
         all_related_posts.append(
             {
