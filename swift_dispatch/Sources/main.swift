@@ -52,7 +52,7 @@ func main() {
             for tag in post.tags {
                 if let tagPosts = tagMap[tag] {
                     for otherPostIdx in tagPosts {
-                        taggedPostCount[otherPostIdx] &+= 1
+                        taggedPostCount[otherPostIdx] += 1
                     }
                 }
             }
@@ -66,9 +66,9 @@ func main() {
                 if count > minTags {
                     var pos = 4
                     while pos >= 0 && top5Queue[pos].1 < count {
-                        pos &-= 1
+                        pos -= 1
                     }
-                    pos &+= 1
+                    pos += 1
                     if pos <= 4 {
                         top5Queue.insert((idx, count), at: pos)
                         top5Queue.removeLast()
