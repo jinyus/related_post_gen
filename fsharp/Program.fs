@@ -1,7 +1,14 @@
 ﻿open System
 open System.IO
+open FSharp.NativeInterop
 open FSharp.Json
 open System.Collections.Generic
+
+#nowarn "9"
+
+let inline stackalloc<'a when 'a: unmanaged> (length: int): Span<'a> =
+  let p = NativePtr.stackalloc<'a> length |> NativePtr.toVoidPtr
+  Span<'a>(p, length)
 
 
 [<Struct>]
@@ -47,8 +54,8 @@ let topN = 5
 let allRelatedPosts: RelatedPosts[] =
     posts
     |> Array.Parallel.mapi (fun postId post ->
-        let taggedPostCount = Array.zeroCreate posts.Length
-        let top5 = Array.zeroCreate (topN * 2) // flattened list of (count, id)
+        let taggedPostCount = stackalloc posts.Length
+        let top5 = stackalloc (topN * 2) // flattened list of (count, id)
 
         for tagId in postTagsStacks[postId] do
             for relatedPostId in tagPosts[tagId] do
@@ -77,9 +84,13 @@ let allRelatedPosts: RelatedPosts[] =
 
                 minTags <- top5[topN * 2 - 2]
 
+        let related = Array.zeroCreate topN
+        for i in 0 .. related.Length - 1 do
+            related[i] <- posts[top5[i * 2 + 1]]
+
         { _id = post._id
           tags = post.tags
-          related = Array.init topN (fun i -> posts[top5[i * 2 + 1]]) }
+          related = related }
 
     )
 
