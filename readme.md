@@ -1,6 +1,6 @@
 ### Problem:
 
-#### Given a list of posts, compute the top 5 related posts for each post based on the number of shared tags.
+> Given a list of posts, compute the top 5 related posts for each post based on the number of shared tags.
 
 ## Steps:
 
