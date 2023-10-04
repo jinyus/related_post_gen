@@ -43,6 +43,12 @@ if __name__ == "__main__":
     with open("correct_related.json") as f:
         correct_file: Dict[str, int] = json.load(f)
 
+    if len(target_file) != len(correct_file):
+        print(
+            f"Invalid post count! expected: {len(correct_file)} actual: {len(target_file)}"
+        )
+        sys.exit(1)
+
     for post in target_file:
         if "_id" not in post:
             print(f"Invalid post! _id not found: \n{post}")
