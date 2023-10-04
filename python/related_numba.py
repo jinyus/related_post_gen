@@ -32,6 +32,16 @@ def get_top5(relation_count):
     return max_i
 
 
+@njit
+def get_all_top5(n_posts, t_to_pp, p_to_tt):
+    all_top5 = np.empty((n_posts, 5), np.uint16)
+    for p in range(n_posts):
+        relation_count = count_relations(n_posts, t_to_pp, p_to_tt, p)
+        top5 = get_top5(relation_count)
+        all_top5[p] = top5
+    return all_top5
+
+
 def precompile():
     lap()
     # JIT compile by running with the arguments of the correct type
@@ -43,6 +53,11 @@ def precompile():
         typed.List([np.empty(0, dtype=np.uint8)]),
         0)
     get_top5(np.empty(0, dtype=np.uint8))
+    get_all_top5(
+        0,
+        typed.List([np.empty(0, dtype=np.uint16)]),
+        typed.List([np.empty(0, dtype=np.uint8)])
+    )
 
 
 def main():
@@ -63,10 +78,10 @@ def main():
     t_to_pp = typed.List(np.array(tp, dtype=np.uint16) for tp in t_to_pp)
     p_to_tt = typed.List(np.array(tp, dtype=np.uint8) for tp in p_to_tt)
 
+    all_top5 = get_all_top5(len(posts), t_to_pp, p_to_tt)
+
     all_related_posts = []
-    for p, post in enumerate(posts):
-        relation_count = count_relations(len(posts), t_to_pp, p_to_tt, p)
-        top5 = get_top5(relation_count)
+    for post, top5 in zip(posts, all_top5):
         all_related_posts.append(
             {
                 "_id": post["_id"],
