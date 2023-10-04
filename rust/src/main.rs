@@ -1,5 +1,5 @@
-use std::{collections::BinaryHeap, time::Instant};
 use std::borrow::Cow;
+use std::{collections::BinaryHeap, time::Instant};
 
 use rustc_data_structures::fx::FxHashMap;
 use serde::{Deserialize, Serialize};
@@ -74,11 +74,21 @@ fn main() {
 
     let start = Instant::now();
 
-    let mut post_tags_map: FxHashMap<&Cow<'_, str>, Vec<usize>> = FxHashMap::default();
+    let mut known_tag_idx: FxHashMap<&Cow<'_, str>, usize> = FxHashMap::default();
+    // Indexed by TagIdx
+    let mut post_idx_for_tag: Vec<Vec<usize>> = Vec::new();
+    // Indexed by PostIdx, contains TagIdx values for each post
+    let mut post_tag_idxs: Vec<Vec<usize>> = vec![Vec::new(); posts.len()];
 
     for (i, post) in posts.iter().enumerate() {
         for tag in &post.tags {
-            post_tags_map.entry(tag).or_default().push(i);
+            let next_tag_idx = known_tag_idx.len();
+            let tag_idx = *known_tag_idx.entry(tag).or_insert_with(|| {
+                post_idx_for_tag.push(Vec::new());
+                next_tag_idx
+            });
+            post_idx_for_tag[tag_idx].push(i);
+            post_tag_idxs[i].push(tag_idx);
         }
     }
 
@@ -89,11 +99,9 @@ fn main() {
             // faster than allocating outside the loop
             let mut tagged_post_count = vec![0; posts.len()];
 
-            for tag in &post.tags {
-                if let Some(tag_posts) = post_tags_map.get(tag) {
-                    for &other_post_idx in tag_posts {
-                        tagged_post_count[other_post_idx] += 1;
-                    }
+            for &tag_idx in &post_tag_idxs[idx] {
+                for &other_post_idx in &post_idx_for_tag[tag_idx] {
+                    tagged_post_count[other_post_idx] += 1;
                 }
             }
 
