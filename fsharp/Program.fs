@@ -1,4 +1,5 @@
-﻿open System.IO
+﻿open System.Collections.Generic
+open System.IO
 open System
 open FSharp.Json
 open Microsoft.FSharp.NativeInterop
@@ -23,22 +24,30 @@ type RelatedPosts =
 let srcDir = __SOURCE_DIRECTORY__
 let posts = Json.deserialize<Post[]> (File.ReadAllText $"{srcDir}/../posts.json")
 
-let start = DateTime.Now
+let stopwatch = Diagnostics.Stopwatch()
+stopwatch.Start()
 
-// very slow, 50ms. needs improvement
-let tagMap: Map<string, int array> =
-    posts
-    |> Array.mapi (fun i p -> i, p)
-    |> Array.collect (fun (i, p) -> p.tags |> Array.map (fun t -> t, [| i |]))
-    |> Array.groupBy fst
-    |> Array.map (fun (t, is) -> t, is |> Array.collect snd)
-    |> Map.ofArray
+// Start work
+let tagMap = Dictionary<string, Stack<int>>()
 
+posts
+|> Array.iteri (fun postId post ->
+    let postTagsStack = Stack()
+
+    for tag in post.tags do
+        postTagsStack.Push tag
+        match tagMap.TryGetValue tag with
+        | true, s -> s.Push postId
+        | false, _ ->
+            let newStack = Stack()
+            newStack.Push postId
+            tagMap[tag] <- newStack
+    )
 
 let allRelatedPosts: RelatedPosts[] =
     posts
     |> Array.mapi (fun i post ->
-        let mutable taggedPostCount = stackalloc posts.Length
+        let taggedPostCount = stackalloc posts.Length
 
         for tag in post.tags do
             for oIDX in tagMap[tag] do
@@ -48,7 +57,7 @@ let allRelatedPosts: RelatedPosts[] =
         taggedPostCount[i] <- 0 // ignore self
 
         let topN = 5
-        let mutable top5 = stackalloc (topN * 2) // flattened list of (count, id)
+        let top5 = stackalloc (topN * 2) // flattened list of (count, id)
         let mutable minTags = 0
 
         // custom priority queue to find topN
@@ -73,15 +82,15 @@ let allRelatedPosts: RelatedPosts[] =
         let related = Array.zeroCreate 5
         for i in 0 .. related.Length - 1 do
             related[i] <- posts[top5[i * 2 + 1]]
-        
+
         { _id = post._id
           tags = post.tags
           related = related }
 
     )
 
-
-printfn "Processing time (w/o IO): %dms" (DateTime.Now - start).Milliseconds
+stopwatch.Stop()
+printfn "Processing time (w/o IO): %dms" stopwatch.ElapsedMilliseconds
 let json = Json.serialize allRelatedPosts
 
 File.WriteAllText($"{srcDir}/../related_posts_fsharp.json", json)
