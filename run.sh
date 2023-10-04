@@ -367,6 +367,9 @@ run_luajit() {
         else
             command time -f '%es %Mk' luajit only_lua.lua
         fi
+
+    check_output "related_posts_lua.json"
+
 }
 
 run_lua() {
@@ -378,6 +381,8 @@ run_lua() {
         else
             command time -f '%es %Mk' lua only_lua.lua
         fi
+
+    check_output "related_posts_lua.json"
 }
 
 check_output() {
