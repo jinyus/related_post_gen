@@ -353,6 +353,35 @@ run_fsharp() {
     check_output "related_posts_fsharp.json"
 }
 
+run_luajit_ffi() {
+    echo "Running LuaJIT+FFI" &&
+        cd ./lua &&
+        if [ $HYPER == 1 ]; then
+            capture "LuaJIT" hyperfine -r 5 -w 2 --show-output "luajit luajit_ffi.lua"
+        else
+            command time -f '%es %Mk' luajit luajit_ffi.lua
+        fi
+}
+
+run_luajit() {
+    echo "Running LuaJIT" &&
+        cd ./lua &&
+        if [ $HYPER == 1 ]; then
+            capture "LuaJIT" hyperfine -r 5 -w 2 --show-output "luajit only_lua.lua"
+        else
+            command time -f '%es %Mk' luajit only_lua.lua
+        fi
+}
+
+run_lua() {
+    echo "Running Lua" &&
+        cd ./lua &&
+            capture "LuaJIT" hyperfine -r 5 -w 2 --show-output "lua only_lua.lua"
+        else
+            command time -f '%es %Mk' lua only_lua.lua
+        fi
+}
+
 check_output() {
     cd .. &&
         echo "Checking output" &&
@@ -451,6 +480,18 @@ elif [ "$first_arg" = "fsharp" ]; then
 
     run_fsharp
 
+elif [ "$first_arg" = "luajit" ]; then
+
+    run_luajit
+
+elif [ "$first_arg" = "luajit_ffi" ]; then
+
+    run_luajit_ffi
+
+elif [ "$first_arg" = "lua" ]; then
+
+    run_lua
+
 elif [ "$first_arg" = "all" ]; then
 
     echo -e "Running all\n" &&
@@ -476,6 +517,9 @@ elif [ "$first_arg" = "all" ]; then
         run_java_graal || echo -e "\n" &&
         run_nim || echo -e "\n" &&
         run_fsharp || echo -e "\n" &&
+        run_luajit || echo -e "\n" &&
+        run_luajit_ffi || echo -e "\n" &&
+        run_lua || echo -e "\n" &&
         echo -e "Finished running all\n"
 
 elif [ "$first_arg" = "clean" ]; then
@@ -499,6 +543,6 @@ elif [ "$first_arg" = "clean" ]; then
 
 else
 
-    echo "Valid args: go | go_con | rust | rust_ray | py | numpy | cr | zig | odin | jq | jul1 | jul2 | v | dart | swift | node | bun | deno | java | java_graal | nim | all | clean. Unknown argument: $first_arg"
+    echo "Valid args: go | go_con | rust | rust_ray | py | numpy | cr | zig | odin | jq | jul1 | jul2 | v | dart | swift | node | bun | deno | java | java_graal | nim | luajit_ffi | luajit | lua | all | clean. Unknown argument: $first_arg"
 
 fi
