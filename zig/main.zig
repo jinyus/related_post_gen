@@ -1,8 +1,9 @@
 const std = @import("std");
 var allocator = std.heap.c_allocator;
-const post = struct { _id: []const u8, title: []const u8, tags: [][]const u8 };
-const posts = []post;
-const constop_posts = struct { _id: *const []const u8, tags: *const [][]const u8, related: []*post };
+const Post = struct { _id: []const u8, title: []const u8, tags: [][]const u8 };
+const Posts = []Post;
+const TopPosts = struct { _id: *const []const u8, tags: *const [][]const u8, related: []*Post };
+const PostsWithSharedTag = struct { post: usize, tags: usize };
 const stdout = std.io.getStdOut().writer();
 
 fn lessthan(context: void, lhs: usize, rhs: usize) bool {
@@ -13,46 +14,80 @@ fn lessthan(context: void, lhs: usize, rhs: usize) bool {
 pub fn main() !void {
     const file = try std.fs.cwd().openFile("../posts.json", .{});
     defer file.close();
-    const arr_posts = std.ArrayList(usize);
-    var map = std.StringHashMap(arr_posts).init(allocator);
+    const ArrPosts = std.ArrayList(usize);
+    var map = std.StringHashMap(ArrPosts).init(allocator);
     defer map.deinit();
     var json_reader = std.json.reader(allocator, file.reader());
     defer json_reader.deinit();
-    const parsed = try std.json.parseFromTokenSource(posts, allocator, &json_reader, .{});
+    const parsed = try std.json.parseFromTokenSource(Posts, allocator, &json_reader, .{});
     defer parsed.deinit();
 
     const start = try std.time.Instant.now();
 
     for (parsed.value, 0..) |post_ele, i| {
         for (post_ele.tags) |tag| {
-            var g_p = try map.getOrPut(tag);
-            if (g_p.found_existing) {
-                try g_p.value_ptr.*.append(i);
+            var get_or_put = try map.getOrPut(tag);
+            if (get_or_put.found_existing) {
+                try get_or_put.value_ptr.*.append(i);
             } else {
-                var temp = arr_posts.init(allocator);
+                var temp = ArrPosts.init(allocator);
                 try temp.append(i);
-                g_p.value_ptr.* = temp;
+                get_or_put.value_ptr.* = temp;
             }
         }
     }
-    var op = std.ArrayList(constop_posts).init(allocator);
+
+    var op = try std.ArrayList(TopPosts).initCapacity(allocator, parsed.value.len);
+    defer op.deinit();
+    var tagged_post_count: []usize = try allocator.alloc(usize, parsed.value.len);
+    defer allocator.free(tagged_post_count);
+
     for (0..parsed.value.len) |post_index| {
-        var top_5 = std.ArrayList(*post).init(allocator);
-        var rel_posts_tags: [6000]usize = [_]usize{0} ** 6000;
+        // reset tagged_post_count
+        @memset(tagged_post_count, 0);
+
         for (parsed.value[post_index].tags) |tag| {
-            const tag_posts = map.getPtr(tag).?;
-            for (0..tag_posts.*.items.len) |i_t| {
-                if (tag_posts.*.items[i_t] != post_index) rel_posts_tags[tag_posts.*.items[i_t]] += 1;
+            for (map.get(tag).?.items) |i_t| {
+                tagged_post_count[i_t] += 1;
             }
         }
-        var n: usize = 5;
-        while (n > 0) : (n -= 1) {
-            const index = std.sort.argMax(usize, &rel_posts_tags, {}, lessthan).?;
-            try top_5.append(&parsed.value[index]);
-            rel_posts_tags[index] = 0;
+
+        tagged_post_count[post_index] = 0; // Don't count self
+
+        var top_5 = [_]PostsWithSharedTag{.{ .post = 0, .tags = 0 }} ** 5;
+        var min_tags: usize = 0;
+
+        for (0..tagged_post_count.len) |j| {
+            const count = tagged_post_count[j];
+            if (count > min_tags) {
+
+                // Find the position to insert
+                var pos: isize = 0;
+                while (top_5[@intCast(pos)].tags >= count) {
+                    pos += 1;
+                }
+
+                // Shift and insert
+                var shift: usize = 4;
+                while (shift > pos) : (shift -= 1) {
+                    top_5[shift] = top_5[shift - 1];
+                }
+                top_5[@intCast(pos)] = PostsWithSharedTag{ .post = j, .tags = count };
+                min_tags = top_5[4].tags;
+            }
         }
 
-        try op.append(.{ ._id = &parsed.value[post_index]._id, .tags = &parsed.value[post_index].tags, .related = try top_5.toOwnedSlice() });
+        // Convert indexes back to Post pointers
+        var top_posts = try std.ArrayList(*Post).initCapacity(allocator, 5);
+
+        for (top_5) |tagged_post| {
+            if (tagged_post.tags == 0) {
+                continue;
+            }
+            try top_posts.append(&parsed.value[tagged_post.post]);
+        }
+
+        try op.append(.{ ._id = &parsed.value[post_index]._id, .tags = &parsed.value[post_index].tags, .related = try top_posts.toOwnedSlice() });
     }
     const end = try std.time.Instant.now();
     try stdout.print("Processing time (w/o IO): {d}ms\n", .{@divFloor(end.since(start), std.time.ns_per_ms)});
