@@ -30,20 +30,25 @@ let stopwatch = Diagnostics.Stopwatch()
 stopwatch.Start()
 
 // Start work
-let tagPosts = Dictionary<string, Stack<int>>()
+let tagPostsTmp = Dictionary<string, Stack<int>>()
 
 posts
 |> Array.iteri (fun postId post ->
 
     for tag in post.tags do
 
-        match tagPosts.TryGetValue tag with
+        match tagPostsTmp.TryGetValue tag with
         | true, s -> s.Push postId
         | false, _ ->
             let newStack = Stack()
             newStack.Push postId
-            tagPosts[tag] <- newStack)
+            tagPostsTmp[tag] <- newStack)
 
+// convert from Dict<_,Stack<int>> to Dict<_,int[]> for faster access
+let tagPosts = Dictionary(tagPostsTmp.Count)
+
+for kv in tagPostsTmp do
+    tagPosts[kv.Key] <- kv.Value.ToArray()
 
 let topN = 5
 
