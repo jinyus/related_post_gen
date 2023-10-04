@@ -1,6 +1,13 @@
 ﻿open System.IO
 open System
 open FSharp.Json
+open Microsoft.FSharp.NativeInterop
+
+#nowarn "9"
+
+let inline stackalloc<'a when 'a: unmanaged> (length: int): Span<'a> =
+  let p = NativePtr.stackalloc<'a> length |> NativePtr.toVoidPtr
+  Span<'a>(p, length)
 
 
 type Post =
@@ -27,12 +34,11 @@ let tagMap: Map<string, int array> =
     |> Array.map (fun (t, is) -> t, is |> Array.collect snd)
     |> Map.ofArray
 
-let mutable taggedPostCount = Array.create posts.Length 0
 
 let allRelatedPosts: RelatedPosts[] =
     posts
     |> Array.mapi (fun i post ->
-        Array.fill taggedPostCount 0 posts.Length 0
+        let mutable taggedPostCount = stackalloc posts.Length
 
         for tag in post.tags do
             for oIDX in tagMap[tag] do
@@ -42,7 +48,7 @@ let allRelatedPosts: RelatedPosts[] =
         taggedPostCount[i] <- 0 // ignore self
 
         let topN = 5
-        let mutable top5 = Array.zeroCreate (topN * 2) // flattened list of (count, id)
+        let mutable top5 = stackalloc (topN * 2) // flattened list of (count, id)
         let mutable minTags = 0
 
         // custom priority queue to find topN
@@ -64,9 +70,13 @@ let allRelatedPosts: RelatedPosts[] =
 
                 minTags <- top5[topN * 2 - 2]
 
+        let related = Array.zeroCreate 5
+        for i in 0 .. related.Length - 1 do
+            related[i] <- posts[top5[i * 2 + 1]]
+        
         { _id = post._id
           tags = post.tags
-          related = Array.init topN (fun i -> posts[top5[i * 2 + 1]]) }
+          related = related }
 
     )
 
