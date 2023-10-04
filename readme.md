@@ -41,31 +41,31 @@ Given a list of posts, compute the top 5 related posts for each post based on th
 
 | Language       | Processing Time | Total (PT + I/O) |
 | -------------- | --------------- | ---------------- |
-| Go Concurrent | 16.69 ms | 52.3 ms |
-| Rust Concurrent | 19.28 ms | 39.3 ms |
-| Go | 32.28 ms | 68.3 ms |
-| Rust | 34.12 ms | 55.8 ms |
-| Java (GraalVM) | 35.15 ms | 65.5 ms |
-| Swift Concurrent | 41.23 ms | 445.0 ms |
-| Fsharp Concurrent | 42.57 ms | 906.2 ms |
-| Fsharp | 49.00 ms | 900.4 ms |
-| Crystal | 56.56 ms | 116.5 ms |
-| Vlang | 63.38 ms | 413.3 ms |
-| Swift | 66.49 ms | 456.4 ms |
-| Odin | 70.88 ms | 321.7 ms |
-| Nim | 91.67 ms | 122.5 ms |
-| Dart VM | 108.13 ms | 623.4 ms |
-| LuaJIT | 123.92 ms | 435.7 ms |
-| Dart AOT | 142.00 ms | 292.1 ms |
-| Zig | 178.00 ms | 221.2 ms |
-| JS (Deno) | 184.80 ms | 290.7 ms |
-| JS (Node) | 208.20 ms | 292.5 ms |
-| Java (JIT) | 278.54 ms | 567.3 ms |
-| Numpy | 0.41 s | 669.3 ms |
-| Julia v2 | 666.17 ms | 5.523 s |
-| JS (Bun) | 743.80 ms | 831.4 ms |
-| Lua | 2375.23 ms | 3.095 s |
-| Python | 2.71 s | 2.789 s |
+| Go Concurrent | 16.24 ms | 49.3 ms |
+| Rust Concurrent | 18.71 ms | 37.6 ms |
+| Go | 31.18 ms | 62.6 ms |
+| Rust | 33.69 ms | 52.9 ms |
+| Java (GraalVM) | 35.23 ms | 66.1 ms |
+| Zig | 38.00 ms | 80.4 ms |
+| Swift Concurrent | 40.63 ms | 435.3 ms |
+| Fsharp Concurrent | 41.14 ms | 879.2 ms |
+| Fsharp | 50.14 ms | 876.8 ms |
+| Crystal | 56.17 ms | 114.0 ms |
+| Vlang | 59.11 ms | 395.3 ms |
+| Odin | 63.57 ms | 312.6 ms |
+| Swift | 65.80 ms | 451.8 ms |
+| Nim | 91.58 ms | 122.3 ms |
+| Dart VM | 99.50 ms | 595.5 ms |
+| LuaJIT | 119.18 ms | 400.2 ms |
+| Dart AOT | 141.75 ms | 285.8 ms |
+| JS (Deno) | 185.00 ms | 285.9 ms |
+| JS (Node) | 206.20 ms | 289.6 ms |
+| Java (JIT) | 263.38 ms | 547.8 ms |
+| Numpy | 0.39 s | 642.0 ms |
+| Julia v2 | 634.17 ms | 5.210 s |
+| JS (Bun) | 738.40 ms | 820.2 ms |
+| Lua | 2363.01 ms | 3.050 s |
+| Python | 2.70 s | 2.776 s |
 
 <details>
 <summary> Old Results with details (on my machine) </summary>
