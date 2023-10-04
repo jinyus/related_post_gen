@@ -30,9 +30,8 @@ let tagMap: Map<string, int array> =
 let mutable taggedPostCount = Array.create posts.Length 0
 
 let allRelatedPosts: RelatedPosts[] =
-    Array.init posts.Length (fun i ->
-        let post = posts[i]
-
+    posts
+    |> Array.mapi (fun i post ->
         Array.fill taggedPostCount 0 posts.Length 0
 
         for tag in post.tags do
