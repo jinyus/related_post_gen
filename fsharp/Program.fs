@@ -18,6 +18,7 @@ let posts = Json.deserialize<Post[]> (File.ReadAllText $"{srcDir}/../posts.json"
 
 let start = DateTime.Now
 
+// very slow, 50ms. needs improvement
 let tagMap: Map<string, int array> =
     posts
     |> Array.mapi (fun i p -> i, p)
