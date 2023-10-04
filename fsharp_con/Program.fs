@@ -51,7 +51,7 @@ let topN = 5
 
 let allRelatedPosts: RelatedPosts[] =
     posts
-    |> Array.mapi (fun postId post ->
+    |> Array.Parallel.mapi (fun postId post ->
         let taggedPostCount = stackalloc posts.Length
         let top5 = stackalloc (topN * 2) // flattened list of (count, id)
 
@@ -98,4 +98,4 @@ stopwatch.Stop()
 printfn "Processing time (w/o IO): %dms" stopwatch.ElapsedMilliseconds
 let json = Json.serialize allRelatedPosts
 
-File.WriteAllText($"{srcDir}/../related_posts_fsharp.json", json)
+File.WriteAllText($"{srcDir}/../related_posts_fsharp_con.json", json)

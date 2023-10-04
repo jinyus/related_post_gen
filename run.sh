@@ -82,7 +82,7 @@ run_rust_con() {
         cd ./rust_con &&
         cargo build --release &&
         if [ $HYPER == 1 ]; then
-            capture "Rust Rayon" hyperfine -r 10 -w 3 --show-output "./target/release/rust_rayon"
+            capture "Rust Concurrent" hyperfine -r 10 -w 3 --show-output "./target/release/rust_rayon"
         else
             command time -f '%es %Mk' ./target/release/rust_rayon
         fi
@@ -258,7 +258,7 @@ run_swift() {
 }
 
 run_swift_con() {
-    echo "Running Swift with Dispatch" &&
+    echo "Running Swift Concurrent" &&
         cd ./swift_con &&
         swift build -c release &&
         if [ $HYPER == 1 ]; then
@@ -369,6 +369,20 @@ run_fsharp() {
         fi
 
     check_output "related_posts_fsharp.json"
+}
+
+run_fsharp_con() {
+    echo "Running FSharp" &&
+        cd ./fsharp_con &&
+        dotnet add package FSharp.Json &&
+        dotnet publish -c release &&
+        if [ $HYPER == 1 ]; then
+            capture "Fsharp" hyperfine -r 5 -w 2 --show-output "./bin/release/net7.0/fsharp"
+        else
+            command time -f '%es %Mk' ./bin/release/net7.0/fsharp
+        fi
+
+    check_output "related_posts_fsharp_con.json"
 }
 
 run_luajit() {
@@ -499,6 +513,10 @@ elif [ "$first_arg" = "nim" ]; then
 elif [ "$first_arg" = "fsharp" ]; then
 
     run_fsharp
+
+elif [ "$first_arg" = "fsharp_con" ]; then
+
+    run_fsharp_con
 
 elif [ "$first_arg" = "luajit" ]; then
 
