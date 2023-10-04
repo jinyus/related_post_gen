@@ -552,6 +552,7 @@ elif [ "$first_arg" = "all" ]; then
         run_java_graal || echo -e "\n" &&
         run_nim || echo -e "\n" &&
         run_fsharp || echo -e "\n" &&
+        run_fsharp_con || echo -e "\n" &&
         run_luajit || echo -e "\n" &&
         run_lua || echo -e "\n" &&
         echo -e "Finished running all\n"
