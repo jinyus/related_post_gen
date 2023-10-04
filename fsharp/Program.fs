@@ -29,7 +29,7 @@ let mutable taggedPostCount = Array.create posts.Length 0
 
 let allRelatedPosts: RelatedPosts[] =
     Array.init posts.Length (fun i ->
-        let post = posts.[i]
+        let post = posts[i]
 
         Array.fill taggedPostCount 0 posts.Length 0
 
@@ -46,26 +46,26 @@ let allRelatedPosts: RelatedPosts[] =
 
         // custom priority queue to find topN
         for i in 0 .. taggedPostCount.Length - 1 do
-            let count = taggedPostCount.[i]
+            let count = taggedPostCount[i]
 
             if count > minTags then
                 // Find upper bound: pos at which count is larger than current one.
                 let mutable upperBound = (topN - 2) * 2
 
-                while upperBound >= 0 && count > top5.[upperBound] do
-                    top5.[upperBound + 2] <- top5.[upperBound]
-                    top5.[upperBound + 3] <- top5.[upperBound + 1]
+                while upperBound >= 0 && count > top5[upperBound] do
+                    top5[upperBound + 2] <- top5[upperBound]
+                    top5[upperBound + 3] <- top5[upperBound + 1]
                     upperBound <- upperBound - 2
 
                 let insertionPos = upperBound + 2
-                top5.[insertionPos] <- count
-                top5.[insertionPos + 1] <- i
+                top5[insertionPos] <- count
+                top5[insertionPos + 1] <- i
 
-                minTags <- top5.[topN * 2 - 2]
+                minTags <- top5[topN * 2 - 2]
 
         { _id = post._id
           tags = post.tags
-          related = Array.init topN (fun i -> posts.[top5.[i * 2 + 1]]) }
+          related = Array.init topN (fun i -> posts[top5[i * 2 + 1]]) }
 
     )
 
