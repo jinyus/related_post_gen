@@ -41,36 +41,36 @@ Given a list of posts, compute the top 5 related posts for each post based on th
 
 | Language       | Processing Time | Total (PT + I/O) |
 | -------------- | --------------- | ---------------- |
-| Rust | 38.69 ms | 63.6 ms |
-| Java (GraalVM) | 44.77 ms | 80.5 ms |
-| Zig | 48.08 ms | 102.4 ms |
-| Go | 51.77 ms | 94.4 ms |
-| Fsharp | 57.43 ms | 1.055 s |
-| Vlang | 60.86 ms | 750.4 ms |
-| Crystal | 65.15 ms | 129.0 ms |
-| Swift | 66.01 ms | 540.9 ms |
-| Odin | 66.73 ms | 380.9 ms |
-| Dart VM | 96.50 ms | 735.9 ms |
-| Nim | 105.58 ms | 140.3 ms |
-| Dart AOT | 116.88 ms | 280.9 ms |
-| LuaJIT | 120.75 ms | 453.8 ms |
-| JS (Deno) | 183.20 ms | 320.9 ms |
-| JS (Node) | 208.80 ms | 313.0 ms |
-| Java (JIT) | 350.08 ms | 711.8 ms |
-| Numpy | 0.49 s | 809.1 ms |
-| JS (Bun) | 998.80 ms | 1.117 s |
-| Julia v2 | 1032.17 ms | 7.119 s |
-| Lua | 2864.61 ms | 3.720 s |
-| Python | 3.26 s | 3.356 s |
+| Rust | 28.24 ms | 47.7 ms |
+| Go | 30.91 ms | 62.8 ms |
+| Java (GraalVM) | 35.46 ms | 64.4 ms |
+| Zig | 38.00 ms | 79.9 ms |
+| Fsharp | 48.29 ms | 866.5 ms |
+| Crystal | 56.21 ms | 112.6 ms |
+| Vlang | 59.84 ms | 385.7 ms |
+| Odin | 63.49 ms | 311.8 ms |
+| Swift | 65.73 ms | 444.5 ms |
+| Nim | 91.58 ms | 121.1 ms |
+| Dart VM | 103.63 ms | 590.9 ms |
+| LuaJIT | 120.37 ms | 418.6 ms |
+| Dart AOT | 141.50 ms | 285.8 ms |
+| JS (Deno) | 183.20 ms | 276.7 ms |
+| JS (Node) | 201.80 ms | 277.2 ms |
+| Java (JIT) | 265.15 ms | 551.2 ms |
+| Numpy | 0.40 s | 634.0 ms |
+| Julia v2 | 648.83 ms | 5.130 s |
+| JS (Bun) | 711.40 ms | 787.3 ms |
+| Lua | 2373.13 ms | 3.048 s |
+| Python | 2.69 s | 2.775 s |
 
 ### Multicore Results
 
 | Language       | Processing Time | Total (PT + I/O) |
 | -------------- | --------------- | ---------------- |
-| Rust Concurrent | 19.81 ms | 44.5 ms |
-| Go Concurrent | 21.30 ms | 65.3 ms |
-| Swift Concurrent | 43.43 ms | 557.6 ms |
-| Fsharp Concurrent | 49.14 ms | 1.062 s |
+| Go Concurrent | 16.71 ms | 50.8 ms |
+| Rust Concurrent | 20.61 ms | 41.8 ms |
+| Swift Concurrent | 40.75 ms | 428.3 ms |
+| Fsharp Concurrent | 45.00 ms | 868.0 ms |
 
 <details>
 <summary> Old Results with details (on my machine) </summary>
