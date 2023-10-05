@@ -20,6 +20,9 @@ Given a list of posts, compute the top 5 related posts for each post based on th
 
 # windows (powershell)
 ./run.ps1 go | rust | python | all
+
+or
+pwsh ./run.ps1 go | rust | python | all
 ```
 
 <details>
