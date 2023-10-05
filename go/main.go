@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"os"
 	"time"
 
@@ -34,20 +33,11 @@ type PostWithSharedTags struct {
 }
 
 func main() {
-	file, err := os.Open("../posts.json")
-	if err != nil {
-		log.Panicln(err)
-	}
+	file, _ := os.Open("../posts.json")
 	var posts = make([]Post, 0, InitialPostsSliceCap)
-	err = json.NewDecoder(file).Decode(&posts)
-	if err != nil {
-		log.Panicln(err)
-	}
-
+	_ = json.NewDecoder(file).Decode(&posts)
 	postsLen := len(posts)
-
 	start := time.Now()
-
 	// assumes that there are less than 100 tags
 	tagMap := make(map[string][]isize, InitialTagMapSize)
 
@@ -107,13 +97,7 @@ func main() {
 
 	fmt.Println("Processing time (w/o IO):", time.Since(start))
 
-	file, err = os.Create("../related_posts_go.json")
-	if err != nil {
-		log.Panicln(err)
-	}
+	file, _ = os.Create("../related_posts_go.json")
 
-	err = json.NewEncoder(file).Encode(allRelatedPosts)
-	if err != nil {
-		log.Panicln(err)
-	}
+	_ = json.NewEncoder(file).Encode(allRelatedPosts)
 }
