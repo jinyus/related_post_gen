@@ -15,6 +15,7 @@ type SString = smallstr::SmallString<[u8; 16]>;
 #[derive(Serialize, Deserialize)]
 struct Post<'a> {
     _id: SString,
+    #[serde(borrow)]
     title: Cow<'a, str>,
     // #[serde(skip_serializing)]
     tags: Vec<SString>,
