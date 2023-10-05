@@ -68,6 +68,7 @@ public class Program
             int[] top5 = new int[topN * 2]; // flattened list of (count, id)
             int minTags = 0;
 
+            //  custom priority queue to find top N
             foreach (var item in taggedPostCount.Select((value, index) => new { value, index }))
             {
                 int j = item.index;
