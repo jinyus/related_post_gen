@@ -3,6 +3,11 @@
 import std/[tables, sequtils, monotimes, times]
 import jsony
 
+const
+    input = "../posts.json"
+    output = "../related_posts_nim.json"
+    topN = 5
+
 type
   Post = ref object
     `"_id"`: string
@@ -12,11 +17,9 @@ type
   RelatedPosts = ref object
     `"_id"`: string
     tags : seq[string]
-    related : seq[Post]
+    related : array[topN,Post]
 
-const
-    input = "../posts.json"
-    output = "../related_posts_nim.json"
+
 
 let posts = readFile(input).fromJson(seq[Post])
 
@@ -40,24 +43,35 @@ for i ,post in posts.pairs:
 
   taggedPostCount[i] = 0 # remove self
 
-  var top5: array[5, tuple[idx, count: int]]
+  var top5: array[topN * 2, int]
+  var minTags = 0
 
-  for i, count in taggedPostCount:
-    if count > top5[4].count:
-      top5[4] = top5[3]
-      block loop:
-        for pos in countdown(3, 1):
-          if count > top5[pos - 1].count:
-            top5[pos] = top5[pos - 1]
-          else:
-            top5[pos] = (idx: i, count: count)
-            break loop
-        top5[0] = (idx: i, count: count)
+  for j, count in taggedPostCount:
+    if count > minTags:
+      var upperBound = (topN - 2) * 2
+
+      while upperBound >= 0 and count > top5[upperBound]:
+        top5[upperBound+2] = top5[upperBound]
+        top5[upperBound+3] = top5[upperBound+1]
+        upperBound -= 2
+
+      let insertPos = upperBound + 2
+      top5[insertPos] = count
+      top5[insertPos+1] = j
+
+      minTags = top5[topN*2-2]
+      
+  
+  var topPosts: array[5, Post]
+
+# Convert indexes back to Post pointers
+  for i in countup(1, 9, 2):
+    topPosts[i div 2] = posts[top5[i]]
 
   allRelatedPosts[i] = RelatedPosts(
     `"_id"`: post.`"_id"`,
     tags: post.tags,
-    related: top5.map(proc(x: auto): Post = posts[x.idx]),
+    related: topPosts,
     )
 
 let total = getMonotime() - start
