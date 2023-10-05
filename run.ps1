@@ -6,7 +6,11 @@ if (Get-Command hyperfine -ErrorAction SilentlyContinue) {
     $HYPER = 1
 }
 
-$EXT 
+$EXT = if ([System.Environment]::OSVersion.Platform -eq "Unix") {
+    ""
+} else {
+    ".exe"
+}
 
 function run_go {
     Write-Output "Running Go"
@@ -14,10 +18,10 @@ function run_go {
     $env:GOEXPERIMENT='arenas'
     go build
     if ($HYPER -eq 1) {
-        hyperfine -r 10 -w 5 --show-output "./related.exe"
+        hyperfine -r 10 -w 5 --show-output "./related$EXT"
     }
     else {
-        Measure-Command { ./related.exe }
+        Measure-Command { "./related$EXT" }
     }
     check_output "related_posts_go.json"
 }
@@ -66,10 +70,10 @@ function run_fsharp {
     dotnet restore
     dotnet publish -c release
     if ($HYPER -eq 1) {
-        hyperfine -r 5 -w 2 --show-output "./bin/release/net7.0/fsharp.exe"
+        hyperfine -r 5 -w 2 --show-output "./bin/release/net7.0/fsharp$EXT"
     }
     else {
-        Measure-Command { ./bin/release/net7.0/fsharp.exe }
+        Measure-Command { "./bin/release/net7.0/fsharp$EXT" }
     }
     check_output "related_posts_fsharp.json"
 }
@@ -80,10 +84,10 @@ function run_csharp {
     dotnet restore
     dotnet publish -c release
     if ($HYPER -eq 1) {
-        hyperfine -r 5 -w 2 --show-output "./bin/release/net7.0/publish/related.exe"
+        hyperfine -r 5 -w 2 --show-output "./bin/release/net7.0/publish/related$EXT"
     }
     else {
-        Measure-Command { ./bin/release/net7.0/publish/related.exe }
+        Measure-Command { "./bin/release/net7.0/publish/related$EXT" }
     }
     check_output "related_posts_csharp.json"
 }
