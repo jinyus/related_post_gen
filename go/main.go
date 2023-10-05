@@ -82,10 +82,9 @@ func main() {
 				if pos < 4 {
 					copy(top5[pos+1:], top5[pos:4])
 				}
-				if pos <= 4 {
-					top5[pos] = PostWithSharedTags{Post: j, SharedTags: count}
-					minTags = top5[4].SharedTags
-				}
+
+				top5[pos] = PostWithSharedTags{Post: j, SharedTags: count}
+				minTags = top5[4].SharedTags
 			}
 		}
 
