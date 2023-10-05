@@ -31,12 +31,12 @@ public class Program
     public static void Main(string[] args)
     {
         const int topN = 5;
-        var filePath = @"../posts.json";
-        var posts = JsonSerializer.Deserialize<List<Post>>(File.ReadAllText(filePath));
+        var posts = JsonSerializer.Deserialize<List<Post>>(File.ReadAllText(@"../posts.json"));
 
         var start = DateTime.Now;
 
         var tagMap = new Dictionary<string, List<int>>();
+
         for (var i = 0; i < posts!.Count; i++)
         {
             foreach (var tag in posts[i].Tags)
@@ -49,7 +49,7 @@ public class Program
             }
         }
 
-        var allRelatedPosts = new List<RelatedPosts>(posts.Count);
+        var allRelatedPosts = new RelatedPosts[posts.Count];
         var taggedPostCount = new int[posts.Count];
 
         for (var i = 0; i < posts.Count; i++)
@@ -95,19 +95,18 @@ public class Program
 
             Post[] topPosts = new Post[topN];
 
-            // Convert indexes back to Post references
+            // Convert indexes back to Post references. skip even indexes
             for (int j = 1; j < 10; j += 2)
             {
                 topPosts[j / 2] = posts[top5[j]];
             }
 
-
-            allRelatedPosts.Add(new RelatedPosts
+            allRelatedPosts[i] = new RelatedPosts
             {
                 Id = posts[i].Id,
                 Tags = posts[i].Tags,
                 Related = topPosts
-            });
+            };
         }
 
         var end = DateTime.Now;
