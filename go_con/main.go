@@ -1,9 +1,8 @@
 package main
 
 import (
-	"bufio"
-	"bytes"
 	"fmt"
+	"log"
 	"os"
 	"runtime"
 	"sync"
@@ -12,16 +11,13 @@ import (
 	"github.com/goccy/go-json"
 )
 
-// Constants and Configurable Variables
-const (
-	InputJSONFilePath    = "../posts.json"
-	OutputJSONFilePath   = "../related_posts_go_con.json"
-	InitialTagMapSize    = 0
-	InitialPostsSliceCap = 0
-)
+// custom type alias - for easier experiments with int size
+// using smaller than int64 integer size but still big enough for 4 billion posts
+var concurrency = isize(runtime.NumCPU())
 
-// Type Definitions
 const topN = 5
+const InitialTagMapSize = 100
+const InitialPostsSliceCap = 0
 
 type isize uint32
 
@@ -37,64 +33,35 @@ type PostWithSharedTags struct {
 }
 
 type RelatedPosts struct {
-	ID      string   `json:"_id"`
-	Tags    []string `json:"tags"`
-	Related []*Post  `json:"related"`
+	ID      string      `json:"_id"`
+	Tags    []string    `json:"tags"`
+	Related [topN]*Post `json:"related"`
 }
 
-// Global Variables
-var concurrency = isize(runtime.NumCPU())
-var wg = &sync.WaitGroup{}
-var readWriter *bufio.ReadWriter
-var outputJSONFile *os.File
-var buf = bytes.NewBuffer(make([]byte, 0, 1024*1024*10)) // 10MB
-var workerResults = make([]*bytes.Buffer, concurrency)
-var posts []Post
-var postLen int
+// Result struct to hold results from goroutines
+type Result struct {
+	Index       isize
+	RelatedPost RelatedPosts
+}
 
-// Entry Point
 func main() {
-	// Initialize
-	initializeResources()
-	defer outputJSONFile.Close()
-
-	// Compute related posts and measure time
-	processTime := time.Now()
-	computeAllRelatedPosts(posts)
-	fmt.Println("Processing time (w/o IO)", time.Since(processTime))
-
-	// write result to file
-	readWriter.WriteString("[\n")
-	// write all worker results to file
-	for _, workerResult := range workerResults {
-		if workerResult == nil {
-			continue
-		}
-		buf.Write(workerResult.Bytes())
+	file, err := os.Open("../posts.json")
+	if err != nil {
+		log.Panicln(err)
 	}
-	// Remove the second last character (should be ',')
-	readWriter.Write(buf.Bytes()[:len(buf.Bytes())-2])
-	readWriter.WriteString("\n]\n")
-	readWriter.Flush()
-}
+	defer file.Close()
 
-// Function Definitions
-func initializeResources() {
-	// Initialize concurrency
-	wg.Add(int(concurrency))
-	// Initialize output file writer
-	outputJSONFile, _ := os.Create(OutputJSONFilePath)
-	readWriter = bufio.NewReadWriter(bufio.NewReader(outputJSONFile), bufio.NewWriter(outputJSONFile))
+	posts := make([]Post, 0, InitialPostsSliceCap)
+	err = json.NewDecoder(file).Decode(&posts)
+	if err != nil {
+		log.Panicln(err)
+	}
 
-	// Read data and preprocess
-	file, _ := os.Open(InputJSONFilePath)
-	posts = make([]Post, 0, InitialPostsSliceCap)
-	_ = json.NewDecoder(file).Decode(&posts)
-	postLen = len(posts)
-}
+	start := time.Now()
 
-func computeAllRelatedPosts(posts []Post) {
-	// Create tag map
+	postsLength := len(posts)
+	postsLengthISize := isize(postsLength)
+
 	tagMap := make(map[string][]isize, InitialTagMapSize)
 	for i, post := range posts {
 		for _, tag := range post.Tags {
@@ -102,36 +69,64 @@ func computeAllRelatedPosts(posts []Post) {
 		}
 	}
 
-	// Launch workers and give them buffers to write to
-	for w := isize(0); w < concurrency; w++ {
-		go worker(w, posts, tagMap)
+	resultsChan := make(chan Result, postsLengthISize)
+
+	// create wait group to wait for all workers to finish
+	wg := sync.WaitGroup{}
+	wg.Add(int(concurrency))
+	var w isize
+	for ; w < isize(concurrency); w++ {
+		// allocate taggedPostCount for each worker once, zero out for each task
+		taggedPostCount := make([]isize, postsLengthISize)
+		go func(workerID isize) {
+			for i := workerID; i < postsLengthISize; i += concurrency {
+				// provide taggedPostCount and binary heap for each task
+				resultsChan <- Result{
+					Index:       i,
+					RelatedPost: computeRelatedPost(i, posts, tagMap, taggedPostCount),
+				}
+			}
+			wg.Done()
+		}(w)
 	}
-	// Wait for workers to finish
 	wg.Wait()
-}
+	close(resultsChan)
 
-func worker(workerID isize, posts []Post, tagMap map[string][]isize) {
-	workerResults[workerID] = bytes.NewBuffer(make([]byte, 0, 1024*1024*10)) // 10MB
-	taggedPostCount := make([]isize, postLen)
-	// Compute related posts for each post
-	for i := workerID; i < isize(len(posts)); i += concurrency {
-		computeRelatedPost(i, posts, tagMap, taggedPostCount, workerID)
+	allRelatedPosts := make([]RelatedPosts, postsLength)
+	for r := range resultsChan {
+		allRelatedPosts[r.Index] = r.RelatedPost
 	}
-	wg.Done()
+
+	end := time.Now()
+
+	fmt.Println("Processing time (w/o IO):", end.Sub(start))
+
+	file, err = os.Create("../related_posts_go_con.json")
+	if err != nil {
+		log.Panicln(err)
+	}
+
+	err = json.NewEncoder(file).Encode(allRelatedPosts)
+	if err != nil {
+		log.Panicln(err)
+	}
 }
 
-func computeRelatedPost(i isize, posts []Post, tagMap map[string][]isize, taggedPostCount []isize, workerID isize) {
+func computeRelatedPost(i isize, posts []Post, tagMap map[string][]isize, taggedPostCount []isize) RelatedPosts {
+	// Zero out tagged post count
 	for j := range taggedPostCount {
 		taggedPostCount[j] = 0
 	}
+
 	// Count the number of tags shared between posts
 	for _, tag := range posts[i].Tags {
 		for _, otherPostIdx := range tagMap[tag] {
-			if otherPostIdx != i { // Exclude the post itself
-				taggedPostCount[otherPostIdx]++
-			}
+			taggedPostCount[otherPostIdx]++
 		}
 	}
+
+	taggedPostCount[i] = 0 // Don't count self
+
 	top5 := [topN]PostWithSharedTags{}
 	minTags := isize(0) // Updated initialization
 
@@ -148,26 +143,21 @@ func computeRelatedPost(i isize, posts []Post, tagMap map[string][]isize, tagged
 			if pos < 4 {
 				copy(top5[pos+1:], top5[pos:4])
 			}
-			if pos <= 4 {
-				top5[pos] = PostWithSharedTags{Post: isize(j), SharedTags: count}
-				minTags = top5[4].SharedTags
-			}
-		}
-	}
-	// Convert indexes back to Post pointers
-	topPosts := make([]*Post, 0, topN)
-	for _, t := range top5 {
-		if t.SharedTags > 0 {
-			topPosts = append(topPosts, &posts[t.Post])
+
+			top5[pos] = PostWithSharedTags{Post: isize(j), SharedTags: count}
+			minTags = top5[4].SharedTags
 		}
 	}
 
-	relPost := &RelatedPosts{
+	// Convert indexes back to Post pointers
+	topPosts := [topN]*Post{}
+	for idx, t := range top5 {
+		topPosts[idx] = &posts[t.Post]
+	}
+
+	return RelatedPosts{
 		ID:      posts[i].ID,
 		Tags:    posts[i].Tags,
 		Related: topPosts,
 	}
-
-	jsonStrBytes, _ := json.Marshal(relPost)
-	workerResults[workerID].WriteString(string(jsonStrBytes) + ",\n")
 }

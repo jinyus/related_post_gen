@@ -9,11 +9,10 @@ import (
 )
 
 const topN = 5
+const InitialTagMapSize = 100
+const InitialPostsSliceCap = 0
 
 type isize uint32
-
-var InitialTagMapSize = 100
-var InitialPostsSliceCap = 10000
 
 type Post struct {
 	ID    string   `json:"_id"`
@@ -35,7 +34,10 @@ type PostWithSharedTags struct {
 func main() {
 	file, _ := os.Open("../posts.json")
 	var posts = make([]Post, 0, InitialPostsSliceCap)
-	_ = json.NewDecoder(file).Decode(&posts)
+	err := json.NewDecoder(file).Decode(&posts)
+	if err != nil {
+		fmt.Println(err)
+	}
 	postsLen := len(posts)
 	start := time.Now()
 	// assumes that there are less than 100 tags
@@ -96,8 +98,6 @@ func main() {
 	}
 
 	fmt.Println("Processing time (w/o IO):", time.Since(start))
-
 	file, _ = os.Create("../related_posts_go.json")
-
 	_ = json.NewEncoder(file).Encode(allRelatedPosts)
 }
