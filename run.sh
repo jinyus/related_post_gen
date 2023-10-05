@@ -172,7 +172,7 @@ run_julia() {
         cd ./julia &&
         julia -e 'using Pkg; Pkg.add.(["JSON3", "StatsBase", "StructTypes", "LinearAlgebra"])' &&
         if [ $HYPER == 1 ]; then
-            capture "Julia v1" hyperfine -r 5 --warmup 1 --show-output "julia related.jl"
+            capture "Julia" hyperfine -r 5 --warmup 1 --show-output "julia related.jl"
         else
             command time -f '%es %Mk' julia related.jl
         fi
