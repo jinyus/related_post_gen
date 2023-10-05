@@ -1,11 +1,3 @@
-// Program Overview
-// This program computes the 5 most related posts for each post in a dataset.
-// It uses Go's concurrency model to parallelize the computation.
-// Steps:
-// 1. Load a list of posts from a JSON file
-// 2. Create a tag map to quickly find posts sharing the same tags
-// 3. Use concurrent workers to compute related posts for each post
-// 4. Output the related posts into a new JSON file
 package main
 
 import (
@@ -19,7 +11,6 @@ import (
 	"sync"
 	"time"
 
-	"github.com/bytedance/sonic"
 	"github.com/goccy/go-json"
 )
 
@@ -32,6 +23,8 @@ const (
 )
 
 // Type Definitions
+const topN = 5
+
 type isize uint32
 
 type Post struct {
@@ -59,29 +52,13 @@ var readWriter *bufio.ReadWriter
 var outputJSONFile *os.File
 var buf = bytes.NewBuffer(make([]byte, 0, 1024*1024*10)) // 10MB
 var workerResults = make([]*bytes.Buffer, concurrency)
+var posts []Post
 
 // Entry Point
 func main() {
 	// Initialize
 	initializeResources()
 	defer outputJSONFile.Close()
-
-	// Read data and preprocess
-	file, _ := os.Open(InputJSONFilePath)
-	reader := bufio.NewReader(file)
-	posts := arena.MakeSlice[Post](a, 0, InitialPostsSliceCap)
-
-	// check cpu architecture
-	if runtime.GOARCH == "arm64" {
-		// use fastest decoder for arm64
-		err := json.NewDecoder(file).Decode(&posts)
-		if err != nil {
-			log.Panicln(err)
-		}
-	} else {
-		// use fastest decoder for amd64
-		sonic.ConfigFastest.NewDecoder(reader).Decode(&posts)
-	}
 
 	// Compute related posts and measure time
 	processTime := time.Now()
@@ -117,6 +94,14 @@ func initializeResources() {
 		log.Panicln(err)
 	}
 	readWriter = bufio.NewReadWriter(bufio.NewReader(outputJSONFile), bufio.NewWriter(outputJSONFile))
+
+	// Read data and preprocess
+	file, _ := os.Open(InputJSONFilePath)
+	posts = arena.MakeSlice[Post](a, 0, InitialPostsSliceCap)
+	err = json.NewDecoder(file).Decode(&posts)
+	if err != nil {
+		log.Panicln(err)
+	}
 }
 
 func computeAllRelatedPosts(posts []Post) {
@@ -130,8 +115,6 @@ func computeAllRelatedPosts(posts []Post) {
 
 	// Launch workers and give them buffers to write to
 	for w := isize(0); w < concurrency; w++ {
-		// initialize worker result buffer
-		workerResults[w] = bytes.NewBuffer(make([]byte, 0, 1024*1024*10)) // 10MB
 		go worker(w, posts, tagMap)
 	}
 	// Wait for workers to finish
@@ -139,6 +122,7 @@ func computeAllRelatedPosts(posts []Post) {
 }
 
 func worker(workerID isize, posts []Post, tagMap map[string][]isize) {
+	workerResults[workerID] = bytes.NewBuffer(make([]byte, 0, 1024*1024*10)) // 10MB
 	taggedPostCount := arena.MakeSlice[isize](a, len(posts), len(posts))
 	// Compute related posts for each post
 	for i := workerID; i < isize(len(posts)); i += concurrency {
@@ -159,7 +143,7 @@ func computeRelatedPost(i isize, posts []Post, tagMap map[string][]isize, tagged
 			}
 		}
 	}
-	top5 := [5]PostWithSharedTags{}
+	top5 := [topN]PostWithSharedTags{}
 	minTags := isize(0) // Updated initialization
 
 	for j, count := range taggedPostCount {
@@ -182,7 +166,7 @@ func computeRelatedPost(i isize, posts []Post, tagMap map[string][]isize, tagged
 		}
 	}
 	// Convert indexes back to Post pointers
-	topPosts := make([]*Post, 0, 5)
+	topPosts := make([]*Post, 0, topN)
 	for _, t := range top5 {
 		if t.SharedTags > 0 {
 			topPosts = append(topPosts, &posts[t.Post])
@@ -195,13 +179,6 @@ func computeRelatedPost(i isize, posts []Post, tagMap map[string][]isize, tagged
 		Related: topPosts,
 	}
 
-	var jsonStr string
-	if runtime.GOARCH == "arm64" {
-		jsonStrBytes, _ := json.Marshal(relPost)
-		jsonStr = string(jsonStrBytes)
-	} else {
-		jsonStr, _ = sonic.MarshalString(relPost)
-	}
-
-	workerResults[workerID].WriteString(jsonStr + ",\n")
+	jsonStrBytes, _ := json.Marshal(relPost)
+	workerResults[workerID].WriteString(string(jsonStrBytes) + ",\n")
 }
