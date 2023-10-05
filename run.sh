@@ -75,7 +75,19 @@ run_rust() {
         fi
 
     check_output "related_posts_rust.json"
+}
 
+run_cpp() {
+    echo "Running C++" &&
+        cd ./cpp &&
+        g++ -std=c++11 -I./include main.cpp -o main &&
+        if [ $HYPER == 1 ]; then
+            capture "cpp" hyperfine -r 10 -w 3 --show-output "./main"
+        else
+            command time -f '%es %Mk' ./main
+        fi
+
+    check_output "related_posts_cpp.json"
 }
 
 run_rust_con() {
@@ -440,6 +452,10 @@ if [ "$first_arg" = "go" ]; then
 elif [ "$first_arg" = "go_con" ]; then
 
     run_go_concurrent
+
+elif [ "$first_arg" = "cpp" ]; then
+
+    run_cpp
 
 elif [ "$first_arg" = "rust" ]; then
 
