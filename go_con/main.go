@@ -10,6 +10,8 @@ package main
 
 import (
 	"arena"
+	"bufio"
+	"bytes"
 	"fmt"
 	"log"
 	"os"
@@ -17,6 +19,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/bytedance/sonic"
 	"github.com/goccy/go-json"
 )
 
@@ -24,13 +27,11 @@ import (
 const (
 	InputJSONFilePath    = "../posts.json"
 	OutputJSONFilePath   = "../related_posts_go_con.json"
-	InitialTagMapSize    = 100
-	InitialPostsSliceCap = 10000
+	InitialTagMapSize    = 0
+	InitialPostsSliceCap = 0
 )
 
 // Type Definitions
-const topN = 5
-
 type isize uint32
 
 type Post struct {
@@ -45,33 +46,61 @@ type PostWithSharedTags struct {
 }
 
 type RelatedPosts struct {
-	ID      string      `json:"_id"`
-	Tags    []string    `json:"tags"`
-	Related [topN]*Post `json:"related"`
-}
-
-type Result struct {
-	Index       isize
-	RelatedPost RelatedPosts
+	ID      string   `json:"_id"`
+	Tags    []string `json:"tags"`
+	Related []*Post  `json:"related"`
 }
 
 // Global Variables
 var concurrency = isize(runtime.NumCPU())
 var a *arena.Arena
-var start time.Time
+var wg = &sync.WaitGroup{}
+var readWriter *bufio.ReadWriter
+var outputJSONFile *os.File
+var buf = bytes.NewBuffer(make([]byte, 0, 1024*1024*10)) // 10MB
+var workerResults = make([]*bytes.Buffer, concurrency)
 
 // Entry Point
 func main() {
 	// Initialize
 	initializeResources()
+	defer outputJSONFile.Close()
+
 	// Read data and preprocess
-	posts, tagMap := loadDataAndPreprocess()
+	file, _ := os.Open(InputJSONFilePath)
+	reader := bufio.NewReader(file)
+	posts := arena.MakeSlice[Post](a, 0, InitialPostsSliceCap)
 
-	// Compute related posts
-	allRelatedPosts := computeAllRelatedPosts(posts, tagMap)
+	// check cpu architecture
+	if runtime.GOARCH == "arm64" {
+		// use fastest decoder for arm64
+		err := json.NewDecoder(file).Decode(&posts)
+		if err != nil {
+			log.Panicln(err)
+		}
+	} else {
+		// use fastest decoder for amd64
+		sonic.ConfigFastest.NewDecoder(reader).Decode(&posts)
+	}
 
-	// Write result
-	writeResults(allRelatedPosts)
+	// Compute related posts and measure time
+	processTime := time.Now()
+	computeAllRelatedPosts(posts)
+	fmt.Println("Processing time (w/o IO)", time.Since(processTime))
+
+	// write result to file
+	readWriter.WriteString("[\n")
+	// write all worker results to file
+	for _, workerResult := range workerResults {
+		if workerResult == nil {
+			continue
+		}
+		buf.Write(workerResult.Bytes())
+	}
+	// Remove the second last character (should be ',')
+	readWriter.Write(buf.Bytes()[:len(buf.Bytes())-2])
+	readWriter.WriteString("\n]\n")
+	readWriter.Flush()
 
 	// Release memory
 	a.Free()
@@ -80,126 +109,57 @@ func main() {
 // Function Definitions
 func initializeResources() {
 	a = arena.NewArena() // Create a new arena
-}
-
-func loadDataAndPreprocess() ([]Post, map[string][]isize) {
-	file, err := openJSONFile(InputJSONFilePath)
+	// Initialize concurrency
+	wg.Add(int(concurrency))
+	// Initialize output file writer
+	outputJSONFile, err := os.Create(OutputJSONFilePath)
 	if err != nil {
 		log.Panicln(err)
 	}
-	defer file.Close()
-
-	posts := decodeJSONFile(file)
-	tagMap := createTagMap(posts)
-
-	return posts, tagMap
+	readWriter = bufio.NewReadWriter(bufio.NewReader(outputJSONFile), bufio.NewWriter(outputJSONFile))
 }
 
-func openJSONFile(filePath string) (*os.File, error) {
-	return os.Open(filePath)
-}
-
-func decodeJSONFile(file *os.File) []Post {
-	posts := arena.MakeSlice[Post](a, 0, InitialPostsSliceCap)
-	err := json.NewDecoder(file).Decode(&posts)
-	if err != nil {
-		log.Panicln(err)
-	}
-	return posts
-}
-
-func createTagMap(posts []Post) map[string][]isize {
-	start = time.Now()
+func computeAllRelatedPosts(posts []Post) {
+	// Create tag map
 	tagMap := make(map[string][]isize, InitialTagMapSize)
 	for i, post := range posts {
 		for _, tag := range post.Tags {
 			tagMap[tag] = append(tagMap[tag], isize(i))
 		}
 	}
-	return tagMap
-}
 
-func computeAllRelatedPosts(posts []Post, tagMap map[string][]isize) []RelatedPosts {
-	// Initialize
-	resultsChan, wg := initializeConcurrency(len(posts))
-
-	// Launch workers
-	launchWorkers(posts, tagMap, resultsChan, wg)
-
-	// Wait for workers and close channel
-	wg.Wait()
-	close(resultsChan)
-
-	// Gather results
-	allRelatedPosts := gatherResults(len(posts), resultsChan)
-
-	// Print processing time
-	fmt.Println("Processing time (w/o IO)", time.Since(start))
-
-	return allRelatedPosts
-}
-
-func initializeConcurrency(postsLength int) (chan Result, *sync.WaitGroup) {
-	resultsChan := make(chan Result, isize(postsLength))
-	wg := &sync.WaitGroup{}
-	wg.Add(int(concurrency))
-	return resultsChan, wg
-}
-
-func launchWorkers(posts []Post, tagMap map[string][]isize, resultsChan chan Result, wg *sync.WaitGroup) {
+	// Launch workers and give them buffers to write to
 	for w := isize(0); w < concurrency; w++ {
-		taggedPostCount := arena.MakeSlice[isize](a, len(posts), len(posts))
-		go worker(w, posts, tagMap, taggedPostCount, resultsChan, wg)
+		// initialize worker result buffer
+		workerResults[w] = bytes.NewBuffer(make([]byte, 0, 1024*1024*10)) // 10MB
+		go worker(w, posts, tagMap)
 	}
+	// Wait for workers to finish
+	wg.Wait()
 }
 
-func worker(workerID isize, posts []Post, tagMap map[string][]isize, taggedPostCount []isize, resultsChan chan Result, wg *sync.WaitGroup) {
+func worker(workerID isize, posts []Post, tagMap map[string][]isize) {
+	taggedPostCount := arena.MakeSlice[isize](a, len(posts), len(posts))
+	// Compute related posts for each post
 	for i := workerID; i < isize(len(posts)); i += concurrency {
-		resultsChan <- Result{
-			Index:       i,
-			RelatedPost: computeRelatedPost(i, posts, tagMap, taggedPostCount),
-		}
+		computeRelatedPost(i, posts, tagMap, taggedPostCount, workerID)
 	}
 	wg.Done()
 }
 
-func gatherResults(postsLength int, resultsChan chan Result) []RelatedPosts {
-	allRelatedPosts := arena.MakeSlice[RelatedPosts](a, postsLength, postsLength)
-	for r := range resultsChan {
-		allRelatedPosts[r.Index] = r.RelatedPost
-	}
-	return allRelatedPosts
-}
-
-func writeResults(allRelatedPosts []RelatedPosts) {
-	file, err := os.Create(OutputJSONFilePath)
-
-	end := time.Now()
-
-	fmt.Println("Processing time (w/o IO):", end.Sub(start))
-
-	file, err = os.Create("../related_posts_go_con.json")
-	if err != nil {
-		log.Panicln(err)
-	}
-	err = json.NewEncoder(file).Encode(allRelatedPosts)
-	if err != nil {
-		log.Panicln(err)
-	}
-}
-
-func computeRelatedPost(i isize, posts []Post, tagMap map[string][]isize, taggedPostCount []isize) RelatedPosts {
+func computeRelatedPost(i isize, posts []Post, tagMap map[string][]isize, taggedPostCount []isize, workerID isize) {
 	for j := range taggedPostCount {
 		taggedPostCount[j] = 0
 	}
 	// Count the number of tags shared between posts
 	for _, tag := range posts[i].Tags {
 		for _, otherPostIdx := range tagMap[tag] {
-			taggedPostCount[otherPostIdx]++
+			if otherPostIdx != i { // Exclude the post itself
+				taggedPostCount[otherPostIdx]++
+			}
 		}
 	}
-	taggedPostCount[i] = 0 // Don't count self
-	top5 := [topN]PostWithSharedTags{}
+	top5 := [5]PostWithSharedTags{}
 	minTags := isize(0) // Updated initialization
 
 	for j, count := range taggedPostCount {
@@ -215,20 +175,33 @@ func computeRelatedPost(i isize, posts []Post, tagMap map[string][]isize, tagged
 			if pos < 4 {
 				copy(top5[pos+1:], top5[pos:4])
 			}
-
-			top5[pos] = PostWithSharedTags{Post: isize(j), SharedTags: count}
-			minTags = top5[4].SharedTags
+			if pos <= 4 {
+				top5[pos] = PostWithSharedTags{Post: isize(j), SharedTags: count}
+				minTags = top5[4].SharedTags
+			}
 		}
 	}
 	// Convert indexes back to Post pointers
-	topPosts := [topN]*Post{}
-	for idx, t := range top5 {
-		topPosts[idx] = &posts[t.Post]
+	topPosts := make([]*Post, 0, 5)
+	for _, t := range top5 {
+		if t.SharedTags > 0 {
+			topPosts = append(topPosts, &posts[t.Post])
+		}
 	}
 
-	return RelatedPosts{
+	relPost := &RelatedPosts{
 		ID:      posts[i].ID,
 		Tags:    posts[i].Tags,
 		Related: topPosts,
 	}
+
+	var jsonStr string
+	if runtime.GOARCH == "arm64" {
+		jsonStrBytes, _ := json.Marshal(relPost)
+		jsonStr = string(jsonStrBytes)
+	} else {
+		jsonStr, _ = sonic.MarshalString(relPost)
+	}
+
+	workerResults[workerID].WriteString(jsonStr + ",\n")
 }
