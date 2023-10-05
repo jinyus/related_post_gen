@@ -1,6 +1,4 @@
-# This is just an example to get you started. A typical binary package
-# uses this file as the main entry point of the application.
-import std/[tables, sequtils, monotimes, times]
+import std/[tables, hashes, sequtils, monotimes, times, bitops]
 import jsony
 
 type
@@ -14,6 +12,25 @@ type
     tags : seq[string]
     related : seq[Post]
 
+  Key = distinct string
+
+proc `==`(a, b: Key): bool = a.string == b.string
+
+const
+  rotate = 5
+  seed = 0x517cc1b727220a95'u64
+
+proc hashWord(x: var Hash, word: uint64) =
+  x = cast[Hash]((x.uint64.rotateLeftBits(rotate) xor word) * seed)
+
+proc hash(x: Key): Hash =
+  var pos = 0
+  while x.string.high - pos > 8:
+    result.hashWord(cast[ptr uint64](x.string[pos].addr)[])
+    pos += 8
+  for pos in pos..x.string.high:
+    result.hashWord(x.string[pos].uint64)
+
 const
     input = "../posts.json"
     output = "../related_posts_nim.json"
@@ -22,25 +39,25 @@ let posts = readFile(input).fromJson(seq[Post])
 
 let start = getMonotime()
 
-var tagMap: Table[string, seq[int]]
+var tagMap: Table[Key, seq[int]]
 for i, post in posts:
   for tag in post.tags:
-    if tagMap.hasKeyOrPut(tag, @[i]):
-      tagMap[tag].add i
+    if tagMap.hasKeyOrPut(tag.Key, @[i]):
+      tagMap[tag.Key].add i
 
-var allRelatedPosts  = newSeq[RelatedPosts](posts.len)
-var taggedPostCount: seq[int]
+var allRelatedPosts = newSeq[RelatedPosts](posts.len)
+var taggedPostCount = newSeq[uint8](posts.len)
 
-for i ,post in posts.pairs:
-  taggedPostCount  = newSeq[int](posts.len)
+for i, post in posts.pairs:
+  zeroMem(taggedPostCount[0].addr, taggedPostCount.len)
 
   for tag in post.tags:
-    for otherIDX in tagMap[tag]:
+    for otherIDX in tagMap[tag.Key]:
       taggedPostCount[otherIDX] += 1
 
   taggedPostCount[i] = 0 # remove self
 
-  var top5: array[5, tuple[idx, count: int]]
+  var top5: array[5, tuple[idx: int, count: uint8]]
 
   for i, count in taggedPostCount:
     if count > top5[4].count:
