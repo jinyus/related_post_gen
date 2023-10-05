@@ -1,5 +1,5 @@
 using JSON3
-using StatsBase: countmap
+using LinearAlgebra
 using StructTypes
 using Dates
 
@@ -7,12 +7,16 @@ function relatedIO()
     json_string = read("../posts.json", String)
     posts = JSON3.read(json_string, Vector{PostData})
 
+    # we only want to evaluate the time it takes to run the algorithm,
+    # not to compile the function(s) - so we run it once before starting the timer
+    related(posts)
+
     start = now()
     all_related_posts = related(posts)
     println("Processing time (w/o IO): $(now() - start)")
-    
 
-    open("../related_posts_julia_v1.json", "w") do f
+
+    open("../related_posts_julia.json", "w") do f
         JSON3.write(f, all_related_posts)
     end
 end
@@ -31,8 +35,27 @@ end
 
 StructTypes.StructType(::Type{PostData}) = StructTypes.Struct()
 
+function fastmaxindex(xs::Vector{Int64}, topn::Int64)
+    maxn = ones(Int64, topn)
+    maxv = zeros(Int64, topn)
+    for (i, x) in enumerate(xs)
+        if x > maxv[1]
+            maxv[1] = x
+            maxn[1] = i
+            for j in 2:topn
+                if maxv[j-1] > maxv[j]
+                    maxv[j-1], maxv[j] = maxv[j], maxv[j-1]
+                    maxn[j-1], maxn[j] = maxn[j], maxn[j-1]
+                end
+            end
+        end
+    end
+    reverse!(maxn)
+    maxn
+end
+
 function related(posts)
-    tag_map = Dict{String, Vector{Int64}}()
+    tag_map = Dict{String,Vector{Int64}}()
     for (idx, post) in enumerate(posts)
         for tag in post.tags
             if !haskey(tag_map, tag)
@@ -42,22 +65,24 @@ function related(posts)
         end
     end
 
-    all_related_posts = Vector{RelatedPost}()
+    relatedposts = Vector{RelatedPost}()
+    taggedpostcount = zeros(Int64, length(posts))
 
-    for (this_post_idx, post) in enumerate(posts)
-        related_posts_list = countmap(reduce(vcat, [tag_map[tag] for tag in post.tags]))
-        related_posts_list[this_post_idx] = 0
-
-        top_posts = [
-            posts[p]
-            for (p, v) in partialsort!(collect(related_posts_list), by=x-> x[2], 1:5, rev=true)
-        ]
-
-        push!(all_related_posts, RelatedPost(post._id, post.tags, top_posts))
+    for (i, post) in enumerate(posts)
+        taggedpostcount .= 0
+        for tag in post.tags
+            for idx in tag_map[tag]
+                taggedpostcount[idx] += 1
+            end
+        end
+        taggedpostcount[i] = 0
+        max5 = fastmaxindex(taggedpostcount, 5)
+        relatedpost = RelatedPost(post._id, post.tags, [posts[ix] for ix in max5])
+        push!(relatedposts, relatedpost)
     end
 
-    return all_related_posts
+    relatedposts
 end
 
-
 relatedIO()
+
