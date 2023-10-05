@@ -1,8 +1,9 @@
 ﻿open System
 open System.IO
 open FSharp.NativeInterop
-open FSharp.Json
+// open FSharp.Json
 open System.Collections.Generic
+open System.Text.Json
 
 #nowarn "9"
 
@@ -24,7 +25,9 @@ type RelatedPosts =
       related: Post[] }
 
 let srcDir = __SOURCE_DIRECTORY__
-let posts = Json.deserialize<Post[]> (File.ReadAllText $"{srcDir}/../posts.json")
+
+let posts =
+    JsonSerializer.Deserialize<Post[]>(File.ReadAllText $"{srcDir}/../posts.json")
 
 let stopwatch = Diagnostics.Stopwatch()
 stopwatch.Start()
@@ -99,6 +102,6 @@ let allRelatedPosts: RelatedPosts[] =
 
 stopwatch.Stop()
 printfn "Processing time (w/o IO): %dms" stopwatch.ElapsedMilliseconds
-let json = Json.serialize allRelatedPosts
+let json = JsonSerializer.Serialize allRelatedPosts
 
 File.WriteAllText($"{srcDir}/../related_posts_fsharp.json", json)
