@@ -17,6 +17,8 @@ import (
 var concurrency = isize(runtime.NumCPU())
 var a *arena.Arena
 
+const topN = 5
+
 type isize uint32
 
 type Post struct {
@@ -31,9 +33,9 @@ type PostWithSharedTags struct {
 }
 
 type RelatedPosts struct {
-	ID      string   `json:"_id"`
-	Tags    []string `json:"tags"`
-	Related []*Post  `json:"related"`
+	ID      string      `json:"_id"`
+	Tags    []string    `json:"tags"`
+	Related [topN]*Post `json:"related"`
 }
 
 // Result struct to hold results from goroutines
@@ -124,13 +126,13 @@ func computeRelatedPost(i isize, posts []Post, tagMap map[string][]isize, tagged
 	// Count the number of tags shared between posts
 	for _, tag := range posts[i].Tags {
 		for _, otherPostIdx := range tagMap[tag] {
-			if otherPostIdx != i { // Exclude the post itself
-				taggedPostCount[otherPostIdx]++
-			}
+			taggedPostCount[otherPostIdx]++
 		}
 	}
 
-	top5 := [5]PostWithSharedTags{}
+	taggedPostCount[i] = 0 // Don't count self
+
+	top5 := [topN]PostWithSharedTags{}
 	minTags := isize(0) // Updated initialization
 
 	for j, count := range taggedPostCount {
@@ -146,19 +148,16 @@ func computeRelatedPost(i isize, posts []Post, tagMap map[string][]isize, tagged
 			if pos < 4 {
 				copy(top5[pos+1:], top5[pos:4])
 			}
-			if pos <= 4 {
-				top5[pos] = PostWithSharedTags{Post: isize(j), SharedTags: count}
-				minTags = top5[4].SharedTags
-			}
+
+			top5[pos] = PostWithSharedTags{Post: isize(j), SharedTags: count}
+			minTags = top5[4].SharedTags
 		}
 	}
 
 	// Convert indexes back to Post pointers
-	topPosts := make([]*Post, 0, 5)
-	for _, t := range top5 {
-		if t.SharedTags > 0 {
-			topPosts = append(topPosts, &posts[t.Post])
-		}
+	topPosts := [topN]*Post{}
+	for idx, t := range top5 {
+		topPosts[idx] = &posts[t.Post]
 	}
 
 	return RelatedPosts{
