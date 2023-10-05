@@ -85,7 +85,7 @@ func main() {
 			}
 		}
 
-		var topPosts [topN]*Post
+		topPosts := [topN]*Post{}
 
 		// Convert indexes back to Post pointers
 		for i := 1; i < 10; i += 2 {
