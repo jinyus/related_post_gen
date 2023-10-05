@@ -5,13 +5,14 @@ TOPN = 5
 lap()
 from collections import defaultdict
 
-import ujson as json
+import orjson
 
 
 def main():
     lap()
-    with open("../posts.json") as f:
-        posts = json.load(f)
+    with open("../posts.json", "rb") as f:
+        s = f.read()
+        posts = orjson.loads(s)
     lap()
 
     tag_map = defaultdict(list)
@@ -62,8 +63,9 @@ def main():
         }
 
     lap()
-    with open("../related_posts_python.json", "w") as f:
-        json.dump(all_related_posts, f)
+    with open("../related_posts_python.json", "wb") as f:
+        s = orjson.dumps(all_related_posts)
+        f.write(s)
     lap()
     finish()
 

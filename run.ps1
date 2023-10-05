@@ -33,7 +33,7 @@ function run_python {
         python3 -m venv venv
     }
     venv\Scripts\activate
-    if (!(pip freeze | Select-String -Pattern "ujson")) {
+    if (!(pip freeze | Select-String -Pattern "orjson")) {
         pip install -r requirements.txt
     }
     if ($HYPER -eq 1) {
