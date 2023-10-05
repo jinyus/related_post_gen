@@ -18,9 +18,9 @@ type Post struct {
 }
 
 type RelatedPosts struct {
-	ID      string   `json:"_id"`
-	Tags    []string `json:"tags"`
-	Related []*Post  `json:"related"`
+	ID      string      `json:"_id"`
+	Tags    []string    `json:"tags"`
+	Related [topN]*Post `json:"related"`
 }
 
 func main() {
@@ -85,11 +85,11 @@ func main() {
 			}
 		}
 
-		topPosts := make([]*Post, 0, 5)
+		var topPosts [topN]*Post
 
 		// Convert indexes back to Post pointers
 		for i := 1; i < 10; i += 2 {
-			topPosts = append(topPosts, &posts[top5[i]])
+			topPosts[i/2] = &posts[top5[i]]
 		}
 
 		allRelatedPosts = append(allRelatedPosts, RelatedPosts{
