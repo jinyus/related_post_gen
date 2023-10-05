@@ -344,7 +344,7 @@ run_java_with_jmh() {
 run_nim() {
     echo "Running Nim" &&
         cd ./nim &&
-        nimble install -y jsony &&
+        nimble install -y &&
         nim compile -d:release --threads:off --passL:"-flto -fprofile-generate" --passC:"-flto -fprofile-generate" src/related.nim &&
         ./src/related &&
         nim compile -d:release --threads:off --passL:"-flto -fprofile-use" --passC:"-flto -fprofile-use" src/related.nim &&
