@@ -70,10 +70,9 @@ public class Program
             int minTags = 0;
 
             //  custom priority queue to find top N
-            foreach (var item in taggedPostCount.Select((value, index) => new { value, index }))
+            for (var j = 0; j < taggedPostCount.Length; j++)
             {
-                int j = item.index;
-                int count = item.value;
+                int count = taggedPostCount[j];
 
                 if (count > minTags)
                 {

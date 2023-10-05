@@ -364,12 +364,26 @@ run_fsharp() {
         dotnet restore &&
         dotnet publish -c release &&
         if [ $HYPER == 1 ]; then
-            capture "Fsharp" hyperfine -r 5 -w 2 --show-output "./bin/release/net7.0/fsharp"
+            capture "F#" hyperfine -r 5 -w 2 --show-output "./bin/release/net7.0/fsharp"
         else
             command time -f '%es %Mk' ./bin/release/net7.0/fsharp
         fi
 
     check_output "related_posts_fsharp.json"
+}
+
+run_csharp() {
+    echo "Running CSharp" &&
+        cd ./csharp &&
+        dotnet restore &&
+        dotnet publish -c release &&
+        if [ $HYPER == 1 ]; then
+            capture "C#" hyperfine -r 5 -w 2 --show-output "./bin/release/net7.0/publish/related"
+        else
+            command time -f '%es %Mk' ./bin/release/net7.0/publish/related
+        fi
+
+    check_output "related_posts_csharp.json"
 }
 
 run_fsharp_con() {
@@ -378,7 +392,7 @@ run_fsharp_con() {
         dotnet restore &&
         dotnet publish -c release &&
         if [ $HYPER == 1 ]; then
-            capture "Fsharp Concurrent" hyperfine -r 5 -w 2 --show-output "./bin/release/net7.0/fsharp_con"
+            capture "F# Concurrent" hyperfine -r 5 -w 2 --show-output "./bin/release/net7.0/fsharp_con"
         else
             command time -f '%es %Mk' ./bin/release/net7.0/fsharp_con
         fi
@@ -515,6 +529,10 @@ elif [ "$first_arg" = "fsharp" ]; then
 
     run_fsharp
 
+elif [ "$first_arg" = "csharp" ]; then
+
+    run_csharp
+
 elif [ "$first_arg" = "fsharp_con" ]; then
 
     run_fsharp_con
@@ -554,6 +572,7 @@ elif [ "$first_arg" = "all" ]; then
         run_nim || echo -e "\n" &&
         run_fsharp || echo -e "\n" &&
         run_fsharp_con || echo -e "\n" &&
+        run_csharp || echo -e "\n" &&
         run_luajit || echo -e "\n" &&
         run_lua || echo -e "\n" &&
         echo -e "Finished running all\n"
