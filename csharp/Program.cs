@@ -51,7 +51,7 @@ public class Program
             }
         }
 
-        var allRelatedPosts = new List<RelatedPosts>();
+        var allRelatedPosts = new List<RelatedPosts>(posts.Count);
         var taggedPostCount = new int[posts.Count];
 
         for (var i = 0; i < posts.Count; i++)
