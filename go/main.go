@@ -84,7 +84,7 @@ func main() {
 			}
 		}
 
-		topPosts := make([]*Post, 5, 5)
+		topPosts := make([]*Post, 0, 5)
 
 		// Convert indexes back to Post pointers
 		for i := 1; i < 10; i += 2 {
