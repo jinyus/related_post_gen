@@ -1,11 +1,9 @@
 package main
 
 import (
-	"arena"
 	"bufio"
 	"bytes"
 	"fmt"
-	"log"
 	"os"
 	"runtime"
 	"sync"
@@ -46,13 +44,13 @@ type RelatedPosts struct {
 
 // Global Variables
 var concurrency = isize(runtime.NumCPU())
-var a *arena.Arena
 var wg = &sync.WaitGroup{}
 var readWriter *bufio.ReadWriter
 var outputJSONFile *os.File
 var buf = bytes.NewBuffer(make([]byte, 0, 1024*1024*10)) // 10MB
 var workerResults = make([]*bytes.Buffer, concurrency)
 var posts []Post
+var postLen int
 
 // Entry Point
 func main() {
@@ -78,30 +76,21 @@ func main() {
 	readWriter.Write(buf.Bytes()[:len(buf.Bytes())-2])
 	readWriter.WriteString("\n]\n")
 	readWriter.Flush()
-
-	// Release memory
-	a.Free()
 }
 
 // Function Definitions
 func initializeResources() {
-	a = arena.NewArena() // Create a new arena
 	// Initialize concurrency
 	wg.Add(int(concurrency))
 	// Initialize output file writer
-	outputJSONFile, err := os.Create(OutputJSONFilePath)
-	if err != nil {
-		log.Panicln(err)
-	}
+	outputJSONFile, _ := os.Create(OutputJSONFilePath)
 	readWriter = bufio.NewReadWriter(bufio.NewReader(outputJSONFile), bufio.NewWriter(outputJSONFile))
 
 	// Read data and preprocess
 	file, _ := os.Open(InputJSONFilePath)
-	posts = arena.MakeSlice[Post](a, 0, InitialPostsSliceCap)
-	err = json.NewDecoder(file).Decode(&posts)
-	if err != nil {
-		log.Panicln(err)
-	}
+	posts = make([]Post, 0, InitialPostsSliceCap)
+	_ = json.NewDecoder(file).Decode(&posts)
+	postLen = len(posts)
 }
 
 func computeAllRelatedPosts(posts []Post) {
@@ -123,7 +112,7 @@ func computeAllRelatedPosts(posts []Post) {
 
 func worker(workerID isize, posts []Post, tagMap map[string][]isize) {
 	workerResults[workerID] = bytes.NewBuffer(make([]byte, 0, 1024*1024*10)) // 10MB
-	taggedPostCount := arena.MakeSlice[isize](a, len(posts), len(posts))
+	taggedPostCount := make([]isize, postLen)
 	// Compute related posts for each post
 	for i := workerID; i < isize(len(posts)); i += concurrency {
 		computeRelatedPost(i, posts, tagMap, taggedPostCount, workerID)

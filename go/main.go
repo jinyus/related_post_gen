@@ -1,7 +1,6 @@
 package main
 
 import (
-	"arena"
 	"fmt"
 	"log"
 	"os"
@@ -14,7 +13,6 @@ const topN = 5
 
 type isize uint32
 
-var a *arena.Arena
 var InitialTagMapSize = 100
 var InitialPostsSliceCap = 10000
 
@@ -40,8 +38,7 @@ func main() {
 	if err != nil {
 		log.Panicln(err)
 	}
-	a = arena.NewArena()
-	var posts = arena.MakeSlice[Post](a, 0, InitialPostsSliceCap)
+	var posts = make([]Post, 0, InitialPostsSliceCap)
 	err = json.NewDecoder(file).Decode(&posts)
 	if err != nil {
 		log.Panicln(err)
@@ -60,8 +57,8 @@ func main() {
 		}
 	}
 
-	allRelatedPosts := arena.MakeSlice[RelatedPosts](a, postsLen, postsLen)
-	taggedPostCount := arena.MakeSlice[isize](a, postsLen, postsLen)
+	allRelatedPosts := make([]RelatedPosts, postsLen)
+	taggedPostCount := make([]isize, postsLen)
 
 	for i := range posts {
 		for j := range taggedPostCount {
