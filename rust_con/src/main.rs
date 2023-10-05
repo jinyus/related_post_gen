@@ -18,8 +18,8 @@ const NUM_TOP_ITEMS: usize = 5;
 
 #[derive(Serialize)]
 struct RelatedPosts<'a> {
-    _id: &'a Cow<'a,str>,
-    tags: &'a Vec<Cow<'a,str>>,
+    _id: &'a str,
+    tags: &'a [Cow<'a, str>],
     related: Vec<&'a Post<'a>>,
 }
 
