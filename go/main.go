@@ -63,7 +63,7 @@ func main() {
 
 		taggedPostCount[i] = 0 // Don't count self
 
-		top5 := [10]int{} // flattened list of (count, id)
+		top5 := [topN * 2]int{} // flattened list of (count, id)
 		minTags := 0
 
 		for j, count := range taggedPostCount {
