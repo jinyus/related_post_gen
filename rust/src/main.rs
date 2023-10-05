@@ -25,8 +25,8 @@ struct RelatedPosts<'a> {
 
 #[derive(Eq)]
 struct PostCount {
-    post: u32,
-    count: u32,
+    post: u16,
+    count: u16,
 }
 
 impl std::cmp::PartialEq for PostCount {
@@ -72,11 +72,11 @@ fn main() {
 
     let start = Instant::now();
 
-    let mut post_tags_map: FxHashMap<&SString, Vec<usize>> = FxHashMap::default();
+    let mut post_tags_map: FxHashMap<&SString, Vec<u16>> = FxHashMap::default();
 
     for (post_idx, post) in posts.iter().enumerate() {
         for tag in post.tags.iter() {
-            post_tags_map.entry(tag).or_default().push(post_idx as u32);
+            post_tags_map.entry(tag).or_default().push(post_idx as u16);
         }
     }
 
@@ -85,10 +85,7 @@ fn main() {
         .enumerate()
         .map(|(post_idx, post)| {
             // faster than allocating outside the loop
-            let mut tagged_post_count = vec![0u32; posts.len()];
-            // tagged_post_count.fill(0u32);
-            // tagged_post_count.clear();
-            // tagged_post_count.extend(std::iter::repeat(0).take(0));
+            let mut tagged_post_count = vec![0u16; posts.len()];
 
             for tag in post.tags.iter() {
                 if let Some(tag_posts) = post_tags_map.get(tag) {
@@ -105,7 +102,10 @@ fn main() {
                 tagged_post_count
                     .iter()
                     .enumerate()
-                    .map(|(post, &count)| PostCount { post: post as u32, count }),
+                    .map(|(post, &count)| PostCount {
+                        post: post as u16,
+                        count,
+                    }),
             );
             let related = top.map(|it| &posts[it.post as usize]).collect();
 
