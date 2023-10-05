@@ -15,8 +15,11 @@ Given a list of posts, compute the top 5 related posts for each post based on th
 
 ### Run Benchmark
 
-```rust
+```
 ./run.sh go | rust | python | all
+
+# windows (powershell)
+./run.ps1 go | rust | python | all
 ```
 
 <details>
