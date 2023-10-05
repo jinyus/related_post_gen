@@ -7,8 +7,9 @@ import (
 	"time"
 
 	"github.com/goccy/go-json"
-	"github.com/ugurcsen/gods-generic/trees/binaryheap"
 )
+
+const topN = 5
 
 type Post struct {
 	ID    string   `json:"_id"`
@@ -16,15 +17,10 @@ type Post struct {
 	Tags  []string `json:"tags"`
 }
 
-type PostWithSharedTags struct {
-	Post       int
-	SharedTags int
-}
-
 type RelatedPosts struct {
-	ID      string   `json:"_id"`
-	Tags    []string `json:"tags"`
-	Related []*Post  `json:"related"`
+	ID      string      `json:"_id"`
+	Tags    []string    `json:"tags"`
+	Related [topN]*Post `json:"related"`
 }
 
 func main() {
@@ -50,9 +46,8 @@ func main() {
 		}
 	}
 
-	allRelatedPosts := make([]RelatedPosts, 0, len(posts))
+	allRelatedPosts := make([]RelatedPosts, len(posts))
 	taggedPostCount := make([]int, len(posts))
-	t5 := binaryheap.NewWith[PostWithSharedTags](PostComparator)
 
 	for i := range posts {
 		// optimized to a memset
@@ -62,42 +57,51 @@ func main() {
 
 		for _, tag := range posts[i].Tags {
 			for _, otherPostIdx := range tagMap[tag] {
-				if otherPostIdx != i {
-					taggedPostCount[otherPostIdx]++
+				taggedPostCount[otherPostIdx]++
+			}
+		}
+
+		taggedPostCount[i] = 0 // Don't count self
+
+		top5 := [topN * 2]int{} // flattened list of (count, id)
+		minTags := 0
+
+		for j, count := range taggedPostCount {
+			if count > minTags {
+
+				upperBound := (topN - 2) * 2
+
+				for upperBound >= 0 && count > top5[upperBound] {
+					top5[upperBound+2] = top5[upperBound]
+					top5[upperBound+3] = top5[upperBound+1]
+					upperBound -= 2
 				}
+
+				insertPos := upperBound + 2
+				top5[insertPos] = count
+				top5[insertPos+1] = j
+
+				minTags = top5[topN*2-2]
 			}
 		}
 
-		for v, count := range taggedPostCount {
-			if t5.Size() < 5 {
-				t5.Push(PostWithSharedTags{Post: v, SharedTags: count})
-			} else {
-				if t, _ := t5.Peek(); t.SharedTags < count {
-					t5.Pop()
-					t5.Push(PostWithSharedTags{Post: v, SharedTags: count})
-				}
-			}
+		topPosts := [topN]*Post{}
+
+		// Convert indexes back to Post pointers
+		for i := 1; i < 10; i += 2 {
+			topPosts[i/2] = &posts[top5[i]]
 		}
 
-		num := min(5, t5.Size())
-		topPosts := make([]*Post, num)
-
-		for j := 0; j < num; j++ {
-			if t, ok := t5.Pop(); ok {
-				topPosts[j] = &posts[t.Post]
-			}
-		}
-
-		allRelatedPosts = append(allRelatedPosts, RelatedPosts{
+		allRelatedPosts[i] = RelatedPosts{
 			ID:      posts[i].ID,
 			Tags:    posts[i].Tags,
 			Related: topPosts,
-		})
+		}
 	}
 
 	end := time.Now()
 
-	fmt.Println("Processing time (w/o IO)", end.Sub(start))
+	fmt.Println("Processing time (w/o IO):", end.Sub(start))
 
 	file, err = os.Create("../related_posts_go.json")
 	if err != nil {
@@ -108,14 +112,4 @@ func main() {
 	if err != nil {
 		log.Panicln(err)
 	}
-}
-
-func PostComparator(a, b PostWithSharedTags) int {
-	if a.SharedTags > b.SharedTags {
-		return 1
-	}
-	if a.SharedTags < b.SharedTags {
-		return -1
-	}
-	return 0
 }

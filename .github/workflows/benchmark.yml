@@ -1,0 +1,120 @@
+name: Benchmark
+
+on:
+    # pull_request:
+    #     branches:
+    #         - main
+    #     types:
+    #         - closed
+
+    workflow_dispatch:
+
+jobs:
+    run-benchmarks:
+        # if: github.event_name == 'workflow_dispatch' || (github.event_name == 'pull_request' && github.event.pull_request.merged == true && !contains(github.event.pull_request.title, '[SKIPCI]'))
+        runs-on: ubuntu-22.04
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v4
+
+            - name: Install  Rust
+              uses: dtolnay/rust-toolchain@stable
+
+            - name: Install Go
+              uses: actions/setup-go@v4
+              with:
+                  go-version: "1.21.1"
+
+            - name: Install crystal
+              uses: crystal-lang/install-crystal@v1
+
+            - name: Install zig
+              uses: goto-bus-stop/setup-zig@v2
+
+            - name: Install Julia
+              uses: julia-actions/setup-julia@v1
+
+            - name: Install Vlang
+              uses: vlang/setup-v@v1.3
+
+            - name: Install odin
+              run: |
+                  wget https://github.com/odin-lang/Odin/releases/download/dev-2023-08/odin-ubuntu-amd64-dev-2023-08.zip -O odin.zip
+                  unzip odin.zip -d odin_exe
+                  chmod +x $GITHUB_WORKSPACE/odin_exe/odin
+                  echo "$GITHUB_WORKSPACE/odin_exe" >> $GITHUB_PATH
+
+            - name: Install hyperfine for benchmarking
+              run: |
+                  wget https://github.com/sharkdp/hyperfine/releases/download/v1.17.0/hyperfine_1.17.0_amd64.deb -O hyperfine.deb
+                  sudo dpkg -i hyperfine.deb
+
+            - name: Install dart
+              uses: dart-lang/setup-dart@v1
+
+            - name: Install swift
+              uses: swift-actions/setup-swift@v1
+
+            - name: Install node
+              uses: actions/setup-node@v3
+              with:
+                  node-version: latest
+
+            - name: Install bun
+              uses: oven-sh/setup-bun@v1
+              with:
+                  bun-version: latest
+
+            - name: Install deno
+              uses: denoland/setup-deno@v1
+              with:
+                  deno-version: v1.x
+
+            - name: Install Java
+              uses: actions/setup-java@v3.9.0
+              with:
+                  distribution: "temurin"
+                  java-version: "17"
+
+            - name: Install GraalVM
+              uses: graalvm/setup-graalvm@v1
+              with:
+                  java-version: "21"
+                  set-java-home: false
+
+            - name: Install Nim
+              uses: iffy/install-nim@v5
+
+            - name: Install Dotnet
+              uses: actions/setup-dotnet@v3
+
+            - name: Install LuaJit
+              run: |
+                sudo apt install luajit lua5.1 luarocks lua-socket:amd64
+
+            - name: Run Benchmark
+              run: ./run.sh all raw_results.md
+
+            - name: Clean up
+              run: rm -rf odin_exe && rm hyperfine.deb && rm odin.zip && rm -rf vlang
+            # - name: Push results to repo
+            #   uses: github-actions-x/commit@v2.9
+            #   with:
+            #       commit-message: "Update benchmark results"
+            #       files: raw_results.md
+            #       push-branch: main
+            #       github-token: ${{ secrets.GITHUB_TOKEN }}
+            - name: Modify Readme
+              run: dart extract_results.dart raw_results.md
+            - name: Create Pull Request
+              uses: peter-evans/create-pull-request@v5
+              with:
+                  token: ${{ secrets.GH_REPO_TOKEN }}
+                  commit-message: Update benchmark results
+                  title: "[SKIPCI] Update benchmark results"
+                  body: "New benchmark results"
+                  labels: automated pr
+                  branch: benchmark-results
+                  add-paths: |
+                      raw_results.md
+                      readme.md

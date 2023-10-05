@@ -34,6 +34,13 @@ class MinHeap(T)
     min
   end
 
+  def replace_min(val : T)
+    return if @heap.empty?
+
+    @heap[0] = val
+    sift_down(0)
+  end
+
   private def parent(idx)
     (idx - 1) // 2
   end

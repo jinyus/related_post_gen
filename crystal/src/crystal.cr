@@ -1,6 +1,7 @@
 require "json"
 require "time"
-require "./min_heap.cr"
+
+TOPN = 5
 
 class Post
   include JSON::Serializable
@@ -43,37 +44,47 @@ end
 allRelatedPosts = Array(RelatedPost).new(posts.size)
 tagged_post_count = Array(Int32).new(posts.size, 0)
 
-min_heap = MinHeap({Int32, Int32}).new(5) do |a, b|
-  a[1] <=> b[1]
-end
-
 posts.each_with_index do |post, idx|
   tagged_post_count.fill(0)
 
   post.tags.each do |tag|
     tag_map[tag].each do |other_post_idx|
-      tagged_post_count[other_post_idx] += 1 unless other_post_idx == idx
+      tagged_post_count[other_post_idx] += 1
     end
   end
 
-  tagged_post_count.each_with_index do |count, p_idx|
-    if p_idx < 5
-      min_heap.push({p_idx, count})
-    elsif min_heap.peek_min[1] < count
-      val = min_heap.pop.not_nil![1]
-      min_heap.push({p_idx, count})
+  tagged_post_count[idx] = 0 # don't count self
+
+  # size at 6 to avoid resizing. also faster than allocating outside loop
+  top5 = Array(Int32).new(TOPN * 2, 0) # flattened list of (count, id)
+  min_tags = 0
+
+  tagged_post_count.each_with_index do |count, j|
+    if count > min_tags
+      upper_bound = (TOPN - 2) * 2
+
+      while upper_bound >= 0 && count > top5[upper_bound]
+        top5[upper_bound + 2] = top5[upper_bound]
+        top5[upper_bound + 3] = top5[upper_bound + 1]
+        upper_bound -= 2
+      end
+
+      insert_pos = upper_bound + 2
+      top5[insert_pos] = count
+      top5[insert_pos + 1] = j
+
+      min_tags = top5[TOPN*2 - 2]
     end
   end
 
-  # avoid popping the heap which would reorder it
-  # better to just iterate over it then clear it
-  topPosts = min_heap.map do |p|
-    posts[p[0]]
+  top_posts = Array(Post).new(TOPN)
+
+  # Convert indexes back to Post pointers
+  (1...10).step(2) do |i|
+    top_posts << posts[top5[i]]
   end
 
-  min_heap.clear
-
-  allRelatedPosts << RelatedPost.new(id: post.id, tags: post.tags, related: topPosts)
+  allRelatedPosts << RelatedPost.new(id: post.id, tags: post.tags, related: top_posts)
 end
 
 t2 = Time.utc
