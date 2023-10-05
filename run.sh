@@ -40,7 +40,7 @@ capture() {
 run_go() {
     echo "Running Go" &&
         cd ./go &&
-        go build &&
+        GOEXPERIMENT=arenas go build &&
         if [ $HYPER == 1 ]; then
             capture "Go" hyperfine -r 10 -w 3 --show-output "./related"
         else
