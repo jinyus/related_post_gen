@@ -18,8 +18,8 @@ const NUM_TOP_ITEMS: usize = 5;
 
 #[derive(Serialize)]
 struct RelatedPosts<'a> {
-    _id: &'a SString,
-    tags: &'a Vec<SString>,
+    _id: &'a str,
+    tags: &'a [SString],
     related: Vec<&'a Post>,
 }
 
@@ -72,7 +72,7 @@ fn main() {
 
     let start = Instant::now();
 
-    let mut post_tags_map: FxHashMap<&SString, Vec<u16>> = FxHashMap::default();
+    let mut post_tags_map: FxHashMap<&str, Vec<u16>> = FxHashMap::default();
 
     for (post_idx, post) in posts.iter().enumerate() {
         for tag in post.tags.iter() {
@@ -88,7 +88,7 @@ fn main() {
             let mut tagged_post_count = vec![0u16; posts.len()];
 
             for tag in post.tags.iter() {
-                if let Some(tag_posts) = post_tags_map.get(tag) {
+                if let Some(tag_posts) = post_tags_map.get::<str>(tag.as_ref()) {
                     for other_post_idx in tag_posts.iter() {
                         tagged_post_count[*other_post_idx as usize] += 1;
                     }
