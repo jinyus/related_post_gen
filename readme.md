@@ -39,38 +39,50 @@ Given a list of posts, compute the top 5 related posts for each post based on th
 
 ### Updated Results from github workflow ([raw data](https://github.com/jinyus/related_post_gen/blob/main/raw_results.md))
 
+<details>
+<summary> VM Specs </summary>
+NB: The benchmark runs on the free tier of github workflow.
+
+-   CPU: 2 vCPUs
+-   RAM: 7GB
+-   OS: Ubuntu 22.04
+
+[Source](https://docs.github.com/en/actions/using-github-hosted-runners/about-github-hosted-runners/about-github-hosted-runners#supported-runners-and-hardware-resources)
+
+</details>
+
 | Language       | Processing Time | Total (PT + I/O) |
 | -------------- | --------------- | ---------------- |
-| Zig | 29.00 ms | 71.4 ms |
-| Rust | 29.30 ms | 46.5 ms |
-| Go | 29.36 ms | 60.9 ms |
-| Java (GraalVM) | 36.00 ms | 64.2 ms |
-| Odin | 45.85 ms | 329.3 ms |
-| Nim | 47.08 ms | 75.5 ms |
-| Vlang | 47.29 ms | 350.4 ms |
-| Fsharp | 50.29 ms | 830.5 ms |
-| Swift | 50.41 ms | 417.8 ms |
-| Crystal | 58.44 ms | 108.8 ms |
-| Dart VM | 79.88 ms | 552.8 ms |
-| LuaJIT | 107.23 ms | 403.7 ms |
-| Dart AOT | 116.75 ms | 248.8 ms |
-| JS (Deno) | 150.80 ms | 240.0 ms |
-| JS (Node) | 166.80 ms | 240.8 ms |
-| Java (JIT) | 239.38 ms | 523.6 ms |
-| Numpy | 0.41 s | 632.3 ms |
-| Julia v2 | 588.33 ms | 4.924 s |
-| JS (Bun) | 614.60 ms | 684.5 ms |
-| Lua | 1952.36 ms | 2.601 s |
-| Python | 2.59 s | 2.664 s |
+| Zig            | 29.00 ms        | 71.4 ms          |
+| Rust           | 29.30 ms        | 46.5 ms          |
+| Go             | 29.36 ms        | 60.9 ms          |
+| Java (GraalVM) | 36.00 ms        | 64.2 ms          |
+| Odin           | 45.85 ms        | 329.3 ms         |
+| Nim            | 47.08 ms        | 75.5 ms          |
+| Vlang          | 47.29 ms        | 350.4 ms         |
+| Fsharp         | 50.29 ms        | 830.5 ms         |
+| Swift          | 50.41 ms        | 417.8 ms         |
+| Crystal        | 58.44 ms        | 108.8 ms         |
+| Dart VM        | 79.88 ms        | 552.8 ms         |
+| LuaJIT         | 107.23 ms       | 403.7 ms         |
+| Dart AOT       | 116.75 ms       | 248.8 ms         |
+| JS (Deno)      | 150.80 ms       | 240.0 ms         |
+| JS (Node)      | 166.80 ms       | 240.8 ms         |
+| Java (JIT)     | 239.38 ms       | 523.6 ms         |
+| Numpy          | 0.41 s          | 632.3 ms         |
+| Julia v2       | 588.33 ms       | 4.924 s          |
+| JS (Bun)       | 614.60 ms       | 684.5 ms         |
+| Lua            | 1952.36 ms      | 2.601 s          |
+| Python         | 2.59 s          | 2.664 s          |
 
 ### Multicore Results
 
-| Language       | Processing Time | Total (PT + I/O) |
-| -------------- | --------------- | ---------------- |
-| Rust Concurrent | 15.34 ms | 33.1 ms |
-| Go Concurrent | 16.89 ms | 50.4 ms |
-| Swift Concurrent | 32.71 ms | 409.5 ms |
-| Fsharp Concurrent | 41.29 ms | 830.9 ms |
+| Language          | Processing Time | Total (PT + I/O) |
+| ----------------- | --------------- | ---------------- |
+| Rust Concurrent   | 15.34 ms        | 33.1 ms          |
+| Go Concurrent     | 16.89 ms        | 50.4 ms          |
+| Swift Concurrent  | 32.71 ms        | 409.5 ms         |
+| Fsharp Concurrent | 41.29 ms        | 830.9 ms         |
 
 <details>
 <summary> Old Results with details (on my machine) </summary>
