@@ -6,6 +6,8 @@ import "core:os"
 import "core:time"
 // import "core:slice"
 
+topN :: 5
+
 Post :: struct {
 	id:    string `json:"_id"`,
 	title: string,
@@ -15,13 +17,11 @@ Post :: struct {
 RelatedPosts :: struct {
 	id:      string `json:"_id"`,
 	tags:    []string,
-	related: [5]Post,
+
+	// marshal/unmarshal doesn't work with pointers
+	related: [topN]Post,
 }
 
-PostWithSharedTags :: struct {
-	post:        int,
-	shared_tags: int,
-}
 
 main :: proc() {
 	file, ok := os.read_entire_file_from_filename("../posts.json")
@@ -76,35 +76,32 @@ main :: proc() {
 
 		tagged_post_count[i] = 0 // don't count self
 
-		top5 := [5]PostWithSharedTags{}
+		top5 := [topN * 2]int{}
 		min_tags := 0
 
 		for count, pIdx in tagged_post_count {
 			if count > min_tags {
 
-				pos := 4
+				upperBound := (topN - 2) * 2
 
-				for pos >= 0 && top5[pos].shared_tags < count {
-					pos -= 1
+				for upperBound >= 0 && count > top5[upperBound] {
+					top5[upperBound+2] = top5[upperBound]
+					top5[upperBound+3] = top5[upperBound+1]
+					upperBound -= 2
 				}
 
-				pos += 1
+				insertPos := upperBound + 2
+				top5[insertPos] = count
+				top5[insertPos+1] = pIdx
 
-				if pos < 4 {
-					copy(top5[pos + 1:], top5[pos:4])
-				}
-
-				if pos < 5 {
-					top5[pos] = PostWithSharedTags{pIdx, count}
-					min_tags = top5[4].shared_tags
-				}
-			}
+				min_tags = top5[topN*2-2]
+		}
 		}
 
-		top_posts := [5]Post{}
+		top_posts := [topN]Post{}
 
-		for val, i in top5 {
-			top_posts[i] = posts[val.post]
+		for i := 1; i < 10; i += 2 {
+			top_posts[i/2] = posts[top5[i]]
 		}
 
 
