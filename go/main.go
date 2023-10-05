@@ -46,7 +46,7 @@ func main() {
 		}
 	}
 
-	allRelatedPosts := make([]RelatedPosts, 0, len(posts))
+	allRelatedPosts := make([]RelatedPosts, len(posts))
 	taggedPostCount := make([]int, len(posts))
 
 	for i := range posts {
@@ -92,11 +92,11 @@ func main() {
 			topPosts[i/2] = &posts[top5[i]]
 		}
 
-		allRelatedPosts = append(allRelatedPosts, RelatedPosts{
+		allRelatedPosts[i] = RelatedPosts{
 			ID:      posts[i].ID,
 			Tags:    posts[i].Tags,
 			Related: topPosts,
-		})
+		}
 	}
 
 	end := time.Now()
