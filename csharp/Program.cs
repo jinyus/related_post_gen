@@ -1,7 +1,7 @@
 ﻿using Newtonsoft.Json;
 
 
-public class Post
+public struct Post
 {
     [JsonProperty("_id")]
     public required string Id { get; set; }
@@ -13,7 +13,7 @@ public class Post
     public required List<string> Tags { get; set; }
 }
 
-public class RelatedPosts
+public struct RelatedPosts
 {
     [JsonProperty("_id")]
     public required string Id { get; set; }
@@ -114,7 +114,6 @@ public class Program
 
         Console.WriteLine("Processing time (w/o IO): {0}", (end - start).TotalMilliseconds);
 
-        var outputFilePath = @"../related_posts_csharp.json";
-        File.WriteAllText(outputFilePath, JsonConvert.SerializeObject(allRelatedPosts, Formatting.Indented));
+        File.WriteAllText(@"../related_posts_csharp.json", JsonConvert.SerializeObject(allRelatedPosts));
     }
 }
