@@ -1,3 +1,4 @@
+use std::borrow::Cow;
 use std::{collections::BinaryHeap, time::Instant};
 
 use rustc_data_structures::fx::FxHashMap;
@@ -11,9 +12,10 @@ static GLOBAL: MiMalloc = MiMalloc;
 type SString = smallstr::SmallString<[u8; 16]>;
 
 #[derive(Serialize, Deserialize)]
-struct Post {
+struct Post<'a> {
     _id: SString,
-    title: String,
+    #[serde(borrow)]
+    title: Cow<'a, str>,
     // #[serde(skip_serializing)]
     tags: Vec<SString>,
 }
@@ -24,7 +26,7 @@ const NUM_TOP_ITEMS: usize = 5;
 struct RelatedPosts<'a> {
     _id: &'a str,
     tags: &'a [SString],
-    related: Vec<&'a Post>,
+    related: Vec<&'a Post<'a>>,
 }
 
 #[derive(Eq)]
