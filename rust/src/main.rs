@@ -1,25 +1,26 @@
 use std::{collections::BinaryHeap, time::Instant};
-use std::borrow::Cow;
 
 use rustc_data_structures::fx::FxHashMap;
 use serde::{Deserialize, Serialize};
 use serde_json::from_str;
 
+type SString = smallstr::SmallString<[u8; 16]>;
+
 #[derive(Serialize, Deserialize)]
-struct Post<'a> {
-    _id: Cow<'a,str>,
-    title: Cow<'a,str>,
+struct Post {
+    _id: SString,
+    title: String,
     // #[serde(skip_serializing)]
-    tags: Vec<Cow<'a,str>>,
+    tags: Vec<SString>,
 }
 
 const NUM_TOP_ITEMS: usize = 5;
 
 #[derive(Serialize)]
 struct RelatedPosts<'a> {
-    _id: &'a Cow<'a,str>,
-    tags: &'a Vec<Cow<'a,str>>,
-    related: Vec<&'a Post<'a>>,
+    _id: &'a SString,
+    tags: &'a Vec<SString>,
+    related: Vec<&'a Post>,
 }
 
 #[derive(Eq)]
@@ -71,7 +72,7 @@ fn main() {
 
     let start = Instant::now();
 
-    let mut post_tags_map: FxHashMap<&Cow<'_,str>, Vec<u32>> = FxHashMap::default();
+    let mut post_tags_map: FxHashMap<&SString, Vec<usize>> = FxHashMap::default();
 
     for (post_idx, post) in posts.iter().enumerate() {
         for tag in post.tags.iter() {
