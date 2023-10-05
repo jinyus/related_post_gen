@@ -7,11 +7,11 @@ from numba import njit, typed
 
 
 @njit
-def count_relations(n_posts, t_to_pp, p_to_tt, current_p):
+def count_relations(n_posts, t_to_pp, p_to_tt, p_to_nt, current_p):
     tt = p_to_tt[current_p]
     relation_count = np.zeros(n_posts, dtype=np.uint8)
-    for t in tt:
-        for p in t_to_pp[t]:
+    for tj in range(p_to_nt[current_p]):
+        for p in t_to_pp[tt[tj]]:
             relation_count[p] += 1
     relation_count[current_p] = 0
     return relation_count
@@ -33,10 +33,10 @@ def get_top5(relation_count):
 
 
 @njit
-def get_all_top5(n_posts, t_to_pp, p_to_tt):
+def get_all_top5(n_posts, t_to_pp, p_to_tt, p_to_nt):
     all_top5 = np.empty((n_posts, 5), np.uint16)
     for p in range(n_posts):
-        relation_count = count_relations(n_posts, t_to_pp, p_to_tt, p)
+        relation_count = count_relations(n_posts, t_to_pp, p_to_tt, p_to_nt, p)
         top5 = get_top5(relation_count)
         all_top5[p] = top5
     return all_top5
@@ -50,13 +50,15 @@ def precompile():
     count_relations(
         1,
         typed.List([np.empty(0, dtype=np.uint16)]),
-        typed.List([np.empty(0, dtype=np.uint8)]),
+        np.empty((1, 0), dtype=np.uint8),
+        np.zeros(1, dtype=np.uint8),
         0)
     get_top5(np.empty(0, dtype=np.uint8))
     get_all_top5(
         0,
         typed.List([np.empty(0, dtype=np.uint16)]),
-        typed.List([np.empty(0, dtype=np.uint8)])
+        np.empty((0, 0), dtype=np.uint8),
+        np.empty(0, dtype=np.uint8),
     )
 
 
@@ -70,15 +72,16 @@ def main():
     unique_tags = set(tag for post in posts for tag in post["tags"])
     tag_to_t = {t: np.uint8(i) for i, t in enumerate(unique_tags)}
     t_to_pp = [[] for _ in unique_tags]
-    p_to_tt = []
-    for p, post in enumerate(posts):
-        for tag in post["tags"]:
-            t_to_pp[tag_to_t[tag]].append(p)
-        p_to_tt.append([tag_to_t[tag] for tag in post["tags"]])
-    t_to_pp = typed.List(np.array(tp, dtype=np.uint16) for tp in t_to_pp)
-    p_to_tt = typed.List(np.array(tp, dtype=np.uint8) for tp in p_to_tt)
+    p_to_nt = np.array([len(post["tags"]) for post in posts], dtype=np.uint8)
+    p_to_tt = np.empty((len(posts), p_to_nt.max()), dtype=np.uint8)
 
-    all_top5 = get_all_top5(len(posts), t_to_pp, p_to_tt)
+    for p, post in enumerate(posts):
+        for tj, tag in enumerate(post["tags"]):
+            t_to_pp[tag_to_t[tag]].append(p)
+            p_to_tt[p, tj] = tag_to_t[tag]
+    t_to_pp = typed.List(np.array(tp, dtype=np.uint16) for tp in t_to_pp)
+
+    all_top5 = get_all_top5(len(posts), t_to_pp, p_to_tt, p_to_nt)
 
     all_related_posts = []
     for post, top5 in zip(posts, all_top5):
