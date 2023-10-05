@@ -1,27 +1,28 @@
-﻿using Newtonsoft.Json;
+﻿using System.Text.Json;
+using System.Text.Json.Serialization;
 
 
 public struct Post
 {
-    [JsonProperty("_id")]
+    [JsonPropertyName("_id")]
     public required string Id { get; set; }
 
-    [JsonProperty("title")]
+    [JsonPropertyName("title")]
     public required string Title { get; set; }
 
-    [JsonProperty("tags")]
+    [JsonPropertyName("tags")]
     public required List<string> Tags { get; set; }
 }
 
 public struct RelatedPosts
 {
-    [JsonProperty("_id")]
+    [JsonPropertyName("_id")]
     public required string Id { get; set; }
 
-    [JsonProperty("tags")]
+    [JsonPropertyName("tags")]
     public required List<string> Tags { get; set; }
 
-    [JsonProperty("related")]
+    [JsonPropertyName("related")]
     public required Post[] Related { get; set; }
 }
 
@@ -31,7 +32,7 @@ public class Program
     {
         const int topN = 5;
         var filePath = @"../posts.json";
-        var posts = JsonConvert.DeserializeObject<List<Post>>(File.ReadAllText(filePath));
+        var posts = JsonSerializer.Deserialize<List<Post>>(File.ReadAllText(filePath));
 
         var start = DateTime.Now;
 
@@ -114,6 +115,6 @@ public class Program
 
         Console.WriteLine("Processing time (w/o IO): {0}", (end - start).TotalMilliseconds);
 
-        File.WriteAllText(@"../related_posts_csharp.json", JsonConvert.SerializeObject(allRelatedPosts));
+        File.WriteAllText(@"../related_posts_csharp.json", JsonSerializer.Serialize(allRelatedPosts));
     }
 }
