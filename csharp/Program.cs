@@ -1,4 +1,5 @@
-﻿using System.Text.Json;
+using System.Diagnostics;
+using System.Text.Json;
 using System.Text.Json.Serialization;
 
 
@@ -33,7 +34,7 @@ public class Program
         const int topN = 5;
         var posts = JsonSerializer.Deserialize<List<Post>>(File.ReadAllText(@"../posts.json"));
 
-        var start = DateTime.Now;
+		var sw = Stopwatch.StartNew();
 
         var tagMap = new Dictionary<string, List<int>>();
 
@@ -109,9 +110,9 @@ public class Program
             };
         }
 
-        var end = DateTime.Now;
+        sw.Stop();
 
-        Console.WriteLine("Processing time (w/o IO): {0}ms", (end - start).TotalMilliseconds);
+        Console.WriteLine("Processing time (w/o IO): {0}ms", sw.Elapsed.TotalMilliseconds);
 
         File.WriteAllText(@"../related_posts_csharp.json", JsonSerializer.Serialize(allRelatedPosts));
     }
