@@ -35,17 +35,31 @@ public class Program
 
         var start = DateTime.Now;
 
-        var tagMap = new Dictionary<string, List<int>>();
-        for (var i = 0; i < posts!.Count; i++)
+        var tagPostsTmp = new Dictionary<string, Stack<int>>();
+
+        for (int i = 0; i < posts!.Count; i++)
         {
-            foreach (var tag in posts[i].Tags)
+            var post = posts[i];
+            foreach (var tag in post.Tags)
             {
-                if (!tagMap.ContainsKey(tag))
+                if (tagPostsTmp.TryGetValue(tag, out Stack<int> s))
                 {
-                    tagMap[tag] = new List<int>();
+                    s.Push(i);
                 }
-                tagMap[tag].Add(i);
+                else
+                {
+                    var newStack = new Stack<int>();
+                    newStack.Push(i);
+                    tagPostsTmp[tag] = newStack;
+                }
             }
+        }
+
+        // convert from Dictionary<string, Stack<int>> to Dictionary<string, int[]> for faster access
+        var tagMap = new Dictionary<string, int[]>(tagPostsTmp.Count);
+        foreach (var kv in tagPostsTmp)
+        {
+            tagMap[kv.Key] = kv.Value.ToArray();
         }
 
         var allRelatedPosts = new List<RelatedPosts>(posts.Count);
