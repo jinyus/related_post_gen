@@ -111,7 +111,7 @@ public class Program
 
         var end = DateTime.Now;
 
-        Console.WriteLine("Processing time (w/o IO): {0}", (end - start).TotalMilliseconds);
+        Console.WriteLine("Processing time (w/o IO): {0}ms", (end - start).TotalMilliseconds);
 
         File.WriteAllText(@"../related_posts_csharp.json", JsonSerializer.Serialize(allRelatedPosts));
     }
