@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -7,18 +8,26 @@ var posts = JsonSerializer.Deserialize<List<Post>>(File.ReadAllText(@"../posts.j
 
 var sw = Stopwatch.StartNew();
 
-var tagMap = new Dictionary<string, List<int>>();
+// slower when int[] is used
+var tagMapTemp = new Dictionary<string, Stack<int>>();
 
 for (var i = 0; i < posts!.Count; i++)
 {
     foreach (var tag in posts[i].Tags)
     {
-        if (!tagMap.ContainsKey(tag))
+        if (!tagMapTemp.ContainsKey(tag))
         {
-            tagMap[tag] = new List<int>();
+            tagMapTemp[tag] = new Stack<int>();
         }
-        tagMap[tag].Add(i);
+        tagMapTemp[tag].Push(i);
     }
+}
+
+var tagMap = new Dictionary<string, int[]>();
+
+foreach (var (tag, postIds) in tagMapTemp)
+{
+    tagMap[tag] = postIds.ToArray();
 }
 
 var allRelatedPosts = new RelatedPosts[posts.Count];
@@ -96,7 +105,7 @@ public struct Post
     public required string Title { get; set; }
 
     [JsonPropertyName("tags")]
-    public required List<string> Tags { get; set; }
+    public required string[] Tags { get; set; }
 }
 
 public struct RelatedPosts
@@ -105,7 +114,7 @@ public struct RelatedPosts
     public required string Id { get; set; }
 
     [JsonPropertyName("tags")]
-    public required List<string> Tags { get; set; }
+    public required string[] Tags { get; set; }
 
     [JsonPropertyName("related")]
     public required Post[] Related { get; set; }
