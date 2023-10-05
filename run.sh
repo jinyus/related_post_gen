@@ -42,7 +42,7 @@ run_go() {
         cd ./go &&
         go build &&
         if [ $HYPER == 1 ]; then
-            capture "Go" hyperfine -r 10 -w 3 --show-output "./related"
+            capture "Go" hyperfine -r 10 -w 5 --show-output "./related"
         else
             command time -f '%es %Mk' ./related
         fi
@@ -56,7 +56,7 @@ run_go_concurrent() {
         cd ./go_con &&
         GOEXPERIMENT=arenas go build &&
         if [ $HYPER == 1 ]; then
-            capture "Go Concurrent" hyperfine -r 10 -w 3 --show-output "./related_concurrent"
+            capture "Go Concurrent" hyperfine -r 10 -w 5 --show-output "./related_concurrent"
         else
             command time -f '%es %Mk' ./related_concurrent
         fi
@@ -69,7 +69,7 @@ run_rust() {
         cd ./rust &&
         cargo build --release &&
         if [ $HYPER == 1 ]; then
-            capture "Rust" hyperfine -r 10 -w 3 --show-output "./target/release/rust"
+            capture "Rust" hyperfine -r 10 -w 5 --show-output "./target/release/rust"
         else
             command time -f '%es %Mk' ./target/release/rust
         fi
@@ -83,7 +83,7 @@ run_rust_con() {
         cd ./rust_con &&
         cargo build --release &&
         if [ $HYPER == 1 ]; then
-            capture "Rust Concurrent" hyperfine -r 10 -w 3 --show-output "./target/release/rust_rayon"
+            capture "Rust Concurrent" hyperfine -r 10 -w 5 --show-output "./target/release/rust_rayon"
         else
             command time -f '%es %Mk' ./target/release/rust_rayon
         fi
