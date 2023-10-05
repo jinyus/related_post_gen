@@ -82,6 +82,3 @@ let total = getMonotime() - start
 echo "Processing time (w/o IO): ", total.inMilliseconds, "ms"
 
 writeFile(output, allRelatedPosts.toJson)
-
-
-
