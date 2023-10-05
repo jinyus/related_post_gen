@@ -2,6 +2,15 @@
 using System.Text.Json.Serialization;
 
 
+[JsonSourceGenerationOptions(WriteIndented = true)]
+[JsonSerializable(typeof(List<Post>))]
+[JsonSerializable(typeof(Post))]
+[JsonSerializable(typeof(RelatedPosts[]))]
+[JsonSerializable(typeof(RelatedPosts))]
+internal partial class PostSourceGenerationContext : JsonSerializerContext
+{
+}
+
 public struct Post
 {
     [JsonPropertyName("_id")]
@@ -31,7 +40,7 @@ public class Program
     public static void Main(string[] args)
     {
         const int topN = 5;
-        var posts = JsonSerializer.Deserialize<List<Post>>(File.ReadAllText(@"../posts.json"));
+        var posts = JsonSerializer.Deserialize<List<Post>>(File.ReadAllText(@"../posts.json"), PostSourceGenerationContext.Default.ListPost);
 
         var start = DateTime.Now;
 
@@ -113,6 +122,6 @@ public class Program
 
         Console.WriteLine("Processing time (w/o IO): {0}ms", (end - start).TotalMilliseconds);
 
-        File.WriteAllText(@"../related_posts_csharp.json", JsonSerializer.Serialize(allRelatedPosts));
+        File.WriteAllText(@"../related_posts_csharp.json", JsonSerializer.Serialize(allRelatedPosts, PostSourceGenerationContext.Default.RelatedPostsArray));
     }
 }
