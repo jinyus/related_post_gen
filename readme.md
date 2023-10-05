@@ -34,6 +34,7 @@ pwsh ./run.ps1 go | rust | python | all
 -   Unsafe code blocks
 -   Custom benchmarking
 -   Disabling runtime checks (bounds etc)
+-   Specific hardware targeting
 
 <h3>Must:</h3>
 
