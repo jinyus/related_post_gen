@@ -1,17 +1,19 @@
-use std::{collections::BinaryHeap, time::Instant};
 use std::borrow::Cow;
+use std::{collections::BinaryHeap, time::Instant};
 
 use rayon::prelude::*;
 use rustc_data_structures::fx::FxHashMap;
 use serde::{Deserialize, Serialize};
 use serde_json::from_str;
 
+type SString = smallstr::SmallString<[u8; 16]>;
+
 #[derive(Serialize, Deserialize)]
 struct Post<'a> {
-    _id: Cow<'a,str>,
-    title: Cow<'a,str>,
+    _id: SString,
+    title: Cow<'a, str>,
     // #[serde(skip_serializing)]
-    tags: Vec<Cow<'a,str>>,
+    tags: Vec<SString>,
 }
 
 const NUM_TOP_ITEMS: usize = 5;
@@ -19,7 +21,7 @@ const NUM_TOP_ITEMS: usize = 5;
 #[derive(Serialize)]
 struct RelatedPosts<'a> {
     _id: &'a str,
-    tags: &'a [Cow<'a, str>],
+    tags: &'a [SString],
     related: Vec<&'a Post<'a>>,
 }
 
@@ -69,7 +71,7 @@ fn least_n<T: Ord>(n: usize, mut from: impl Iterator<Item = T>) -> impl Iterator
 fn main() {
     let json_str = std::fs::read_to_string("../posts.json").unwrap();
     let posts: Vec<Post> = from_str(&json_str).unwrap();
-    let num_cpus = num_cpus::get_physical() ; // does IO to get num_cpus
+    let num_cpus = num_cpus::get_physical(); // does IO to get num_cpus
 
     let start = Instant::now();
 
@@ -95,7 +97,7 @@ fn main() {
                 let mut tagged_post_count = vec![0; posts.len()];
 
                 for tag in &post.tags {
-                    if let Some(tag_posts) = post_tags_map.get(tag.as_ref()) {
+                    if let Some(tag_posts) = post_tags_map.get::<str>(tag.as_ref()) {
                         for &other_post_idx in tag_posts {
                             tagged_post_count[other_post_idx as usize] += 1;
                         }
