@@ -9,6 +9,8 @@ import (
 	"github.com/goccy/go-json"
 )
 
+const topN = 5
+
 type Post struct {
 	ID    string   `json:"_id"`
 	Title string   `json:"title"`
@@ -61,7 +63,6 @@ func main() {
 
 		taggedPostCount[i] = 0 // Don't count self
 
-		topN := 5
 		top5 := [10]int{} // flattened list of (count, id)
 		minTags := 0
 
