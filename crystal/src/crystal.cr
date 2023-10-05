@@ -1,6 +1,8 @@
 require "json"
 require "time"
 
+TOPN = 5
+
 class Post
   include JSON::Serializable
 
@@ -54,29 +56,35 @@ posts.each_with_index do |post, idx|
   tagged_post_count[idx] = 0 # don't count self
 
   # size at 6 to avoid resizing. also faster than allocating outside loop
-  top5Queue = Array({Int32, Int32}).new(6, {0, 0})
+  top5 = Array(Int32).new(TOPN * 2, 0) # flattened list of (count, id)
   min_tags = 0
 
-  tagged_post_count.each_with_index do |count, idx|
+  tagged_post_count.each_with_index do |count, j|
     if count > min_tags
-      pos = 4
+      upper_bound = (TOPN - 2) * 2
 
-      while pos >= 0 && top5Queue[pos][1] < count
-        pos -= 1
+      while upper_bound >= 0 && count > top5[upper_bound]
+        top5[upper_bound + 2] = top5[upper_bound]
+        top5[upper_bound + 3] = top5[upper_bound + 1]
+        upper_bound -= 2
       end
-      pos += 1
 
-      if pos <= 4
-        top5Queue.insert(pos, {idx, count})
-        top5Queue.truncate(0, 5)
-        min_tags = top5Queue[4][1]
-      end
+      insert_pos = upper_bound + 2
+      top5[insert_pos] = count
+      top5[insert_pos + 1] = j
+
+      min_tags = top5[TOPN*2 - 2]
     end
   end
 
-  topPosts = top5Queue.map { |p| posts[p[0]] }
+  top_posts = Array(Post).new(TOPN)
 
-  allRelatedPosts << RelatedPost.new(id: post.id, tags: post.tags, related: topPosts)
+  # Convert indexes back to Post pointers
+  (1...10).step(2) do |i|
+    top_posts << posts[top5[i]]
+  end
+
+  allRelatedPosts << RelatedPost.new(id: post.id, tags: post.tags, related: top_posts)
 end
 
 t2 = Time.utc
