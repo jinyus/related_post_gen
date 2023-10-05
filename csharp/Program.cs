@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 
 
 public class Post
@@ -26,13 +22,14 @@ public class RelatedPosts
     public required List<string> Tags { get; set; }
 
     [JsonProperty("related")]
-    public required List<Post> Related { get; set; }
+    public required Post[] Related { get; set; }
 }
 
 public class Program
 {
     public static void Main(string[] args)
     {
+        const int topN = 5;
         var filePath = @"../posts.json";
         var posts = JsonConvert.DeserializeObject<List<Post>>(File.ReadAllText(filePath));
 
@@ -68,18 +65,47 @@ public class Program
 
             taggedPostCount[i] = 0;  // Don't count self
 
-            var top5Indexes = taggedPostCount
-                .Select((count, id) => new { id, count })
-                .OrderByDescending(x => x.count)
-                .Take(5)
-                .Select(x => x.id)
-                .ToList();
+            int[] top5 = new int[topN * 2]; // flattened list of (count, id)
+            int minTags = 0;
+
+            foreach (var item in taggedPostCount.Select((value, index) => new { value, index }))
+            {
+                int j = item.index;
+                int count = item.value;
+
+                if (count > minTags)
+                {
+                    int upperBound = (topN - 2) * 2;
+
+                    while (upperBound >= 0 && count > top5[upperBound])
+                    {
+                        top5[upperBound + 2] = top5[upperBound];
+                        top5[upperBound + 3] = top5[upperBound + 1];
+                        upperBound -= 2;
+                    }
+
+                    int insertPos = upperBound + 2;
+                    top5[insertPos] = count;
+                    top5[insertPos + 1] = j;
+
+                    minTags = top5[topN * 2 - 2];
+                }
+            }
+
+            Post[] topPosts = new Post[topN];
+
+            // Convert indexes back to Post references
+            for (int j = 1; j < 10; j += 2)
+            {
+                topPosts[j / 2] = posts[top5[j]];
+            }
+
 
             allRelatedPosts.Add(new RelatedPosts
             {
                 Id = posts[i].Id,
                 Tags = posts[i].Tags,
-                Related = top5Indexes.Select(index => posts[index]).ToList()
+                Related = topPosts
             });
         }
 
