@@ -15,11 +15,6 @@ type Post struct {
 	Tags  []string `json:"tags"`
 }
 
-type PostWithSharedTags struct {
-	Post       int
-	SharedTags int
-}
-
 type RelatedPosts struct {
 	ID      string   `json:"_id"`
 	Tags    []string `json:"tags"`
@@ -66,34 +61,34 @@ func main() {
 
 		taggedPostCount[i] = 0 // Don't count self
 
-		top5 := [5]PostWithSharedTags{}
-		minTags := 0 // Updated initialization
+		topN := 5
+		top5 := [10]int{} // flattened list of (count, id)
+		minTags := 0
 
 		for j, count := range taggedPostCount {
 			if count > minTags {
-				// Find the position to insert
-				pos := 4
-				for pos >= 0 && top5[pos].SharedTags < count {
-					pos--
-				}
-				pos++
 
-				// Shift and insert
-				if pos < 4 {
-					copy(top5[pos+1:], top5[pos:4])
+				upperBound := (topN - 2) * 2
+
+				for upperBound >= 0 && count > top5[upperBound] {
+					top5[upperBound+2] = top5[upperBound]
+					top5[upperBound+3] = top5[upperBound+1]
+					upperBound -= 2
 				}
 
-				top5[pos] = PostWithSharedTags{Post: j, SharedTags: count}
-				minTags = top5[4].SharedTags
+				insertPos := upperBound + 2
+				top5[insertPos] = count
+				top5[insertPos+1] = j
+
+				minTags = top5[topN*2-2]
 			}
 		}
 
+		topPosts := make([]*Post, 5, 5)
+
 		// Convert indexes back to Post pointers
-		topPosts := make([]*Post, 0, 5)
-		for _, t := range top5 {
-			if t.SharedTags > 0 {
-				topPosts = append(topPosts, &posts[t.Post])
-			}
+		for i := 1; i < 10; i += 2 {
+			topPosts = append(topPosts, &posts[top5[i]])
 		}
 
 		allRelatedPosts = append(allRelatedPosts, RelatedPosts{
