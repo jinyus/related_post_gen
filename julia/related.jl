@@ -2,6 +2,7 @@ using JSON3
 using StructTypes
 using Dates
 using StaticArrays
+using StrideArrays
 
 function relatedIO()
     json_string = read("../posts.json", String)
@@ -35,9 +36,9 @@ end
 
 StructTypes.StructType(::Type{PostData}) = StructTypes.Struct()
 
-function fastmaxindex!(xs::Vector{Int64}, topn, maxn, maxv)
-    maxn .= 1
-    maxv .= 0
+function fastmaxindex!(xs, topn, maxn, maxv)
+    maxn .= UInt16(1)
+    maxv .= UInt16(0)
     for (i, x) in enumerate(xs)
         if x > maxv[1]
             maxv[1] = x
@@ -58,31 +59,32 @@ end
 
 function related(posts)
     topn = 5
-    tagmap = Dict{String,Vector{Int64}}()
+    tagmap = Dict{String,Vector{UInt16}}()
     for (idx, post) in enumerate(posts)
         for tag in post.tags
             if !haskey(tagmap, tag)
-                tagmap[tag] = Vector{Int64}()
+                tagmap[tag] = Vector{UInt16}()
             end
             push!(tagmap[tag], idx)
         end
     end
 
     relatedposts = Vector{RelatedPost}(undef, length(posts))
-    taggedpostcount = Vector{Int64}(undef, length(posts))
+    taggedpostcount = StrideArray{UInt16}(undef, length(posts))
 
-    maxn = Vector{Int64}(undef, topn)
-    maxv = Vector{Int64}(undef, topn)
+    maxn = StrideArray{UInt16}(undef, topn)
+    maxv = StrideArray{UInt16}(undef, topn)
+
 
     for (i, post) in enumerate(posts)
-        taggedpostcount .= 0
+        taggedpostcount .= UInt16(0)
         for tag in post.tags
             for idx in tagmap[tag]
-                taggedpostcount[idx] += 1
+                taggedpostcount[idx] += UInt16(1)
             end
         end
 
-        taggedpostcount[i] = 0
+        taggedpostcount[i] = UInt16(0)
 
         fastmaxindex!(taggedpostcount, topn, maxn, maxv)
 
