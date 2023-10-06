@@ -553,6 +553,7 @@ elif [ "$first_arg" = "all" ]; then
         run_rust_con || echo -e "\n" &&
         run_python || echo -e "\n" &&
         run_python_np || echo -e "\n" &&
+        run_cpp || echo -e "\n" &&
         run_crystal || echo -e "\n" &&
         run_zig || echo -e "\n" &&
         run_julia || echo -e "\n" &&
@@ -600,6 +601,6 @@ elif [ "$first_arg" = "clean" ]; then
 
 else
 
-    echo "Valid args: go | go_con | rust | rust_con | py | numpy | cr | zig | odin | jq | julia | v | dart | swift | swift_con | node | bun | deno | java | java_graal | nim | luajit | lua | all | clean. Unknown argument: $first_arg"
+    echo "Valid args: go | go_con | rust | rust_con | py | numpy | cr | zig | odin | jq | julia | v | dart | swift | swift_con | node | bun | deno | java | java_graal | nim | luajit | lua | cpp | all | clean. Unknown argument: $first_arg"
 
 fi
