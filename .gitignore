@@ -36,3 +36,4 @@ nim/src/nim
 nim/src/related
 
 .fake
+cpp/main

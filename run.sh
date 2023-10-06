@@ -168,9 +168,9 @@ run_zig() {
 }
 
 run_julia() {
-    echo "Running Julia v1" &&
+    echo "Running Julia" &&
         cd ./julia &&
-        julia -e 'using Pkg; Pkg.add.(["JSON3", "StatsBase", "StructTypes", "LinearAlgebra"])' &&
+        julia -e 'using Pkg; Pkg.add.(["JSON3", "StructTypes", "StaticArrays", "StrideArrays"])' &&
         if [ $HYPER == 1 ]; then
             capture "Julia" hyperfine -r 5 --warmup 1 --show-output "julia related.jl"
         else
@@ -375,7 +375,7 @@ run_csharp() {
     echo "Running CSharp" &&
         cd ./csharp &&
         dotnet restore &&
-        dotnet publish -c release &&
+        dotnet publish -c release --self-contained -o "bin/release/net7.0/publish" &&
         if [ $HYPER == 1 ]; then
             capture "C#" hyperfine -r 5 -w 2 --show-output "./bin/release/net7.0/publish/related"
         else

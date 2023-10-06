@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -7,26 +8,25 @@ const int topN = 5;
 
 var fullTime = Stopwatch.StartNew();
 var posts = LoadPosts(@"../posts.json");
-//var posts = JsonSerializer.Deserialize<List<Post>>(File.ReadAllText(@"../posts.json"));
+//var posts = JsonSerializer.Deserialize<List<Post>>(File.ReadAllText(@"../posts.json"), MyJsonContext.Default.ListPost);
 
 var procTime = Stopwatch.StartNew();
 
 // slower when int[] is used
-var tagMapTemp = new Dictionary<string, Stack<int>>();
+var tagMapTemp = new Dictionary<string, Stack<int>>(100);
 
 for (var i = 0; i < posts!.Count; i++)
 {
     foreach (var tag in posts[i].Tags)
     {
-        if (!tagMapTemp.ContainsKey(tag))
-        {
-            tagMapTemp[tag] = new Stack<int>();
-        }
-        tagMapTemp[tag].Push(i);
+        // single lookup
+        ref var stack = ref CollectionsMarshal.GetValueRefOrAddDefault(tagMapTemp, tag, out _);
+        stack ??= new Stack<int>();
+        stack.Push(i);
     }
 }
 
-var tagMap = new Dictionary<string, int[]>();
+var tagMap = new Dictionary<string, int[]>(100);
 
 foreach (var (tag, postIds) in tagMapTemp)
 {
@@ -96,6 +96,7 @@ for (var i = 0; i < posts.Count; i++)
 procTime.Stop();
 
 WritePosts(@"../related_posts_csharp.json", allRelatedPosts);
+//File.WriteAllText(@"../related_posts_csharp.json", JsonSerializer.Serialize(allRelatedPosts, MyJsonContext.Default.RelatedPostsArray));
 
 fullTime.Stop();
 Console.WriteLine("Processing time (w/o IO): {0}ms", procTime.Elapsed.TotalMilliseconds);
@@ -216,35 +217,45 @@ static List<Post> LoadPosts(string path)
             }
             if (r.CurrentDepth == d && r.TokenType == JsonTokenType.EndObject)
             {
-                return new Post { Id = id, Tags = tags.ToArray(), Title = null };
+                return 
+                    new Post { 
+                        Id = id, 
+                        Tags = tags.ToArray(), 
+                        Title = null // title is unused, no need to read it.
+                    };
             }
         }
-        // never...
+        // never
         throw new InvalidDataException();
     }
 }
 
-
-public struct Post
+public class Post
 {
     [JsonPropertyName("_id")]
-    public required string Id { get; set; }
+    public string Id { get; set; }
 
     [JsonPropertyName("title")]
-    public required string Title { get; set; }
+    public string Title { get; set; }
 
     [JsonPropertyName("tags")]
-    public required string[] Tags { get; set; }
+    public string[] Tags { get; set; }
 }
 
-public struct RelatedPosts
+public class RelatedPosts
 {
     [JsonPropertyName("_id")]
-    public required string Id { get; set; }
+    public string Id { get; set; }
 
     [JsonPropertyName("tags")]
-    public required string[] Tags { get; set; }
+    public string[] Tags { get; set; }
 
     [JsonPropertyName("related")]
-    public required Post[] Related { get; set; }
+    public Post[] Related { get; set; }
 }
+
+[JsonSerializable(typeof(Post))]
+[JsonSerializable(typeof(List<Post>))]
+[JsonSerializable(typeof(RelatedPosts))]
+[JsonSerializable(typeof(RelatedPosts[]))]
+public partial class MyJsonContext : JsonSerializerContext { }
