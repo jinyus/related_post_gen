@@ -6,14 +6,14 @@ using System.Text.Json.Serialization;
 
 const int topN = 5;
 var posts = JsonSerializer.Deserialize(File.ReadAllText(@"../posts.json"), MyJsonContext.Default.ListPost)!;
-var postCount = posts.Count;
+var postsCount = posts.Count;
 
 var sw = Stopwatch.StartNew();
 
 // slower when int[] is used
 var tagMapTemp = new Dictionary<string, Stack<int>>(100);
 
-for (var i = 0; i < postCount; i++)
+for (var i = 0; i < postsCount; i++)
 {
     foreach (var tag in posts[i].Tags)
     {
@@ -31,12 +31,12 @@ foreach (var (tag, postIds) in tagMapTemp)
     tagMap[tag] = postIds.ToArray();
 }
 
-var allRelatedPosts = new RelatedPosts[postCount];
-var taggedPostCount = new byte[postCount];
+var allRelatedPosts = new RelatedPosts[postsCount];
+var taggedPostCount = new byte[postsCount];
 
-for (var i = 0; i < postCount; i++)
+for (var i = 0; i < postsCount; i++)
 {
-    Array.Clear(taggedPostCount, 0, postCount);  // reset counts
+    Array.Clear(taggedPostCount, 0, postsCount);  // reset counts
 
     foreach (var tag in posts[i].Tags)
     {
@@ -52,7 +52,7 @@ for (var i = 0; i < postCount; i++)
     byte minTags = 0;
 
     //  custom priority queue to find top N
-    for (var j = 0; j < postCount; j++)
+    for (var j = 0; j < postsCount; j++)
     {
         byte count = taggedPostCount[j];
 
