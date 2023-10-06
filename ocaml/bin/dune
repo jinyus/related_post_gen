@@ -1,5 +1,5 @@
 (executable
  (public_name okaml)
  (name main)
- (libraries yojson core ppx_deriving_yojson.runtime)
+ (libraries yojson base ppx_deriving_yojson.runtime stdio unix)
  (preprocess (pps ppx_deriving.show ppx_deriving_yojson)))

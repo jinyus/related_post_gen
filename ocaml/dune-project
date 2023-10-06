@@ -19,7 +19,7 @@
  (name okaml)
  (synopsis "A short synopsis")
  (description "A longer description")
- (depends dune ppx_deriving ppx_deriving_yojson core yojson)
+ (depends dune ppx_deriving ppx_deriving_yojson base stdio yojson)
  (tags
   (topics "to describe" your project)))
 

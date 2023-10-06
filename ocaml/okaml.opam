@@ -13,7 +13,8 @@ depends: [
   "dune" {>= "3.10"}
   "ppx_deriving"
   "ppx_deriving_yojson"
-  "core"
+  "base"
+  "stdio"
   "yojson"
   "odoc" {with-doc}
 ]
