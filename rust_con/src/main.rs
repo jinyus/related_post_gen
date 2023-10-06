@@ -1,4 +1,5 @@
 use std::borrow::Cow;
+use std::cell::RefCell;
 use std::{collections::BinaryHeap, time::Instant};
 
 use rayon::prelude::*;
@@ -11,6 +12,9 @@ use mimalloc::MiMalloc;
 static GLOBAL: MiMalloc = MiMalloc;
 
 type SString = smallstr::SmallString<[u8; 16]>;
+// play around for the best size for your machine
+#[allow(non_camel_case_types)]
+type int_t = u32;
 
 #[derive(Serialize, Deserialize)]
 struct Post<'a> {
@@ -32,8 +36,8 @@ struct RelatedPosts<'a> {
 
 #[derive(Eq)]
 struct PostCount {
-    post: u16,
-    count: u16,
+    post: int_t,
+    count: int_t,
 }
 
 impl std::cmp::PartialEq for PostCount {
@@ -80,27 +84,29 @@ fn main() {
 
     let start = Instant::now();
 
-    let mut post_tags_map: FxHashMap<&str, Vec<u16>> = FxHashMap::default();
+    let mut post_tags_map: FxHashMap<&str, Vec<int_t>> = FxHashMap::default();
 
     for (i, post) in posts.iter().enumerate() {
         for tag in &post.tags {
-            post_tags_map.entry(tag).or_default().push(i as u16);
+            post_tags_map.entry(tag).or_default().push(i as int_t);
         }
     }
 
-    let pool = rayon::ThreadPoolBuilder::new()
+    rayon::ThreadPoolBuilder::new()
         .num_threads(num_cpus)
-        .build()
+        .build_global()
         .unwrap();
 
-    pool.install(|| {
-        let related_posts: Vec<RelatedPosts<'_>> = posts
-            .par_iter()
-            .enumerate()
-            .map(|(idx, post)| {
-                // faster than allocating outside the loop
-                let mut tagged_post_count = vec![0; posts.len()];
-
+    let related_posts: Vec<RelatedPosts<'_>> = posts
+        .par_iter()
+        .enumerate()
+        .map(|(idx, post)| {
+            thread_local! {
+                static POST_COUNT: RefCell<Vec<int_t>> = panic!("!");
+            }
+            POST_COUNT.set(vec![0; posts.len()]);
+            POST_COUNT.with_borrow_mut(|tagged_post_count| {
+                let tagged_post_count = tagged_post_count.as_mut_slice();
                 for tag in &post.tags {
                     if let Some(tag_posts) = post_tags_map.get::<str>(tag.as_ref()) {
                         for &other_post_idx in tag_posts {
@@ -114,31 +120,33 @@ fn main() {
                 let top = least_n(
                     NUM_TOP_ITEMS,
                     tagged_post_count
-                        .into_iter()
+                        .iter()
                         .enumerate()
-                        .map(|(post, count)| PostCount {
-                            post: post as u16,
+                        .map(|(post, &count)| PostCount {
+                            post: post as int_t,
                             count,
                         }),
                 );
                 let related = top.map(|it| &posts[it.post as usize]).collect();
 
-                RelatedPosts {
+                let rp = RelatedPosts {
                     _id: &post._id,
                     tags: &post.tags,
                     related,
-                }
+                };
+                tagged_post_count.fill(0);
+                rp
             })
-            .collect();
+        })
+        .collect();
 
-        let end = Instant::now();
+    let end = Instant::now();
 
-        print!(
-            "Processing time (w/o IO): {:?}\n",
-            end.duration_since(start)
-        );
+    print!(
+        "Processing time (w/o IO): {:?}\n",
+        end.duration_since(start)
+    );
 
-        let json_str = serde_json::to_string(&related_posts).unwrap();
-        std::fs::write("../related_posts_rust_con.json", json_str).unwrap();
-    });
+    let json_str = serde_json::to_string(&related_posts).unwrap();
+    std::fs::write("../related_posts_rust_con.json", json_str).unwrap();
 }

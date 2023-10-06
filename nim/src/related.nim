@@ -16,7 +16,7 @@ type
   Key = string
 
 proc hash(x: Key): Hash =
-  cast[Hash](XXH64(x))
+  cast[Hash](XXH3_64bits(x))
 
 const
     input = "../posts.json"

@@ -1,10 +1,11 @@
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Runtime.InteropServices;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
 const int topN = 5;
-var posts = JsonSerializer.Deserialize<List<Post>>(File.ReadAllText(@"../posts.json"));
+var posts = JsonSerializer.Deserialize<List<Post>>(File.ReadAllText(@"../posts.json"), MyJsonContext.Default.ListPost);
 
 var sw = Stopwatch.StartNew();
 
@@ -15,11 +16,10 @@ for (var i = 0; i < posts!.Count; i++)
 {
     foreach (var tag in posts[i].Tags)
     {
-        if (!tagMapTemp.ContainsKey(tag))
-        {
-            tagMapTemp[tag] = new Stack<int>();
-        }
-        tagMapTemp[tag].Push(i);
+        // single lookup
+        ref var stack = ref CollectionsMarshal.GetValueRefOrAddDefault(tagMapTemp, tag, out _);
+        stack ??= new Stack<int>();
+        stack.Push(i);
     }
 }
 
@@ -94,28 +94,34 @@ sw.Stop();
 
 Console.WriteLine("Processing time (w/o IO): {0}ms", sw.Elapsed.TotalMilliseconds);
 
-File.WriteAllText(@"../related_posts_csharp.json", JsonSerializer.Serialize(allRelatedPosts));
+File.WriteAllText(@"../related_posts_csharp.json", JsonSerializer.Serialize(allRelatedPosts, MyJsonContext.Default.RelatedPostsArray));
 
-public struct Post
+public class Post
 {
     [JsonPropertyName("_id")]
-    public required string Id { get; set; }
+    public string Id { get; set; }
 
     [JsonPropertyName("title")]
-    public required string Title { get; set; }
+    public string Title { get; set; }
 
     [JsonPropertyName("tags")]
-    public required string[] Tags { get; set; }
+    public string[] Tags { get; set; }
 }
 
-public struct RelatedPosts
+public class RelatedPosts
 {
     [JsonPropertyName("_id")]
-    public required string Id { get; set; }
+    public string Id { get; set; }
 
     [JsonPropertyName("tags")]
-    public required string[] Tags { get; set; }
+    public string[] Tags { get; set; }
 
     [JsonPropertyName("related")]
-    public required Post[] Related { get; set; }
+    public Post[] Related { get; set; }
 }
+
+[JsonSerializable(typeof(Post))]
+[JsonSerializable(typeof(List<Post>))]
+[JsonSerializable(typeof(RelatedPosts))]
+[JsonSerializable(typeof(RelatedPosts[]))]
+public partial class MyJsonContext : JsonSerializerContext { }
