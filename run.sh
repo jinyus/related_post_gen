@@ -399,6 +399,20 @@ run_fsharp_con() {
     check_output "related_posts_fsharp_con.json"
 }
 
+run_ocaml() {
+    echo "Running Ocaml" &&
+        cd ./ocaml &&
+        opam install . --deps-only -y &&
+        dune build &&
+        if [ $HYPER == 1 ]; then
+            capture "ocaml" hyperfine -r 5 -w 2 --show-output "./_build/default/bin/main.exe"
+        else
+            command time -f '%es %Mk' ./_build/default/bin/main.exe
+        fi
+
+    check_output "related_posts_ocaml.json"
+}
+
 run_luajit() {
     echo "Running LuaJIT" &&
         cd ./lua &&
@@ -532,9 +546,14 @@ elif [ "$first_arg" = "csharp" ]; then
 
     run_csharp
 
+
 elif [ "$first_arg" = "fsharp_con" ]; then
 
     run_fsharp_con
+
+elif [ "$first_arg" = "ocaml" ]; then
+
+    run_ocaml
 
 elif [ "$first_arg" = "luajit" ]; then
 
@@ -570,6 +589,7 @@ elif [ "$first_arg" = "all" ]; then
         run_nim || echo -e "\n" &&
         run_fsharp || echo -e "\n" &&
         run_fsharp_con || echo -e "\n" &&
+        run_ocaml || echo -e "\n" &&
         run_csharp || echo -e "\n" &&
         run_luajit || echo -e "\n" &&
         run_lua || echo -e "\n" &&
