@@ -9,17 +9,25 @@ var posts = JsonSerializer.Deserialize<List<Post>>(File.ReadAllText(@"../posts.j
 
 var sw = Stopwatch.StartNew();
 
-var tagMap = new Dictionary<string, List<int>>();
+// slower when int[] is used
+var tagMapTemp = new Dictionary<string, Stack<int>>();
 
 for (var i = 0; i < posts!.Count; i++)
 {
     foreach (var tag in posts[i].Tags)
     {
         // single lookup
-        ref var tagMapList = ref CollectionsMarshal.GetValueRefOrAddDefault(tagMap, tag, out _);
-        tagMapList ??= new List<int>();
-        tagMapList.Add(i);
+        ref var tagMapStack = ref CollectionsMarshal.GetValueRefOrAddDefault(tagMapTemp, tag, out _);
+        tagMapStack ??= new Stack<int>();
+        tagMapStack.Push(i);
     }
+}
+
+var tagMap = new Dictionary<string, int[]>();
+
+foreach (var (tag, postIds) in tagMapTemp)
+{
+    tagMap[tag] = postIds.ToArray();
 }
 
 var allRelatedPosts = new RelatedPosts[posts.Count];
