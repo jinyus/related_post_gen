@@ -17,9 +17,9 @@ for (var i = 0; i < posts!.Count; i++)
     foreach (var tag in posts[i].Tags)
     {
         // single lookup
-        ref var tagMapStack = ref CollectionsMarshal.GetValueRefOrAddDefault(tagMapTemp, tag, out _);
-        tagMapStack ??= new Stack<int>();
-        tagMapStack.Push(i);
+        ref var stack = ref CollectionsMarshal.GetValueRefOrAddDefault(tagMapTemp, tag, out _);
+        stack ??= new Stack<int>();
+        stack.Push(i);
     }
 }
 
