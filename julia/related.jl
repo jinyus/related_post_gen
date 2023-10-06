@@ -71,8 +71,8 @@ function related(posts)
     relatedposts = Vector{RelatedPost}(undef, length(posts))
     taggedpostcount = Vector{Int64}(undef, length(posts))
 
-    maxn = zeros(Int, topn)
-    maxv = ones(Int, topn)
+    maxn = Vector{Int64}(undef, topn)
+    maxv = Vector{Int64}(undef, topn)
 
     for (i, post) in enumerate(posts)
         taggedpostcount .= 0
@@ -86,7 +86,7 @@ function related(posts)
 
         fastmaxindex!(taggedpostcount, topn, maxn, maxv)
 
-        relatedpost = RelatedPost(post._id, post.tags, SVector{topn}([posts[ix] for ix in maxn]))
+        relatedpost = RelatedPost(post._id, post.tags, SVector{topn}(posts[ix] for ix in maxn))
         relatedposts[i] = relatedpost
     end
 
