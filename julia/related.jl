@@ -36,7 +36,7 @@ end
 
 StructTypes.StructType(::Type{PostData}) = StructTypes.Struct()
 
-function fastmaxindex!(xs::Vector{Int64}, topn, maxn, maxv)
+function fastmaxindex!(xs, topn, maxn, maxv)
     maxn .= 1
     maxv .= 0
     for (i, x) in enumerate(xs)
@@ -70,10 +70,10 @@ function related(posts)
     end
 
     relatedposts = Vector{RelatedPost}(undef, length(posts))
-    taggedpostcount = Vector{Int64}(undef, length(posts))
+    taggedpostcount = StrideArray{Int32}(undef, length(posts))
 
-    maxn = StrideArray{Int64}(undef, topn) #Vector{Int64}(undef, topn)
-    maxv = StrideArray{Int64}(undef, topn) #Vector{Int64}(undef, topn)
+    maxn = StrideArray{Int32}(undef, topn) #Vector{Int64}(undef, topn)
+    maxv = StrideArray{Int32}(undef, topn) #Vector{Int64}(undef, topn)
 
     for (i, post) in enumerate(posts)
         taggedpostcount .= 0
