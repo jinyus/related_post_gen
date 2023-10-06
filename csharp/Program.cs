@@ -6,7 +6,7 @@ using System.Text.Json.Serialization;
 
 
 const int topN = 5;
-var posts = JsonSerializer.Deserialize<List<Post>>(File.ReadAllText(@"../posts.json"), MyJsonContext.Default.ListPost)!;
+var posts = JsonSerializer.Deserialize(File.ReadAllText(@"../posts.json"), MyJsonContext.Default.ListPost)!;
 var postsCount = posts.Count;
 
 var sw = Stopwatch.StartNew();
@@ -14,7 +14,7 @@ var sw = Stopwatch.StartNew();
 // slower when int[] is used
 var tagMapTemp = new Dictionary<string, LinkedList<int>>(100);
 
-for (var i = 0; i < posts!.Count; i++)
+for (var i = 0; i < postsCount; i++)
 {
     foreach (var tag in posts[i].Tags)
     {
@@ -25,13 +25,12 @@ for (var i = 0; i < posts!.Count; i++)
     }
 }
 
-var tagMap = new Dictionary<string, int[]>(100);
+var tagMap = new Dictionary<string, int[]>(tagMapTemp.Count);
 
 foreach (var (tag, postIds) in tagMapTemp)
 {
     tagMap[tag] = postIds.ToArray();
 }
-
 
 Span<RelatedPosts> allRelatedPosts = new RelatedPosts[postsCount];
 Span<byte> taggedPostCount = stackalloc byte[postsCount];
@@ -51,8 +50,6 @@ for (var i = 0; i < postsCount; i++)
 
     taggedPostCount[i] = 0;  // Don't count self
     top5.Clear();
-
-
     byte minTags = 0;
 
     //  custom priority queue to find top N
@@ -94,7 +91,7 @@ for (var i = 0; i < postsCount; i++)
 
 sw.Stop();
 
-Console.WriteLine("Processing time (w/o IO): {0}ms", sw.Elapsed.TotalMilliseconds);
+Console.WriteLine($"Processing time (w/o IO): {sw.Elapsed.TotalMilliseconds}ms");
 
 File.WriteAllText(@"../related_posts_csharp.json", JsonSerializer.Serialize(allRelatedPosts.ToArray(), MyJsonContext.Default.RelatedPostsArray));
 
