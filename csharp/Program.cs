@@ -4,6 +4,7 @@ using System.Runtime.InteropServices;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
+
 const int topN = 5;
 var posts = JsonSerializer.Deserialize(File.ReadAllText(@"../posts.json"), MyJsonContext.Default.ListPost)!;
 var postsCount = posts.Count;
@@ -11,7 +12,7 @@ var postsCount = posts.Count;
 var sw = Stopwatch.StartNew();
 
 // slower when int[] is used
-var tagMapTemp = new Dictionary<string, Stack<int>>(100);
+var tagMapTemp = new Dictionary<string, LinkedList<int>>(100);
 
 for (var i = 0; i < postsCount; i++)
 {
@@ -19,8 +20,8 @@ for (var i = 0; i < postsCount; i++)
     {
         // single lookup
         ref var stack = ref CollectionsMarshal.GetValueRefOrAddDefault(tagMapTemp, tag, out _);
-        stack ??= new Stack<int>();
-        stack.Push(i);
+        stack ??= new LinkedList<int>();
+        stack.AddLast(i);
     }
 }
 
@@ -31,12 +32,13 @@ foreach (var (tag, postIds) in tagMapTemp)
     tagMap[tag] = postIds.ToArray();
 }
 
-var allRelatedPosts = new RelatedPosts[postsCount];
-var taggedPostCount = new byte[postsCount];
+Span<RelatedPosts> allRelatedPosts = new RelatedPosts[postsCount];
+Span<byte> taggedPostCount = stackalloc byte[postsCount];
+Span<(byte Count, int PostId)> top5 = stackalloc (byte Count, int PostId)[topN];
 
 for (var i = 0; i < postsCount; i++)
 {
-    Array.Clear(taggedPostCount, 0, postsCount);  // reset counts
+    taggedPostCount.Clear();  // reset counts
 
     foreach (var tag in posts[i].Tags)
     {
@@ -47,8 +49,7 @@ for (var i = 0; i < postsCount; i++)
     }
 
     taggedPostCount[i] = 0;  // Don't count self
-
-    var  top5 = new (byte Count, int PostId)[topN];
+    top5.Clear();
     byte minTags = 0;
 
     //  custom priority queue to find top N
@@ -68,14 +69,14 @@ for (var i = 0; i < postsCount; i++)
 
             top5[upperBound + 1] = (count, j);
 
-            minTags = top5[topN -  1].Count;
+            minTags = top5[topN - 1].Count;
         }
     }
 
     var topPosts = new Post[topN];
 
-    // Convert indexes back to Post references. 
-    for (int j = 1; j < 5; j++)
+    // Convert indexes back to Post references. skip even indexes
+    for (int j = 0; j < 5; j ++)
     {
         topPosts[j] = posts[top5[j].PostId];
     }
@@ -92,7 +93,7 @@ sw.Stop();
 
 Console.WriteLine($"Processing time (w/o IO): {sw.Elapsed.TotalMilliseconds}ms");
 
-File.WriteAllText(@"../related_posts_csharp.json", JsonSerializer.Serialize(allRelatedPosts, MyJsonContext.Default.RelatedPostsArray));
+File.WriteAllText(@"../related_posts_csharp.json", JsonSerializer.Serialize(allRelatedPosts.ToArray(), MyJsonContext.Default.RelatedPostsArray));
 
 public record struct Post
 {
