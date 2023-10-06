@@ -1,8 +1,6 @@
 ﻿open System
 open System.IO
-open System.Runtime.Intrinsics
 open FSharp.NativeInterop
-// open FSharp.Json
 open System.Collections.Generic
 open System.Text.Json
 
