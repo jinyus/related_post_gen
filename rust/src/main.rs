@@ -1,6 +1,8 @@
 use std::borrow::Cow;
 use std::{collections::BinaryHeap, time::Instant};
 
+use bumpalo::Bump;
+use bumpalo::collections::Vec as BVec;
 use rustc_data_structures::fx::FxHashMap;
 use serde::{Deserialize, Serialize};
 use serde_json::from_str;
@@ -10,6 +12,9 @@ use mimalloc::MiMalloc;
 static GLOBAL: MiMalloc = MiMalloc;
 
 type SString = smallstr::SmallString<[u8; 16]>;
+#[allow(non_camel_case_types)]
+// play around with this to get the right size for your environment
+type int_t = u16;
 
 #[derive(Serialize, Deserialize)]
 struct Post<'a> {
@@ -20,7 +25,7 @@ struct Post<'a> {
     tags: Vec<SString>,
 }
 
-const NUM_TOP_ITEMS: usize = 5;
+const NUM_TOP_ITEMS: int_t = 5;
 
 #[derive(Serialize)]
 struct RelatedPosts<'a> {
@@ -31,8 +36,8 @@ struct RelatedPosts<'a> {
 
 #[derive(Eq)]
 struct PostCount {
-    post: u16,
-    count: u16,
+    post: int_t,
+    count: int_t
 }
 
 impl std::cmp::PartialEq for PostCount {
@@ -57,8 +62,8 @@ impl std::cmp::Ord for PostCount {
     }
 }
 
-fn least_n<T: Ord>(n: usize, mut from: impl Iterator<Item = T>) -> impl Iterator<Item = T> {
-    let mut h = BinaryHeap::from_iter(from.by_ref().take(n));
+fn least_n<T: Ord>(n: int_t, mut from: impl Iterator<Item = T>) -> impl Iterator<Item = T> {
+    let mut h = BinaryHeap::from_iter(from.by_ref().take(n as usize));
 
     for it in from {
         // heap thinks the smallest is the greatest because of reverse order
@@ -76,13 +81,16 @@ fn main() {
     let json_str = std::fs::read_to_string("../posts.json").unwrap();
     let posts: Vec<Post> = from_str(&json_str).unwrap();
 
+    let cap = (posts.len() * std::mem::size_of::<int_t>()).next_power_of_two();
+    let arena = Bump::with_capacity(cap);
+
     let start = Instant::now();
 
-    let mut post_tags_map: FxHashMap<&str, Vec<u16>> = FxHashMap::default();
+    let mut post_tags_map: FxHashMap<&str, Vec<int_t>> = FxHashMap::default();
 
     for (post_idx, post) in posts.iter().enumerate() {
         for tag in post.tags.iter() {
-            post_tags_map.entry(tag).or_default().push(post_idx as u16);
+            post_tags_map.entry(tag).or_default().push(post_idx as int_t);
         }
     }
 
@@ -90,8 +98,8 @@ fn main() {
         .iter()
         .enumerate()
         .map(|(post_idx, post)| {
-            // faster than allocating outside the loop
-            let mut tagged_post_count = vec![0u16; posts.len()];
+            let mut tagged_post_count:  BVec<int_t> = BVec::with_capacity_in(posts.len(), &arena);
+            tagged_post_count.resize(posts.len(), 0);
 
             for tag in post.tags.iter() {
                 if let Some(tag_posts) = post_tags_map.get::<str>(tag.as_ref()) {
@@ -109,7 +117,7 @@ fn main() {
                     .iter()
                     .enumerate()
                     .map(|(post, &count)| PostCount {
-                        post: post as u16,
+                        post: post as int_t,
                         count,
                     }),
             );
