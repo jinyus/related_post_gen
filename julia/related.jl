@@ -52,8 +52,10 @@ function fastmaxindex!(xs::Vector{Int64}, topn, maxn, maxv)
             end
         end
     end
+
     reverse!(maxn)
-    maxn
+
+    return maxn
 end
 
 function related(posts)
@@ -79,13 +81,9 @@ function related(posts)
         relatedpost = RelatedPost(post._id, post.tags, SVector{topn}([posts[ix] for ix in maxn]))
 
         push!(relatedposts, relatedpost)
-
-        # for (j, ix) in enumerate(maxn)
-        #     relatedposts[i].related[j] = posts[ix]
-        # end
     end
 
-    relatedposts
+    return relatedposts
 end
 
 relatedIO()
