@@ -82,7 +82,7 @@ function run_csharp {
     Write-Output "Running CSharp"
     Set-Location ./csharp
     dotnet restore
-    dotnet publish -c release
+    dotnet publish -c release --self-contained -o "bin/release/net7.0/publish"
     if ($HYPER -eq 1) {
         hyperfine -r 5 -w 2 --show-output "./bin/release/net7.0/publish/related$EXT"
     }
