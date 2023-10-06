@@ -10,7 +10,7 @@ var posts = JsonSerializer.Deserialize<List<Post>>(File.ReadAllText(@"../posts.j
 var sw = Stopwatch.StartNew();
 
 // slower when int[] is used
-var tagMapTemp = new Dictionary<string, Stack<int>>();
+var tagMapTemp = new Dictionary<string, Stack<int>>(100);
 
 for (var i = 0; i < posts!.Count; i++)
 {
@@ -23,7 +23,7 @@ for (var i = 0; i < posts!.Count; i++)
     }
 }
 
-var tagMap = new Dictionary<string, int[]>();
+var tagMap = new Dictionary<string, int[]>(100);
 
 foreach (var (tag, postIds) in tagMapTemp)
 {
