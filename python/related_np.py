@@ -1,15 +1,16 @@
 from timing import lap, finish
 
 lap()
-import ujson as json
+import orjson
 import numpy as np
 from scipy.sparse import coo_array
 
 
 def main():
     lap()
-    with open("../posts.json") as f:
-        posts = json.load(f)
+    with open("../posts.json", "rb") as f:
+        s = f.read()
+        posts = orjson.loads(s)
     lap()
 
     unique_tags = set(tag for post in posts for tag in post["tags"])
@@ -48,8 +49,9 @@ def main():
         )
 
     lap()
-    with open("../related_posts_python_np.json", "w") as f:
-        json.dump(all_related, f)
+    with open("../related_posts_python_np.json", "wb") as f:
+        s = orjson.dumps(all_related)
+        f.write(s)
     lap()
     finish()
 

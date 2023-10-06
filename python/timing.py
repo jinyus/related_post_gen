@@ -20,4 +20,8 @@ def finish():
     else:
         end = perf[-2]  # before final output
         start = perf[-3]  # before process and output
-        print(f"Processing time (w/o IO): {(end - start)/1e9:.3f}s")
+        dt = (end - start)/1e9
+        if dt > 1:
+            print(f"Processing time (w/o IO): {(end - start) / 1e9:.3f}s")
+        else:
+            print(f"Processing time (w/o IO): {(end - start)/1e6:.1f}ms")
