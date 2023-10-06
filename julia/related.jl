@@ -2,7 +2,6 @@ using JSON3
 using StructTypes
 using Dates
 using StaticArrays
-using StatsBase
 
 function relatedIO()
     json_string = read("../posts.json", String)
@@ -59,31 +58,40 @@ end
 
 function related(posts)
     topn = 5
-    tag_map = countmap(tag for post in posts for tag in post.tags)
+    tagmap = Dict{String,Vector{Int64}}()
+    for (idx, post) in enumerate(posts)
+        for tag in post.tags
+            if !haskey(tagmap, tag)
+                tagmap[tag] = Vector{Int64}()
+            end
+            push!(tagmap[tag], idx)
+        end
+    end
 
-    relatedposts = Vector{RelatedPost}()
-    taggedpostcount = zeros(Int64, length(posts))
+    relatedposts = Vector{RelatedPost}(undef, length(posts))
+    taggedpostcount = Vector{Int64}(undef, length(posts))
+
     maxn = zeros(Int, topn)
     maxv = ones(Int, topn)
 
     for (i, post) in enumerate(posts)
         taggedpostcount .= 0
         for tag in post.tags
-            for idx in tag_map[tag]
+            for idx in tagmap[tag]
                 taggedpostcount[idx] += 1
             end
         end
+
         taggedpostcount[i] = 0
 
         fastmaxindex!(taggedpostcount, topn, maxn, maxv)
 
         relatedpost = RelatedPost(post._id, post.tags, SVector{topn}([posts[ix] for ix in maxn]))
-
-        push!(relatedposts, relatedpost)
+        relatedposts[i] = relatedpost
     end
 
     return relatedposts
 end
 
-relatedIO()
+const res = relatedIO()
 
