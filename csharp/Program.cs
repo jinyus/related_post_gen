@@ -4,13 +4,15 @@ using System.Runtime.InteropServices;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
+
 const int topN = 5;
-var posts = JsonSerializer.Deserialize<List<Post>>(File.ReadAllText(@"../posts.json"), MyJsonContext.Default.ListPost);
+var posts = JsonSerializer.Deserialize<List<Post>>(File.ReadAllText(@"../posts.json"), MyJsonContext.Default.ListPost)!;
+var postsCount = posts.Count;
 
 var sw = Stopwatch.StartNew();
 
 // slower when int[] is used
-var tagMapTemp = new Dictionary<string, Stack<int>>(100);
+var tagMapTemp = new Dictionary<string, LinkedList<int>>(100);
 
 for (var i = 0; i < posts!.Count; i++)
 {
@@ -18,8 +20,8 @@ for (var i = 0; i < posts!.Count; i++)
     {
         // single lookup
         ref var stack = ref CollectionsMarshal.GetValueRefOrAddDefault(tagMapTemp, tag, out _);
-        stack ??= new Stack<int>();
-        stack.Push(i);
+        stack ??= new LinkedList<int>();
+        stack.AddLast(i);
     }
 }
 
@@ -30,12 +32,14 @@ foreach (var (tag, postIds) in tagMapTemp)
     tagMap[tag] = postIds.ToArray();
 }
 
-var allRelatedPosts = new RelatedPosts[posts.Count];
-var taggedPostCount = new int[posts.Count];
 
-for (var i = 0; i < posts.Count; i++)
+Span<RelatedPosts> allRelatedPosts = new RelatedPosts[postsCount];
+Span<byte> taggedPostCount = stackalloc byte[postsCount];
+Span<(byte Count, int PostId)> top5 = stackalloc (byte Count, int PostId)[topN];
+
+for (var i = 0; i < postsCount; i++)
 {
-    Array.Clear(taggedPostCount, 0, taggedPostCount.Length);  // reset counts
+    taggedPostCount.Clear();  // reset counts
 
     foreach (var tag in posts[i].Tags)
     {
@@ -46,40 +50,38 @@ for (var i = 0; i < posts.Count; i++)
     }
 
     taggedPostCount[i] = 0;  // Don't count self
+    top5.Clear();
 
-    var top5 = new int[topN * 2]; // flattened list of (count, id)
-    int minTags = 0;
+
+    byte minTags = 0;
 
     //  custom priority queue to find top N
-    for (var j = 0; j < taggedPostCount.Length; j++)
+    for (var j = 0; j < postsCount; j++)
     {
-        int count = taggedPostCount[j];
+        byte count = taggedPostCount[j];
 
         if (count > minTags)
         {
-            int upperBound = (topN - 2) * 2;
+            int upperBound = topN - 2;
 
-            while (upperBound >= 0 && count > top5[upperBound])
+            while (upperBound >= 0 && count > top5[upperBound].Count)
             {
-                top5[upperBound + 2] = top5[upperBound];
-                top5[upperBound + 3] = top5[upperBound + 1];
-                upperBound -= 2;
+                top5[upperBound + 1] = top5[upperBound];
+                upperBound--;
             }
 
-            int insertPos = upperBound + 2;
-            top5[insertPos] = count;
-            top5[insertPos + 1] = j;
+            top5[upperBound + 1] = (count, j);
 
-            minTags = top5[topN * 2 - 2];
+            minTags = top5[topN - 1].Count;
         }
     }
 
     var topPosts = new Post[topN];
 
     // Convert indexes back to Post references. skip even indexes
-    for (int j = 1; j < 10; j += 2)
+    for (int j = 0; j < 5; j ++)
     {
-        topPosts[j / 2] = posts[top5[j]];
+        topPosts[j] = posts[top5[j].PostId];
     }
 
     allRelatedPosts[i] = new RelatedPosts
@@ -94,9 +96,9 @@ sw.Stop();
 
 Console.WriteLine("Processing time (w/o IO): {0}ms", sw.Elapsed.TotalMilliseconds);
 
-File.WriteAllText(@"../related_posts_csharp.json", JsonSerializer.Serialize(allRelatedPosts, MyJsonContext.Default.RelatedPostsArray));
+File.WriteAllText(@"../related_posts_csharp.json", JsonSerializer.Serialize(allRelatedPosts.ToArray(), MyJsonContext.Default.RelatedPostsArray));
 
-public class Post
+public record struct Post
 {
     [JsonPropertyName("_id")]
     public string Id { get; set; }
@@ -108,7 +110,7 @@ public class Post
     public string[] Tags { get; set; }
 }
 
-public class RelatedPosts
+public record RelatedPosts
 {
     [JsonPropertyName("_id")]
     public string Id { get; set; }
