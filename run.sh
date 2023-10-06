@@ -375,7 +375,7 @@ run_csharp() {
     echo "Running CSharp" &&
         cd ./csharp &&
         dotnet restore &&
-        dotnet publish -c release &&
+        dotnet publish -c release --self-contained -o "bin/release/net7.0/publish" &&
         if [ $HYPER == 1 ]; then
             capture "C#" hyperfine -r 5 -w 2 --show-output "./bin/release/net7.0/publish/related"
         else
