@@ -1,5 +1,4 @@
 using JSON3
-using LinearAlgebra
 using StructTypes
 using Dates
 using StaticArrays
