@@ -9,17 +9,16 @@ var posts = JsonSerializer.Deserialize<List<Post>>(File.ReadAllText(@"../posts.j
 var sw = Stopwatch.StartNew();
 
 // slower when int[] is used
-var tagMapTemp = new Dictionary<string, Stack<int>>();
+var tagMapTemp = new Dictionary<string, List<int>>();
 
 for (var i = 0; i < posts!.Count; i++)
 {
     foreach (var tag in posts[i].Tags)
     {
         if (!tagMapTemp.ContainsKey(tag))
-        {
-            tagMapTemp[tag] = new Stack<int>();
-        }
-        tagMapTemp[tag].Push(i);
+            tagMapTemp[tag] = new List<int>();
+
+        tagMapTemp[tag].Add(i);
     }
 }
 
@@ -96,7 +95,7 @@ Console.WriteLine("Processing time (w/o IO): {0}ms", sw.Elapsed.TotalMillisecond
 
 File.WriteAllText(@"../related_posts_csharp.json", JsonSerializer.Serialize(allRelatedPosts));
 
-public struct Post
+public class Post
 {
     [JsonPropertyName("_id")]
     public required string Id { get; set; }
@@ -108,7 +107,7 @@ public struct Post
     public required string[] Tags { get; set; }
 }
 
-public struct RelatedPosts
+public class RelatedPosts
 {
     [JsonPropertyName("_id")]
     public required string Id { get; set; }
