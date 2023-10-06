@@ -1,7 +1,7 @@
 using JSON3
-using LinearAlgebra
 using StructTypes
 using Dates
+using StaticArrays
 
 function relatedIO()
     json_string = read("../posts.json", String)
@@ -30,14 +30,14 @@ end
 struct RelatedPost
     _id::String
     tags::Vector{String}
-    related::Vector{PostData}
+    related::SVector{5,PostData}
 end
 
 StructTypes.StructType(::Type{PostData}) = StructTypes.Struct()
 
-function fastmaxindex(xs::Vector{Int64}, topn::Int64)
-    maxn = ones(Int64, topn)
-    maxv = zeros(Int64, topn)
+function fastmaxindex!(xs::Vector{Int64}, topn, maxn, maxv)
+    maxn .= 1
+    maxv .= 0
     for (i, x) in enumerate(xs)
         if x > maxv[1]
             maxv[1] = x
@@ -50,39 +50,48 @@ function fastmaxindex(xs::Vector{Int64}, topn::Int64)
             end
         end
     end
+
     reverse!(maxn)
-    maxn
+
+    return maxn
 end
 
 function related(posts)
-    tag_map = Dict{String,Vector{Int64}}()
+    topn = 5
+    tagmap = Dict{String,Vector{Int64}}()
     for (idx, post) in enumerate(posts)
         for tag in post.tags
-            if !haskey(tag_map, tag)
-                tag_map[tag] = Vector{Int64}()
+            if !haskey(tagmap, tag)
+                tagmap[tag] = Vector{Int64}()
             end
-            push!(tag_map[tag], idx)
+            push!(tagmap[tag], idx)
         end
     end
 
-    relatedposts = Vector{RelatedPost}()
-    taggedpostcount = zeros(Int64, length(posts))
+    relatedposts = Vector{RelatedPost}(undef, length(posts))
+    taggedpostcount = Vector{Int64}(undef, length(posts))
+
+    maxn = zeros(Int, topn)
+    maxv = ones(Int, topn)
 
     for (i, post) in enumerate(posts)
         taggedpostcount .= 0
         for tag in post.tags
-            for idx in tag_map[tag]
+            for idx in tagmap[tag]
                 taggedpostcount[idx] += 1
             end
         end
+
         taggedpostcount[i] = 0
-        max5 = fastmaxindex(taggedpostcount, 5)
-        relatedpost = RelatedPost(post._id, post.tags, [posts[ix] for ix in max5])
-        push!(relatedposts, relatedpost)
+
+        fastmaxindex!(taggedpostcount, topn, maxn, maxv)
+
+        relatedpost = RelatedPost(post._id, post.tags, SVector{topn}([posts[ix] for ix in maxn]))
+        relatedposts[i] = relatedpost
     end
 
-    relatedposts
+    return relatedposts
 end
 
-relatedIO()
+const res = relatedIO()
 
