@@ -1,5 +1,6 @@
 ﻿open System
 open System.IO
+open System.Runtime.Intrinsics
 open FSharp.NativeInterop
 // open FSharp.Json
 open System.Collections.Generic
@@ -52,19 +53,20 @@ for kv in tagPostsTmp do
 
 let [<Literal>] topN = 5
 
+let top5 = Array.zeroCreate<struct{|count:byte;postId:int|}> topN
+
 let allRelatedPosts: RelatedPosts[] =
     posts
     |> Array.mapi (fun postId post ->
         let taggedPostCount = stackalloc posts.Length
-        let top5 = Array.zeroCreate<struct{|count:int;postId:int|}> topN // flattened list of (count, id)
 
         for tagId in post.tags do
             for relatedPostId in tagPosts[tagId] do
-                taggedPostCount[relatedPostId] <- taggedPostCount[relatedPostId] + 1
+                taggedPostCount[relatedPostId] <- taggedPostCount[relatedPostId] + 1uy
 
-        taggedPostCount[postId] <- 0 // ignore self
+        taggedPostCount[postId] <- 0uy // ignore self
 
-        let mutable minTags = 0
+        let mutable minTags = 0uy
 
         // custom priority queue to find topN
         for i in 0 .. taggedPostCount.Length - 1 do
@@ -81,9 +83,16 @@ let allRelatedPosts: RelatedPosts[] =
                 top5[pos+1] <- {| count=count; postId=i |}
                 minTags <- top5[topN-1].count
 
-        { _id = post._id
-          tags = post.tags
-          related = top5 |> Array.map (fun top -> posts[top.postId]) }
+        let result =
+            { _id = post._id
+              tags = post.tags
+              related = top5 |> Array.map (fun top -> posts[top.postId]) }
+
+        // Clean up the top5 array
+        for i in 0..top5.Length - 1 do
+            top5[i] <- {|count = 0uy; postId = -1|}
+
+        result
     )
 
 stopwatch.Stop()
