@@ -48,7 +48,7 @@ for (var i = 0; i < postCount; i++)
 
     taggedPostCount[i] = 0;  // Don't count self
 
-    var  top5 = new (byte count, int postId)[topN];
+    var  top5 = new (byte Count, int PostId)[topN];
     byte minTags = 0;
 
     //  custom priority queue to find top N
@@ -60,7 +60,7 @@ for (var i = 0; i < postCount; i++)
         {
             int upperBound = topN - 2;
 
-            while (upperBound >= 0 && count > top5[upperBound].count)
+            while (upperBound >= 0 && count > top5[upperBound].Count)
             {
                 top5[upperBound + 1] = top5[upperBound];
                 upperBound--;
@@ -68,7 +68,7 @@ for (var i = 0; i < postCount; i++)
 
             top5[upperBound + 1] = (count, j);
 
-            minTags = top5[topN -  1].count;
+            minTags = top5[topN -  1].Count;
         }
     }
 
@@ -77,7 +77,7 @@ for (var i = 0; i < postCount; i++)
     // Convert indexes back to Post references. 
     for (int j = 1; j < 5; j++)
     {
-        topPosts[j] = posts[top5[j].postId];
+        topPosts[j] = posts[top5[j].PostId];
     }
 
     allRelatedPosts[i] = new RelatedPosts
