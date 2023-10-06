@@ -2,6 +2,7 @@ using JSON3
 using StructTypes
 using Dates
 using StaticArrays
+using StrideArrays
 
 function relatedIO()
     json_string = read("../posts.json", String)
@@ -71,8 +72,8 @@ function related(posts)
     relatedposts = Vector{RelatedPost}(undef, length(posts))
     taggedpostcount = Vector{Int64}(undef, length(posts))
 
-    maxn = Vector{Int64}(undef, topn)
-    maxv = Vector{Int64}(undef, topn)
+    maxn = StrideArray{Int64}(undef, topn) #Vector{Int64}(undef, topn)
+    maxv = StrideArray{Int64}(undef, topn) #Vector{Int64}(undef, topn)
 
     for (i, post) in enumerate(posts)
         taggedpostcount .= 0
