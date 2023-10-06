@@ -1,12 +1,15 @@
-using System.Collections.Generic;
 using System.Diagnostics;
+using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
 const int topN = 5;
-var posts = JsonSerializer.Deserialize<List<Post>>(File.ReadAllText(@"../posts.json"));
 
-var sw = Stopwatch.StartNew();
+var fullTime = Stopwatch.StartNew();
+var posts = LoadPosts(@"../posts.json");
+//var posts = JsonSerializer.Deserialize<List<Post>>(File.ReadAllText(@"../posts.json"));
+
+var procTime = Stopwatch.StartNew();
 
 // slower when int[] is used
 var tagMapTemp = new Dictionary<string, Stack<int>>();
@@ -90,11 +93,137 @@ for (var i = 0; i < posts.Count; i++)
     };
 }
 
-sw.Stop();
+procTime.Stop();
 
-Console.WriteLine("Processing time (w/o IO): {0}ms", sw.Elapsed.TotalMilliseconds);
+WritePosts(@"../related_posts_csharp.json", allRelatedPosts);
 
-File.WriteAllText(@"../related_posts_csharp.json", JsonSerializer.Serialize(allRelatedPosts));
+fullTime.Stop();
+Console.WriteLine("Processing time (w/o IO): {0}ms", procTime.Elapsed.TotalMilliseconds);
+Console.WriteLine($"Total time (w IO): {fullTime.Elapsed.TotalMilliseconds}ms");
+
+static void WritePosts(string file, RelatedPosts[] posts)
+{
+    using var o = File.Create(file);
+    var w = new Utf8JsonWriter(o);
+    w.WriteStartArray();
+
+    foreach(var p in posts)
+    {
+        w.WriteStartObject();
+        w.WritePropertyName("_id"u8);
+        w.WriteStringValue(p.Id);
+        w.WritePropertyName("tags"u8);
+        w.WriteStartArray();
+        foreach(var t in p.Tags)
+        {
+            w.WriteStringValue(t);
+        }
+        w.WriteEndArray();
+
+        w.WritePropertyName("related"u8);
+        w.WriteStartArray();
+        foreach (var r in p.Related)
+        {
+            w.WriteStartObject();
+
+            w.WritePropertyName("_id"u8);
+            w.WriteStringValue(r.Id);
+            w.WritePropertyName("tags"u8);
+            w.WriteStartArray();
+            foreach (var t in r.Tags)
+            {
+                w.WriteStringValue(t);
+            }
+            w.WriteEndArray();
+
+            w.WriteEndObject();
+        }
+        w.WriteEndArray();
+
+        w.WriteEndObject();
+    }
+    w.WriteEndArray();
+    w.Flush();
+}
+
+static List<Post> LoadPosts(string path)
+{
+    var data = File.ReadAllBytes(path);
+    var r = new Utf8JsonReader(data);
+    List<string> tags = new(5); // reused for accumulating tags
+    var posts = new List<Post>();
+    r.Read();
+    if (r.TokenType != JsonTokenType.StartArray)
+    {
+        throw new InvalidDataException();
+    }
+    int idx = 0;
+    while (r.Read())
+    {
+        switch (r.TokenType)
+        {
+            case JsonTokenType.StartObject:
+                idx++;
+                tags.Clear();
+                Post post = LoadPost(ref r, tags);
+                posts.Add(post);
+                break;
+            case JsonTokenType.EndArray:
+                goto done;
+        }
+    }
+    done:
+    return posts;
+
+    static Post LoadPost(ref Utf8JsonReader r, List<string> tags)
+    {        
+        var d = r.CurrentDepth;
+        string? id = null;
+        while (r.Read())
+        {
+            if (r.TokenType == JsonTokenType.PropertyName)
+            {
+                if (r.ValueSpan.SequenceEqual("_id"u8))
+                {
+                    r.Read();
+                    id = Encoding.UTF8.GetString(r.ValueSpan);
+                }
+                else
+                if (r.ValueSpan.SequenceEqual("tags"u8))
+                {
+                    r.Read();
+                    if(r.TokenType != JsonTokenType.StartArray)
+                    {
+                        throw new InvalidDataException();
+                    }
+                    while (r.Read())
+                    {
+                        switch (r.TokenType)
+                        {
+                            case JsonTokenType.String:
+                                var tag = Encoding.UTF8.GetString(r.ValueSpan);
+                                tags.Add(tag);
+                                break;
+                            case JsonTokenType.EndArray:
+                                goto donetags;
+                            default:                                
+                                throw new InvalidDataException();
+                        }
+                    }
+                donetags:
+                    ;
+                }
+            }
+            if (r.CurrentDepth == d && r.TokenType == JsonTokenType.EndObject)
+            {
+                return new Post { Id = id, Tags = tags.ToArray(), Title = null };
+            }
+        }
+        // never...
+        throw new InvalidDataException();
+    }
+}
+
 
 public struct Post
 {
