@@ -12,3 +12,4 @@ bin           = @["related"]
 
 requires "nim >= 2.0.0"
 requires "jsony"
+requires "xxhash"

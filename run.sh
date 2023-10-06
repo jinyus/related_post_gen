@@ -40,7 +40,7 @@ capture() {
 run_go() {
     echo "Running Go" &&
         cd ./go &&
-        go build &&
+        GOEXPERIMENT=arenas go build &&
         if [ $HYPER == 1 ]; then
             capture "Go" hyperfine -r 10 -w 5 --show-output "./related"
         else
@@ -75,7 +75,19 @@ run_rust() {
         fi
 
     check_output "related_posts_rust.json"
+}
 
+run_cpp() {
+    echo "Running C++" &&
+        cd ./cpp &&
+        g++ -std=c++11 -I./include main.cpp -o main &&
+        if [ $HYPER == 1 ]; then
+            capture "cpp" hyperfine -r 10 -w 3 --show-output "./main"
+        else
+            command time -f '%es %Mk' ./main
+        fi
+
+    check_output "related_posts_cpp.json"
 }
 
 run_rust_con() {
@@ -155,30 +167,17 @@ run_zig() {
     check_output "related_posts_zig.json"
 }
 
-run_julia_v1() {
+run_julia() {
     echo "Running Julia v1" &&
         cd ./julia &&
         julia -e 'using Pkg; Pkg.add.(["JSON3", "StatsBase", "StructTypes", "StaticArrays"])' &&
         if [ $HYPER == 1 ]; then
-            capture "Julia v1" hyperfine -r 5 --warmup 1 --show-output "julia related.jl"
+            capture "Julia" hyperfine -r 5 --warmup 1 --show-output "julia related.jl"
         else
             command time -f '%es %Mk' julia related.jl
         fi
 
-    check_output "related_posts_julia_v1.json"
-}
-
-run_julia_v2() {
-    echo "Running Julia v2" &&
-        cd ./julia &&
-        julia -e 'using Pkg; Pkg.add.(["JSON3", "StatsBase", "StructTypes", "LinearAlgebra"])' &&
-        if [ $HYPER == 1 ]; then
-            capture "Julia v2" hyperfine -r 5 --warmup 1 --show-output "julia related_v2.jl"
-        else
-            command time -f '%es %Mk' julia related_v2.jl
-        fi
-
-    check_output "related_posts_julia_v2.json"
+    check_output "related_posts_julia.json"
 }
 
 run_odin() {
@@ -345,7 +344,7 @@ run_java_with_jmh() {
 run_nim() {
     echo "Running Nim" &&
         cd ./nim &&
-        nimble install -y jsony &&
+        nimble install -y &&
         nim compile -d:release --threads:off --passL:"-flto -fprofile-generate" --passC:"-flto -fprofile-generate" src/related.nim &&
         ./src/related &&
         nim compile -d:release --threads:off --passL:"-flto -fprofile-use" --passC:"-flto -fprofile-use" src/related.nim &&
@@ -441,6 +440,10 @@ elif [ "$first_arg" = "go_con" ]; then
 
     run_go_concurrent
 
+elif [ "$first_arg" = "cpp" ]; then
+
+    run_cpp
+
 elif [ "$first_arg" = "rust" ]; then
 
     run_rust
@@ -465,13 +468,9 @@ elif [ "$first_arg" = "zig" ]; then
 
     run_zig
 
-elif [ "$first_arg" = "jul1" ]; then
+elif [ "$first_arg" = "julia" ]; then
 
-    run_julia_v1
-
-elif [ "$first_arg" = "jul2" ]; then
-
-    run_julia_v2
+    run_julia
 
 elif [ "$first_arg" = "odin" ]; then
 
@@ -556,8 +555,7 @@ elif [ "$first_arg" = "all" ]; then
         run_python_np || echo -e "\n" &&
         run_crystal || echo -e "\n" &&
         run_zig || echo -e "\n" &&
-        # run_julia_v1 || echo -e "\n" &&
-        run_julia_v2 || echo -e "\n" &&
+        run_julia || echo -e "\n" &&
         run_odin || echo -e "\n" &&
         run_vlang || echo -e "\n" &&
         run_dart || echo -e "\n" &&
@@ -602,6 +600,6 @@ elif [ "$first_arg" = "clean" ]; then
 
 else
 
-    echo "Valid args: go | go_con | rust | rust_con | py | numpy | cr | zig | odin | jq | jul1 | jul2 | v | dart | swift | swift_con | node | bun | deno | java | java_graal | nim | luajit | lua | all | clean. Unknown argument: $first_arg"
+    echo "Valid args: go | go_con | rust | rust_con | py | numpy | cr | zig | odin | jq | julia | v | dart | swift | swift_con | node | bun | deno | java | java_graal | nim | luajit | lua | all | clean. Unknown argument: $first_arg"
 
 fi

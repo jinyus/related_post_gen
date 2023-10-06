@@ -11,14 +11,12 @@ let inline stackalloc<'a when 'a: unmanaged> (length: int) : Span<'a> =
     let p = NativePtr.stackalloc<'a> length |> NativePtr.toVoidPtr
     Span<'a>(p, length)
 
-
 [<Struct>]
 type Post =
     { _id: string
       title: string
       tags: string[] }
 
-[<Struct>]
 type RelatedPosts =
     { _id: string
       tags: string[]
@@ -29,8 +27,7 @@ let srcDir = __SOURCE_DIRECTORY__
 let posts =
     JsonSerializer.Deserialize<Post[]>(File.ReadAllText $"{srcDir}/../posts.json")
 
-let stopwatch = Diagnostics.Stopwatch()
-stopwatch.Start()
+let stopwatch = Diagnostics.Stopwatch.StartNew()
 
 // Start work
 let tagPostsTmp = Dictionary<string, Stack<int>>()
@@ -53,13 +50,13 @@ let tagPosts = Dictionary(tagPostsTmp.Count)
 for kv in tagPostsTmp do
     tagPosts[kv.Key] <- kv.Value.ToArray()
 
-let topN = 5
+let [<Literal>] topN = 5
 
 let allRelatedPosts: RelatedPosts[] =
     posts
     |> Array.mapi (fun postId post ->
         let taggedPostCount = stackalloc posts.Length
-        let top5 = stackalloc (topN * 2) // flattened list of (count, id)
+        let top5 = Array.zeroCreate<struct{|count:int;postId:int|}> topN // flattened list of (count, id)
 
         for tagId in post.tags do
             for relatedPostId in tagPosts[tagId] do
@@ -75,33 +72,23 @@ let allRelatedPosts: RelatedPosts[] =
 
             if count > minTags then
                 // Find upper bound: pos at which count is larger than current one.
-                let mutable upperBound = (topN - 2) * 2
+                let mutable pos = topN - 2
 
-                while upperBound >= 0 && count > top5[upperBound] do
-                    top5[upperBound + 2] <- top5[upperBound]
-                    top5[upperBound + 3] <- top5[upperBound + 1]
-                    upperBound <- upperBound - 2
+                while pos >= 0 && count > top5[pos].count do
+                    top5[pos + 1] <- top5[pos]
+                    pos <- pos - 1
 
-                let insertionPos = upperBound + 2
-                top5[insertionPos] <- count
-                top5[insertionPos + 1] <- i
-
-                minTags <- top5[topN * 2 - 2]
-
-        let related = Array.zeroCreate topN
-
-        for i in 0 .. related.Length - 1 do
-            related[i] <- posts[top5[i * 2 + 1]]
+                top5[pos+1] <- {| count=count; postId=i |}
+                minTags <- top5[topN-1].count
 
         { _id = post._id
           tags = post.tags
-          related = related }
-
+          related = top5 |> Array.map (fun top -> posts[top.postId]) }
     )
-
 
 stopwatch.Stop()
 printfn "Processing time (w/o IO): %dms" stopwatch.ElapsedMilliseconds
+
 let json = JsonSerializer.Serialize allRelatedPosts
 
 File.WriteAllText($"{srcDir}/../related_posts_fsharp.json", json)

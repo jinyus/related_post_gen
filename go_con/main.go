@@ -1,7 +1,6 @@
 package main
 
 import (
-	"arena"
 	"fmt"
 	"log"
 	"os"
@@ -15,9 +14,10 @@ import (
 // custom type alias - for easier experiments with int size
 // using smaller than int64 integer size but still big enough for 4 billion posts
 var concurrency = isize(runtime.NumCPU())
-var a *arena.Arena
 
 const topN = 5
+const InitialTagMapSize = 100
+const InitialPostsSliceCap = 0
 
 type isize uint32
 
@@ -51,11 +51,7 @@ func main() {
 	}
 	defer file.Close()
 
-	a = arena.NewArena() // Create a new arena
-
-	var posts []Post
-	posts = arena.MakeSlice[Post](a, 0, 10000)
-
+	posts := make([]Post, 0, InitialPostsSliceCap)
 	err = json.NewDecoder(file).Decode(&posts)
 	if err != nil {
 		log.Panicln(err)
@@ -66,7 +62,7 @@ func main() {
 	postsLength := len(posts)
 	postsLengthISize := isize(postsLength)
 
-	tagMap := make(map[string][]isize, 100)
+	tagMap := make(map[string][]isize, InitialTagMapSize)
 	for i, post := range posts {
 		for _, tag := range post.Tags {
 			tagMap[tag] = append(tagMap[tag], isize(i))
@@ -81,7 +77,7 @@ func main() {
 	var w isize
 	for ; w < isize(concurrency); w++ {
 		// allocate taggedPostCount for each worker once, zero out for each task
-		taggedPostCount := arena.MakeSlice[isize](a, postsLength, postsLength)
+		taggedPostCount := make([]isize, postsLengthISize)
 		go func(workerID isize) {
 			for i := workerID; i < postsLengthISize; i += concurrency {
 				// provide taggedPostCount and binary heap for each task
@@ -96,7 +92,7 @@ func main() {
 	wg.Wait()
 	close(resultsChan)
 
-	allRelatedPosts := arena.MakeSlice[RelatedPosts](a, postsLength, postsLength)
+	allRelatedPosts := make([]RelatedPosts, postsLength)
 	for r := range resultsChan {
 		allRelatedPosts[r.Index] = r.RelatedPost
 	}
@@ -114,7 +110,6 @@ func main() {
 	if err != nil {
 		log.Panicln(err)
 	}
-	a.Free()
 }
 
 func computeRelatedPost(i isize, posts []Post, tagMap map[string][]isize, taggedPostCount []isize) RelatedPosts {
