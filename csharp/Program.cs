@@ -96,7 +96,7 @@ Console.WriteLine("Processing time (w/o IO): {0}ms", sw.Elapsed.TotalMillisecond
 
 File.WriteAllText(@"../related_posts_csharp.json", JsonSerializer.Serialize(allRelatedPosts, MyJsonContext.Default.RelatedPostsArray));
 
-public struct Post
+public class Post
 {
     [JsonPropertyName("_id")]
     public string Id { get; set; }
@@ -108,7 +108,7 @@ public struct Post
     public string[] Tags { get; set; }
 }
 
-public struct RelatedPosts
+public class RelatedPosts
 {
     [JsonPropertyName("_id")]
     public string Id { get; set; }
