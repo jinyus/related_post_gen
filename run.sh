@@ -168,7 +168,7 @@ run_zig() {
 }
 
 run_julia() {
-    echo "Running Julia v1" &&
+    echo "Running Julia" &&
         cd ./julia &&
         julia -e 'using Pkg; Pkg.add.(["JSON3", "StructTypes", "StaticArrays"])' &&
         if [ $HYPER == 1 ]; then
