@@ -25,12 +25,12 @@ end
 struct PostData
     _id::String
     title::String
-    tags::Vector{String}
+    tags::Vector{Symbol}
 end
 
 struct RelatedPost
     _id::String
-    tags::Vector{String}
+    tags::Vector{Symbol}
     related::SVector{5,PostData}
 end
 
@@ -59,7 +59,7 @@ end
 
 function related(posts)
     topn = 5
-    tagmap = Dict{String,Vector{UInt16}}()
+    tagmap = Dict{Symbol,Vector{UInt16}}()
     for (idx, post) in enumerate(posts)
         for tag in post.tags
             if !haskey(tagmap, tag)
