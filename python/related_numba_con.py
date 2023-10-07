@@ -3,13 +3,13 @@ from timing import lap, finish
 lap()
 import numpy as np
 import orjson
-from numba import njit, typed
+from numba import njit, prange, typed
 
 
-@njit
+@njit(parallel=True)
 def get_all_top5(n_posts, t_to_pp, p_to_tt, p_to_nt):
     all_top5 = np.empty((n_posts, 5), np.uint16)
-    for current_p in range(n_posts):
+    for current_p in prange(n_posts):
         tt = p_to_tt[current_p]
         relation_count = np.zeros(n_posts, dtype=np.uint8)
         for tj in range(p_to_nt[current_p]):
