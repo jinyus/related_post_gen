@@ -49,9 +49,10 @@ let tagPosts = Dictionary(tagPostsTmp.Count)
 for kv in tagPostsTmp do
     tagPosts[kv.Key] <- kv.Value.ToArray()
 
-let [<Literal>] topN = 5
+[<Literal>]
+let topN = 5
 
-let top5 = Array.zeroCreate<struct{|count:byte;postId:int|}> topN
+let top5 = Array.zeroCreate<struct {| count: byte; postId: int |}> topN
 
 let allRelatedPosts: RelatedPosts[] =
     posts
@@ -64,34 +65,29 @@ let allRelatedPosts: RelatedPosts[] =
 
         taggedPostCount[postId] <- 0uy // ignore self
 
-        let mutable minTags = 0uy
+        let queue = PriorityQueue<int, byte>(topN)
 
-        // custom priority queue to find topN
+
         for i in 0 .. taggedPostCount.Length - 1 do
-            let count = taggedPostCount[i]
+            if queue.Count < topN then
+                queue.Enqueue(i, taggedPostCount[i])
+            else
+                queue.EnqueueDequeue(i, taggedPostCount[i]) |> ignore
 
-            if count > minTags then
-                // Find upper bound: pos at which count is larger than current one.
-                let mutable pos = topN - 2
-
-                while pos >= 0 && count > top5[pos].count do
-                    top5[pos + 1] <- top5[pos]
-                    pos <- pos - 1
-
-                top5[pos+1] <- {| count=count; postId=i |}
-                minTags <- top5[topN-1].count
 
         let result =
             { _id = post._id
               tags = post.tags
-              related = top5 |> Array.map (fun top -> posts[top.postId]) }
+              related =
+                queue.UnorderedItems
+                |> Seq.map (fun struct (postId, _) -> posts.[postId])
+                |> Seq.toArray }
 
         // Clean up the top5 array
-        for i in 0..top5.Length - 1 do
-            top5[i] <- {|count = 0uy; postId = -1|}
+        for i in 0 .. top5.Length - 1 do
+            top5[i] <- {| count = 0uy; postId = -1 |}
 
-        result
-    )
+        result)
 
 stopwatch.Stop()
 printfn "Processing time (w/o IO): %dms" stopwatch.ElapsedMilliseconds
