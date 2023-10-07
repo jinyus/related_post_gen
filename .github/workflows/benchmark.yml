@@ -99,6 +99,10 @@ jobs:
               with:
                   python-version: "3.11"
 
+            - name: Install jd
+              run: |
+                  go install github.com/josephburnett/jd@latest
+
             - name: Run Benchmark
               run: ./run.sh all raw_results.md
 
