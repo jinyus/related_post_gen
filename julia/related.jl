@@ -4,13 +4,11 @@ using Dates
 using StaticArrays
 using StrideArrays
 
+# warmup is done by hyperfine
+
 function relatedIO()
     json_string = read("../posts.json", String)
     posts = JSON3.read(json_string, Vector{PostData})
-
-    # we only want to evaluate the time it takes to run the algorithm,
-    # not to compile the function(s) - so we run it once before starting the timer
-    related(posts)
 
     start = now()
     all_related_posts = related(posts)
