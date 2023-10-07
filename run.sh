@@ -158,6 +158,24 @@ run_python_numba() {
 
 }
 
+run_python_numba_con() {
+    echo "Running Numba Concurrent" &&
+        cd ./python &&
+        if [ ! -d "venv" ]; then
+            python3 -m venv venv
+        fi
+    source venv/bin/activate &&
+        (pip freeze | grep numba && pip freeze | grep orjson) || pip install -r requirements.txt &&
+        if [ $HYPER == 1 ]; then
+            capture "Numba Concurrent" hyperfine -r 10 -w 3 --show-output "python3 ./related_numba_con.py"
+        else
+            command time -f '%es %Mk' python3 ./related_numba_con.py
+        fi
+    deactivate &&
+        check_output "related_posts_python_numba_con.json"
+
+}
+
 run_crystal() {
     echo "Running Crystal" &&
         cd ./crystal &&
@@ -482,6 +500,10 @@ elif [ "$first_arg" = "numba" ]; then
 
     run_python_numba
 
+elif [ "$first_arg" = "numba_con" ]; then
+
+    run_python_numba_con
+
 elif [ "$first_arg" = "cr" ]; then
 
     run_crystal
@@ -623,6 +645,6 @@ elif [ "$first_arg" = "clean" ]; then
 
 else
 
-    echo "Valid args: go | go_con | rust | rust_con | py | numpy | numba | cr | zig | odin | jq | julia | v | dart | swift | swift_con | node | bun | deno | java | java_graal | nim | luajit | lua | all | clean. Unknown argument: $first_arg"
+    echo "Valid args: go | go_con | rust | rust_con | py | numpy | numba | numba_con | cr | zig | odin | jq | julia | v | dart | swift | swift_con | node | bun | deno | java | java_graal | nim | luajit | lua | all | clean. Unknown argument: $first_arg"
 
 fi
