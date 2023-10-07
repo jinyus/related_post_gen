@@ -7,8 +7,11 @@
     <Nullable>enable</Nullable>
     <PublishAot>true</PublishAot>
     <ServerGarbageCollection>true</ServerGarbageCollection>
-    <StripSymbols>true</StripSymbols>
     <InvariantGlobalization>true</InvariantGlobalization>
+    <StripSymbols>true</StripSymbols>
+    <IlcOptimizationPreference>Speed</IlcOptimizationPreference>
+    <IlcPgoOptimize>true</IlcPgoOptimize>
+    <IlcInstructionSet>x86-x64-v3</IlcInstructionSet>
   </PropertyGroup>
 
 </Project>
