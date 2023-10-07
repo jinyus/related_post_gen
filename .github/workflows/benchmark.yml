@@ -36,6 +36,8 @@ jobs:
 
             - name: Install Vlang
               uses: vlang/setup-v@v1.3
+              with:
+                  version: "weekly.2023.40"
 
             - name: Install odin
               run: |
@@ -90,12 +92,12 @@ jobs:
 
             - name: Install LuaJit
               run: |
-                sudo apt install luajit lua5.1 luarocks lua-socket:amd64
+                  sudo apt install luajit lua5.1 luarocks lua-socket:amd64
 
             - name: Install Python
               uses: actions/setup-python@v4.7.1
               with:
-                python-version: '3.11'
+                  python-version: "3.11"
 
             - name: Run Benchmark
               run: ./run.sh all raw_results.md
