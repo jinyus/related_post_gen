@@ -1,4 +1,3 @@
-
 export function genRelatedPosts(posts) {
   // build a map of tags to post indices. tag -> [idx1, idx2, ...]
   const tagMap = {};
@@ -15,9 +14,10 @@ export function genRelatedPosts(posts) {
   const taggedPostCount = Array(posts.length);
 
   return Array(posts.length)
-    .fill({})
+    .fill()
     .map((record, i) => {
-    
+
+    record = {}
     taggedPostCount.fill(0);
     let post = posts[i];
 
@@ -62,4 +62,3 @@ export function genRelatedPosts(posts) {
     return record;
   });
 }
-
