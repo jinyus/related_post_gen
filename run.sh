@@ -2,10 +2,10 @@
 
 # Read the first arg passed to the script
 first_arg=$1
-outfile=${2:-/dev/stdout}
+outfile=$2
 
 tab=""
-if [[ $outfile != "/dev/stdout" ]]; then
+if [[ -n $outfile ]]; then
     tab="\t"
     if [ -f "$outfile" ]; then
         truncate -s 0 "$outfile"
@@ -34,9 +34,15 @@ capture() {
     (
         echo -e "$title:\n"
 
-        # use awk to intent the output so it shows up as a codeblock in markdown
-        $command "$@" | awk -v tab="$tab" '{print tab$0}'
-    ) >>"$outfile"
+        # use awk to indent the output so it shows up as a codeblock in markdown
+        if [ -z "$outfile" ]; then
+            # outfile is empty, so write to stdout
+            $command "$@" | awk -v tab="$tab" '{print tab$0}'
+        else
+            # write to a file and stdout
+            $command "$@" | awk -v tab="$tab" '{print tab$0}' | tee -a "$outfile"
+        fi
+    )
 }
 
 run_go() {
