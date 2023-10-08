@@ -605,7 +605,8 @@ elif [ "$first_arg" = "all" ]; then
         run_rust_con || echo -e "\n" &&
         run_python || echo -e "\n" &&
         run_python_np || echo -e "\n" &&
-        run_python_numba || echo -e "\n" &&
+
+        # run_python_numba || echo -e "\n" && break rules but very interesting
         run_crystal || echo -e "\n" &&
         run_zig || echo -e "\n" &&
         run_julia || echo -e "\n" &&
