@@ -1,13 +1,13 @@
 import * as fs from "fs";
 import { genRelatedPosts } from "./related.js";
 
-const start = Date.now();
-
 const posts = JSON.parse(
     fs.readFileSync("../posts.json", {
         encoding: "utf-8",
     })
 );
+
+const start = Date.now();
 
 const allRelatedPosts = genRelatedPosts(posts);
 

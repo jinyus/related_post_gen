@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Read the first arg passed to the script
 first_arg=$1
@@ -20,6 +20,8 @@ HYPER=0
 if command -v hyperfine &>/dev/null; then
     HYPER=1
 fi
+
+time="$(which gtime || which time)"
 
 # capture the output of a command and write it to stout or to a file
 capture() {
@@ -44,7 +46,7 @@ run_go() {
         if [ $HYPER == 1 ]; then
             capture "Go" hyperfine -r 10 -w 5 --show-output "./related"
         else
-            command time -f '%es %Mk' ./related
+            command ${time} -f '%es %Mk' ./related
         fi
 
     check_output "related_posts_go.json"
@@ -58,7 +60,7 @@ run_go_concurrent() {
         if [ $HYPER == 1 ]; then
             capture "Go Concurrent" hyperfine -r 10 -w 5 --show-output "./related_concurrent"
         else
-            command time -f '%es %Mk' ./related_concurrent
+            command ${time} -f '%es %Mk' ./related_concurrent
         fi
 
     check_output "related_posts_go_con.json"
@@ -71,7 +73,7 @@ run_rust() {
         if [ $HYPER == 1 ]; then
             capture "Rust" hyperfine -r 10 -w 5 --show-output "./target/release/rust"
         else
-            command time -f '%es %Mk' ./target/release/rust
+            command ${time} -f '%es %Mk' ./target/release/rust
         fi
 
     check_output "related_posts_rust.json"
@@ -84,7 +86,7 @@ run_cpp() {
         if [ $HYPER == 1 ]; then
             capture "cpp" hyperfine -r 10 -w 3 --show-output "./main"
         else
-            command time -f '%es %Mk' ./main
+            command ${time} -f '%es %Mk' ./main
         fi
 
     check_output "related_posts_cpp.json"
@@ -97,7 +99,7 @@ run_rust_con() {
         if [ $HYPER == 1 ]; then
             capture "Rust Concurrent" hyperfine -r 10 -w 5 --show-output "./target/release/rust_rayon"
         else
-            command time -f '%es %Mk' ./target/release/rust_rayon
+            command ${time} -f '%es %Mk' ./target/release/rust_rayon
         fi
 
     check_output "related_posts_rust_con.json"
@@ -115,7 +117,7 @@ run_python() {
         if [ $HYPER == 1 ]; then
             capture "Python" hyperfine -r 10 -w 3 --show-output "python3 ./related.py"
         else
-            command time -f '%es %Mk' python3 ./related.py
+            command ${time} -f '%es %Mk' python3 ./related.py
         fi
     deactivate
     check_output "related_posts_python.json"
@@ -133,7 +135,7 @@ run_python_np() {
         if [ $HYPER == 1 ]; then
             capture "Numpy" hyperfine -r 10 -w 3 --show-output "python3 ./related_np.py"
         else
-            command time -f '%es %Mk' python3 ./related_np.py
+            command ${time} -f '%es %Mk' python3 ./related_np.py
         fi
     deactivate &&
         check_output "related_posts_python_np.json"
@@ -147,7 +149,7 @@ run_crystal() {
         if [ $HYPER == 1 ]; then
             capture "Crystal" hyperfine -r 10 -w 5 --show-output "./crystal"
         else
-            command time -f '%es %Mk' ./crystal
+            command ${time} -f '%es %Mk' ./crystal
         fi
 
     check_output "related_posts_cr.json"
@@ -161,7 +163,7 @@ run_zig() {
     if [ $HYPER == 1 ]; then
         capture "Zig" hyperfine -r 10 -w 5 --show-output "./main"
     else
-        command time -f '%es %Mk' ./main
+        command ${time} -f '%es %Mk' ./main
     fi
 
     check_output "related_posts_zig.json"
@@ -174,7 +176,7 @@ run_julia() {
         if [ $HYPER == 1 ]; then
             capture "Julia" hyperfine -r 10 -w 5 --show-output "julia related.jl"
         else
-            command time -f '%es %Mk' julia related.jl
+            command ${time} -f '%es %Mk' julia related.jl
         fi
 
     check_output "related_posts_julia.json"
@@ -187,7 +189,7 @@ run_odin() {
         if [ $HYPER == 1 ]; then
             capture "Odin" hyperfine -r 10 -w 5 --show-output "./related"
         else
-            command time -f '%es %Mk' ./related
+            command ${time} -f '%es %Mk' ./related
         fi
 
     check_output "related_posts_odin.json"
@@ -200,7 +202,7 @@ run_vlang() {
         if [ $HYPER == 1 ]; then
             capture "Vlang" hyperfine -r 10 -w 5 --show-output "./related"
         else
-            command time -f '%es %Mk' ./related
+            command ${time} -f '%es %Mk' ./related
         fi
 
     check_output "related_posts_v.json"
@@ -213,7 +215,7 @@ run_jq() {
             # run once as it's very slow. ~50s
             capture "JQ" hyperfine -r 1 "jq -c -f ./related.jq ../posts.json > ../related_posts_jq.json"
         else
-            command time -f '%es %Mk' jq -c -f ./related.jq ../posts.json >../related_posts_jq.json
+            command ${time} -f '%es %Mk' jq -c -f ./related.jq ../posts.json >../related_posts_jq.json
         fi
     check_output "related_posts_jq.json"
 
@@ -225,7 +227,7 @@ run_dart() {
         if [ $HYPER == 1 ]; then
             capture "Dart VM" hyperfine -r 10 --warmup 3 --show-output "dart related.dart"
         else
-            command time -f '%es %Mk' dart related.dart
+            command ${time} -f '%es %Mk' dart related.dart
         fi
 
     check_output "related_posts_dart.json"
@@ -238,7 +240,7 @@ run_dart_aot() {
         if [ $HYPER == 1 ]; then
             capture "Dart AOT" hyperfine -r 10 --warmup 3 --show-output "./related"
         else
-            command time -f '%es %Mk' ./related
+            command ${time} -f '%es %Mk' ./related
         fi
 
     check_output "related_posts_dart.json"
@@ -251,7 +253,7 @@ run_swift() {
         if [ $HYPER == 1 ]; then
             capture "Swift" hyperfine -r 10 -w 5 --show-output "./.build/release/related"
         else
-            command time -f '%es %Mk' "./.build/release/related"
+            command ${time} -f '%es %Mk' "./.build/release/related"
         fi
 
     check_output "related_posts_swift.json"
@@ -264,7 +266,7 @@ run_swift_con() {
         if [ $HYPER == 1 ]; then
             capture "Swift Concurrent" hyperfine -r 10 -w 5 --show-output "./.build/release/related"
         else
-            command time -f '%es %Mk' "./.build/release/related"
+            command ${time} -f '%es %Mk' "./.build/release/related"
         fi
 
     check_output "related_posts_swift_con.json"
@@ -284,7 +286,7 @@ run_js() {
             fi
 
         else
-            command time -f '%es %Mk' "$1 $1.js"
+            command ${time} -f '%es %Mk' "$1" "$1.js"
         fi
 
     check_output "related_posts_$1.json"
@@ -299,7 +301,7 @@ run_java() {
         if [ $HYPER == 1 ]; then
             capture "Java (JIT)" hyperfine -r 10 -w 3 --show-output "java $VM_OPTIONS -jar ./target/main.jar"
         else
-            command time -f '%es %Mk' java $VM_OPTIONS -jar ./target/main.jar
+            command ${time} -f '%es %Mk' java $VM_OPTIONS -jar ./target/main.jar
         fi
 
     check_output "related_posts_java.json"
@@ -316,7 +318,7 @@ run_java_graal() {
         if [ $HYPER == 1 ]; then
             capture "Java (GraalVM)" hyperfine -r 10 -w 3 --show-output "./target/related"
         else
-            command time -f '%es %Mk' ./target/related
+            command ${time} -f '%es %Mk' ./target/related
         fi
 
     check_output "related_posts_java.json"
@@ -334,7 +336,7 @@ run_java_with_jmh() {
             capture "Java JMH" cat ./benchmark_result.txt
             # rm ./benchmark_result.txt
         else
-            command time -f '%es %Mk' java -jar ./target/benchmark.jar
+            command ${time} -f '%es %Mk' java -jar ./target/benchmark.jar
         fi
 
     check_output "related_posts_java.json"
@@ -351,7 +353,7 @@ run_nim() {
         if [ $HYPER == 1 ]; then
             capture "Nim" hyperfine -r 10 -w 5 --show-output "./src/related"
         else
-            command time -f '%es %Mk' ./src/related
+            command ${time} -f '%es %Mk' ./src/related
         fi
 
     check_output "related_posts_nim.json"
@@ -365,7 +367,7 @@ run_fsharp() {
         if [ $HYPER == 1 ]; then
             capture "F#" hyperfine -r 10 -w 5 --show-output "./bin/release/net7.0/fsharp"
         else
-            command time -f '%es %Mk' ./bin/release/net7.0/fsharp
+            command ${time} -f '%es %Mk' ./bin/release/net7.0/fsharp
         fi
 
     check_output "related_posts_fsharp.json"
@@ -379,7 +381,7 @@ run_csharp() {
         if [ $HYPER == 1 ]; then
             capture "C#" hyperfine -r 10 -w 5 --show-output "./bin/release/net7.0/publish/related"
         else
-            command time -f '%es %Mk' ./bin/release/net7.0/publish/related
+            command ${time} -f '%es %Mk' ./bin/release/net7.0/publish/related
         fi
 
     check_output "related_posts_csharp.json"
@@ -393,7 +395,7 @@ run_fsharp_con() {
         if [ $HYPER == 1 ]; then
             capture "F# Concurrent" hyperfine -r 10 -w 5 --show-output "./bin/release/net7.0/fsharp_con"
         else
-            command time -f '%es %Mk' ./bin/release/net7.0/fsharp_con
+            command ${time} -f '%es %Mk' ./bin/release/net7.0/fsharp_con
         fi
 
     check_output "related_posts_fsharp_con.json"
@@ -406,7 +408,7 @@ run_luajit() {
         if [ $HYPER == 1 ]; then
             capture "LuaJIT" hyperfine -r 10 -w 5 --show-output "luajit only_lua.lua"
         else
-            command time -f '%es %Mk' luajit only_lua.lua
+            command ${time} -f '%es %Mk' luajit only_lua.lua
         fi
 
     check_output "related_posts_lua.json"
@@ -420,17 +422,23 @@ run_lua() {
         if [ $HYPER == 1 ]; then
             capture "Lua" hyperfine -r 10 -w 2 --show-output "lua only_lua.lua"
         else
-            command time -f '%es %Mk' lua only_lua.lua
+            command ${time} -f '%es %Mk' lua only_lua.lua
         fi
 
     check_output "related_posts_lua.json"
 }
 
 check_output() {
-    cd .. &&
-        echo "Checking output" &&
-        python3 verify.py "$1"
+     cd .. &&
+         echo "Checking output" &&
+         python3 verify.py "$1"
 }
+
+#check_output() {
+#    cd .. &&
+#        echo "Checking output" &&
+#        ./verify.sh "$1"
+#}
 
 if [ "$first_arg" = "go" ]; then
 
