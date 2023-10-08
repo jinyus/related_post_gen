@@ -428,17 +428,17 @@ run_lua() {
     check_output "related_posts_lua.json"
 }
 
-# check_output() {
-#     cd .. &&
-#         echo "Checking output" &&
-#         python3 verify.py "$1"
-# }
-
 check_output() {
-    cd .. &&
-        echo "Checking output" &&
-        ./verify.sh "$1"
+     cd .. &&
+         echo "Checking output" &&
+         python3 verify.py "$1"
 }
+
+#check_output() {
+#    cd .. &&
+#        echo "Checking output" &&
+#        ./verify.sh "$1"
+#}
 
 if [ "$first_arg" = "go" ]; then
 
