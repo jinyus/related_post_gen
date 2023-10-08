@@ -44,7 +44,7 @@ run_go() {
         cd ./go &&
         go build &&
         if [ $HYPER == 1 ]; then
-            capture "Go" hyperfine -r 10 -w 5 --show-output "./related"
+            capture "Go" hyperfine -r 10 -w 5 --show-output "GOGC=off GOMEMLIMIT=32MiB ./related"
         else
             command ${time} -f '%es %Mk' ./related
         fi
@@ -58,7 +58,7 @@ run_go_concurrent() {
         cd ./go_con &&
         go build &&
         if [ $HYPER == 1 ]; then
-            capture "Go Concurrent" hyperfine -r 10 -w 5 --show-output "./related_concurrent"
+            capture "Go Concurrent" hyperfine -r 10 -w 5 --show-output "GOGC=off GOMEMLIMIT=64MiB ./related_concurrent"
         else
             command ${time} -f '%es %Mk' ./related_concurrent
         fi
