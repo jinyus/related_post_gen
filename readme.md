@@ -61,37 +61,37 @@ NB: The benchmark runs on the free tier of github workflow.
 
 | Language       | Processing Time | Total (PT + I/O) |
 | -------------- | --------------- | ---------------- |
-| Go | 30.33 ms | 70.3 ms |
-| Rust | 32.28 ms | 52.5 ms |
-| Julia | 36.13 ms | 8.327 s |
-| Java (GraalVM) | 43.77 ms | 79.5 ms |
-| Zig | 47.53 ms | 100.3 ms |
-| Nim | 50.60 ms | 84.6 ms |
-| F# | 53.00 ms | 384.5 ms |
-| Vlang | 60.14 ms | 708.6 ms |
-| Odin | 62.67 ms | 378.8 ms |
-| C# | 62.75 ms | 141.5 ms |
-| Crystal | 63.02 ms | 127.0 ms |
-| Swift | 65.40 ms | 535.8 ms |
-| Dart VM | 94.23 ms | 727.5 ms |
-| Dart AOT | 118.31 ms | 284.2 ms |
-| LuaJIT | 119.84 ms | 456.5 ms |
-| JS (Deno) | 173.31 ms | 259.8 ms |
-| JS (Node) | 196.77 ms | 292.1 ms |
-| Java (JIT) | 334.77 ms | 709.4 ms |
-| Numpy | 478.32 ms | 769.0 ms |
-| JS (Bun) | 930.54 ms | 998.7 ms |
-| Python | 2.22 s | 2.313 s |
-| Lua | 2748.61 ms | 3.536 s |
+| Go | 26.62 ms | 57.2 ms |
+| Rust | 30.95 ms | 48.7 ms |
+| Java (GraalVM) | 36.38 ms | 69.6 ms |
+| Zig | 38.00 ms | 79.0 ms |
+| Nim | 39.00 ms | 67.1 ms |
+| Julia | 48.60 ms | 3.337 s |
+| F# | 50.47 ms | 304.0 ms |
+| Odin | 53.73 ms | 302.3 ms |
+| Vlang | 59.03 ms | 396.9 ms |
+| Swift | 65.70 ms | 442.9 ms |
+| Crystal | 68.44 ms | 124.8 ms |
+| C# | 81.07 ms | 147.1 ms |
+| Dart VM | 109.08 ms | 579.9 ms |
+| LuaJIT | 117.53 ms | 388.4 ms |
+| Dart AOT | 140.62 ms | 283.9 ms |
+| JS (Node) | 193.54 ms | 290.4 ms |
+| JS (Deno) | 218.46 ms | 292.5 ms |
+| Java (JIT) | 258.77 ms | 542.3 ms |
+| Numpy | 372.44 ms | 589.8 ms |
+| JS (Bun) | 738.92 ms | 780.7 ms |
+| Python | 1.70 s | 1.769 s |
+| Lua | 2365.36 ms | 3.025 s |
 
 ### Multicore Results
 
 | Language       | Processing Time | Total (PT + I/O) |
 | -------------- | --------------- | ---------------- |
-| Go Concurrent | 18.29 ms | 55.3 ms |
-| Rust Concurrent | 21.30 ms | 45.3 ms |
-| Swift Concurrent | 41.54 ms | 531.6 ms |
-| F# Concurrent | 48.73 ms | 1.057 s |
+| Rust Concurrent | 15.70 ms | 32.9 ms |
+| Go Concurrent | 21.63 ms | 54.4 ms |
+| F# Concurrent | 40.53 ms | 859.2 ms |
+| Swift Concurrent | 41.05 ms | 429.8 ms |
 
 <details>
 <summary> Old Results with details (on my machine) </summary>
