@@ -35,9 +35,9 @@ jobs:
               uses: julia-actions/setup-julia@v1
 
             - name: Install Vlang
-              uses: vlang/setup-v@v1.3
-              with:
-                  version: "stable"
+              uses: vlang/setup-v@v1.2
+              # with:
+              #     version: "stable"
 
             - name: Install odin
               run: |
