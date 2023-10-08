@@ -60,7 +60,7 @@ NB: The benchmark runs on the free tier of github workflow.
 
 </details>
 
-| Language       | Time (5k posts) | 25k posts | 50k posts |
+| Language       | Time (5k posts) | 15k posts | 30k posts |
 | -------------- | --------------- | --------- | --------- |
 | Go             | 25.59 ms        | -         | -         |
 | Rust           | 30.93 ms        | -         | -         |
@@ -88,7 +88,7 @@ NB: The benchmark runs on the free tier of github workflow.
 
 ### Multicore Results
 
-| Language         | Time (5k posts) | 25k posts | 50k posts |
+| Language         | Time (5k posts) | 15k posts | 30k posts |
 | ---------------- | --------------- | --------- | --------- |
 | Rust Concurrent  | 15.77 ms        | -         | -         |
 | Go Concurrent    | 18.98 ms        | -         | -         |

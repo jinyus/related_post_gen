@@ -110,16 +110,16 @@ jobs:
             - name: Install python deps
               run: python -m pip install faker --break-system-packages && python -m pip install nanoid --break-system-packages
 
-            - name: Generate 25k posts
-              run: python gen_fake_posts.py 25000
+            - name: Generate 15k posts
+              run: python gen_fake_posts.py 15000
 
-            - name: Run Benchmark (25k posts)
+            - name: Run Benchmark (15k posts)
               run: ./run.sh all raw_results.md append
 
-            - name: Generate 50k posts
-              run: python gen_fake_posts.py 50000
+            - name: Generate 30k posts
+              run: python gen_fake_posts.py 30000
 
-            - name: Run Benchmark (50k posts)
+            - name: Run Benchmark (30k posts)
               run: ./run.sh all raw_results.md append
 
             - name: Clean up
