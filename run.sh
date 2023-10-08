@@ -42,7 +42,7 @@ capture() {
 run_go() {
     echo "Running Go" &&
         cd ./go &&
-        GOEXPERIMENT=arenas go build &&
+        go build &&
         if [ $HYPER == 1 ]; then
             capture "Go" hyperfine -r 10 -w 5 --show-output "./related"
         else
@@ -56,7 +56,7 @@ run_go() {
 run_go_concurrent() {
     echo "Running Go Concurrent" &&
         cd ./go_con &&
-        GOEXPERIMENT=arenas go build &&
+        go build &&
         if [ $HYPER == 1 ]; then
             capture "Go Concurrent" hyperfine -r 10 -w 5 --show-output "./related_concurrent"
         else
