@@ -4,10 +4,14 @@
 first_arg=$1
 outfile=$2
 
+# only truncate file when this is empty, otherwise append
+appendToFile=$3
+
 tab=""
 if [[ -n $outfile ]]; then
     tab="\t"
-    if [ -f "$outfile" ]; then
+
+    if [ -f "$outfile" ] && [ -z "$appendToFile" ]; then
         truncate -s 0 "$outfile"
     fi
 
@@ -32,14 +36,15 @@ capture() {
     shift 2
 
     (
-        echo -e "$title:\n"
 
         # use awk to indent the output so it shows up as a codeblock in markdown
         if [ -z "$outfile" ]; then
             # outfile is empty, so write to stdout
+            echo -e "$title:\n"
             $command "$@" | awk -v tab="$tab" '{print tab$0}'
         else
             # write to a file and stdout
+            echo -e "$title:\n" | tee -a "$outfile"
             $command "$@" | awk -v tab="$tab" '{print tab$0}' | tee -a "$outfile"
         fi
     )
