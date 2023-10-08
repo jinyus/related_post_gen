@@ -498,9 +498,9 @@ run_ocaml() {
 }
 
 check_output() {
+    cd ..
     if [ -z "$appendToFile" ]; then
-        cd .. &&
-            echo "Checking output" &&
+        echo "Checking output" &&
             python3 verify.py "$1"
     fi
 }
