@@ -68,6 +68,8 @@ if __name__ == "__main__":
             f"{WARNING} Invalid post count! \nexpected: {len(correct_file)} \nactual: {len(target_file)}\n"
         )
 
+    checked_posts = set()
+
     for post in target_file:
         if "_id" not in post:
             print(f"{ERROR} Invalid post! _id not found: \n{post}")
@@ -79,13 +81,19 @@ if __name__ == "__main__":
             print(f"{ERROR} Invalid post! related not found: \n{post}")
             sys.exit(1)
 
+        post_id = post["_id"]
+
+        if post_id in checked_posts:
+            print(f"{ERROR} Post {post_id} is duplicated!")
+            sys.exit(1)
+
+        checked_posts.add(post_id)
+
         tag_set = set(post["tags"])
         shared_tag_count = 0
 
         for related_post in post["related"]:
             shared_tag_count += len(set(related_post["tags"]) & tag_set)
-
-        post_id = post["_id"]
 
         if post_id not in correct_file:
             print(f"{ERROR} Post {post_id} not found in correct file!\n{post}")
