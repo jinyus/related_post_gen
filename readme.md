@@ -60,40 +60,40 @@ NB: The benchmark runs on the free tier of github workflow.
 
 </details>
 
-| Language       | Processing Time | Total (PT + I/O) |
-| -------------- | --------------- | ---------------- |
-| Go             | 25.59 ms        | 55.0 ms          |
-| Rust           | 30.93 ms        | 47.7 ms          |
-| Zig            | 38.00 ms        | 65.0 ms          |
-| Nim            | 39.07 ms        | 65.3 ms          |
-| Julia          | 39.93 ms        | 3.404 s          |
-| Java (GraalVM) | 40.00 ms        | 69.6 ms          |
-| F#             | 49.87 ms        | 295.5 ms         |
-| Odin           | 53.73 ms        | 299.7 ms         |
-| Vlang          | 58.53 ms        | 382.7 ms         |
-| Swift          | 64.48 ms        | 437.8 ms         |
-| Crystal        | 68.37 ms        | 120.9 ms         |
-| C#             | 79.72 ms        | 141.0 ms         |
-| Dart VM        | 104.08 ms       | 566.7 ms         |
-| LuaJIT         | 115.42 ms       | 379.5 ms         |
-| Dart AOT       | 140.23 ms       | 280.0 ms         |
-| JS (Node)      | 191.15 ms       | 282.9 ms         |
-| ocaml          | 199.15 ms       | 306.3 ms         |
-| JS (Deno)      | 220.92 ms       | 291.5 ms         |
-| Java (JIT)     | 259.00 ms       | 537.8 ms         |
-| Numpy          | 374.95 ms       | 599.2 ms         |
-| JS (Bun)       | 821.08 ms       | 894.7 ms         |
-| Python         | 1.69 s          | 1.768 s          |
-| Lua            | 2356.96 ms      | 2.989 s          |
+| Language       | Time (5k posts) | 25k posts | 50k posts |
+| -------------- | --------------- | --------- | --------- |
+| Go             | 25.59 ms        | -         | -         |
+| Rust           | 30.93 ms        | -         | -         |
+| Zig            | 38.00 ms        | -         | -         |
+| Nim            | 39.07 ms        | -         | -         |
+| Julia          | 39.93 ms        | -         | -         |
+| Java (GraalVM) | 40.00 ms        | -         | -         |
+| F#             | 49.87 ms        | -         | -         |
+| Odin           | 53.73 ms        | -         | -         |
+| Vlang          | 58.53 ms        | -         | -         |
+| Swift          | 64.48 ms        | -         | -         |
+| Crystal        | 68.37 ms        | -         | -         |
+| C#             | 79.72 ms        | -         | -         |
+| Dart VM        | 104.08 ms       | -         | -         |
+| LuaJIT         | 115.42 ms       | -         | -         |
+| Dart AOT       | 140.23 ms       | -         | -         |
+| JS (Node)      | 191.15 ms       | -         | -         |
+| ocaml          | 199.15 ms       | -         | -         |
+| JS (Deno)      | 220.92 ms       | -         | -         |
+| Java (JIT)     | 259.00 ms       | -         | -         |
+| Numpy          | 374.95 ms       | -         | -         |
+| JS (Bun)       | 821.08 ms       | -         | -         |
+| Python         | 1.69 s          | -         | -         |
+| Lua            | 2356.96 ms      | -         | -         |
 
 ### Multicore Results
 
-| Language         | Processing Time | Total (PT + I/O) |
-| ---------------- | --------------- | ---------------- |
-| Rust Concurrent  | 15.77 ms        | 32.8 ms          |
-| Go Concurrent    | 18.98 ms        | 50.6 ms          |
-| Swift Concurrent | 39.95 ms        | 434.0 ms         |
-| F# Concurrent    | 40.47 ms        | 857.4 ms         |
+| Language         | Time (5k posts) | 25k posts | 50k posts |
+| ---------------- | --------------- | --------- | --------- |
+| Rust Concurrent  | 15.77 ms        | -         | -         |
+| Go Concurrent    | 18.98 ms        | -         | -         |
+| Swift Concurrent | 39.95 ms        | -         | -         |
+| F# Concurrent    | 40.47 ms        | -         | -         |
 
 <details>
 <summary> Old Results with details (on my machine) </summary>

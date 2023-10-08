@@ -10,8 +10,8 @@ final tTimeRegex = RegExp(r'Time[^0-9]*([\d.]+ (ms|s))');
 const multiCoreHeading = '''
 ### Multicore Results
 
-| Language       | Processing Time | Total (PT + I/O) |
-| -------------- | --------------- | ---------------- |
+| Language       | Processing Time (5k posts) | 25k posts | 50k posts |
+| -------------- | -------------------------- | --------- | --------- |
 ''';
 
 void main(List<String> args) {
@@ -25,14 +25,32 @@ void main(List<String> args) {
 
   final lines = file.readAsLinesSync();
 
-  final scores = <String, Score>{};
+  final scores = <String, List<Score>>{};
 
   Score? currentScore;
+  String? currentLang;
 
   for (final line in lines) {
     if (langRegex.hasMatch(line)) {
       final name = line.trim().replaceAll(colonOrNewLineRegex, '');
-      currentScore = (scores[name] ??= Score(name: name));
+
+      if (scores.containsKey(name)) {
+        if (currentLang != name) {
+          final newScore = Score(name: name);
+          scores[name]!.add(newScore);
+          currentScore = newScore;
+          currentLang = name;
+          continue;
+        } else {
+          currentScore = scores[name]!.last;
+          continue;
+        }
+      }
+
+      final newScore = Score(name: name);
+      scores[name] = [newScore];
+      currentScore = newScore;
+      currentLang = name;
       continue;
     }
 
@@ -48,19 +66,18 @@ void main(List<String> args) {
       currentScore.addTime(time, unit);
       continue;
     }
-
-    final totalTimeMatch = tTimeRegex.firstMatch(line);
-
-    if (totalTimeMatch != null) {
-      currentScore.totalTime = totalTimeMatch.group(1)!.trim();
-    }
   }
 
-  final sortedScores = scores.values.toList()..sort((a, b) => a.avgTime().compareTo(b.avgTime()));
+  final sortedScores = scores.values.toList()
+    ..sort((a, b) {
+      final aSum = a.fold(0.0, (total, sc) => sc.avgTime() + total);
+      final bSum = b.fold(0.0, (total, sc) => sc.avgTime() + total);
+      return aSum.compareTo(bSum);
+    });
 
-  final multiCoreScores = sortedScores.where((s) => s.name.contains('Concurrent')).toList();
+  final multiCoreScores = sortedScores.where((s) => s.first.name.contains('Concurrent')).toList();
 
-  sortedScores..removeWhere((s) => s.name.contains('Concurrent'));
+  sortedScores..removeWhere((s) => s.first.name.contains('Concurrent'));
 
   sortedScores.forEach(print);
 
@@ -92,8 +109,8 @@ void main(List<String> args) {
         shouldReplace = false;
         replaced = true;
 
-        final sCoreLines = sortedScores.map((e) => e.toString()).join('\n') + '\n\n';
-        final mCoreLines = multiCoreScores.map((e) => e.toString()).join('\n') + '\n\n';
+        final sCoreLines = sortedScores.map((e) => e.toRowString()).join('\n') + '\n\n';
+        final mCoreLines = multiCoreScores.map((e) => e.toRowString()).join('\n') + '\n\n';
 
         // add back the line with detail opening tag
         return sCoreLines + multiCoreHeading + mCoreLines + line;
@@ -108,7 +125,6 @@ class Score {
   final String name;
   final List<double> processingTimes = [];
   String unit = "";
-  String totalTime = "";
 
   Score({
     required this.name,
@@ -134,6 +150,12 @@ class Score {
 
   @override
   String toString() {
-    return '| $name | ${avgTimeString()} | $totalTime |';
+    return '| $name | ${avgTimeString()}  |';
+  }
+}
+
+extension on List<Score> {
+  String toRowString() {
+    return '| ${first.name} | ${first.avgTimeString()} | ${this[1].avgTimeString()} | ${this[2].avgTimeString()} |';
   }
 }
