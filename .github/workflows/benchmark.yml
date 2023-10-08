@@ -108,7 +108,7 @@ jobs:
               run: ./run.sh all raw_results.md
 
             - name: Install python deps
-              run: pip3 install faker && pip3 install nanoid
+              run: python -m pip install faker --break-system-packages && python -m pip install nanoid --break-system-packages
 
             - name: Generate 25k posts
               run: python gen_fake_posts.py 25000
