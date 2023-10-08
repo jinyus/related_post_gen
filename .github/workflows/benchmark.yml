@@ -37,7 +37,7 @@ jobs:
             - name: Install Vlang
               uses: vlang/setup-v@v1.3
               with:
-                  version: "weekly.2023.40"
+                  version: "stable"
 
             - name: Install odin
               run: |
