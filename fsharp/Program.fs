@@ -60,7 +60,8 @@ let allRelatedPosts: RelatedPosts[] =
 
         for tagId in post.tags do
             for relatedPostId in tagPosts[tagId] do
-                taggedPostCount[relatedPostId] <- taggedPostCount[relatedPostId] + 1uy
+                let mutable relatedPostTagCount = &taggedPostCount[relatedPostId]
+                relatedPostTagCount <- relatedPostTagCount + 1uy
 
         taggedPostCount[postId] <- 0uy // ignore self
 
