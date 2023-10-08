@@ -429,9 +429,9 @@ run_lua() {
 }
 
 check_output() {
-     cd .. &&
-         echo "Checking output" &&
-         python3 verify.py "$1"
+    cd .. &&
+        echo "Checking output" &&
+        python3 verify.py "$1"
 }
 
 #check_output() {
