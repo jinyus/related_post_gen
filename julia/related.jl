@@ -36,8 +36,9 @@ StructTypes.StructType(::Type{PostData}) = StructTypes.Struct()
 function fastmaxindex!(xs::Vector{Int64}, topn, maxn, maxv)
     maxn .= 1
     maxv .= 0
+    top = maxv[1]
     for (i, x) in enumerate(xs)
-        if x > maxv[1]
+        if x > top
             maxv[1] = x
             maxn[1] = i
             for j in 2:topn
@@ -46,6 +47,7 @@ function fastmaxindex!(xs::Vector{Int64}, topn, maxn, maxv)
                     maxn[j-1], maxn[j] = maxn[j], maxn[j-1]
                 end
             end
+            top = maxv[1]
         end
     end
 
@@ -56,6 +58,8 @@ end
 
 function related(posts)
     topn = 5
+    # key is every possible "tag" used in all posts
+    # value is indicies of all "post"s that used this tag
     tagmap = Dict{String,Vector{Int64}}()
     for (idx, post) in enumerate(posts)
         for tag in post.tags
@@ -69,22 +73,26 @@ function related(posts)
     relatedposts = Vector{RelatedPost}(undef, length(posts))
     taggedpostcount = Vector{Int64}(undef, length(posts))
 
-    maxn = Vector{Int64}(undef, topn)
-    maxv = Vector{Int64}(undef, topn)
+    maxn = MVector{topn, Int64}(undef)
+    maxv = MVector{topn, Int64}(undef)
 
     for (i, post) in enumerate(posts)
         taggedpostcount .= 0
+        # for each post (`i`-th)
+        # and every tag used in the `i`-th post
+        # give all related post +1 in `taggedpostcount` shadow vector
         for tag in post.tags
             for idx in tagmap[tag]
                 taggedpostcount[idx] += 1
             end
         end
 
+        # don't self count
         taggedpostcount[i] = 0
 
         fastmaxindex!(taggedpostcount, topn, maxn, maxv)
 
-        relatedpost = RelatedPost(post._id, post.tags, SVector{topn}(posts[ix] for ix in maxn))
+        relatedpost = RelatedPost(post._id, post.tags, SVector{topn}(@view posts[maxn]))
         relatedposts[i] = relatedpost
     end
 
@@ -92,4 +100,3 @@ function related(posts)
 end
 
 const res = relatedIO()
-
