@@ -645,6 +645,7 @@ elif [ "$first_arg" = "all" ]; then
         run_csharp || echo -e "\n" &&
         run_luajit || echo -e "\n" &&
         run_lua || echo -e "\n" &&
+        run_ocaml || echo -e "\n" &&
         echo -e "Finished running all\n"
 
 elif [ "$first_arg" = "clean" ]; then
