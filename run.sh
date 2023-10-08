@@ -208,7 +208,7 @@ run_zig() {
 run_julia() {
     echo "Running Julia" &&
         cd ./julia &&
-        julia -e 'using Pkg; Pkg.add.(["JSON3", "StructTypes", "StaticArrays", "StrideArrays"])' &&
+        julia -e 'using Pkg; Pkg.add.(["JSON3", "StructTypes", "StaticArrays"])' &&
         if [ $HYPER == 1 ]; then
             capture "Julia" hyperfine -r 10 -w 5 --show-output "julia related.jl"
         else
