@@ -104,8 +104,20 @@ jobs:
               with:
                   ocaml-compiler: "5.1"
 
-            - name: Run Benchmark
+            - name: Run Benchmark (5k posts)
               run: ./run.sh all raw_results.md
+
+            - name: Generate 25k posts
+              run: python gen_fake_posts.py 25000
+
+            - name: Run Benchmark (25k posts)
+              run: ./run.sh all raw_results.md append
+
+            - name: Generate 50k posts
+              run: python gen_fake_posts.py 50000
+
+            - name: Run Benchmark (50k posts)
+              run: ./run.sh all raw_results.md append
 
             - name: Clean up
               run: rm -rf odin_exe && rm hyperfine.deb && rm odin.zip && rm -rf vlang
