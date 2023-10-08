@@ -99,6 +99,11 @@ jobs:
               with:
                   python-version: "3.11"
 
+            - name: Install Ocaml
+              uses: ocaml/setup-ocaml@v2
+              with:
+                  ocaml-compiler: "5.1"
+
             - name: Run Benchmark
               run: ./run.sh all raw_results.md
 

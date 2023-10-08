@@ -464,6 +464,20 @@ run_lua() {
     check_output "related_posts_lua.json"
 }
 
+run_ocaml() {
+    echo "Running Ocaml" &&
+        cd ./ocaml &&
+        opam install . --deps-only -y &&
+        opam exec -- dune build &&
+        if [ $HYPER == 1 ]; then
+            capture "ocaml" hyperfine -r 10 -w 3 --show-output "./_build/default/bin/main.exe"
+        else
+            command time -f '%es %Mk' ./_build/default/bin/main.exe
+        fi
+
+    check_output "related_posts_ocaml.json"
+}
+
 check_output() {
     cd .. &&
         echo "Checking output" &&
@@ -595,6 +609,10 @@ elif [ "$first_arg" = "luajit" ]; then
 elif [ "$first_arg" = "lua" ]; then
 
     run_lua
+
+elif [ "$first_arg" = "ocaml" ]; then
+
+    run_ocaml
 
 elif [ "$first_arg" = "all" ]; then
 

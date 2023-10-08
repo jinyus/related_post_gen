@@ -17,11 +17,10 @@ type related_posts =
 type post_array = post array [@@deriving of_yojson]
 type related_posts_array = related_posts array [@@deriving to_yojson]
 
+let source = "../posts.json"
+let destination = "../related_posts_ocaml.json"
+
 let () =
-  let args = Sys.get_argv () in
-  Array.sexp_of_t String.sexp_of_t args |> Sexp.to_string |> Stdio.print_endline;
-  let source = args.(1) in
-  let destination = args.(2) in
   let posts =
     Yojson.Safe.from_file source |> post_array_of_yojson |> Result.ok_or_failwith
   in
