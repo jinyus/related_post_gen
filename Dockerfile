@@ -3,9 +3,9 @@ FROM archlinux:base
 # Update package repository
 RUN pacman -Syu --noconfirm
 
-# Install necessary tools for downloading and installing other programs
 RUN pacman -S --noconfirm --needed wget unzip sudo base-devel git go jdk17-openjdk clang llvm python python-pip ncurses gcc llvm hyperfine rustup dotnet-sdk crystal zig julia dart nodejs deno maven nim opam dune lua51 luajit luarocks libedit
 
+# user needed to install aur packages
 RUN useradd -ms /bin/bash builduser
 
 RUN echo "builduser ALL=(ALL) NOPASSWD:ALL" >>/etc/sudoers
@@ -60,14 +60,20 @@ RUN chmod +x /home/builduser/odin/odin && odin version && v version && swift --v
 
 RUN pacman -S --noconfirm --needed github-cli less
 
+# you token that will be used to authenticate your fork
 ENV GIT_PAT=""
+
 ENV GIT_USER="jinyus"
 ENV GIT_EMAIL="jinyus@users.noreply.github.com"
+
+# the repo that will be clone. Most likely your fork
 ENV GIT_REPO="https://github.com/jinyus/related_post_gen.git"
+
+# incase you use a different name for your fork
 ENV GIT_REPO_NAME="related_post_gen"
+
 ENV TEST_NAME="all"
 
 COPY docker_start.sh /docker_start.sh
 
-# Set the benchmark script as the entrypoint
 CMD ["/docker_start.sh"]
