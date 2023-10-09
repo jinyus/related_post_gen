@@ -27,31 +27,28 @@ RUN su -c "git clone https://aur.archlinux.org/bunjs-bin.git /home/builduser/bun
 
 RUN su -c "cd /home/builduser/bunjs && makepkg -si --noconfirm --needed --noprogressbar" builduser
 
+# install swift
 RUN wget https://download.swift.org/swift-5.9-release/ubuntu2204/swift-5.9-RELEASE/swift-5.9-RELEASE-ubuntu22.04.tar.gz -O /home/builduser/swift.tar.gz
 
 RUN tar -xvf /home/builduser/swift.tar.gz -C /home/builduser && rm /home/builduser/swift.tar.gz && export PATH=/home/builduser/swift-5.9-RELEASE-ubuntu22.04/usr/bin:$PATH
 
+# install odin
 RUN wget 'https://github.com/odin-lang/Odin/releases/download/dev-2023-10/odin-ubuntu-amd64-dev-2023-10.zip' -O /home/builduser/odin.zip
 
 RUN unzip /home/builduser/odin.zip -d /home/builduser/odin
 
+# install vlang
 RUN wget 'https://github.com/vlang/v/releases/download/weekly.2023.40.1/v_linux.zip' -O /home/builduser/v.zip
 
 RUN unzip /home/builduser/v.zip -d /home/builduser/v
 
 ENV PATH="/home/builduser/odin:/home/builduser/v/v:/home/builduser/swift-5.9-RELEASE-ubuntu22.04/usr/bin:${PATH}"
 
-RUN pip install faker --break-system-packages && pip install nanoid --break-system-packages
+RUN pip install faker nanoid --break-system-packages
 
 RUN rustup toolchain install stable
 
 RUN opam init -y -a
-
-RUN ldconfig
-
-# RUN find /usr/lib -name 'libncurses*'
-
-ENV LD_LIBRARY_PATH=/usr/lib/libedit.so:$LD_LIBRARY_PATH
 
 # for odin
 RUN ln -s /usr/lib/libedit.so /usr/lib/libedit.so.2
@@ -59,9 +56,9 @@ RUN ln -s /usr/lib/libedit.so /usr/lib/libedit.so.2
 # for swift
 RUN ln -s /usr/lib/libncursesw.so.6 /usr/lib/libncurses.so.6
 
-RUN chmod +x /home/builduser/odin/odin && echo $PATH && ls /home/builduser/odin && which odin && which swift && odin version && v version && swift --version
+RUN chmod +x /home/builduser/odin/odin && odin version && v version && swift --version
 
 COPY start.sh /start.sh
 
 # Set the benchmark script as the entrypoint
-ENTRYPOINT ["/start.sh"]
+CMD ["/start.sh"]
