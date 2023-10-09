@@ -395,24 +395,6 @@ run_java_graal_con() {
 
 }
 
-run_java_with_jmh() {
-    echo "Running Java JMH" &&
-        cd ./java &&
-        mvn -q -B -PJMH clean package &&
-        if [ $HYPER == 1 ]; then
-            java -jar ./target/benchmark.jar >./benchmark_result.txt
-            score=$(cat ./benchmark_result.txt | grep -E "BenchmarkRunner.init.*avgt" | awk -F ' +' '{print $3}' | sed -e "s/,/./")
-            echo "Time $score s" >>./benchmark_result.txt
-            capture "Java JMH" cat ./benchmark_result.txt
-            # rm ./benchmark_result.txt
-        else
-            command ${time} -f '%es %Mk' java -jar ./target/benchmark.jar
-        fi
-
-    check_output "related_posts_java.json"
-
-}
-
 run_nim() {
     echo "Running Nim" &&
         cd ./nim &&
