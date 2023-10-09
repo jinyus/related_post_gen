@@ -121,31 +121,32 @@ void main(List<String> args) {
   readmeFile.writeAsStringSync(newReadmeContent);
 }
 
+typedef Time = ({double time, String unit});
+
 class Score {
   final String name;
-  final List<double> processingTimes = [];
-  String unit = "";
+  final List<Time> processingTimes = [];
 
   Score({
     required this.name,
   });
 
-  double _avgAbsoluteTime() {
-    if (processingTimes.isEmpty) throw Exception('No processing time found for $name');
-    return processingTimes.reduce((a, b) => a + b) / processingTimes.length;
-  }
-
   double avgTime() {
-    return _avgAbsoluteTime() * (unit == 's' ? 1000 : 1);
+    if (processingTimes.isEmpty) throw Exception('No processing time found for $name');
+
+    return processingTimes.fold(0.0, (total, el) => el.millis + total) / processingTimes.length;
   }
 
   String avgTimeString() {
-    return _avgAbsoluteTime().toStringAsFixed(2) + ' $unit';
+    final avg = avgTime();
+
+    if (avg < 1000) return avgTime().toStringAsFixed(2) + ' ms';
+
+    return (avg / 1000).toStringAsFixed(2) + ' s';
   }
 
   void addTime(double time, String unit) {
-    processingTimes.add(time);
-    this.unit = unit;
+    processingTimes.add((time: time, unit: unit));
   }
 
   @override
@@ -158,4 +159,8 @@ extension on List<Score> {
   String toRowString() {
     return '| ${first.name} | ${first.avgTimeString()} | ${this[1].avgTimeString()} | ${this[2].avgTimeString()} |';
   }
+}
+
+extension on Time {
+  double get millis => unit == 'ms' ? time : time * 1000;
 }
