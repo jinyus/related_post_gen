@@ -996,3 +996,12 @@ ocaml:
     Processing time (w/o IO): 6101ms
       Time (mean ± σ):      6.680 s ±  0.008 s    [User: 6.523 s, System: 0.141 s]
       Range (min … max):    6.675 s …  6.686 s    2 runs
+JS (Node):
+
+	Benchmark 1: node node.js
+	Processing time (w/o IO): 6ms
+	Processing time (w/o IO): 7ms
+	Processing time (w/o IO): 6ms
+	  Time (mean ± σ):     115.1 ms ±   0.4 ms    [User: 87.8 ms, System: 61.3 ms]
+	  Range (min … max):   114.8 ms … 115.4 ms    2 runs
+	 
