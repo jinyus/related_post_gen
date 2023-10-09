@@ -58,6 +58,15 @@ RUN ln -s /usr/lib/libncursesw.so.6 /usr/lib/libncurses.so.6
 
 RUN chmod +x /home/builduser/odin/odin && odin version && v version && swift --version
 
+RUN pacman -S --noconfirm --needed github-cli less
+
+ENV GIT_PAT=""
+ENV GIT_USER="jinyus"
+ENV GIT_EMAIL="jinyus@users.noreply.github.com"
+ENV GIT_REPO="https://github.com/jinyus/related_post_gen.git"
+ENV GIT_REPO_NAME="related_post_gen"
+ENV TEST_NAME="all"
+
 COPY docker_start.sh /docker_start.sh
 
 # Set the benchmark script as the entrypoint
