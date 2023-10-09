@@ -496,6 +496,8 @@ run_ocaml() {
 
 check_output() {
     cd ..
+
+    # only check output if we're not appending to a file. ie: 5k runs
     if [ -z "$appendToFile" ]; then
         echo "Checking output" &&
             python3 verify.py "$1"
