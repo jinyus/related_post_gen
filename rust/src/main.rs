@@ -1,8 +1,8 @@
 use std::borrow::Cow;
 use std::{collections::BinaryHeap, time::Instant};
 
-use bumpalo::Bump;
 use bumpalo::collections::Vec as BVec;
+use bumpalo::Bump;
 use rustc_data_structures::fx::FxHashMap;
 use serde::{Deserialize, Serialize};
 use serde_json::from_str;
@@ -11,33 +11,28 @@ use mimalloc::MiMalloc;
 #[global_allocator]
 static GLOBAL: MiMalloc = MiMalloc;
 
-type SString = smallstr::SmallString<[u8; 16]>;
-#[allow(non_camel_case_types)]
-// play around with this to get the right size for your environment
-type int_t = u16;
-
 #[derive(Serialize, Deserialize)]
 struct Post<'a> {
-    _id: SString,
+    _id: String,
     #[serde(borrow)]
     title: Cow<'a, str>,
     // #[serde(skip_serializing)]
-    tags: Vec<SString>,
+    tags: Vec<String>,
 }
 
-const NUM_TOP_ITEMS: int_t = 5;
+const NUM_TOP_ITEMS: u32 = 5;
 
 #[derive(Serialize)]
 struct RelatedPosts<'a> {
     _id: &'a str,
-    tags: &'a [SString],
+    tags: &'a [String],
     related: Vec<&'a Post<'a>>,
 }
 
 #[derive(Eq)]
 struct PostCount {
-    post: int_t,
-    count: int_t
+    post: u32,
+    count: u32,
 }
 
 impl std::cmp::PartialEq for PostCount {
@@ -62,7 +57,7 @@ impl std::cmp::Ord for PostCount {
     }
 }
 
-fn least_n<T: Ord>(n: int_t, mut from: impl Iterator<Item = T>) -> impl Iterator<Item = T> {
+fn least_n<T: Ord>(n: u32, mut from: impl Iterator<Item = T>) -> impl Iterator<Item = T> {
     let mut h = BinaryHeap::from_iter(from.by_ref().take(n as usize));
 
     for it in from {
@@ -81,16 +76,16 @@ fn main() {
     let json_str = std::fs::read_to_string("../posts.json").unwrap();
     let posts: Vec<Post> = from_str(&json_str).unwrap();
 
-    let cap = (posts.len() * std::mem::size_of::<int_t>()).next_power_of_two();
+    let cap = (posts.len() * std::mem::size_of::<u32>()).next_power_of_two();
     let arena = Bump::with_capacity(cap);
 
     let start = Instant::now();
 
-    let mut post_tags_map: FxHashMap<&str, Vec<int_t>> = FxHashMap::default();
+    let mut post_tags_map: FxHashMap<&str, Vec<u32>> = FxHashMap::default();
 
     for (post_idx, post) in posts.iter().enumerate() {
         for tag in post.tags.iter() {
-            post_tags_map.entry(tag).or_default().push(post_idx as int_t);
+            post_tags_map.entry(tag).or_default().push(post_idx as u32);
         }
     }
 
@@ -98,7 +93,7 @@ fn main() {
         .iter()
         .enumerate()
         .map(|(post_idx, post)| {
-            let mut tagged_post_count:  BVec<int_t> = BVec::with_capacity_in(posts.len(), &arena);
+            let mut tagged_post_count: BVec<u32> = BVec::with_capacity_in(posts.len(), &arena);
             tagged_post_count.resize(posts.len(), 0);
 
             for tag in post.tags.iter() {
@@ -117,7 +112,7 @@ fn main() {
                     .iter()
                     .enumerate()
                     .map(|(post, &count)| PostCount {
-                        post: post as int_t,
+                        post: post as u32,
                         count,
                     }),
             );
@@ -133,14 +128,14 @@ fn main() {
 
     let end = Instant::now();
 
-    // I have no explanation for why, but doing this before the print improves performance pretty
-    // significantly (15%) when using slices in the hashmap key and RelatedPosts
-    let json_str = serde_json::to_string(&related_posts).unwrap();
-
     print!(
         "Processing time (w/o IO): {:?}\n",
         end.duration_since(start)
     );
+
+    // I have no explanation for why, but doing this before the print improves performance pretty
+    // significantly (15%) when using slices in the hashmap key and RelatedPosts
+    let json_str = serde_json::to_string(&related_posts).unwrap();
 
     std::fs::write("../related_posts_rust.json", json_str).unwrap();
 }

@@ -11,18 +11,13 @@ use mimalloc::MiMalloc;
 #[global_allocator]
 static GLOBAL: MiMalloc = MiMalloc;
 
-type SString = smallstr::SmallString<[u8; 16]>;
-// play around for the best size for your machine
-#[allow(non_camel_case_types)]
-type int_t = u32;
-
 #[derive(Serialize, Deserialize)]
 struct Post<'a> {
-    _id: SString,
+    _id: String,
     #[serde(borrow)]
     title: Cow<'a, str>,
     // #[serde(skip_serializing)]
-    tags: Vec<SString>,
+    tags: Vec<String>,
 }
 
 const NUM_TOP_ITEMS: usize = 5;
@@ -30,14 +25,14 @@ const NUM_TOP_ITEMS: usize = 5;
 #[derive(Serialize)]
 struct RelatedPosts<'a> {
     _id: &'a str,
-    tags: &'a [SString],
+    tags: &'a [String],
     related: Vec<&'a Post<'a>>,
 }
 
 #[derive(Eq)]
 struct PostCount {
-    post: int_t,
-    count: int_t,
+    post: u32,
+    count: u32,
 }
 
 impl std::cmp::PartialEq for PostCount {
@@ -84,11 +79,11 @@ fn main() {
 
     let start = Instant::now();
 
-    let mut post_tags_map: FxHashMap<&str, Vec<int_t>> = FxHashMap::default();
+    let mut post_tags_map: FxHashMap<&str, Vec<u32>> = FxHashMap::default();
 
     for (i, post) in posts.iter().enumerate() {
         for tag in &post.tags {
-            post_tags_map.entry(tag).or_default().push(i as int_t);
+            post_tags_map.entry(tag).or_default().push(i as u32);
         }
     }
 
@@ -102,7 +97,7 @@ fn main() {
         .enumerate()
         .map(|(idx, post)| {
             thread_local! {
-                static POST_COUNT: RefCell<Vec<int_t>> = panic!("!");
+                static POST_COUNT: RefCell<Vec<u32>> = panic!("!");
             }
             POST_COUNT.set(vec![0; posts.len()]);
             POST_COUNT.with_borrow_mut(|tagged_post_count| {
@@ -123,7 +118,7 @@ fn main() {
                         .iter()
                         .enumerate()
                         .map(|(post, &count)| PostCount {
-                            post: post as int_t,
+                            post: post as u32,
                             count,
                         }),
                 );
