@@ -60,31 +60,37 @@ NB: The benchmark runs on the free tier of github workflow.
 
 </details>
 
-| Language       | Time (5k posts)                  | 15k posts                         | 30k posts                         | Total   |
-| -------------- | -------------------------------- | --------------------------------- | --------------------------------- | ------- |
-| Go             | 30.94 ms                         | $\textsf{\color{green}256.98 ms}$ | $\textsf{\color{green}998.54 ms}$ | 1.29 s  |
-| Java (GraalVM) | 36.00 ms                         | 298.67 ms                         | 1.16 s                            | 1.50 s  |
-| Julia          | 32.77 ms                         | 302.67 ms                         | 1.18 s                            | 1.52 s  |
-| Rust           | 36.10 ms                         | 307.96 ms                         | 1.27 s                            | 1.62 s  |
-| Zig            | $\textsf{\color{green}29.00 ms}$ | 331.33 ms                         | 1.30 s                            | 1.66 s  |
-| F#             | 56.08 ms                         | 364.00 ms                         | 1.39 s                            | 1.81 s  |
-| Vlang          | 45.92 ms                         | 379.67 ms                         | 1.45 s                            | 1.88 s  |
-| Swift          | 49.01 ms                         | 419.11 ms                         | 1.63 s                            | 2.10 s  |
-| C#             | 56.10 ms                         | 478.25 ms                         | 1.82 s                            | 2.36 s  |
-| Odin           | 44.97 ms                         | 418.74 ms                         | 1.99 s                            | 2.45 s  |
-| Nim            | 32.08 ms                         | 394.00 ms                         | 2.09 s                            | 2.52 s  |
-| Crystal        | 58.43 ms                         | 512.20 ms                         | 2.02 s                            | 2.59 s  |
-| Dart VM        | 79.00 ms                         | 811.67 ms                         | 2.74 s                            | 3.63 s  |
-| LuaJIT         | 102.37 ms                        | 784.57 ms                         | 2.91 s                            | 3.80 s  |
-| Dart AOT       | 116.08 ms                        | 1.01 s                            | 3.97 s                            | 5.10 s  |
-| JS (Deno)      | 168.77 ms                        | 1.40 s                            | 4.40 s                            | 5.96 s  |
-| JS (Node)      | 154.15 ms                        | 1.27 s                            | 4.70 s                            | 6.13 s  |
-| ocaml          | 173.92 ms                        | 1.53 s                            | 6.09 s                            | 7.80 s  |
-| Numpy          | 366.95 ms                        | 3.22 s                            | 13.35 s                           | 16.93 s |
-| JS (Bun)       | 589.62 ms                        | 5.15 s                            | 24.00 s                           | 29.73 s |
-| Python         | 1.69 s                           | 15.02 s                           | 60.37 s                           | 77.08 s |
-| Lua            | 1.94 s                           | 17.10 s                           | 69.53 s                           | 88.57 s |
-| Java (JIT)     | 234.00 ms                        | OutOfMemoryError                  | OutOfMemoryError                  | N/A     |
+<style>
+r { color: Red }
+o { color: Orange }
+g { color: Green }
+</style>
+
+| Language       | Time (5k posts) | 15k posts        | 30k posts        | Total   |
+| -------------- | --------------- | ---------------- | ---------------- | ------- |
+| Go             | 30.94 ms        | <g>256.98 ms</g> | <g>998.54 ms</g> | 1.29 s  |
+| Java (GraalVM) | 36.00 ms        | 298.67 ms        | 1.16 s           | 1.50 s  |
+| Julia          | 32.77 ms        | 302.67 ms        | 1.18 s           | 1.52 s  |
+| Rust           | 36.10 ms        | 307.96 ms        | 1.27 s           | 1.62 s  |
+| Zig            | <g>29.00 ms</g> | 331.33 ms        | 1.30 s           | 1.66 s  |
+| F#             | 56.08 ms        | 364.00 ms        | 1.39 s           | 1.81 s  |
+| Vlang          | 45.92 ms        | 379.67 ms        | 1.45 s           | 1.88 s  |
+| Swift          | 49.01 ms        | 419.11 ms        | 1.63 s           | 2.10 s  |
+| C#             | 56.10 ms        | 478.25 ms        | 1.82 s           | 2.36 s  |
+| Odin           | 44.97 ms        | 418.74 ms        | 1.99 s           | 2.45 s  |
+| Nim            | 32.08 ms        | 394.00 ms        | 2.09 s           | 2.52 s  |
+| Crystal        | 58.43 ms        | 512.20 ms        | 2.02 s           | 2.59 s  |
+| Dart VM        | 79.00 ms        | 811.67 ms        | 2.74 s           | 3.63 s  |
+| LuaJIT         | 102.37 ms       | 784.57 ms        | 2.91 s           | 3.80 s  |
+| Dart AOT       | 116.08 ms       | 1.01 s           | 3.97 s           | 5.10 s  |
+| JS (Deno)      | 168.77 ms       | 1.40 s           | 4.40 s           | 5.96 s  |
+| JS (Node)      | 154.15 ms       | 1.27 s           | 4.70 s           | 6.13 s  |
+| ocaml          | 173.92 ms       | 1.53 s           | 6.09 s           | 7.80 s  |
+| Numpy          | 366.95 ms       | 3.22 s           | 13.35 s          | 16.93 s |
+| JS (Bun)       | 589.62 ms       | 5.15 s           | 24.00 s          | 29.73 s |
+| Python         | 1.69 s          | 15.02 s          | 60.37 s          | 77.08 s |
+| Lua            | 1.94 s          | 17.10 s          | 69.53 s          | 88.57 s |
+| Java (JIT)     | 234.00 ms       | OutOfMemoryError | OutOfMemoryError | N/A     |
 
 ### Multicore Results
 
