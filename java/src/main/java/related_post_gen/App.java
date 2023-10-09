@@ -31,7 +31,7 @@ public class App {
     @CompiledJson
     record RelatedPosts(@JsonAttribute(name = "_id") String id,
                         List<String> tags,
-                        List<Post> related) {
+                        Post[] related) {
     }
 
     public static void main(String[] args) throws IOException {
@@ -102,11 +102,10 @@ public class App {
             }
 
             // Convert indexes back to Post pointers
-            List<Post> topPosts = new ArrayList<>(5);
+            Post[] topPosts = new Post[5];
+            int index = 0;
             for (PostWithSharedTags t : top5) {
-                if (t.sharedTags > 0) {
-                    topPosts.add(posts[t.post]);
-                }
+                topPosts[index++] = posts[t.post];
             }
 
             allRelatedPosts[i] = new RelatedPosts(post.id(), post.tags(), topPosts);
