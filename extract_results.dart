@@ -10,8 +10,8 @@ final tTimeRegex = RegExp(r'Time[^0-9]*([\d.]+ (ms|s))');
 const multiCoreHeading = '''
 ### Multicore Results
 
-| Language       | Processing Time (5k posts) | 25k posts | 50k posts |
-| -------------- | -------------------------- | --------- | --------- |
+| Language       | Time (5k posts) | 15k posts        | 30k posts        | Total     |
+| -------------- | --------------- | ---------------- | ---------------- | --------- |
 ''';
 
 void main(List<String> args) {
@@ -70,8 +70,8 @@ void main(List<String> args) {
 
   final sortedScores = scores.values.toList()
     ..sort((a, b) {
-      final aSum = a.fold(0.0, (total, sc) => sc.avgTime() + total);
-      final bSum = b.fold(0.0, (total, sc) => sc.avgTime() + total);
+      final aSum = a.fold(0.0, (total, sc) => sc.avgTimeMS() + total);
+      final bSum = b.fold(0.0, (total, sc) => sc.avgTimeMS() + total);
       return aSum.compareTo(bSum);
     });
 
@@ -131,16 +131,17 @@ class Score {
     required this.name,
   });
 
-  double avgTime() {
-    if (processingTimes.isEmpty) throw Exception('No processing time found for $name');
+  double avgTimeMS() {
+    // if (processingTimes.isEmpty) throw Exception('No processing time found for $name');
+    if (processingTimes.isEmpty) return double.maxFinite;
 
     return processingTimes.fold(0.0, (total, el) => el.millis + total) / processingTimes.length;
   }
 
   String avgTimeString() {
-    final avg = avgTime();
+    final avg = avgTimeMS();
 
-    if (avg < 1000) return avgTime().toStringAsFixed(2) + ' ms';
+    if (avg < 1000) return avgTimeMS().toStringAsFixed(2) + ' ms';
 
     return (avg / 1000).toStringAsFixed(2) + ' s';
   }
@@ -157,7 +158,15 @@ class Score {
 
 extension on List<Score> {
   String toRowString() {
-    return '| ${first.name} | ${first.avgTimeString()} | ${this[1].avgTimeString()} | ${this[2].avgTimeString()} |';
+    return '| ${first.name} | ${first.avgTimeString()} | ${this[1].avgTimeString()} | ${this[2].avgTimeString()} | ${this.totalString} |';
+  }
+
+  String get totalString {
+    final sum = fold(0.0, (total, sc) => sc.avgTimeMS() + total);
+
+    if (sum < 1000) return sum.toStringAsFixed(2) + ' ms';
+
+    return (sum / 1000).toStringAsFixed(2) + ' s';
   }
 }
 
