@@ -348,7 +348,7 @@ run_js() {
 }
 
 run_java() {
-    VM_OPTIONS="-Xms10m -Xmx10m -XX:+UseSerialGC"
+    VM_OPTIONS="-XX:+UseSerialGC"
     echo "Running Java (JIT)" &&
         cd ./java &&
         java -version &&
@@ -377,6 +377,21 @@ run_java_graal() {
         fi
 
     check_output "related_posts_java.json"
+
+}
+
+run_java_graal_con() {
+    echo "Running Java (GraalVM) Concurrent" &&
+        cd ./java &&
+        java -version &&
+        mvn -q -B -Pnative,pgo,parallel clean package &&
+        if [ $HYPER == 1 ]; then
+            capture "Java (GraalVM) Concurrent" hyperfine -r $runs -w $warmup --show-output "./target/related"
+        else
+            command ${time} -f '%es %Mk' ./target/related
+        fi
+
+    check_output "related_posts_java_con.json"
 
 }
 
@@ -607,6 +622,10 @@ elif [ "$first_arg" = "java_graal" ]; then
 
     run_java_graal
 
+elif [ "$first_arg" = "java_graal_con" ]; then
+
+    run_java_graal_con
+
 elif [ "$first_arg" = "nim" ]; then
 
     run_nim
@@ -660,6 +679,7 @@ elif [ "$first_arg" = "all" ]; then
         run_js "deno" || echo -e "\n" &&
         run_java || echo -e "\n" &&
         run_java_graal || echo -e "\n" &&
+        run_java_graal_con || echo -e "\n" &&
         run_nim || echo -e "\n" &&
         run_fsharp || echo -e "\n" &&
         run_fsharp_con || echo -e "\n" &&
@@ -694,6 +714,6 @@ elif [ "$first_arg" = "clean" ]; then
 
 else
 
-    echo "Valid args: go | go_con | rust | rust_con | py | numpy | numba | numba_con | cr | zig | odin | jq | julia | v | dart | swift | swift_con | node | bun | deno | java | java_graal | nim | luajit | lua | all | clean. Unknown argument: $first_arg"
+    echo "Valid args: go | go_con | rust | rust_con | py | numpy | numba | numba_con | cr | zig | odin | jq | julia | v | dart | swift | swift_con | node | bun | deno | java | java_graal | java_graal_con | nim | luajit | lua | all | clean. Unknown argument: $first_arg"
 
 fi
