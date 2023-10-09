@@ -58,7 +58,7 @@ RUN ln -s /usr/lib/libncursesw.so.6 /usr/lib/libncurses.so.6
 
 RUN chmod +x /home/builduser/odin/odin && odin version && v version && swift --version
 
-COPY start.sh /start.sh
+COPY docker_start.sh /docker_start.sh
 
 # Set the benchmark script as the entrypoint
-CMD ["/start.sh"]
+CMD ["/docker_start.sh"]
