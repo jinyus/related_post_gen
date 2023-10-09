@@ -62,11 +62,11 @@ NB: The benchmark runs on the free tier of github workflow.
 
 | Language       | Time (5k posts) | 15k posts        | 30k posts        | Total   |
 | -------------- | --------------- | ---------------- | ---------------- | ------- |
-| Go             | 30.94 ms        | 256.98 ms        | 998.54 ms        | 1.29 s  |
+| Go             | 30.94 ms        | `256.98 ms`      | `998.54 ms`      | 1.29 s  |
 | Java (GraalVM) | 36.00 ms        | 298.67 ms        | 1.16 s           | 1.50 s  |
 | Julia          | 32.77 ms        | 302.67 ms        | 1.18 s           | 1.52 s  |
 | Rust           | 36.10 ms        | 307.96 ms        | 1.27 s           | 1.62 s  |
-| Zig            | 29.00 ms        | 331.33 ms        | 1.30 s           | 1.66 s  |
+| Zig            | `29.00 ms`      | 331.33 ms        | 1.30 s           | 1.66 s  |
 | F#             | 56.08 ms        | 364.00 ms        | 1.39 s           | 1.81 s  |
 | Vlang          | 45.92 ms        | 379.67 ms        | 1.45 s           | 1.88 s  |
 | Swift          | 49.01 ms        | 419.11 ms        | 1.63 s           | 2.10 s  |
