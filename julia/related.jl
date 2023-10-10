@@ -10,7 +10,7 @@ function relatedIO()
     posts = JSON3.read(json_string, Vector{PostData})
 
     start = now()
-    all_related_posts = related(posts)
+    all_related_posts = @btime related($posts)
     println("Processing time (w/o IO): $(now() - start)")
 
 
@@ -33,7 +33,7 @@ end
 
 StructTypes.StructType(::Type{PostData}) = StructTypes.Struct()
 
-function fastmaxindex!(xs::Vector{Int64}, topn, maxn, maxv)
+function fastmaxindex!(xs::Vector, topn, maxn, maxv)
     maxn .= 1
     maxv .= 0
     top = maxv[1]
@@ -57,24 +57,29 @@ function fastmaxindex!(xs::Vector{Int64}, topn, maxn, maxv)
 end
 
 function related(posts)
+    for T in (UInt8, UInt16, UInt32, UInt64)
+        if length(posts) < typemax(T)
+            return related(T, posts)
+        end
+    end
+end
+function related(::Type{T}, posts) where T
     topn = 5
     # key is every possible "tag" used in all posts
     # value is indicies of all "post"s that used this tag
-    tagmap = Dict{String,Vector{Int64}}()
+    tagmap = Dict{String,Vector{T}}()
     for (idx, post) in enumerate(posts)
         for tag in post.tags
-            if !haskey(tagmap, tag)
-                tagmap[tag] = Vector{Int64}()
-            end
-            push!(tagmap[tag], idx)
+            tags = get!(() -> T[], tagmap, tag)
+            push!(tags, idx)
         end
     end
 
     relatedposts = Vector{RelatedPost}(undef, length(posts))
-    taggedpostcount = Vector{Int64}(undef, length(posts))
+    taggedpostcount = Vector{T}(undef, length(posts))
 
-    maxn = MVector{topn, Int64}(undef)
-    maxv = MVector{topn, Int64}(undef)
+    maxn = MVector{topn, T}(undef)
+    maxv = MVector{topn, T}(undef)
 
     for (i, post) in enumerate(posts)
         taggedpostcount .= 0
@@ -83,7 +88,7 @@ function related(posts)
         # give all related post +1 in `taggedpostcount` shadow vector
         for tag in post.tags
             for idx in tagmap[tag]
-                taggedpostcount[idx] += 1
+                taggedpostcount[idx] += one(T)
             end
         end
 
