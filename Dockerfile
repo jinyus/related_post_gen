@@ -70,6 +70,8 @@ ENV GIT_REPO_NAME="related_post_gen"
 
 ENV TEST_NAME="all"
 
+ENV BRANCH="main"
+
 COPY docker_start.sh /docker_start.sh
 
 CMD ["/docker_start.sh"]
