@@ -239,7 +239,7 @@ run_julia() {
 
 run_julia_con() {
     echo "Running Julia Concurrent" &&
-        cd ./julia &&
+        cd ./julia_con &&
         julia -e 'using Pkg; Pkg.add.(["JSON3", "StructTypes", "StaticArrays", "ChunkSplitters"])' &&
         if [ $HYPER == 1 ]; then
             capture "Julia" hyperfine -r $runs -w $warmup --show-output "julia --threads auto related.jl"
