@@ -1,4 +1,4 @@
-// import struct Collections.TreeDictionary
+import struct Collections.TreeDictionary
 import Foundation
 import Dispatch
 
@@ -33,7 +33,7 @@ func main() {
 
     let start = DispatchTime.now()
 
-    var tagMap =  [String: [Int]]()
+    var tagMap: TreeDictionary<String, [Int]> = [:]
 
     for (i, post) in posts.enumerated() {
         for tag in post.tags {
