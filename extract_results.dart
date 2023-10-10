@@ -158,7 +158,6 @@ class Score {
 
 extension on List<Score> {
   String toRowString() {
-    print(this);
     return '| ${first.name} | ${first.avgTimeString()} | ${this[1].avgTimeString()} | ${this[2].avgTimeString()} | ${this.totalString} |';
   }
 
