@@ -242,7 +242,7 @@ run_julia_con() {
         cd ./julia_con &&
         julia -e 'using Pkg; Pkg.add.(["JSON3", "StructTypes", "StaticArrays", "ChunkSplitters"])' &&
         if [ $HYPER == 1 ]; then
-            capture "Julia" hyperfine -r $runs -w $warmup --show-output "julia --threads auto related.jl"
+            capture "Julia Concurrent" hyperfine -r $runs -w $warmup --show-output "julia --threads auto related.jl"
         else
             command ${time} -f '%es %Mk' julia --threads auto related.jl
         fi
@@ -669,6 +669,7 @@ elif [ "$first_arg" = "all" ]; then
         run_crystal || echo -e "\n" &&
         run_zig || echo -e "\n" &&
         run_julia || echo -e "\n" &&
+        run_julia_con || echo -e "\n" &&
         run_odin || echo -e "\n" &&
         run_vlang || echo -e "\n" &&
         run_dart || echo -e "\n" &&
