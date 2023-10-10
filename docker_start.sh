@@ -5,10 +5,14 @@ git clone "$GIT_REPO" &&
 
 if [ "$BRANCH" != "main" ]; then
     git checkout "$BRANCH"
+else
+    echo "Using main branch"
 fi
 
 if [ -z "$GIT_PAT" ]; then
     echo "No GIT_PAT provided, skipping PR creation"
+else
+    echo "GIT_PAT provided, creating PR"
 fi
 #
 echo "Run Benchmark (5k posts)" &&
