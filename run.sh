@@ -643,34 +643,34 @@ elif [ "$first_arg" = "all" ]; then
     echo -e "Running all\n" &&
         run_go || echo -e "\n" &&
         run_go_concurrent || echo -e "\n" &&
-        run_rust || echo -e "\n" &&
-        run_rust_con || echo -e "\n" &&
-        run_python || echo -e "\n" &&
-        run_python_np || echo -e "\n" &&
+        # run_rust || echo -e "\n" &&
+        # run_rust_con || echo -e "\n" &&
+        # run_python || echo -e "\n" &&
+        # run_python_np || echo -e "\n" &&
 
-        # run_python_numba || echo -e "\n" && break rules but very interesting
-        run_crystal || echo -e "\n" &&
-        run_zig || echo -e "\n" &&
-        run_julia || echo -e "\n" &&
-        run_odin || echo -e "\n" &&
-        run_vlang || echo -e "\n" &&
-        run_dart || echo -e "\n" &&
-        run_dart_aot || echo -e "\n" &&
-        run_swift || echo -e "\n" &&
-        run_swift_con || echo -e "\n" &&
-        run_js "node" || echo -e "\n" &&
-        run_js "bun" || echo -e "\n" &&
-        run_js "deno" || echo -e "\n" &&
-        run_java || echo -e "\n" &&
-        run_java_graal || echo -e "\n" &&
-        run_java_graal_con || echo -e "\n" &&
-        run_nim || echo -e "\n" &&
-        run_fsharp || echo -e "\n" &&
-        run_fsharp_con || echo -e "\n" &&
-        run_csharp || echo -e "\n" &&
-        run_luajit || echo -e "\n" &&
-        run_lua || echo -e "\n" &&
-        run_ocaml || echo -e "\n" &&
+        # # run_python_numba || echo -e "\n" && break rules but very interesting
+        # run_crystal || echo -e "\n" &&
+        # run_zig || echo -e "\n" &&
+        # run_julia || echo -e "\n" &&
+        # run_odin || echo -e "\n" &&
+        # run_vlang || echo -e "\n" &&
+        # run_dart || echo -e "\n" &&
+        # run_dart_aot || echo -e "\n" &&
+        # run_swift || echo -e "\n" &&
+        # run_swift_con || echo -e "\n" &&
+        # run_js "node" || echo -e "\n" &&
+        # run_js "bun" || echo -e "\n" &&
+        # run_js "deno" || echo -e "\n" &&
+        # run_java || echo -e "\n" &&
+        # run_java_graal || echo -e "\n" &&
+        # run_java_graal_con || echo -e "\n" &&
+        # run_nim || echo -e "\n" &&
+        # run_fsharp || echo -e "\n" &&
+        # run_fsharp_con || echo -e "\n" &&
+        # run_csharp || echo -e "\n" &&
+        # run_luajit || echo -e "\n" &&
+        # run_lua || echo -e "\n" &&
+        # run_ocaml || echo -e "\n" &&
         echo -e "Finished running all\n"
 
 elif [ "$first_arg" = "clean" ]; then
