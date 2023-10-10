@@ -571,6 +571,10 @@ elif [ "$first_arg" = "julia" ]; then
 
     run_julia
 
+elif [ "$first_arg" = "julia_con" ]; then
+
+    run_julia_con
+
 elif [ "$first_arg" = "odin" ]; then
 
     run_odin
