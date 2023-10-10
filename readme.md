@@ -66,38 +66,39 @@ NB: The benchmark runs on the free tier of github workflow.
 
 | Language       | Time (5k posts)                       | 15k posts                              | 30k posts                              | Total   |
 | -------------- | ------------------------------------- | -------------------------------------- | -------------------------------------- | ------- |
-| Go             | 30.94 ms                              | $\textsf{\color{lightgreen}256.98 ms}$ | $\textsf{\color{lightgreen}998.54 ms}$ | 1.29 s  |
-| Java (GraalVM) | 36.00 ms                              | 298.67 ms                              | 1.16 s                                 | 1.50 s  |
-| Julia          | 32.77 ms                              | 302.67 ms                              | 1.18 s                                 | 1.52 s  |
-| Rust           | 36.10 ms                              | 307.96 ms                              | 1.27 s                                 | 1.62 s  |
-| Zig            | $\textsf{\color{lightgreen}29.00 ms}$ | 331.33 ms                              | 1.30 s                                 | 1.66 s  |
-| F#             | 56.08 ms                              | 364.00 ms                              | 1.39 s                                 | 1.81 s  |
-| Vlang          | 45.92 ms                              | 379.67 ms                              | 1.45 s                                 | 1.88 s  |
-| Swift          | 49.01 ms                              | 419.11 ms                              | 1.63 s                                 | 2.10 s  |
-| C#             | 56.10 ms                              | 478.25 ms                              | 1.82 s                                 | 2.36 s  |
-| Odin           | 44.97 ms                              | 418.74 ms                              | 1.99 s                                 | 2.45 s  |
-| Nim            | 32.08 ms                              | 394.00 ms                              | 2.09 s                                 | 2.52 s  |
-| Crystal        | 58.43 ms                              | 512.20 ms                              | 2.02 s                                 | 2.59 s  |
-| Dart VM        | 79.00 ms                              | 811.67 ms                              | 2.74 s                                 | 3.63 s  |
-| LuaJIT         | 102.37 ms                             | 784.57 ms                              | 2.91 s                                 | 3.80 s  |
-| Dart AOT       | 116.08 ms                             | 1.01 s                                 | 3.97 s                                 | 5.10 s  |
-| JS (Deno)      | 168.77 ms                             | 1.40 s                                 | 4.40 s                                 | 5.96 s  |
-| JS (Node)      | 154.15 ms                             | 1.27 s                                 | 4.70 s                                 | 6.13 s  |
-| ocaml          | 173.92 ms                             | 1.53 s                                 | 6.09 s                                 | 7.80 s  |
-| Numpy          | 366.95 ms                             | 3.22 s                                 | 13.35 s                                | 16.93 s |
-| JS (Bun)       | 589.62 ms                             | 5.15 s                                 | 24.00 s                                | 29.73 s |
-| Python         | 1.69 s                                | 15.02 s                                | 60.37 s                                | 77.08 s |
-| Lua            | 1.94 s                                | 17.10 s                                | 69.53 s                                | 88.57 s |
-| Java (JIT)     | 234.00 ms                             | OutOfMemoryError                       | OutOfMemoryError                       | N/A     |
+| Rust | 56.35 ms | $\textsf{\color{lightgreen}486.12 ms}$ | $\textsf{\color{lightgreen}1.93 s}$ | 2.47 s |
+| Go | $\textsf{\color{lightgreen}55.90 ms}$ | 498.00 ms | 2.00 s | 2.55 s |
+| Julia | 67.69 ms | 588.00 ms | 2.31 s | 2.97 s |
+| Zig | 65.46 ms | 571.67 ms | 2.35 s | 2.99 s |
+| Java (GraalVM) | 63.38 ms | 582.00 ms | 2.35 s | 3.00 s |
+| Vlang | 74.61 ms | 635.76 ms | 2.49 s | 3.20 s |
+| F# | 77.69 ms | 686.67 ms | 2.44 s | 3.21 s |
+| Swift | 83.67 ms | 671.85 ms | 2.61 s | 3.37 s |
+| C# | 79.20 ms | 686.91 ms | 2.69 s | 3.46 s |
+| Java (JIT) | 168.77 ms | 839.00 ms | 3.10 s | 4.11 s |
+| Crystal | 96.72 ms | 828.52 ms | 3.28 s | 4.20 s |
+| Odin | 101.07 ms | 855.85 ms | 3.39 s | 4.35 s |
+| Nim | 71.46 ms | 616.00 ms | 4.67 s | 5.35 s |
+| LuaJIT | 146.95 ms | 1.17 s | 4.39 s | 5.71 s |
+| Dart VM | 188.46 ms | 1.62 s | 6.54 s | 8.35 s |
+| JS (Deno) | 276.15 ms | 2.26 s | 7.79 s | 10.33 s |
+| JS (Node) | 271.92 ms | 2.18 s | 8.67 s | 11.12 s |
+| Dart AOT | 311.15 ms | 2.81 s | 11.80 s | 14.92 s |
+| ocaml | 310.85 ms | 2.77 s | 12.05 s | 15.12 s |
+| Numpy | 554.34 ms | 4.33 s | 18.21 s | 23.09 s |
+| JS (Bun) | 719.23 ms | 8.83 s | 40.35 s | 49.90 s |
+| Lua | 1.76 s | 17.14 s | 68.95 s | 87.85 s |
+| Python | 3.43 s | 34.07 s | 142.47 s | 179.98 s |
 
 ### Multicore Results
 
-| Language         | Time (5k posts) | 15k posts | 30k posts | Total     |
-| ---------------- | --------------- | --------- | --------- | --------- |
-| Rust Concurrent  | 15.69 ms        | 144.11 ms | 551.81 ms | 711.61 ms |
-| Go Concurrent    | 21.94 ms        | 180.48 ms | 694.76 ms | 897.19 ms |
-| Swift Concurrent | 30.20 ms        | 228.19 ms | 848.64 ms | 1.11 s    |
-| F# Concurrent    | 39.62 ms        | 236.67 ms | 925.33 ms | 1.20 s    |
+| Language       | Time (5k posts) | 15k posts        | 30k posts        | Total     |
+| -------------- | --------------- | ---------------- | ---------------- | --------- |
+| Go Concurrent | 24.79 ms | 182.07 ms | 706.41 ms | 913.27 ms |
+| Rust Concurrent | 22.24 ms | 186.02 ms | 743.80 ms | 952.06 ms |
+| Swift Concurrent | 32.00 ms | 224.61 ms | 821.21 ms | 1.08 s |
+| F# Concurrent | 48.69 ms | 279.67 ms | 969.33 ms | 1.30 s |
+| Java (GraalVM) Concurrent | 43.00 ms | 410.00 ms | 1.34 s | 1.80 s |
 
 <details>
 <summary> Old Results with details (on my machine) </summary>
