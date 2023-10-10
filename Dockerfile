@@ -3,7 +3,7 @@ FROM archlinux:base
 # Update package repository
 RUN pacman -Syu --noconfirm
 
-RUN pacman -S --noconfirm --needed wget unzip sudo base-devel git go jdk17-openjdk clang llvm python python-pip ncurses gcc llvm hyperfine rustup dotnet-sdk crystal zig julia dart nodejs deno maven nim opam dune lua51 luajit luarocks libedit
+RUN pacman -S --noconfirm --needed wget unzip sudo base-devel git go clang llvm python python-pip ncurses gcc llvm hyperfine rustup dotnet-sdk crystal zig julia dart nodejs deno maven nim opam dune lua51 luajit luarocks libedit github-cli less
 
 # user needed to install aur packages
 RUN useradd -ms /bin/bash builduser
@@ -12,15 +12,13 @@ RUN echo "builduser ALL=(ALL) NOPASSWD:ALL" >>/etc/sudoers
 
 WORKDIR /app
 
-# install graalvm
-RUN su -c "git clone https://aur.archlinux.org/jdk17-graalvm-bin.git /home/builduser/jdk17-graalvm-bin" builduser
+RUN curl -s "https://get.sdkman.io" | bash
 
-RUN su -c "cd /home/builduser/jdk17-graalvm-bin && makepkg -si --noconfirm --needed --noprogressbar" builduser
+RUN bash -c "source /root/.sdkman/bin/sdkman-init.sh && sdk install java 21-graal"
 
-# install graalvm-llvm
-RUN su -c "git clone https://aur.archlinux.org/graal-llvm-jdk17-bin.git /home/builduser/graal" builduser
-
-RUN su -c "cd /home/builduser/graal && makepkg -si --noconfirm --needed --noprogressbar" builduser
+ENV GRAALVM_HOME=/root/.sdkman/candidates/java/21-graal
+ENV JAVA_HOME=/root/.sdkman/candidates/java/21-graal
+ENV PATH=$PATH:$GRAALVM_HOME/bin:$JAVA_HOME/bin
 
 # install bunjs
 RUN su -c "git clone https://aur.archlinux.org/bunjs-bin.git /home/builduser/bunjs" builduser
@@ -56,9 +54,7 @@ RUN ln -s /usr/lib/libedit.so /usr/lib/libedit.so.2
 # for swift
 RUN ln -s /usr/lib/libncursesw.so.6 /usr/lib/libncurses.so.6
 
-RUN chmod +x /home/builduser/odin/odin && odin version && v version && swift --version
-
-RUN pacman -S --noconfirm --needed github-cli less
+RUN chmod +x /home/builduser/odin/odin && odin version && v version && swift --version && java --version
 
 # you token that will be used to authenticate your fork
 ENV GIT_PAT=""
