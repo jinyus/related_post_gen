@@ -35,7 +35,7 @@ echo "Run Benchmark (5k posts)" &&
             echo "Pushing to new branch" &&
             echo "$GIT_PAT" >/app/token.txt && gh auth login --with-token </app/token.txt &&
             git push --force https://$(echo "$GIT_USER:$GIT_PAT")@github.com/$(git config --get remote.origin.url | cut -d'/' -f4-5) results &&
-            gh pr create --title "[SKIP] Update Benchmark Results" --body "Automated PR" --base main --head results &&
+            gh pr create --title "[SKIP] Update Benchmark Results ($DEVICE)" --body "Automated PR" --base main --head results &&
             echo "Done"
     else
         echo "No GIT_PAT provided, skipping PR creation"
