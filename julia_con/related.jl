@@ -1,20 +1,23 @@
+using Base.Threads
+
 using JSON3
 using StructTypes
 using Dates
 using StaticArrays
+using ChunkSplitters
 
 # warmup is done by hyperfine
 
 function relatedIO()
     json_string = read("../posts.json", String)
-    posts = JSON3.read(json_string, Vector{PostData})    
+    posts = JSON3.read(json_string, Vector{PostData})
 
     start = now()
     all_related_posts = related(posts)
     println("Processing time (w/o IO): $(now() - start)")
 
 
-    open("../related_posts_julia.json", "w") do f
+    open("../related_posts_julia_con.json", "w") do f
         JSON3.write(f, all_related_posts)
     end
 end
@@ -75,31 +78,37 @@ function related(::Type{T}, posts) where {T}
         end
     end
 
-    relatedposts = Vector{RelatedPost}(undef, length(posts))
-    taggedpostcount = Vector{T}(undef, length(posts))
+    relatedposts = Vector{RelatedPost}(undef, length(posts))    
 
-    maxn = MVector{topn,T}(undef)
-    maxv = MVector{topn,T}(undef)
+    @threads for (postsrange, _) in chunks(posts, nthreads()) 
+        maxn = MVector{topn,T}(undef)
+        maxv = MVector{topn,T}(undef)
+        taggedpostcount = Vector{T}(undef, length(posts))
 
-    for (i, post) in enumerate(posts)
-        taggedpostcount .= 0
-        # for each post (`i`-th)
-        # and every tag used in the `i`-th post
-        # give all related post +1 in `taggedpostcount` shadow vector
-        for tag in post.tags
-            for idx in tagmap[tag]
-                taggedpostcount[idx] += one(T)
+        for i in postsrange
+            post = posts[i]        
+        
+            taggedpostcount .= 0
+            # for each post (`i`-th)
+            # and every tag used in the `i`-th post
+            # give all related post +1 in `taggedpostcount` shadow vector
+            for tag in post.tags
+                for idx in tagmap[tag]
+                    taggedpostcount[idx] += one(T)
+                end
             end
+
+            # don't self count
+            taggedpostcount[i] = 0
+
+            fastmaxindex!(taggedpostcount, topn, maxn, maxv)
+
+            relatedpost = RelatedPost(post._id, post.tags, SVector{topn}(@view posts[maxn]))
+            relatedposts[i] = relatedpost
         end
-
-        # don't self count
-        taggedpostcount[i] = 0
-
-        fastmaxindex!(taggedpostcount, topn, maxn, maxv)
-
-        relatedpost = RelatedPost(post._id, post.tags, SVector{topn}(@view posts[maxn]))
-        relatedposts[i] = relatedpost
     end
+
+    
 
     return relatedposts
 end
