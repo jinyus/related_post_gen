@@ -1,10 +1,15 @@
 #!/bin/bash
 
 git clone "$GIT_REPO" &&
-    cd "$GIT_REPO_NAME" &&
-    if [ "$BRANCH" != "main" ]; then
-        git checkout "$BRANCH"
-    fi
+    cd "$GIT_REPO_NAME"
+
+if [ "$BRANCH" != "main" ]; then
+    git checkout "$BRANCH"
+fi
+
+if [ -z "$GIT_PAT" ]; then
+    echo "No GIT_PAT provided, skipping PR creation"
+fi
 #
 echo "Run Benchmark (5k posts)" &&
     ./run.sh "$TEST_NAME" raw_results.md &&
