@@ -1,11 +1,10 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"os"
 	"time"
-
-	"github.com/goccy/go-json"
 )
 
 const topN = 5

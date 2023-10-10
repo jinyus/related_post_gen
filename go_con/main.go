@@ -1,14 +1,13 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"log"
 	"os"
 	"runtime"
 	"sync"
 	"time"
-
-	"github.com/goccy/go-json"
 )
 
 // custom type alias - for easier experiments with int size
