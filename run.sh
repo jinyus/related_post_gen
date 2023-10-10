@@ -327,7 +327,6 @@ run_swift() {
     check_output "related_posts_swift.json"
 }
 
-
 run_arturo() {
     echo "Running Arturo" &&
         cd ./arturo &&
@@ -339,6 +338,7 @@ run_arturo() {
         fi
 
     check_output "related_posts_arturo.json"
+}
 
 run_swift_con() {
     echo "Running Swift Concurrent" &&
@@ -615,7 +615,7 @@ elif [ "$first_arg" = "swift" ]; then
 elif [ "$first_arg" = "art" ]; then
 
     run_arturo
-    
+
 elif [ "$first_arg" = "swift_con" ]; then
 
     run_swift_con
