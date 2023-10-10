@@ -10,7 +10,7 @@ function relatedIO()
     posts = JSON3.read(json_string, Vector{PostData})
 
     start = now()
-    all_related_posts = @btime related($posts)
+    all_related_posts = related(posts)
     println("Processing time (w/o IO): $(now() - start)")
 
 
@@ -63,7 +63,7 @@ function related(posts)
         end
     end
 end
-function related(::Type{T}, posts) where T
+function related(::Type{T}, posts) where {T}
     topn = 5
     # key is every possible "tag" used in all posts
     # value is indicies of all "post"s that used this tag
@@ -78,8 +78,8 @@ function related(::Type{T}, posts) where T
     relatedposts = Vector{RelatedPost}(undef, length(posts))
     taggedpostcount = Vector{T}(undef, length(posts))
 
-    maxn = MVector{topn, T}(undef)
-    maxv = MVector{topn, T}(undef)
+    maxn = MVector{topn,T}(undef)
+    maxv = MVector{topn,T}(undef)
 
     for (i, post) in enumerate(posts)
         taggedpostcount .= 0
