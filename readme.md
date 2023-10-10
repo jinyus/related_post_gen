@@ -1,11 +1,13 @@
-Generate related posts based on tags. Sort by the number of shared tags.
+### Problem:
+
+Given a list of posts, compute the top 5 related posts for each post based on the number of shared tags.
 
 ## Steps:
 
 -   Read the posts JSON file.
--   Iterate over the posts and populate a map containing: `tag -> List<Post>` that has that tag
+-   Iterate over the posts and populate a map containing: `tag -> List<int>`, with the int representing the post index of each post with that tag.
 -   Iterate over the posts and for each post:
-    -   Create a map: `Post -> int` to track the number of shared tags
+    -   Create a map: `PostIndex -> int` to track the number of shared tags
     -   For each tag, Iterate over the posts that have that tag
     -   For each post, increment the shared tag count in the map.
 -   Sort the related posts by the number of shared tags.
@@ -13,29 +15,84 @@ Generate related posts based on tags. Sort by the number of shared tags.
 
 ### Run Benchmark
 
-```rust
-./run.sh go | rust | python | all
 ```
+./run.sh go | rust | python | all
+
+# windows (powershell)
+./run.ps1 go | rust | python | all
+
+or
+pwsh ./run.ps1 go | rust | python | all
+
+# Docker (check the dockerfile for available variables)
+docker build -t databench .
+docker run -e TEST_NAME=all -it --rm databench
+```
+
+<details>
+<summary> Rules </summary>
+
+<h3>No:</h3>
+
+-   FFI (including assembly inlining)
+-   Unsafe code blocks
+-   Custom benchmarking
+-   Disabling runtime checks (bounds etc)
+-   Specific hardware targeting
+
+<h3>Must:</h3>
+
+-   Support up to 100,000 posts
+-   Parse json at runtime
+-   Not hardcode number of posts
+-   Support up to 100 tags
+-   Use a stable release of the compiler/runtime
+-   Represent tags as strings
+</details>
 
 ### Updated Results from github workflow ([raw data](https://github.com/jinyus/related_post_gen/blob/main/raw_results.md))
 
-| Language      | Processing Time | Total (PT + I/O) |
-| ------------- | --------------- | ---------------- |
-| Go Concurrent | 16.43ms | 49.2 ms |
-| Rust Rayon | 18.20ms | 36.1 ms |
-| Go | 30.76ms | 60.7 ms |
-| Rust | 33.31ms | 51.2 ms |
-| Crystal | 55.74ms | 109.5 ms |
-| Swift | 57.62ms | 489.9 ms |
-| Vlang | 58.90ms | 381.7 ms |
-| Zig | 178.00ms | 219.7 ms |
-| Dart VM | 224.25ms | 723.7 ms |
-| Odin | 326.59ms | 860.9 ms |
-| Julia v2 | 614.83 ms | 5.076 s |
-| Numpy | 0.95s | 1.341 s |
-| Python | 2.73s | 3.017 s |
+##### VM Specs ( Azure F4s v2 - 4vCPU-8GB-Ubuntu 22.04 )
 
-### Old Results (on my machine)
+| Language       | Time (5k posts) | 15k posts | 30k posts | Total     |
+| -------------- | --------------- | --------- | --------- | --------- |
+| Julia          | 23.08 ms        | 189.33 ms | 745.00 ms | 957.41 ms |
+| Go             | 24.55 ms        | 213.58 ms | 825.39 ms | 1.06 s    |
+| Rust           | 24.04 ms        | 221.31 ms | 867.30 ms | 1.11 s    |
+| F#             | 39.23 ms        | 290.67 ms | 1.14 s    | 1.47 s    |
+| Java (GraalVM) | 37.00 ms        | 309.33 ms | 1.20 s    | 1.55 s    |
+| Zig            | 34.00 ms        | 305.00 ms | 1.21 s    | 1.55 s    |
+| Odin           | 41.46 ms        | 391.67 ms | 1.27 s    | 1.71 s    |
+| C#             | 45.33 ms        | 370.25 ms | 1.45 s    | 1.87 s    |
+| Swift          | 54.14 ms        | 409.25 ms | 1.58 s    | 2.04 s    |
+| Vlang          | 52.88 ms        | 434.56 ms | 1.68 s    | 2.17 s    |
+| Nim            | 32.62 ms        | 262.67 ms | 2.04 s    | 2.33 s    |
+| Java (JIT)     | 111.15 ms       | 509.00 ms | 1.76 s    | 2.38 s    |
+| Crystal        | 63.31 ms        | 527.32 ms | 2.07 s    | 2.66 s    |
+| LuaJIT         | 105.49 ms       | 865.78 ms | 3.06 s    | 4.04 s    |
+| Dart VM        | 134.15 ms       | 1.16 s    | 5.34 s    | 6.64 s    |
+| JS (Deno)      | 194.54 ms       | 1.56 s    | 5.04 s    | 6.79 s    |
+| JS (Node)      | 182.54 ms       | 1.39 s    | 5.41 s    | 6.98 s    |
+| Dart AOT       | 186.54 ms       | 1.62 s    | 6.48 s    | 8.29 s    |
+| ocaml          | 149.08 ms       | 1.40 s    | 7.29 s    | 8.84 s    |
+| Numpy          | 361.37 ms       | 2.71 s    | 11.67 s   | 14.74 s   |
+| JS (Bun)       | 725.85 ms       | 6.35 s    | 24.62 s   | 31.69 s   |
+| Lua            | 1.09 s          | 9.48 s    | 37.49 s   | 48.07 s   |
+| Python         | 1.46 s          | 13.12 s   | 53.43 s   | 68.01 s   |
+
+### Multicore Results
+
+| Language                  | Time (5k posts) | 15k posts | 30k posts | Total     |
+| ------------------------- | --------------- | --------- | --------- | --------- |
+| Go Concurrent             | 16.71 ms        | 126.81 ms | 488.01 ms | 631.53 ms |
+| Julia Concurrent          | 17.38 ms        | 142.00 ms | 495.67 ms | 655.05 ms |
+| Rust Concurrent           | 20.56 ms        | 175.09 ms | 686.19 ms | 881.84 ms |
+| F# Concurrent             | 35.77 ms        | 189.33 ms | 697.67 ms | 922.77 ms |
+| Swift Concurrent          | 33.03 ms        | 228.18 ms | 886.81 ms | 1.15 s    |
+| Java (GraalVM) Concurrent | 39.00 ms        | 344.00 ms | 1.35 s    | 1.73 s    |
+
+<details>
+<summary> Old Results with details (on my machine) </summary>
 
 | Language   | Processing Time | Total (+ I/O) | Details                                                                                                                                                                                                                                                                                         |
 | ---------- | --------------- | ------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -73,3 +130,5 @@ Generate related posts based on tags. Sort by the number of shared tags.
 | Vlang      | 339ms           | 560ms         | Ported from golang code                                                                                                                                                                                                                                                                         |
 | ⠀          | ⠀               | ⠀             | ⠀                                                                                                                                                                                                                                                                                               |
 | Zig        | 80ms            | 110ms         | Provided by [akhildevelops](https://github.com/jinyus/related_post_gen/pull/30)                                                                                                                                                                                                                 |
+
+</details>

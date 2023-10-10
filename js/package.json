@@ -1,0 +1,6 @@
+{
+  "name": "related",
+  "module": "related.js",
+  "type": "module",
+  "devDependencies": {}
+}

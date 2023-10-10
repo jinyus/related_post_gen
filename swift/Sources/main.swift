@@ -1,4 +1,7 @@
 import Foundation
+// import FoundationPreview
+
+
 
 let url = URL(fileURLWithPath: "../posts.json")
 let data = try! Data(contentsOf: url)
@@ -11,12 +14,11 @@ let t1 = Date()
 var tag_map = [String: [Int]]()
 for (index, post) in posts.enumerated() {
     for tag in post.tags {
-        if tag_map[tag] == nil { tag_map[tag] = [Int]() }
-        tag_map[tag]!.append(index)
+        tag_map[tag, default:[]].append(index)
     }
 }
 
-var allRelatedPosts = [RelatedPost]()
+var allRelatedPosts = [RelatedPosts]()
 
 for (idx, post) in posts.enumerated() {
     // how to preallocate and empty on each iteration?
@@ -33,6 +35,7 @@ for (idx, post) in posts.enumerated() {
     var top5Queue = Array(repeating: (0, 0), count: 5)
     var min_tags = 0
 
+    // custom priority queue
     for (idx, count) in tagged_post_count.enumerated() {
         if count > min_tags {
             var pos = 4
@@ -52,7 +55,7 @@ for (idx, post) in posts.enumerated() {
 
     let topPosts = top5Queue.map { posts[$0.0] }
 
-    allRelatedPosts.append(RelatedPost(id: post.id, tags: post.tags, related: topPosts))
+    allRelatedPosts.append(RelatedPosts(_id: post._id, tags: post.tags, related: topPosts))
 }
 
 
@@ -66,7 +69,7 @@ let encoder = JSONEncoder()
 if let data = try? encoder.encode(allRelatedPosts) {
 
     let fileURL = URL(fileURLWithPath: "../related_posts_swift.json", isDirectory: false) 
-    try! data.write(to: fileURL, options: .atomic)
+    try! data.write(to: fileURL)
 
 } else {
 
@@ -76,30 +79,14 @@ if let data = try? encoder.encode(allRelatedPosts) {
 
 // types
 
-class Post: Codable {
-    var id: String
-    var title: String
-    var tags: [String]
-
-    private enum CodingKeys: String, CodingKey {
-        case id = "_id"
-        case title, tags
-    }
+struct Post: Codable {
+    let _id: String
+    let title: String
+    let tags: [String]
 }
 
-class RelatedPost: Codable {
-    var id: String
-    var tags: [String]
-    var related: [Post]
-
-    init(id: String, tags: [String], related: [Post]) {
-        self.id = id
-        self.tags = tags
-        self.related = related
-    }
-
-    private enum CodingKeys: String, CodingKey {
-        case id = "_id"
-        case tags, related
-    }
+struct RelatedPosts: Codable {
+    let _id: String
+    let tags: [String]
+    let related: [Post]
 }

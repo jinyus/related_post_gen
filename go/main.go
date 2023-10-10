@@ -1,13 +1,17 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
-	"log"
 	"os"
 	"time"
-
-	"github.com/goccy/go-json"
 )
+
+const topN = 5
+const InitialTagMapSize = 100
+const InitialPostsSliceCap = 0
+
+type isize uint32
 
 type Post struct {
 	ID    string   `json:"_id"`
@@ -15,59 +19,51 @@ type Post struct {
 	Tags  []string `json:"tags"`
 }
 
-type PostWithSharedTags struct {
-	Post       int
-	SharedTags int
+type RelatedPosts struct {
+	ID      string      `json:"_id"`
+	Tags    []string    `json:"tags"`
+	Related [topN]*Post `json:"related"`
 }
 
-type RelatedPosts struct {
-	ID      string   `json:"_id"`
-	Tags    []string `json:"tags"`
-	Related []*Post  `json:"related"`
+type PostWithSharedTags struct {
+	Post       isize
+	SharedTags isize
 }
 
 func main() {
-	file, err := os.Open("../posts.json")
+	file, _ := os.Open("../posts.json")
+	var posts = make([]Post, 0, InitialPostsSliceCap)
+	err := json.NewDecoder(file).Decode(&posts)
 	if err != nil {
-		log.Panicln(err)
+		fmt.Println(err)
 	}
-
-	var posts []Post
-	err = json.NewDecoder(file).Decode(&posts)
-	if err != nil {
-		log.Panicln(err)
-	}
-
+	postsLen := len(posts)
 	start := time.Now()
-
 	// assumes that there are less than 100 tags
-	tagMap := make(map[string][]int, 100)
+	tagMap := make(map[string][]isize, InitialTagMapSize)
 
 	for i, post := range posts {
 		for _, tag := range post.Tags {
-			tagMap[tag] = append(tagMap[tag], i)
+			tagMap[tag] = append(tagMap[tag], isize(i))
 		}
 	}
 
-	allRelatedPosts := make([]RelatedPosts, 0, len(posts))
-	taggedPostCount := make([]int, len(posts))
+	allRelatedPosts := make([]RelatedPosts, postsLen)
+	taggedPostCount := make([]isize, postsLen)
 
 	for i := range posts {
-		// optimized to a memset
 		for j := range taggedPostCount {
 			taggedPostCount[j] = 0
 		}
-
+		// Count the number of tags shared between posts
 		for _, tag := range posts[i].Tags {
 			for _, otherPostIdx := range tagMap[tag] {
 				taggedPostCount[otherPostIdx]++
 			}
 		}
-
 		taggedPostCount[i] = 0 // Don't count self
-
-		top5 := [5]PostWithSharedTags{}
-		minTags := 0 // Updated initialization
+		top5 := [topN]PostWithSharedTags{}
+		minTags := isize(0) // Updated initialization
 
 		for j, count := range taggedPostCount {
 			if count > minTags {
@@ -82,49 +78,25 @@ func main() {
 				if pos < 4 {
 					copy(top5[pos+1:], top5[pos:4])
 				}
-				if pos <= 4 {
-					top5[pos] = PostWithSharedTags{Post: j, SharedTags: count}
-					minTags = top5[4].SharedTags
-				}
+
+				top5[pos] = PostWithSharedTags{Post: isize(j), SharedTags: count}
+				minTags = top5[4].SharedTags
 			}
 		}
-
 		// Convert indexes back to Post pointers
-		topPosts := make([]*Post, 0, 5)
-		for _, t := range top5 {
-			if t.SharedTags > 0 {
-				topPosts = append(topPosts, &posts[t.Post])
-			}
+		topPosts := [topN]*Post{}
+		for idx, t := range top5 {
+			topPosts[idx] = &posts[t.Post]
 		}
 
-		allRelatedPosts = append(allRelatedPosts, RelatedPosts{
+		allRelatedPosts[i] = RelatedPosts{
 			ID:      posts[i].ID,
 			Tags:    posts[i].Tags,
 			Related: topPosts,
-		})
+		}
 	}
 
-	end := time.Now()
-
-	fmt.Println("Processing time (w/o IO)", end.Sub(start))
-
-	file, err = os.Create("../related_posts_go.json")
-	if err != nil {
-		log.Panicln(err)
-	}
-
-	err = json.NewEncoder(file).Encode(allRelatedPosts)
-	if err != nil {
-		log.Panicln(err)
-	}
-}
-
-func PostComparator(a, b PostWithSharedTags) int {
-	if a.SharedTags > b.SharedTags {
-		return 1
-	}
-	if a.SharedTags < b.SharedTags {
-		return -1
-	}
-	return 0
+	fmt.Println("Processing time (w/o IO):", time.Since(start))
+	file, _ = os.Create("../related_posts_go.json")
+	_ = json.NewEncoder(file).Encode(allRelatedPosts)
 }

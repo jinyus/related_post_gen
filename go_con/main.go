@@ -1,21 +1,22 @@
 package main
 
 import (
-	"arena"
+	"encoding/json"
 	"fmt"
 	"log"
 	"os"
 	"runtime"
 	"sync"
 	"time"
-
-	"github.com/goccy/go-json"
 )
 
 // custom type alias - for easier experiments with int size
 // using smaller than int64 integer size but still big enough for 4 billion posts
 var concurrency = isize(runtime.NumCPU())
-var a *arena.Arena
+
+const topN = 5
+const InitialTagMapSize = 100
+const InitialPostsSliceCap = 0
 
 type isize uint32
 
@@ -31,9 +32,9 @@ type PostWithSharedTags struct {
 }
 
 type RelatedPosts struct {
-	ID      string   `json:"_id"`
-	Tags    []string `json:"tags"`
-	Related []*Post  `json:"related"`
+	ID      string      `json:"_id"`
+	Tags    []string    `json:"tags"`
+	Related [topN]*Post `json:"related"`
 }
 
 // Result struct to hold results from goroutines
@@ -49,11 +50,7 @@ func main() {
 	}
 	defer file.Close()
 
-	a = arena.NewArena() // Create a new arena
-
-	var posts []Post
-	posts = arena.MakeSlice[Post](a, 0, 10000)
-
+	posts := make([]Post, 0, InitialPostsSliceCap)
 	err = json.NewDecoder(file).Decode(&posts)
 	if err != nil {
 		log.Panicln(err)
@@ -64,7 +61,7 @@ func main() {
 	postsLength := len(posts)
 	postsLengthISize := isize(postsLength)
 
-	tagMap := make(map[string][]isize, 100)
+	tagMap := make(map[string][]isize, InitialTagMapSize)
 	for i, post := range posts {
 		for _, tag := range post.Tags {
 			tagMap[tag] = append(tagMap[tag], isize(i))
@@ -79,7 +76,7 @@ func main() {
 	var w isize
 	for ; w < isize(concurrency); w++ {
 		// allocate taggedPostCount for each worker once, zero out for each task
-		taggedPostCount := arena.MakeSlice[isize](a, postsLength, postsLength)
+		taggedPostCount := make([]isize, postsLengthISize)
 		go func(workerID isize) {
 			for i := workerID; i < postsLengthISize; i += concurrency {
 				// provide taggedPostCount and binary heap for each task
@@ -94,14 +91,14 @@ func main() {
 	wg.Wait()
 	close(resultsChan)
 
-	allRelatedPosts := arena.MakeSlice[RelatedPosts](a, postsLength, postsLength)
+	allRelatedPosts := make([]RelatedPosts, postsLength)
 	for r := range resultsChan {
 		allRelatedPosts[r.Index] = r.RelatedPost
 	}
 
 	end := time.Now()
 
-	fmt.Println("Processing time (w/o IO)", end.Sub(start))
+	fmt.Println("Processing time (w/o IO):", end.Sub(start))
 
 	file, err = os.Create("../related_posts_go_con.json")
 	if err != nil {
@@ -112,7 +109,6 @@ func main() {
 	if err != nil {
 		log.Panicln(err)
 	}
-	a.Free()
 }
 
 func computeRelatedPost(i isize, posts []Post, tagMap map[string][]isize, taggedPostCount []isize) RelatedPosts {
@@ -124,13 +120,13 @@ func computeRelatedPost(i isize, posts []Post, tagMap map[string][]isize, tagged
 	// Count the number of tags shared between posts
 	for _, tag := range posts[i].Tags {
 		for _, otherPostIdx := range tagMap[tag] {
-			if otherPostIdx != i { // Exclude the post itself
-				taggedPostCount[otherPostIdx]++
-			}
+			taggedPostCount[otherPostIdx]++
 		}
 	}
 
-	top5 := [5]PostWithSharedTags{}
+	taggedPostCount[i] = 0 // Don't count self
+
+	top5 := [topN]PostWithSharedTags{}
 	minTags := isize(0) // Updated initialization
 
 	for j, count := range taggedPostCount {
@@ -146,19 +142,16 @@ func computeRelatedPost(i isize, posts []Post, tagMap map[string][]isize, tagged
 			if pos < 4 {
 				copy(top5[pos+1:], top5[pos:4])
 			}
-			if pos <= 4 {
-				top5[pos] = PostWithSharedTags{Post: isize(j), SharedTags: count}
-				minTags = top5[4].SharedTags
-			}
+
+			top5[pos] = PostWithSharedTags{Post: isize(j), SharedTags: count}
+			minTags = top5[4].SharedTags
 		}
 	}
 
 	// Convert indexes back to Post pointers
-	topPosts := make([]*Post, 0, 5)
-	for _, t := range top5 {
-		if t.SharedTags > 0 {
-			topPosts = append(topPosts, &posts[t.Post])
-		}
+	topPosts := [topN]*Post{}
+	for idx, t := range top5 {
+		topPosts[idx] = &posts[t.Post]
 	}
 
 	return RelatedPosts{

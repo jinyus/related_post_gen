@@ -1,18 +1,22 @@
 using JSON3
-using StatsBase: countmap
 using StructTypes
 using Dates
+using StaticArrays
+
+# warmup is done by hyperfine
 
 function relatedIO()
     json_string = read("../posts.json", String)
-    posts = JSON3.read(json_string, Vector{PostData})
+    posts = JSON3.read(json_string, Vector{PostData})    
+
+    related(posts)
 
     start = now()
     all_related_posts = related(posts)
     println("Processing time (w/o IO): $(now() - start)")
-    
 
-    open("../related_posts_julia_v1.json", "w") do f
+
+    open("../related_posts_julia.json", "w") do f
         JSON3.write(f, all_related_posts)
     end
 end
@@ -26,38 +30,80 @@ end
 struct RelatedPost
     _id::String
     tags::Vector{String}
-    related::Vector{PostData}
+    related::SVector{5,PostData}
 end
 
 StructTypes.StructType(::Type{PostData}) = StructTypes.Struct()
 
-function related(posts)
-    tag_map = Dict{String, Vector{Int64}}()
-    for (idx, post) in enumerate(posts)
-        for tag in post.tags
-            if !haskey(tag_map, tag)
-                tag_map[tag] = Vector{Int64}()
+function fastmaxindex!(xs::Vector, topn, maxn, maxv)
+    maxn .= 1
+    maxv .= 0
+    top = maxv[1]
+    for (i, x) in enumerate(xs)
+        if x > top
+            maxv[1] = x
+            maxn[1] = i
+            for j in 2:topn
+                if maxv[j-1] > maxv[j]
+                    maxv[j-1], maxv[j] = maxv[j], maxv[j-1]
+                    maxn[j-1], maxn[j] = maxn[j], maxn[j-1]
+                end
             end
-            push!(tag_map[tag], idx)
+            top = maxv[1]
         end
     end
 
-    all_related_posts = Vector{RelatedPost}()
+    reverse!(maxn)
 
-    for (this_post_idx, post) in enumerate(posts)
-        related_posts_list = countmap(reduce(vcat, [tag_map[tag] for tag in post.tags]))
-        related_posts_list[this_post_idx] = 0
-
-        top_posts = [
-            posts[p]
-            for (p, v) in partialsort!(collect(related_posts_list), by=x-> x[2], 1:5, rev=true)
-        ]
-
-        push!(all_related_posts, RelatedPost(post._id, post.tags, top_posts))
-    end
-
-    return all_related_posts
+    return maxn
 end
 
+function related(posts)
+    for T in (UInt8, UInt16, UInt32, UInt64)
+        if length(posts) < typemax(T)
+            return related(T, posts)
+        end
+    end
+end
+function related(::Type{T}, posts) where {T}
+    topn = 5
+    # key is every possible "tag" used in all posts
+    # value is indicies of all "post"s that used this tag
+    tagmap = Dict{String,Vector{T}}()
+    for (idx, post) in enumerate(posts)
+        for tag in post.tags
+            tags = get!(() -> T[], tagmap, tag)
+            push!(tags, idx)
+        end
+    end
 
-relatedIO()
+    relatedposts = Vector{RelatedPost}(undef, length(posts))
+    taggedpostcount = Vector{T}(undef, length(posts))
+
+    maxn = MVector{topn,T}(undef)
+    maxv = MVector{topn,T}(undef)
+
+    for (i, post) in enumerate(posts)
+        taggedpostcount .= 0
+        # for each post (`i`-th)
+        # and every tag used in the `i`-th post
+        # give all related post +1 in `taggedpostcount` shadow vector
+        for tag in post.tags
+            for idx in tagmap[tag]
+                taggedpostcount[idx] += one(T)
+            end
+        end
+
+        # don't self count
+        taggedpostcount[i] = 0
+
+        fastmaxindex!(taggedpostcount, topn, maxn, maxv)
+
+        relatedpost = RelatedPost(post._id, post.tags, SVector{topn}(@view posts[maxn]))
+        relatedposts[i] = relatedpost
+    end
+
+    return relatedposts
+end
+
+const res = relatedIO()
