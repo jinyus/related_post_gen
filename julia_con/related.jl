@@ -69,7 +69,6 @@ function related(posts)
     end
 end
 function related(::Type{T}, posts) where {T}
-    topn = 5
     # key is every possible "tag" used in all posts
     # value is indicies of all "post"s that used this tag
     tagmap = Dict{String,Vector{T}}()
@@ -80,16 +79,17 @@ function related(::Type{T}, posts) where {T}
         end
     end
 
-    relatedposts = Vector{RelatedPost}(undef, length(posts))    
+    relatedposts = Vector{RelatedPost}(undef, length(posts))
 
-    @threads for (postsrange, _) in chunks(posts, nthreads()) 
+    @threads for (postsrange, _) in chunks(posts, nthreads())
+        topn = 5
         maxn = MVector{topn,T}(undef)
         maxv = MVector{topn,T}(undef)
         taggedpostcount = Vector{T}(undef, length(posts))
 
         for i in postsrange
-            post = posts[i]        
-        
+            post = posts[i]
+
             taggedpostcount .= 0
             # for each post (`i`-th)
             # and every tag used in the `i`-th post
@@ -110,7 +110,7 @@ function related(::Type{T}, posts) where {T}
         end
     end
 
-    
+
 
     return relatedposts
 end
