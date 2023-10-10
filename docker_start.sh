@@ -2,8 +2,11 @@
 
 git clone "$GIT_REPO" &&
     cd "$GIT_REPO_NAME" &&
-    #
-    echo "Run Benchmark (5k posts)" &&
+    if [ "$BRANCH" != "main" ]; then
+        git checkout "$BRANCH"
+    fi
+#
+echo "Run Benchmark (5k posts)" &&
     ./run.sh "$TEST_NAME" raw_results.md &&
     #
     echo "Generate 15k posts" &&
