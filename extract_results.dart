@@ -81,6 +81,11 @@ void main(List<String> args) {
 
   sortedScores.forEach(print);
 
+  if (sortedScores.first.length != 3) {
+    print('${file.readAsStringSync()}\n\nEnough scores not found. Need 3 scores for each language to update readme.md');
+    return;
+  }
+
   final readmePathList = file.absolute.path.split(Platform.pathSeparator)
     ..removeLast()
     ..add('readme.md');
