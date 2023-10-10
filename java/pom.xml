@@ -12,15 +12,14 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.compiler.source>21</maven.compiler.source>
-        <maven.compiler.target>21</maven.compiler.target>
-        <maven.compiler.release>21</maven.compiler.release>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
+        <maven.compiler.release>17</maven.compiler.release>
         <mainClass>related_post_gen.App</mainClass>
         <native.maven.plugin.version>0.9.27</native.maven.plugin.version>
         <imageName>related</imageName>
         <benchmark.mainClass>related_post_gen.BenchmarkRunner</benchmark.mainClass>
         <dsljson-version>2.0.2</dsljson-version>
-        <pgo-file>sequential.iprof</pgo-file>
     </properties>
 
     <dependencies>
@@ -137,13 +136,6 @@
 
     <profiles>
         <profile>
-            <id>parallel</id>
-            <properties>
-                <mainClass>related_post_gen.AppParallel</mainClass>
-                <pgo-file>parallel.iprof</pgo-file>
-            </properties>
-        </profile>
-        <profile>
             <id>jvm</id>
             <build>
                 <plugins>
@@ -235,23 +227,7 @@
                         <artifactId>native-maven-plugin</artifactId>
                         <configuration>
                             <buildArgs>
-                                <buildArg>--pgo=${pgo-file}</buildArg>
-                            </buildArgs>
-                        </configuration>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-        <profile>
-            <id>optim</id>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.graalvm.buildtools</groupId>
-                        <artifactId>native-maven-plugin</artifactId>
-                        <configuration>
-                            <buildArgs>
-                                <buildArg>-O3</buildArg>
+                                <buildArg>--pgo=default.iprof</buildArg>
                             </buildArgs>
                         </configuration>
                     </plugin>

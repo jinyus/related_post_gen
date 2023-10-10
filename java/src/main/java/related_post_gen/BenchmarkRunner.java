@@ -9,8 +9,8 @@ public class BenchmarkRunner {
     @Benchmark
     @BenchmarkMode(Mode.AverageTime)
     @Fork(value = 1, warmups = 0)
-    @Warmup(iterations = 2, batchSize = 1, time = 3)
-    @Measurement(iterations = 1, batchSize = 1, time = 5)
+    @Warmup(iterations = 1, batchSize = 1, time = 3)
+    @Measurement(iterations = 1, batchSize = 1, time = 3)
     public void init(Blackhole blackhole) throws IOException {
         App.main(new String[]{});
     }

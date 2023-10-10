@@ -10,6 +10,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -30,7 +31,7 @@ public class App {
     @CompiledJson
     record RelatedPosts(@JsonAttribute(name = "_id") String id,
                         List<String> tags,
-                        Post[] related) {
+                        List<Post> related) {
     }
 
     public static void main(String[] args) throws IOException {
@@ -38,6 +39,8 @@ public class App {
     }
 
     public static void mainFunc(String inputFile, String outputFile) throws IOException {
+        long mainStart = System.nanoTime();
+
         DslJson<Object> dslJson = new DslJson<>();
 
         Post[] posts;
@@ -47,7 +50,7 @@ public class App {
 
         long start = System.nanoTime();
 
-        Map<String, IntArrayList> tagMap = HashMap.newHashMap(100);
+        Map<String, IntArrayList> tagMap = new HashMap<>();
         for (int i = 0; i < posts.length; i++) {
             for (String tag : posts[i].tags()) {
                 tagMap.computeIfAbsent(tag, k -> new IntArrayList()).add(i);
@@ -57,8 +60,56 @@ public class App {
         var allRelatedPosts = new RelatedPosts[posts.length];
         var taggedPostCount = new int[posts.length];
 
+        var top5 = new PostWithSharedTags[5];
+
         for (int i = 0; i < posts.length; i++) {
-            allRelatedPosts[i] = getRelatedPosts(posts, i, taggedPostCount, tagMap);
+            Post post = posts[i];
+
+            // optimized to a memset
+            Arrays.fill(taggedPostCount, 0);
+
+            for (String tag : post.tags()) {
+                tagMap.get(tag).forEach(otherPostIdx -> taggedPostCount[otherPostIdx]++);
+            }
+
+            taggedPostCount[i] = 0; // Don't count self
+
+            for (int j = 0; j < top5.length; j++) {
+                top5[j] = new PostWithSharedTags(0, 0);
+            }
+            int minTags = 0; // Updated initialization
+
+            for (int j = 0; j < taggedPostCount.length; j++) {
+                int count = taggedPostCount[j];
+
+                if (count > minTags) {
+                    // Find the position to insert
+                    int pos = 4;
+                    while (pos >= 0 && top5[pos].sharedTags < count) {
+                        pos--;
+                    }
+                    pos++;
+
+                    // Shift and insert
+                    if (pos < 4) {
+                        System.arraycopy(top5, pos, top5, pos + 1, 4 - pos);
+                    }
+                    if (pos <= 4) {
+                        top5[pos] = new PostWithSharedTags(j, count);
+                        minTags = top5[4].sharedTags;
+                    }
+                }
+            }
+
+            // Convert indexes back to Post pointers
+            List<Post> topPosts = new ArrayList<>(5);
+            for (PostWithSharedTags t : top5) {
+                if (t.sharedTags > 0) {
+                    topPosts.add(posts[t.post]);
+                }
+            }
+
+            allRelatedPosts[i] = new RelatedPosts(post.id(), post.tags(), topPosts);
         }
 
         long end = System.nanoTime();
@@ -68,54 +119,5 @@ public class App {
         try (OutputStream out = Files.newOutputStream(Paths.get(outputFile))) {
             dslJson.serialize(allRelatedPosts, out);
         }
-    }
-
-    private static RelatedPosts getRelatedPosts(Post[] posts, int i, int[] taggedPostCount, Map<String, IntArrayList> tagMap) {
-        Post post = posts[i];
-
-        // optimized to a memset
-        Arrays.fill(taggedPostCount, 0);
-
-        for (String tag : post.tags()) {
-            tagMap.get(tag).forEach(otherPostIdx -> taggedPostCount[otherPostIdx]++);
-        }
-
-        taggedPostCount[i] = 0; // Don't count self
-
-        var top5 = new PostWithSharedTags[5];
-        for (int j = 0; j < top5.length; j++) {
-            top5[j] = new PostWithSharedTags(0, 0);
-        }
-        int minTags = 0; // Updated initialization
-
-        for (int j = 0; j < taggedPostCount.length; j++) {
-            int count = taggedPostCount[j];
-
-            if (count > minTags) {
-                // Find the position to insert
-                int pos = 4;
-                while (pos >= 0 && top5[pos].sharedTags < count) {
-                    pos--;
-                }
-                pos++;
-
-                // Shift and insert
-                if (pos < 4) {
-                    System.arraycopy(top5, pos, top5, pos + 1, 4 - pos);
-                }
-
-                top5[pos] = new PostWithSharedTags(j, count);
-                minTags = top5[4].sharedTags;
-            }
-        }
-
-        // Convert indexes back to Post pointers
-        Post[] topPosts = new Post[5];
-        int index = 0;
-        for (PostWithSharedTags t : top5) {
-            topPosts[index++] = posts[t.post];
-        }
-
-        return new RelatedPosts(post.id(), post.tags(), topPosts);
     }
 }
