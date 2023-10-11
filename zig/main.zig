@@ -3,7 +3,7 @@ var allocator = std.heap.c_allocator;
 const Post = struct { _id: []const u8, title: []const u8, tags: [][]const u8 };
 const Posts = []Post;
 const TopPosts = struct { _id: *const []const u8, tags: *const [][]const u8, related: []*Post };
-const PostsWithSharedTag = struct { post: usize, tags: usize };
+const PostsWithSharedTag = struct { post: usize, tags: u8 };
 const stdout = std.io.getStdOut().writer();
 
 fn lessthan(context: void, lhs: usize, rhs: usize) bool {
@@ -39,12 +39,12 @@ pub fn main() !void {
 
     var op = try std.ArrayList(TopPosts).initCapacity(allocator, parsed.value.len);
     defer op.deinit();
-    var tagged_post_count: []usize = try allocator.alloc(usize, parsed.value.len);
+    var tagged_post_count: []u8 = try allocator.alloc(u8, parsed.value.len);
     defer allocator.free(tagged_post_count);
 
     for (0..parsed.value.len) |post_index| {
         // reset tagged_post_count
-        @memset(tagged_post_count, 0);
+        // @memset(tagged_post_count, 0);
 
         for (parsed.value[post_index].tags) |tag| {
             for (map.get(tag).?.items) |i_t| {
@@ -55,7 +55,7 @@ pub fn main() !void {
         tagged_post_count[post_index] = 0; // Don't count self
 
         var top_5 = [_]PostsWithSharedTag{.{ .post = 0, .tags = 0 }} ** 5;
-        var min_tags: usize = 0;
+        var min_tags: u8 = 0;
 
         for (0..tagged_post_count.len) |j| {
             const count = tagged_post_count[j];
@@ -75,6 +75,7 @@ pub fn main() !void {
                 top_5[@intCast(pos)] = PostsWithSharedTag{ .post = j, .tags = count };
                 min_tags = top_5[4].tags;
             }
+            tagged_post_count[j] = 0;
         }
 
         // Convert indexes back to Post pointers
