@@ -56,10 +56,10 @@ docker run -e TEST_NAME=all -it --rm databench
 
 | Language       | Time (5k posts) | 20k posts | 60k posts | Total     |
 | -------------- | --------------- | --------- | --------- | --------- |
-| Go | 24.66 ms | 373.99 ms | 3.29 s | 3.69 s |
-| Rust | 24.03 ms | 391.72 ms | 3.48 s | 3.89 s |
+| Go | 24.66 ms | 373.99 ms | $\textsf{\color{lightgreen}3.29 s}$ | 3.69 s |
+| Rust | $\textsf{\color{lightgreen}24.03 ms}$ | 391.72 ms | 3.48 s | 3.89 s |
 | Zig | 29.00 ms | 434.33 ms | 3.86 s | 4.32 s |
-| Julia | 30.00 ms | 338.00 ms | 3.98 s | 4.35 s |
+| Julia | 30.00 ms | $\textsf{\color{lightgreen}338.00 ms}$ | 3.98 s | 4.35 s |
 | Java (GraalVM) | 37.46 ms | 544.33 ms | 4.77 s | 5.35 s |
 | Odin | 48.03 ms | 689.80 ms | 5.10 s | 5.84 s |
 | F# | 38.85 ms | 619.00 ms | 5.44 s | 6.10 s |
