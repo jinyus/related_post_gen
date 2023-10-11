@@ -87,6 +87,19 @@ run_go_concurrent() {
     check_output "related_posts_go_con.json"
 }
 
+run_d() {
+    echo "Running D" &&
+        cd ./d &&
+        dub build --release &&
+        if [ $HYPER == 1 ]; then
+            capture "D" hyperfine -r 10 -w 5 --show-output "./related"
+        else
+            command time -f '%es %Mk' ./related
+        fi
+
+    check_output "related_posts_d.json"
+}
+
 run_rust() {
     echo "Running Rust" &&
         cd ./rust &&
@@ -550,6 +563,10 @@ elif [ "$first_arg" = "cpp" ]; then
 
     run_cpp
 
+elif [ "$first_arg" = "d" ]; then
+
+    run_d
+
 elif [ "$first_arg" = "rust" ]; then
 
     run_rust
@@ -681,6 +698,7 @@ elif [ "$first_arg" = "all" ]; then
         run_go_concurrent || echo -e "\n" &&
         run_rust || echo -e "\n" &&
         run_rust_con || echo -e "\n" &&
+        run_d || echo -e "\n" &&
         run_python || echo -e "\n" &&
         run_python_np || echo -e "\n" &&
 
@@ -721,6 +739,8 @@ elif [ "$first_arg" = "clean" ]; then
         cd .. &&
         cd rust_con && cargo clean &&
         cd .. &&
+        cd d && rm -f related &&
+        cd .. &&
         cd python && rm -rf venv/ &&
         cd .. &&
         cd swift && swift package reset &&
@@ -735,6 +755,6 @@ elif [ "$first_arg" = "clean" ]; then
 
 else
 
-    echo "Valid args: go | go_con | rust | rust_con | py | numpy | numba | numba_con | cr | zig | odin | jq | julia | v | dart | swift | swift_con | node | bun | deno | java | java_graal | java_graal_con | nim | luajit | lua | all | clean. Unknown argument: $first_arg"
+    echo "Valid args: go | go_con | rust | rust_con | d | py | numpy | numba | numba_con | cr | zig | odin | jq | julia | v | dart | swift | swift_con | node | bun | deno | java | java_graal | java_graal_con | nim | luajit | lua | all | clean. Unknown argument: $first_arg"
 
 fi
