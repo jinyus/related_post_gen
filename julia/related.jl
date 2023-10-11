@@ -1,7 +1,13 @@
-using JSON3, Dates, StaticArrays
+using JSON3
+using StructTypes
+using Dates
+using StaticArrays
+
+# warmup is done by hyperfine
 
 function relatedIO()
-    posts = JSON3.read(read("../posts.json"), Vector{PostData})
+    json_string = read("../posts.json", String)
+    posts = JSON3.read(json_string, Vector{PostData})    
 
     related(posts)
 
@@ -27,17 +33,20 @@ struct RelatedPost
     related::SVector{5,PostData}
 end
 
-function fastmaxindex!(xs::Vector{T}, topn, maxn::AbstractVector{T}, maxv) where {T}
-    maxn .= one(T)
-    maxv .= top = zero(T)
+StructTypes.StructType(::Type{PostData}) = StructTypes.Struct()
+
+function fastmaxindex!(xs::Vector, topn, maxn, maxv)
+    maxn .= 1
+    maxv .= 0
+    top = maxv[1]
     for (i, x) in enumerate(xs)
         if x > top
             maxv[1] = x
             maxn[1] = i
-            for j = 2:topn
-                if maxv[j - 1] > maxv[j]
-                    maxv[j - 1], maxv[j] = maxv[j], maxv[j - 1]
-                    maxn[j - 1], maxn[j] = maxn[j], maxn[j - 1]
+            for j in 2:topn
+                if maxv[j-1] > maxv[j]
+                    maxv[j-1], maxv[j] = maxv[j], maxv[j-1]
+                    maxn[j-1], maxn[j] = maxn[j], maxn[j-1]
                 end
             end
             top = maxv[1]
@@ -79,8 +88,10 @@ function related(::Type{T}, posts) where {T}
         # for each post (`i`-th)
         # and every tag used in the `i`-th post
         # give all related post +1 in `taggedpostcount` shadow vector
-        for tag in post.tags, idx in tagmap[tag]
-            taggedpostcount[idx] += one(T)
+        for tag in post.tags
+            for idx in tagmap[tag]
+                taggedpostcount[idx] += one(T)
+            end
         end
 
         # don't self count
