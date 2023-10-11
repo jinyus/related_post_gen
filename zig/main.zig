@@ -71,6 +71,7 @@ pub fn main() !void {
                 // Shift and insert
                 var shift: usize = 4;
                 while (shift > pos) : (shift -= 1) {
+                    top_5[shift] = top_5[shift - 1];
                     op.items[post_index].related[shift] = op.items[post_index].related[shift - 1];
                 }
                 top_5[@intCast(pos)] = count;
