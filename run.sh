@@ -10,9 +10,11 @@ appendToFile=$3
 if [ -z "$appendToFile" ]; then
     runs=10
     warmup=3
+    slow_lang_runs=10
 else
     runs=2
     warmup=1
+    slow_lang_runs=1
 fi
 
 tab=""
@@ -134,7 +136,7 @@ run_python() {
     source venv/bin/activate &&
         pip freeze | grep orjson || pip install -r requirements.txt &&
         if [ $HYPER == 1 ]; then
-            capture "Python" hyperfine -r $runs -w $warmup --show-output "python3 ./related.py"
+            capture "Python" hyperfine -r $slow_lang_runs -w $warmup --show-output "python3 ./related.py"
         else
             command ${time} -f '%es %Mk' python3 ./related.py
         fi
@@ -498,7 +500,7 @@ run_lua() {
         sudo luarocks install luasocket &&
         cd ./lua &&
         if [ $HYPER == 1 ]; then
-            capture "Lua" hyperfine -r $runs -w $warmup --show-output "lua only_lua.lua"
+            capture "Lua" hyperfine -r $slow_lang_runs -w $warmup --show-output "lua only_lua.lua"
         else
             command ${time} -f '%es %Mk' lua only_lua.lua
         fi
