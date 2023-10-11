@@ -21,7 +21,6 @@ ENV JAVA_HOME=/root/.sdkman/candidates/java/21-graal
 ENV PATH=$PATH:$GRAALVM_HOME/bin:$JAVA_HOME/bin
 
 # install bunjs
-# install bunjs
 RUN su -c "curl -fsSL https://bun.sh/install | bash" builduser
 
 ENV BUN_INSTALL="/home/builduser/.bun"
