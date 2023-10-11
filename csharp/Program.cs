@@ -38,7 +38,7 @@ Span<(byte Count, int PostId)> top5 = stackalloc (byte Count, int PostId)[topN];
 
 for (var i = 0; i < postsCount; i++)
 {
-    taggedPostCount.Clear();  // reset counts
+    taggedPostCount.Fill(0);  // reset counts
 
     foreach (var tag in posts[i].Tags)
     {
