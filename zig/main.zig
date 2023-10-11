@@ -44,7 +44,7 @@ pub fn main() !void {
 
     for (0..parsed.value.len) |post_index| {
         // reset tagged_post_count
-        // @memset(tagged_post_count, 0);
+        @memset(tagged_post_count, 0);
 
         for (parsed.value[post_index].tags) |tag| {
             for (map.get(tag).?.items) |i_t| {
@@ -78,7 +78,6 @@ pub fn main() !void {
                 op.items[post_index].related[@intCast(pos)] = &parsed.value[j];
                 min_tags = top_5[4];
             }
-            tagged_post_count[j] = 0;
         }
     }
     const end = try std.time.Instant.now();
