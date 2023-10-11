@@ -525,7 +525,7 @@ run_ocaml() {
 run_d() {
     echo "Running D" &&
         cd ./d &&
-        dub build --release &&
+        dub build --build=release &&
         if [ $HYPER == 1 ]; then
             capture "D" hyperfine -r $runs -w $warmup --show-output "./related"
         else
