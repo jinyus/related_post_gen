@@ -6,26 +6,26 @@ git clone "$GIT_REPO" &&
 if [ "$BRANCH" != "main" ]; then
     git checkout "$BRANCH"
 else
-    echo "Using main branch"
+    echo -e "\n---- Using main branch ----\n"
 fi
 
 if [ -z "$GIT_PAT" ]; then
-    echo "No GIT_PAT provided, skipping PR creation"
+    echo -e "\n---- No GIT_PAT provided, skipping PR creation ----\n"
 else
-    echo "GIT_PAT provided, creating PR"
+    echo -e "\n---- GIT_PAT provided, creating PR ----\n"
 fi
 #
 echo "Run Benchmark (5k posts)" &&
     ./run.sh "$TEST_NAME" raw_results.md &&
     #
-    echo "Generate 15k posts" &&
-    python gen_fake_posts.py 15000 &&
+    echo "Generate $RUN2 posts" &&
+    python gen_fake_posts.py "$RUN2" &&
     #
     echo "Run Benchmark (15k posts)" &&
     ./run.sh "$TEST_NAME" raw_results.md append &&
     #
-    echo "Generate 30k posts" &&
-    python gen_fake_posts.py 30000 &&
+    echo "Generate $RUN3 posts" &&
+    python gen_fake_posts.py "$RUN3" &&
     #
     echo "Run Benchmark (30k posts)" &&
     ./run.sh "$TEST_NAME" raw_results.md append &&

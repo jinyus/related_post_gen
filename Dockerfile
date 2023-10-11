@@ -74,6 +74,10 @@ ENV BRANCH="main"
 
 ENV DEVICE="Workflow-VM-2vCPU-7GBram"
 
+ENV Run2="15000"
+
+ENV Run3="30000"
+
 COPY docker_start.sh /docker_start.sh
 
 CMD ["/docker_start.sh"]
