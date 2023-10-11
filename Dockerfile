@@ -21,9 +21,11 @@ ENV JAVA_HOME=/root/.sdkman/candidates/java/21-graal
 ENV PATH=$PATH:$GRAALVM_HOME/bin:$JAVA_HOME/bin
 
 # install bunjs
-RUN su -c "git clone https://aur.archlinux.org/bunjs-bin.git /home/builduser/bunjs" builduser
+# install bunjs
+RUN su -c "curl -fsSL https://bun.sh/install | bash" builduser
 
-RUN su -c "cd /home/builduser/bunjs && makepkg -si --noconfirm --needed --noprogressbar" builduser
+ENV BUN_INSTALL="/home/builduser/.bun"
+ENV PATH=$BUN_INSTALL/bin:$PATH
 
 # install swift
 RUN wget https://download.swift.org/swift-5.9-release/ubuntu2204/swift-5.9-RELEASE/swift-5.9-RELEASE-ubuntu22.04.tar.gz -O /home/builduser/swift.tar.gz
