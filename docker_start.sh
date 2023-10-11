@@ -30,7 +30,7 @@ echo "Run Benchmark (5k posts)" &&
     echo "Run Benchmark (30k posts)" &&
     ./run.sh "$TEST_NAME" raw_results.md append &&
     #
-    dart extract_results.dart raw_results.md &&
+    dart extract_results.dart raw_results.md verbose &&
     if [ -n "$GIT_PAT" ]; then
 
         echo "Creating Pull Request" &&
