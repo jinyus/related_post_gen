@@ -45,9 +45,11 @@ func computeRelatedPosts(posts []Post, tagMap map[string][]isize) []RelatedPosts
 	taggedPostCount := make([]isize, postsLen)
 
 	for i := range posts {
+		// Reset the tag count for each post
 		for j := range taggedPostCount {
 			taggedPostCount[j] = 0
 		}
+
 		// Count the number of tags shared between posts
 		for _, tag := range posts[i].Tags {
 			for _, otherPostIdx := range tagMap[tag] {
@@ -55,28 +57,22 @@ func computeRelatedPosts(posts []Post, tagMap map[string][]isize) []RelatedPosts
 			}
 		}
 		taggedPostCount[i] = 0 // Don't count self
+
 		top5 := [topN]PostWithSharedTags{}
-		minTags := isize(0)
 
 		for j, count := range taggedPostCount {
-			if count > minTags {
-				// Find the position to insert
-				pos := 4
-				for pos >= 0 && top5[pos].SharedTags < count {
-					pos--
-				}
-				pos++
+			if count > top5[0].SharedTags {
+				top5[0] = PostWithSharedTags{Post: isize(j), SharedTags: count}
 
-				// Shift and insert
-				if pos < 4 {
-					copy(top5[pos+1:], top5[pos:4])
+				// Insertion sort to maintain the order
+				for k := 0; k < topN-1; k++ {
+					if top5[k].SharedTags > top5[k+1].SharedTags {
+						top5[k], top5[k+1] = top5[k+1], top5[k]
+					}
 				}
-
-				top5[pos] = PostWithSharedTags{Post: isize(j), SharedTags: count}
-				minTags = top5[4].SharedTags
 			}
 		}
-		// Convert indexes back to Post pointers
+
 		topPosts := [topN]*Post{}
 		for idx, t := range top5 {
 			topPosts[idx] = &posts[t.Post]
@@ -88,6 +84,7 @@ func computeRelatedPosts(posts []Post, tagMap map[string][]isize) []RelatedPosts
 			Related: topPosts,
 		}
 	}
+
 	return allRelatedPosts
 }
 
