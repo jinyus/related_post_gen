@@ -87,19 +87,6 @@ run_go_concurrent() {
     check_output "related_posts_go_con.json"
 }
 
-run_d() {
-    echo "Running D" &&
-        cd ./d &&
-        dub build --release &&
-        if [ $HYPER == 1 ]; then
-            capture "D" hyperfine -r 10 -w 5 --show-output "./related"
-        else
-            command time -f '%es %Mk' ./related
-        fi
-
-    check_output "related_posts_d.json"
-}
-
 run_rust() {
     echo "Running Rust" &&
         cd ./rust &&
@@ -535,6 +522,19 @@ run_ocaml() {
     check_output "related_posts_ocaml.json"
 }
 
+run_d() {
+    echo "Running D" &&
+        cd ./d &&
+        dub build --release &&
+        if [ $HYPER == 1 ]; then
+            capture "D" hyperfine -r $runs -w $warmup --show-output "./related"
+        else
+            command time -f '%es %Mk' ./related
+        fi
+
+    check_output "related_posts_d.json"
+}
+
 check_output() {
     cd ..
 
@@ -562,10 +562,6 @@ elif [ "$first_arg" = "go_con" ]; then
 elif [ "$first_arg" = "cpp" ]; then
 
     run_cpp
-
-elif [ "$first_arg" = "d" ]; then
-
-    run_d
 
 elif [ "$first_arg" = "rust" ]; then
 
@@ -690,6 +686,10 @@ elif [ "$first_arg" = "lua" ]; then
 elif [ "$first_arg" = "ocaml" ]; then
 
     run_ocaml
+
+elif [ "$first_arg" = "d" ]; then
+
+    run_d
 
 elif [ "$first_arg" = "all" ]; then
 
