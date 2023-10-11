@@ -54,7 +54,7 @@ docker run -e TEST_NAME=all -it --rm databench
 
 ##### VM Specs ( Azure F4s v2 - 4vCPU-8GB-Ubuntu 22.04 )
 
-| Language       | Time (5k posts) | 15k posts | 30k posts | Total     |
+| Language       | Time (5k posts) | 20k posts | 60k posts | Total     |
 | -------------- | --------------- | --------- | --------- | --------- |
 | Go | 24.66 ms | 373.99 ms | 3.29 s | 3.69 s |
 | Rust | 24.03 ms | 391.72 ms | 3.48 s | 3.89 s |
@@ -78,11 +78,11 @@ docker run -e TEST_NAME=all -it --rm databench
 | JS (Bun) | 740.85 ms | 11.15 s | 102.24 s | 114.13 s |
 | Lua | 1.10 s | 16.89 s | 153.49 s | 171.48 s |
 | Python | 1.47 s | 23.60 s | 217.33 s | 242.40 s |
-| Numpy | 352.62 ms | 5.27 s | 1.7976931348623156e+305 s | 1.7976931348623156e+305 s |
+| Numpy | 352.62 ms | 5.27 s | OutOfMemory | N/A |
 
 ### Multicore Results
 
-| Language       | Time (5k posts) | 15k posts        | 30k posts        | Total     |
+| Language       | Time (5k posts) | 20k posts        | 60k posts        | Total     |
 | -------------- | --------------- | ---------------- | ---------------- | --------- |
 | Julia Concurrent | 13.15 ms | 162.67 ms | 1.46 s | 1.63 s |
 | Go Concurrent | 13.55 ms | 171.12 ms | 1.47 s | 1.65 s |
