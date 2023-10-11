@@ -49,9 +49,10 @@ let tagPosts = Dictionary(tagPostsTmp.Count)
 for kv in tagPostsTmp do
     tagPosts[kv.Key] <- kv.Value.ToArray()
 
-let [<Literal>] topN = 5
+[<Literal>]
+let topN = 5
 
-let top5 = Array.zeroCreate<struct{|count:byte;postId:int|}> topN
+let top5 = Array.zeroCreate<struct {| count: byte; postId: int |}> topN
 
 let allRelatedPosts: RelatedPosts[] =
     posts
@@ -79,8 +80,8 @@ let allRelatedPosts: RelatedPosts[] =
                     top5[pos + 1] <- top5[pos]
                     pos <- pos - 1
 
-                top5[pos+1] <- {| count=count; postId=i |}
-                minTags <- top5[topN-1].count
+                top5[pos + 1] <- {| count = count; postId = i |}
+                minTags <- top5[topN - 1].count
 
         let result =
             { _id = post._id
@@ -88,11 +89,10 @@ let allRelatedPosts: RelatedPosts[] =
               related = top5 |> Array.map (fun top -> posts[top.postId]) }
 
         // Clean up the top5 array
-        for i in 0..top5.Length - 1 do
-            top5[i] <- {|count = 0uy; postId = -1|}
+        for i in 0 .. top5.Length - 1 do
+            top5[i] <- {| count = 0uy; postId = -1 |}
 
-        result
-    )
+        result)
 
 stopwatch.Stop()
 printfn "Processing time (w/o IO): %dms" stopwatch.ElapsedMilliseconds
