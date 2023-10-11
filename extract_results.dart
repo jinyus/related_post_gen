@@ -75,11 +75,13 @@ void main(List<String> args) {
       return aSum.compareTo(bSum);
     });
 
+  if (args.length > 1) {
+    sortedScores.forEach(print);
+  }
+
   final multiCoreScores = sortedScores.where((s) => s.first.name.contains('Concurrent')).toList();
 
   sortedScores..removeWhere((s) => s.first.name.contains('Concurrent'));
-
-  sortedScores.forEach(print);
 
   if (sortedScores.first.length != 3) {
     print('${file.readAsStringSync()}\n\nEnough scores not found. Need 3 scores for each language to update readme.md');
