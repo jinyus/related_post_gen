@@ -3,7 +3,7 @@ FROM archlinux:base
 # Update package repository
 RUN pacman -Syu --noconfirm
 
-RUN pacman -S --noconfirm --needed wget unzip sudo base-devel git go clang llvm python python-pip ncurses gcc llvm hyperfine rustup dotnet-sdk crystal zig julia dart nodejs deno maven nim opam dune lua51 luajit luarocks libedit github-cli less
+RUN pacman -S --noconfirm --needed wget unzip sudo base-devel git go clang llvm ldc dub python python-pip ncurses gcc llvm hyperfine rustup dotnet-sdk crystal zig julia dart nodejs deno maven nim opam dune lua51 luajit luarocks libedit github-cli less
 
 # user needed to install aur packages
 RUN useradd -ms /bin/bash builduser

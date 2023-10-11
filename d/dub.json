@@ -1,0 +1,14 @@
+{
+	"authors": [
+		"Sergei Giniatulin"
+	],
+	"copyright": "Copyright © 2023, Sergei Giniatulin",
+	"dependencies": {
+		"asdf": "~>0.7.17",
+		"memutils": "~>1.0.9",
+	},
+    "dflags-ldc": ["-mcpu=native"],
+	"description": "A minimal D application.",
+	"license": "MIT",
+	"name": "related"
+}
