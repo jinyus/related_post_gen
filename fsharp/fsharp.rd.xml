@@ -10,6 +10,8 @@
     <Assembly Name="FSharp">
       <Type Name="Program+Post" Dynamic="Required All">
       </Type>
+      <Type Name="Program+RelatedPosts" Dynamic="Required All">
+      </Type>
     </Assembly>
   </Application>
 </Directives>
