@@ -5,7 +5,7 @@
 	"copyright": "Copyright © 2023, johan.forsberg",
 	"description": "Parallel processing",
 	"license": "proprietary",
-	"name": "d_con",
+	"name": "related_con",
 	"dependencies": {
 		"asdf": "~>0.7.17"
 	}

@@ -549,15 +549,15 @@ run_d() {
 
 run_d_con() {
     echo "Running D concurrent" &&
-        cd ./d &&
+        cd ./d_con &&
         dub build --build=release &&
         if [ $HYPER == 1 ]; then
-            capture "D Concurrent" hyperfine -r $runs -w $warmup --show-output "./related"
+            capture "D Concurrent" hyperfine -r $runs -w $warmup --show-output "./related_con"
         else
             command time -f '%es %Mk' ./related
         fi
 
-    check_output "related_posts_d.json"
+    check_output "related_posts_d_con.json"
 }
 
 check_output() {
