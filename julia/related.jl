@@ -1,5 +1,3 @@
-using Pkg
-Pkg.instantiate()
 using JSON3
 using StructTypes
 using Dates

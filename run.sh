@@ -229,6 +229,7 @@ run_zig() {
 run_julia() {
     echo "Running Julia" &&
         cd ./julia &&
+        julia --project -e "using Pkg; Pkg.instantiate()" &&
         if [ $HYPER == 1 ]; then
             capture "Julia" hyperfine -r $runs -w $warmup --show-output "julia --project related.jl"
         else
@@ -241,6 +242,7 @@ run_julia() {
 run_julia_con() {
     echo "Running Julia Concurrent" &&
         cd ./julia_con &&
+        julia --project -e "using Pkg; Pkg.instantiate()" &&
         if [ $HYPER == 1 ]; then
             capture "Julia Concurrent" hyperfine -r $runs -w $warmup --show-output "julia --project --threads auto related.jl"
         else
