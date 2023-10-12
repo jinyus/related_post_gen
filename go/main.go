@@ -40,9 +40,8 @@ func buildTagMap(posts []Post) map[string][]isize {
 }
 
 func computeRelatedPosts(posts []Post, tagMap map[string][]isize) []RelatedPosts {
-	postsLen := len(posts)
-	allRelatedPosts := make([]RelatedPosts, postsLen)
-	taggedPostCount := make([]isize, postsLen)
+	allRelatedPosts := make([]RelatedPosts, 0, len(posts))
+	taggedPostCount := make([]isize, len(posts))
 
 	for i := range posts {
 		// Reset the tag count for each post
@@ -78,11 +77,11 @@ func computeRelatedPosts(posts []Post, tagMap map[string][]isize) []RelatedPosts
 			topPosts[idx] = &posts[t.Post]
 		}
 
-		allRelatedPosts[i] = RelatedPosts{
+		allRelatedPosts = append(allRelatedPosts, RelatedPosts{
 			ID:      posts[i].ID,
 			Tags:    &posts[i].Tags,
 			Related: topPosts,
-		}
+		})
 	}
 
 	return allRelatedPosts
