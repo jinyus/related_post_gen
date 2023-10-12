@@ -61,7 +61,7 @@ StructTypes.StructType(::Type{PostData}) = StructTypes.Struct()
             end
             top = maxv_1
         end
-        @ncall $topn tuple i -> maxn_{N+1-i}
+        @ncall $topn tuple i -> maxn_{$topn+1-i}
     end
 end
 
