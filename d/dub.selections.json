@@ -2,13 +2,8 @@
 	"fileVersion": 1,
 	"versions": {
 		"asdf": "0.7.17",
-		"automem": "0.6.9",
-		"ikod-containers": "0.0.22",
-		"memutils": "1.0.9",
 		"mir-algorithm": "3.21.0",
 		"mir-core": "1.6.0",
-		"silly": "1.1.1",
-		"test_allocator": "0.3.4",
-		"unit-threaded": "2.1.7"
+		"silly": "1.1.1"
 	}
 }

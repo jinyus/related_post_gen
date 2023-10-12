@@ -1,12 +1,18 @@
 {
 	"authors": [
-		"johan.forsberg"
+		"johan.forsberg",
+        "Sergei Giniatulin"
 	],
 	"copyright": "Copyright © 2023, johan.forsberg",
-	"description": "Parallel processing",
-	"license": "proprietary",
-	"name": "d_con",
+	"description": "A Parallel D application",
+	"license": "MIT",
+	"name": "related_concurrent",
 	"dependencies": {
 		"asdf": "~>0.7.17"
-	}
+	},
+    "buildTypes": {
+        "release" : {
+            "buildOptions": ["optimize", "inline"]
+        }
+    }
 }
