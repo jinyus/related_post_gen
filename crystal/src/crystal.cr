@@ -38,10 +38,11 @@ posts.each_with_index do |post, i|
 end
 
 allRelatedPosts = Array(RelatedPost?).new(posts.size, nil)
-tagged_post_count = Array(Int32).new(posts.size, 0)
+# using raw buffer instead of Array for performance
+tagged_post_count = Pointer(Int32).malloc(posts.size, 0)
 
 posts.each_with_index do |post, idx|
-  tagged_post_count.fill(0)
+  posts.size.times do |i| tagged_post_count[i] = 0 end
 
   post.tags.each do |tag|
     tag_map[tag].each do |other_post_idx|
@@ -55,7 +56,8 @@ posts.each_with_index do |post, idx|
   top5 = Array(Int32).new(TOPN * 2, 0) # flattened list of (count, id)
   min_tags = 0
 
-  tagged_post_count.each_with_index do |count, j|
+  posts.size.times do |j|
+    count = tagged_post_count[j]
     if count > min_tags
       upper_bound = (TOPN - 2) * 2
 
