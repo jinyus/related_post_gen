@@ -6,7 +6,7 @@ using Dates
 using ChunkSplitters
 
 # warmup is done by hyperfine
-
+const topn = 5
 struct BufferKey{T}
     len::Int
 end
@@ -40,30 +40,28 @@ end
 struct RelatedPost
     _id::String
     tags::Vector{String}
-    related::NTuple{5,PostData}
+    related::NTuple{topn,PostData}
 end
 
 StructTypes.StructType(::Type{PostData}) = StructTypes.Struct()
 
-function fastmaxindex!(xs::Vector, topn, buf)
-    maxn = view(buf, 1:topn)            .= 1
-    maxv = view(buf, (topn+1):(2*topn)) .= 0
-    top = maxv[1]
+function fastmaxindex!(xs::Vector, topn, maxs)
+    # each element is a pair idx => val
+    maxs .= (1 => 0)
+    top = maxs[1][2]
     for (i, x) in enumerate(xs)
         if x > top
-            maxv[1] = x
-            maxn[1] = i
+            maxs[1] = (i => x)
             for j in 2:topn
-                if maxv[j-1] > maxv[j]
-                    maxv[j-1], maxv[j] = maxv[j], maxv[j-1]
-                    maxn[j-1], maxn[j] = maxn[j], maxn[j-1]
+                if maxs[j-1][2] > maxs[j][2]
+                    maxs[j-1], maxs[j] = maxs[j], maxs[j-1]
                 end
             end
-            top = maxv[1]
+            top = maxs[1][2]
         end
     end
-    reverse!(maxn)
-    maxn
+    reverse!(maxs)
+    first.(maxs)
 end
 
 function related(posts)
@@ -87,8 +85,7 @@ function related(::Type{T}, posts) where {T}
     relatedposts = Vector{RelatedPost}(undef, length(posts))
 
     @threads for (postsrange, _) in chunks(posts, nthreads())
-        topn = 5
-        buf  = task_local_buffer(T, 2*topn)
+        buf = task_local_buffer(Pair{Int, T}, topn)
         taggedpostcount = Vector{T}(undef, length(posts))
 
         for i in postsrange
@@ -113,7 +110,6 @@ function related(::Type{T}, posts) where {T}
             relatedposts[i] = relatedpost
         end
     end
-
     return relatedposts
 end
 

@@ -7,6 +7,15 @@ using Base.Cartesian: @nexprs, @ncall
 
 const topn = 5
 
+struct BufferKey{T}
+    len::Int
+end
+function task_local_buffer(::Type{T}, len) where {T}
+    tls = task_local_storage()
+    key = BufferKey{T}(len)
+    get!(() -> Vector{T}(undef, len), tls, key)::Vector{T}
+end
+
 function relatedIO()
     json_string = read("../posts.json", String)
     posts = JSON3.read(json_string, Vector{PostData})    
@@ -64,7 +73,6 @@ function related(posts)
 end
 
 function related(::Type{T}, posts) where {T}
-    buf = Vector{Pair{Int, T}}(undef, topn)
     # key is every possible "tag" used in all posts
     # value is indicies of all "post"s that used this tag
     tagmap = Dict{String,Vector{T}}()
@@ -75,6 +83,7 @@ function related(::Type{T}, posts) where {T}
         end
     end
 
+    buf = task_local_buffer(Pair{Int, T}, topn)
     relatedposts = Vector{RelatedPost}(undef, length(posts))
     taggedpostcount = Vector{T}(undef, length(posts))
 
