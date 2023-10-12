@@ -456,11 +456,11 @@ run_fsharp() {
 run_csharp() {
     echo "Running CSharp (JIT)" &&
         cd ./csharp &&
-        dotnet publish -c release --self-contained -o "bin/release/net7.0/jit" &&
+        dotnet publish -c release --self-contained -o "bin/release/net8.0/jit" &&
         if [ $HYPER == 1 ]; then
-            capture "C# (JIT)" hyperfine -r $runs -w $warmup --show-output "./bin/release/net7.0/jit/related"
+            capture "C# (JIT)" hyperfine -r $runs -w $warmup --show-output "./bin/release/net8.0/jit/related"
         else
-            command ${time} -f '%es %Mk' ./bin/release/net7.0/jit/related
+            command ${time} -f '%es %Mk' ./bin/release/net8.0/jit/related
         fi
 
     check_output "related_posts_csharp.json"
@@ -469,11 +469,11 @@ run_csharp() {
 run_csharp_aot() {
     echo "Running CSharp (AOT)" &&
         cd ./csharp &&
-        dotnet publish -c release --self-contained -p PublishAot=true -o "bin/release/net7.0/aot" &&
+        dotnet publish -c release --self-contained -p PublishAot=true -o "bin/release/net8.0/aot" &&
         if [ $HYPER == 1 ]; then
-            capture "C# (AOT)" hyperfine -r $runs -w $warmup --show-output "./bin/release/net7.0/aot/related"
+            capture "C# (AOT)" hyperfine -r $runs -w $warmup --show-output "./bin/release/net8.0/aot/related"
         else
-            command ${time} -f '%es %Mk' ./bin/release/net7.0/aot/related
+            command ${time} -f '%es %Mk' ./bin/release/net8.0/aot/related
         fi
 
     check_output "related_posts_csharp.json"
