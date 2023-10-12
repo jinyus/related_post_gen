@@ -1,9 +1,12 @@
+using Pkg
+Pkg.instantiate()
 using JSON3
 using StructTypes
 using Dates
-using StaticArrays
 
 # warmup is done by hyperfine
+
+include("vector5.jl")
 
 function relatedIO()
     json_string = read("../posts.json", String)
@@ -30,7 +33,7 @@ end
 struct RelatedPost
     _id::String
     tags::Vector{String}
-    related::SVector{5,PostData}
+    related::SVector5{PostData}
 end
 
 StructTypes.StructType(::Type{PostData}) = StructTypes.Struct()
@@ -80,8 +83,8 @@ function related(::Type{T}, posts) where {T}
     relatedposts = Vector{RelatedPost}(undef, length(posts))
     taggedpostcount = Vector{T}(undef, length(posts))
 
-    maxn = Vector{T}(undef,topn)
-    maxv = Vector{T}(undef,topn)
+    maxn = MVector5{T}()
+    maxv = MVector5{T}()
 
     for (i, post) in enumerate(posts)
         taggedpostcount .= 0
@@ -99,7 +102,7 @@ function related(::Type{T}, posts) where {T}
 
         fastmaxindex!(taggedpostcount, topn, maxn, maxv)
 
-        relatedpost = RelatedPost(post._id, post.tags, SVector{topn}(@view posts[maxn]))
+        relatedpost = RelatedPost(post._id, post.tags, SVector5(@view posts[maxn]))
         relatedposts[i] = relatedpost
     end
 

@@ -229,11 +229,10 @@ run_zig() {
 run_julia() {
     echo "Running Julia" &&
         cd ./julia &&
-        julia -e 'using Pkg; Pkg.add.(["JSON3", "StructTypes", "StaticArrays"])' &&
         if [ $HYPER == 1 ]; then
-            capture "Julia" hyperfine -r $runs -w $warmup --show-output "julia related.jl"
+            capture "Julia" hyperfine -r $runs -w $warmup --show-output "julia --project related.jl"
         else
-            command ${time} -f '%es %Mk' julia related.jl
+            command ${time} -f '%es %Mk' julia --project related.jl
         fi
 
     check_output "related_posts_julia.json"
@@ -242,11 +241,10 @@ run_julia() {
 run_julia_con() {
     echo "Running Julia Concurrent" &&
         cd ./julia_con &&
-        julia -e 'using Pkg; Pkg.add.(["JSON3", "StructTypes", "StaticArrays", "ChunkSplitters"])' &&
         if [ $HYPER == 1 ]; then
-            capture "Julia Concurrent" hyperfine -r $runs -w $warmup --show-output "julia --threads auto related.jl"
+            capture "Julia Concurrent" hyperfine -r $runs -w $warmup --show-output "julia --project --threads auto related.jl"
         else
-            command ${time} -f '%es %Mk' julia --threads auto related.jl
+            command ${time} -f '%es %Mk' julia --project --threads auto related.jl
         fi
 
     check_output "related_posts_julia_con.json"
