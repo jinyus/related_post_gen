@@ -1,17 +1,17 @@
 using JSON3
 using StructTypes
 using Dates
-
+using Base.Cartesian: @nexprs, @ncall
 # warmup is done by hyperfine
 
-struct BufferKey{T}
-    len::Int
-end
-function task_local_buffer(::Type{T}, len) where {T}
-    tls = task_local_storage()
-    key = BufferKey{T}(len)
-    get!(() -> Vector{T}(undef, len), tls, key)::Vector{T}
-end
+# struct BufferKey{T}
+#     len::Int
+# end
+# function task_local_buffer(::Type{T}, len) where {T}
+#     tls = task_local_storage()
+#     key = BufferKey{T}(len)
+#     get!(() -> Vector{T}(undef, len), tls, key)::Vector{T}
+# end
 
 function relatedIO()
     json_string = read("../posts.json", String)
@@ -42,6 +42,28 @@ struct RelatedPost
 end
 
 StructTypes.StructType(::Type{PostData}) = StructTypes.Struct()
+
+@generated function fastmaxindex(xs::Vector, ::Val{topn}) where {topn}
+    quote
+        @nexprs $topn i -> (maxn_i = 1)
+        @nexprs $topn i -> (maxv_i = 0)
+        top = maxv_1
+        for (i, x) ∈ enumerate(xs)
+            if x > top
+                maxv_1 = x
+                maxn_1 = i
+                @nexprs $(topn-1) j -> begin
+                    if maxv_{j} > maxv_{j+1}
+                        maxv_{j}, maxv_{j+1} = maxv_{j+1}, maxv_{j}
+                        maxn_{j}, maxn_{j+1} = maxn_{j+1}, maxn_{j}
+                    end
+                end
+            end
+            top = maxv_1
+        end
+        @ncall $topn tuple i -> maxn_{N+1-i}
+    end
+end
 
 function fastmaxindex!(xs::Vector, topn, buf)
     maxn = view(buf, 1:topn)            .= 1
@@ -74,7 +96,6 @@ end
 
 function related(::Type{T}, posts) where {T}
     topn = 5
-    buf  = task_local_buffer(T, 2*topn)
     # key is every possible "tag" used in all posts
     # value is indicies of all "post"s that used this tag
     tagmap = Dict{String,Vector{T}}()
@@ -102,7 +123,7 @@ function related(::Type{T}, posts) where {T}
         # don't self count
         taggedpostcount[i] = 0
 
-        maxn = fastmaxindex!(taggedpostcount, topn, buf)
+        maxn = fastmaxindex(taggedpostcount, Val(topn))
         
         relatedpost = RelatedPost(post._id, post.tags, ntuple(i -> posts[maxn[i]], topn))
         relatedposts[i] = relatedpost
