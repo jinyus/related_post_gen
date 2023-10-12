@@ -3,18 +3,16 @@ require "time"
 
 TOPN = 5
 
-class Post
+struct Post
   include JSON::Serializable
 
   @[JSON::Field(key: "_id")]
   property id : String
-
   property title : String
-
   property tags : Array(String)
 end
 
-class RelatedPost
+struct RelatedPost
   include JSON::Serializable
 
   def initialize(@id : String, @tags : Array(String), @related : Array(Post))
@@ -22,9 +20,7 @@ class RelatedPost
 
   @[JSON::Field(key: "_id")]
   property id : String
-
   property tags : Array(String)
-
   property related : Array(Post)
 end
 
@@ -41,7 +37,7 @@ posts.each_with_index do |post, i|
   end
 end
 
-allRelatedPosts = Array(RelatedPost).new(posts.size)
+allRelatedPosts = Array(RelatedPost?).new(posts.size, nil)
 tagged_post_count = Array(Int32).new(posts.size, 0)
 
 posts.each_with_index do |post, idx|
@@ -77,14 +73,10 @@ posts.each_with_index do |post, idx|
     end
   end
 
-  top_posts = Array(Post).new(TOPN)
-
   # Convert indexes back to Post pointers
-  (1...10).step(2) do |i|
-    top_posts << posts[top5[i]]
-  end
+  top_posts = [posts[top5[1]], posts[top5[3]], posts[top5[5]], posts[top5[7]], posts[top5[9]]]
 
-  allRelatedPosts << RelatedPost.new(id: post.id, tags: post.tags, related: top_posts)
+  allRelatedPosts[idx] = RelatedPost.new(id: post.id, tags: post.tags, related: top_posts)
 end
 
 t2 = Time.utc
