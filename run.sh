@@ -459,7 +459,7 @@ run_fsharp_aot() {
         dotnet restore &&
         dotnet publish -c release --self-contained -p PublishAot=true -o "bin/release/net8.0/aot" &&
         if [ $HYPER == 1 ]; then
-            capture "F#" hyperfine -r $runs -w $warmup --show-output "./bin/release/net8.0/aot/fsharp"
+            capture "F# (AOT)" hyperfine -r $runs -w $warmup --show-output "./bin/release/net8.0/aot/fsharp"
         else
             command ${time} -f '%es %Mk' ./bin/release/net8.0/aot/fsharp
         fi
