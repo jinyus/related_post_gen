@@ -46,8 +46,6 @@ void main()
 			tagMap[tag] ~= i;
 
 	auto related = new RelatedPosts[postsCount];
-	ubyte[] result = new ubyte[postsCount];
-
 	auto wls = taskPool.workerLocalStorage(new ubyte[postsCount]);
 
 	foreach (k, ref post; posts.parallel)
@@ -91,9 +89,6 @@ void main()
 			topPosts
 		);
 	}
-
-	foreach (x; wls.toRange)
-		result[] += x[];
 
 	sw.stop();
 
