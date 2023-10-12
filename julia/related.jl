@@ -80,8 +80,8 @@ function related(::Type{T}, posts) where {T}
     relatedposts = Vector{RelatedPost}(undef, length(posts))
     taggedpostcount = Vector{T}(undef, length(posts))
 
-    maxn = MVector{topn,T}(undef)
-    maxv = MVector{topn,T}(undef)
+    maxn = Vector{T}(undef,topn)
+    maxv = Vector{T}(undef,topn)
 
     for (i, post) in enumerate(posts)
         taggedpostcount .= 0

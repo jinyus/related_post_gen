@@ -83,8 +83,8 @@ function related(::Type{T}, posts) where {T}
 
     @threads for (postsrange, _) in chunks(posts, nthreads())
         topn = 5
-        maxn = MVector{topn,T}(undef)
-        maxv = MVector{topn,T}(undef)
+        maxn = Vector{T}(undef,topn)
+        maxv = Vector{T}(undef,topn)
         taggedpostcount = Vector{T}(undef, length(posts))
 
         for i in postsrange
