@@ -13,7 +13,7 @@ end
 function task_local_buffer(::Type{T}, len) where {T}
     tls = task_local_storage()
     key = BufferKey{T}(len)
-    get!(() -> Vector{T}(undef, len), tls, key)
+    get!(() -> Vector{T}(undef, len), tls, key)::Vector{T}
 end
 
 function relatedIO()
