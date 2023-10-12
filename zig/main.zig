@@ -13,21 +13,19 @@ fn lessthan(context: void, lhs: usize, rhs: usize) bool {
 const FxHash = struct {
     const K = 0x517c_c1b7_2722_0a95;
 
-    pub fn hash(self: @This(), s: []const u8) u64 {
+    pub inline fn hash(self: @This(), s: []const u8) u64 {
         _ = self;
         var h: u64 = 0;
-        var bytes: [8]u8 = undefined;
-        var i: usize = 0;
-        while (i < s.len) : (i += 8) {
+        for (s) |c| {
             h <<= 5;
-            @memcpy(&bytes, s.ptr + i);
+            const bytes = [8]u8{ 0, 0, 0, 0, 0, 0, 0, c };
             h ^= @bitCast(bytes);
-            h *|= K;
+            h *%= K;
         }
         return h;
     }
 
-    pub fn eql(self: @This(), a: []const u8, b: []const u8) bool {
+    pub inline fn eql(self: @This(), a: []const u8, b: []const u8) bool {
         _ = self;
         return std.mem.eql(u8, a, b);
     }
