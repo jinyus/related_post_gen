@@ -4,11 +4,15 @@
 	],
 	"copyright": "Copyright © 2023, Sergei Giniatulin",
 	"dependencies": {
-		"asdf": "~>0.7.17",
-		"memutils": "~>1.0.9",
+		"asdf": "~>0.7.17"
 	},
+    "buildTypes": {
+        "release" : {
+            "buildOptions": ["optimize", "inline"]
+        }
+    },
     "dflags-ldc": ["-mcpu=native"],
-	"description": "A minimal D application.",
+	"description": "A sequential D application.",
 	"license": "MIT",
 	"name": "related"
 }

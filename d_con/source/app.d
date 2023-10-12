@@ -2,8 +2,7 @@ import std.stdio : writeln, toFile;
 import std.datetime.stopwatch : StopWatch, AutoStart;
 import asdf.serialization : deserialize, serializeToJson;
 import std.file : readText;
-import std.algorithm : copy;
-import std.parallelism : parallel, taskPool;
+import std.parallelism : taskPool, parallel;
 
 enum TopN = 5;
 
@@ -34,64 +33,65 @@ void main()
 {
 	auto jsonText = readText("../posts.json");
 	auto posts = deserialize!(Post[])(jsonText);
-	int postsCount = cast(int)posts.length;
-
-	// Could be optimized, but is safe as is
-	ulong[][string] tagMap;
+	int postsCount = cast(int) posts.length;
 
 	auto sw = StopWatch(AutoStart.yes);
+
+	size_t[][string] tagMap;
 
 	foreach (i, post; posts)
 		foreach (tag; post.tags)
 			tagMap[tag] ~= i;
 
-	auto related = new RelatedPosts[postsCount];
-	auto wls = taskPool.workerLocalStorage(new ubyte[postsCount]);
-
+	auto relatedPosts = new RelatedPosts[postsCount];
+	auto taggedPostsCountThreadPool = taskPool.workerLocalStorage(new ubyte[postsCount]);
+	
 	foreach (k, ref post; posts.parallel)
 	{
-		ubyte[] tpc = wls.get;
-		tpc[] = 0;
+		ubyte[] taggedPostsCount = taggedPostsCountThreadPool.get;
+		taggedPostsCount[] = 0;
 
 		foreach (tag; post.tags)
 			foreach (idx; tagMap[tag])
-				tpc[idx]++;
+				taggedPostsCount.ptr[idx]++;
 
-		tpc[k] = 0;
+		taggedPostsCount[k] = 0;
 
 		top5[] = PostsWithSharedTags(0, 0);
-		ubyte minTags = 0;
 
-		foreach (j, count; tpc)
+		ubyte minTags = 0;
+		foreach (j, count; taggedPostsCount)
 		{
 			if (count > minTags)
 			{
-				int upperBound = TopN - 2;
+                // Find position to insert
+                auto pos = 4;
+                while (pos >= 0 && top5[pos].sharedTags < count) {
+                    pos--;
+                }
+                pos++;
 
-				while (upperBound >= 0 && count > top5[upperBound].sharedTags)
-				{
-					top5[upperBound + 1] = top5[upperBound];
-					upperBound--;
-				}
-
-				top5[upperBound + 1] = PostsWithSharedTags(j, count);
-
-				minTags = top5[TopN - 1].sharedTags;
+                // Shift and insert
+                if (pos < 4) {
+                    foreach_reverse (idx; pos .. 4)
+                        top5.ptr[idx + 1] = top5.ptr[idx];
+                }
+                top5[pos] = PostsWithSharedTags(j, count);
+                minTags = top5[4].sharedTags;
 			}
 		}
 
 		foreach (i, t; top5)
 			topPosts[i] = posts[t.post];
 
-		related[k] = RelatedPosts(
-			posts[k]._id,
-			posts[k].tags,
+		relatedPosts[k] = RelatedPosts(
+			post._id,
+			post.tags,
 			topPosts
 		);
 	}
-
 	sw.stop();
-
 	writeln("Processing time (w/o IO): ", sw.peek.total!"usecs" * 1.0 / 1000, "ms");
-	toFile(serializeToJson(related), "../related_posts_d_con.json");
+	toFile(serializeToJson(relatedPosts), "../related_posts_d_con.json");
 }
+
