@@ -2,8 +2,7 @@
 open System.IO
 open FSharp.NativeInterop
 open System.Collections.Generic
-open System.Text.Json
-
+open FSharp.Json
 #nowarn "9"
 
 let inline stackalloc<'a when 'a: unmanaged> (length: int) : Span<'a> =
@@ -15,16 +14,16 @@ type Post =
     { _id: string
       title: string
       tags: string[] }
-
+   
 type RelatedPosts =
     { _id: string
       tags: string[]
       related: Post[] }
 
+[<Literal>]
 let srcDir = __SOURCE_DIRECTORY__
 
-let posts =
-    JsonSerializer.Deserialize<Post[]>(File.ReadAllText $"{srcDir}/../posts.json")
+let posts = Json.deserialize<Post[]> (File.ReadAllText $"{srcDir}/../posts.json")
 
 let stopwatch = Diagnostics.Stopwatch.StartNew()
 
@@ -95,8 +94,8 @@ let allRelatedPosts: RelatedPosts[] =
         result)
 
 stopwatch.Stop()
-printfn "Processing time (w/o IO): %dms" stopwatch.ElapsedMilliseconds
+Console.WriteLine ($"Processing time (w/o IO): %d{stopwatch.ElapsedMilliseconds}ms")
 
-let json = JsonSerializer.Serialize allRelatedPosts
+let json = Json.serialize allRelatedPosts
 
 File.WriteAllText($"{srcDir}/../related_posts_fsharp.json", json)
