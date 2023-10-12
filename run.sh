@@ -552,7 +552,7 @@ run_d_con() {
         cd ./d &&
         dub build --build=release &&
         if [ $HYPER == 1 ]; then
-            capture "D" hyperfine -r $runs -w $warmup --show-output "./related"
+            capture "D Concurrent" hyperfine -r $runs -w $warmup --show-output "./related"
         else
             command time -f '%es %Mk' ./related
         fi
