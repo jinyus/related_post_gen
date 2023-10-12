@@ -56,8 +56,8 @@ docker run -e TEST_NAME=all -it --rm databench
 
 | Language       | Time (5k posts) | 20k posts | 60k posts   | Total    |
 | -------------- | --------------- | --------- | ----------- | -------- |
-| Go | 24.56 ms | 371.67 ms | 3.29 s | 3.69 s |
-| Rust | 23.91 ms | 388.04 ms | 3.45 s | 3.86 s |
+| Go | 24.56 ms | $\textsf{\color{lightgreen}371.67 ms}$ | $\textsf{\color{lightgreen}3.29 s}$ | 3.69 s |
+| Rust | $\textsf{\color{lightgreen}23.91 ms}$ | 388.04 ms | 3.45 s | 3.86 s |
 | Zig | 29.00 ms | 429.33 ms | 3.84 s | 4.30 s |
 | D | 32.73 ms | 447.31 ms | 3.89 s | 4.37 s |
 | Julia | 33.23 ms | 574.67 ms | 4.34 s | 4.94 s |
