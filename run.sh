@@ -557,7 +557,7 @@ run_d_con() {
             command time -f '%es %Mk' ./related
         fi
 
-    check_output "related_posts_d.json"
+    check_output "related_posts_d_con.json"
 }
 
 check_output() {
