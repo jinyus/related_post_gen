@@ -80,7 +80,7 @@ docker run -e TEST_NAME=all -it --rm databench
 | JS (Bun) | 618.69 ms | 12.07 s | 109.45 s | 122.13 s |
 | Lua | 1.09 s | 16.90 s | 150.25 s | 168.25 s |
 | Python | 1.46 s | 23.42 s | 215.19 s | 240.07 s |
-| Numpy | 360.05 ms | 6.25 s | 1.7976931348623156e+305 s | 1.7976931348623156e+305 s |
+| Numpy | 360.05 ms | 6.25 s | OutofMemory | N/A |
 
 ### Multicore Results
 
