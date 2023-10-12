@@ -15,7 +15,6 @@ type Post =
       title: string
       tags: string[] }
    
-[<Struct>]
 type RelatedPosts =
     { _id: string
       tags: string[]
