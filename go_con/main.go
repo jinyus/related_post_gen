@@ -14,16 +14,21 @@ import (
 // using smaller than int64 integer size but still big enough for 4 billion posts
 var concurrency = isize(runtime.NumCPU())
 
-const topN = 5
-const InitialTagMapSize = 100
-const InitialPostsSliceCap = 0
+const (
+	topN                 = 5
+	InitialTagMapSize    = 100
+	InitialPostsSliceCap = 0
 
-type isize uint32
+	INPUT_FILE  = "../posts.json"
+	OUTPUT_FILE = "../related_posts_go_con.json"
+)
+
+type isize uint16
 
 type Post struct {
-	ID    string   `json:"_id"`
-	Title string   `json:"title"`
-	Tags  []string `json:"tags"`
+	ID    string    `json:"_id"`
+	Title string    `json:"title"`
+	Tags  *[]string `json:"tags"`
 }
 
 type PostWithSharedTags struct {
@@ -43,8 +48,18 @@ type Result struct {
 	RelatedPost RelatedPosts
 }
 
+func buildTagMap(posts []Post) map[string][]isize {
+	tagMap := make(map[string][]isize, InitialTagMapSize)
+	for i, post := range posts {
+		for _, tag := range *post.Tags {
+			tagMap[tag] = append(tagMap[tag], isize(i))
+		}
+	}
+	return tagMap
+}
+
 func main() {
-	file, err := os.Open("../posts.json")
+	file, err := os.Open(INPUT_FILE)
 	if err != nil {
 		log.Panicln(err)
 	}
@@ -56,33 +71,25 @@ func main() {
 		log.Panicln(err)
 	}
 
+	postslen := isize(len(posts))
+
 	start := time.Now()
-
-	postsLength := len(posts)
-	postsLengthISize := isize(postsLength)
-
-	tagMap := make(map[string][]isize, InitialTagMapSize)
-	for i, post := range posts {
-		for _, tag := range post.Tags {
-			tagMap[tag] = append(tagMap[tag], isize(i))
-		}
-	}
-
-	resultsChan := make(chan Result, postsLengthISize)
+	tagMap := buildTagMap(posts)
+	resultsChan := make(chan Result, postslen)
 
 	// create wait group to wait for all workers to finish
 	wg := sync.WaitGroup{}
 	wg.Add(int(concurrency))
 	var w isize
-	for ; w < isize(concurrency); w++ {
+	for ; w < concurrency; w++ {
 		// allocate taggedPostCount for each worker once, zero out for each task
-		taggedPostCount := make([]isize, postsLengthISize)
+		taggedPostCount := make([]isize, postslen)
 		go func(workerID isize) {
-			for i := workerID; i < postsLengthISize; i += concurrency {
+			for thisPostIdx := workerID; thisPostIdx < postslen; thisPostIdx += concurrency {
 				// provide taggedPostCount and binary heap for each task
 				resultsChan <- Result{
-					Index:       i,
-					RelatedPost: computeRelatedPost(i, posts, tagMap, taggedPostCount),
+					Index:       thisPostIdx,
+					RelatedPost: computeRelatedPost(isize(thisPostIdx), posts, tagMap, taggedPostCount),
 				}
 			}
 			wg.Done()
@@ -91,16 +98,15 @@ func main() {
 	wg.Wait()
 	close(resultsChan)
 
-	allRelatedPosts := make([]RelatedPosts, postsLength)
+	// collect results from channel
+	allRelatedPosts := make([]RelatedPosts, len(posts))
 	for r := range resultsChan {
 		allRelatedPosts[r.Index] = r.RelatedPost
 	}
 
-	end := time.Now()
+	fmt.Println("Processing time (w/o IO):", time.Since(start))
 
-	fmt.Println("Processing time (w/o IO):", end.Sub(start))
-
-	file, err = os.Create("../related_posts_go_con.json")
+	file, err = os.Create(OUTPUT_FILE)
 	if err != nil {
 		log.Panicln(err)
 	}
@@ -111,40 +117,29 @@ func main() {
 	}
 }
 
-func computeRelatedPost(i isize, posts []Post, tagMap map[string][]isize, taggedPostCount []isize) RelatedPosts {
+func computeRelatedPost(thisPostIdx isize, posts []Post, tagMap map[string][]isize, taggedPostCount []isize) RelatedPosts {
 	// Zero out tagged post count
 	for j := range taggedPostCount {
 		taggedPostCount[j] = 0
 	}
 
 	// Count the number of tags shared between posts
-	for _, tag := range posts[i].Tags {
+	for _, tag := range *posts[thisPostIdx].Tags {
 		for _, otherPostIdx := range tagMap[tag] {
 			taggedPostCount[otherPostIdx]++
 		}
 	}
 
-	taggedPostCount[i] = 0 // Don't count self
-
 	top5 := [topN]PostWithSharedTags{}
-	minTags := isize(0) // Updated initialization
-
+	taggedPostCount[thisPostIdx] = 0 // Don't count self
 	for j, count := range taggedPostCount {
-		if count > minTags {
-			// Find the position to insert
-			pos := 4
-			for pos >= 0 && top5[pos].SharedTags < count {
-				pos--
+		if count > top5[0].SharedTags {
+			top5[0] = PostWithSharedTags{Post: isize(j), SharedTags: count}
+			for k := 0; k < topN-1; k++ {
+				if top5[k].SharedTags > top5[k+1].SharedTags {
+					top5[k], top5[k+1] = top5[k+1], top5[k]
+				}
 			}
-			pos++
-
-			// Shift and insert
-			if pos < 4 {
-				copy(top5[pos+1:], top5[pos:4])
-			}
-
-			top5[pos] = PostWithSharedTags{Post: isize(j), SharedTags: count}
-			minTags = top5[4].SharedTags
 		}
 	}
 
@@ -155,8 +150,8 @@ func computeRelatedPost(i isize, posts []Post, tagMap map[string][]isize, tagged
 	}
 
 	return RelatedPosts{
-		ID:      posts[i].ID,
-		Tags:    &posts[i].Tags,
+		ID:      posts[thisPostIdx].ID,
+		Tags:    posts[thisPostIdx].Tags,
 		Related: topPosts,
 	}
 }

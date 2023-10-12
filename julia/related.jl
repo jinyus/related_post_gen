@@ -9,9 +9,8 @@ function relatedIO()
     json_string = read("../posts.json", String)
     posts = JSON3.read(json_string, Vector{PostData})    
 
-    related(posts)
-
     start = now()
+    related(posts)
     all_related_posts = related(posts)
     println("Processing time (w/o IO): $(now() - start)")
 
