@@ -10,11 +10,35 @@ fn lessthan(context: void, lhs: usize, rhs: usize) bool {
     return lhs < rhs;
 }
 
+const FxHash = struct {
+    const K = 0x517c_c1b7_2722_0a95;
+
+    pub fn hash(self: @This(), s: []const u8) u64 {
+        _ = self;
+        var h: u64 = 0;
+        var bytes: [8]u8 = undefined;
+        var i: usize = 0;
+        while (i < s.len) : (i += 8) {
+            h <<= 5;
+            @memcpy(&bytes, s.ptr + i);
+            h ^= @bitCast(bytes);
+            h *|= K;
+        }
+        return h;
+    }
+
+    pub fn eql(self: @This(), a: []const u8, b: []const u8) bool {
+        _ = self;
+        return std.mem.eql(u8, a, b);
+    }
+};
+
 pub fn main() !void {
     const file = try std.fs.cwd().openFile("../posts.json", .{});
     defer file.close();
+    const ctx = FxHash{};
     const ArrPosts = std.ArrayList(usize);
-    var map = std.StringHashMap(ArrPosts).init(allocator);
+    var map = std.HashMap([]const u8, ArrPosts, FxHash, 80).initContext(allocator, ctx);
     defer map.deinit();
     var json_reader = std.json.reader(allocator, file.reader());
     defer json_reader.deinit();
