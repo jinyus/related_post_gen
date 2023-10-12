@@ -98,5 +98,5 @@ void main()
 	sw.stop();
 
 	writeln("Processing time (w/o IO): ", sw.peek.total!"usecs" * 1.0 / 1000, "ms");
-	toFile(serializeToJson(related), "../related_posts_d.json");
+	toFile(serializeToJson(related), "../related_posts_d_con.json");
 }
