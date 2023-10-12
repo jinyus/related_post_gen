@@ -1,9 +1,17 @@
 using JSON3
 using StructTypes
 using Dates
-using StaticArrays
 
 # warmup is done by hyperfine
+
+struct BufferKey{T}
+    len::Int
+end
+function task_local_buffer(::Type{T}, len) where {T}
+    tls = task_local_storage()
+    key = BufferKey{T}(len)
+    get!(() -> Vector{T}(undef, len), tls, key)
+end
 
 function relatedIO()
     json_string = read("../posts.json", String)
@@ -30,14 +38,14 @@ end
 struct RelatedPost
     _id::String
     tags::Vector{String}
-    related::SVector{5,PostData}
+    related::NTuple{5, PostData}
 end
 
 StructTypes.StructType(::Type{PostData}) = StructTypes.Struct()
 
-function fastmaxindex!(xs::Vector, topn, maxn, maxv)
-    maxn .= 1
-    maxv .= 0
+function fastmaxindex!(xs::Vector, topn, buf)
+    maxn = view(buf, 1:topn)            .= 1
+    maxv = view(buf, (topn+1):(2*topn)) .= 0
     top = maxv[1]
     for (i, x) in enumerate(xs)
         if x > top
@@ -52,10 +60,8 @@ function fastmaxindex!(xs::Vector, topn, maxn, maxv)
             top = maxv[1]
         end
     end
-
     reverse!(maxn)
-
-    return maxn
+    maxn
 end
 
 function related(posts)
@@ -65,8 +71,10 @@ function related(posts)
         end
     end
 end
+
 function related(::Type{T}, posts) where {T}
     topn = 5
+    buf  = task_local_buffer(T, 2*topn)
     # key is every possible "tag" used in all posts
     # value is indicies of all "post"s that used this tag
     tagmap = Dict{String,Vector{T}}()
@@ -79,9 +87,6 @@ function related(::Type{T}, posts) where {T}
 
     relatedposts = Vector{RelatedPost}(undef, length(posts))
     taggedpostcount = Vector{T}(undef, length(posts))
-
-    maxn = Vector{T}(undef,topn)
-    maxv = Vector{T}(undef,topn)
 
     for (i, post) in enumerate(posts)
         taggedpostcount .= 0
@@ -97,9 +102,9 @@ function related(::Type{T}, posts) where {T}
         # don't self count
         taggedpostcount[i] = 0
 
-        fastmaxindex!(taggedpostcount, topn, maxn, maxv)
-
-        relatedpost = RelatedPost(post._id, post.tags, SVector{topn}(@view posts[maxn]))
+        maxn = fastmaxindex!(taggedpostcount, topn, buf)
+        
+        relatedpost = RelatedPost(post._id, post.tags, ntuple(i -> posts[maxn[i]], topn))
         relatedposts[i] = relatedpost
     end
 

@@ -8,6 +8,15 @@ using ChunkSplitters
 
 # warmup is done by hyperfine
 
+struct BufferKey{T}
+    len::Int
+end
+function task_local_buffer(::Type{T}, len) where {T}
+    tls = task_local_storage()
+    key = BufferKey{T}(len)
+    get!(() -> Vector{T}(undef, len), tls, key)
+end
+
 function relatedIO()
     json_string = read("../posts.json", String)
     posts = JSON3.read(json_string, Vector{PostData})
@@ -17,7 +26,6 @@ function relatedIO()
     start = now()
     all_related_posts = related(posts)
     println("Processing time (w/o IO): $(now() - start)")
-
 
     open("../related_posts_julia_con.json", "w") do f
         JSON3.write(f, all_related_posts)
@@ -33,14 +41,14 @@ end
 struct RelatedPost
     _id::String
     tags::Vector{String}
-    related::SVector{5,PostData}
+    related::NTuple{5,PostData}
 end
 
 StructTypes.StructType(::Type{PostData}) = StructTypes.Struct()
 
-function fastmaxindex!(xs::Vector, topn, maxn, maxv)
-    maxn .= 1
-    maxv .= 0
+function fastmaxindex!(xs::Vector, topn, buf)
+    maxn = view(buf, 1:topn)            .= 1
+    maxv = view(buf, (topn+1):(2*topn)) .= 0
     top = maxv[1]
     for (i, x) in enumerate(xs)
         if x > top
@@ -55,10 +63,8 @@ function fastmaxindex!(xs::Vector, topn, maxn, maxv)
             top = maxv[1]
         end
     end
-
     reverse!(maxn)
-
-    return maxn
+    maxn
 end
 
 function related(posts)
@@ -83,8 +89,7 @@ function related(::Type{T}, posts) where {T}
 
     @threads for (postsrange, _) in chunks(posts, nthreads())
         topn = 5
-        maxn = Vector{T}(undef,topn)
-        maxv = Vector{T}(undef,topn)
+        buf  = task_local_buffer(T, 2*topn)
         taggedpostcount = Vector{T}(undef, length(posts))
 
         for i in postsrange
@@ -103,14 +108,12 @@ function related(::Type{T}, posts) where {T}
             # don't self count
             taggedpostcount[i] = 0
 
-            fastmaxindex!(taggedpostcount, topn, maxn, maxv)
+            maxn = fastmaxindex!(taggedpostcount, topn, buf)
 
-            relatedpost = RelatedPost(post._id, post.tags, SVector{topn}(@view posts[maxn]))
+            relatedpost = RelatedPost(post._id, post.tags, ntuple(i -> posts[maxn[i]], topn))
             relatedposts[i] = relatedpost
         end
     end
-
-
 
     return relatedposts
 end
