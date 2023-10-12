@@ -4,14 +4,8 @@ using Dates
 using Base.Cartesian: @nexprs, @ncall
 # warmup is done by hyperfine
 
-# struct BufferKey{T}
-#     len::Int
-# end
-# function task_local_buffer(::Type{T}, len) where {T}
-#     tls = task_local_storage()
-#     key = BufferKey{T}(len)
-#     get!(() -> Vector{T}(undef, len), tls, key)::Vector{T}
-# end
+
+const topn = 5
 
 function relatedIO()
     json_string = read("../posts.json", String)
@@ -19,10 +13,9 @@ function relatedIO()
 
     related(posts)
 
-    start = now()
+    start = now()       
     all_related_posts = related(posts)
     println("Processing time (w/o IO): $(now() - start)")
-
 
     open("../related_posts_julia.json", "w") do f
         JSON3.write(f, all_related_posts)
@@ -38,52 +31,28 @@ end
 struct RelatedPost
     _id::String
     tags::Vector{String}
-    related::NTuple{5, PostData}
+    related::NTuple{topn, PostData}
 end
 
 StructTypes.StructType(::Type{PostData}) = StructTypes.Struct()
 
-@generated function fastmaxindex(xs::Vector, ::Val{topn}) where {topn}
-    quote
-        @nexprs $topn i -> (maxn_i = 1)
-        @nexprs $topn i -> (maxv_i = 0)
-        top = maxv_1
-        for (i, x) ∈ enumerate(xs)
-            if x > top
-                maxv_1 = x
-                maxn_1 = i
-                @nexprs $(topn-1) j -> begin
-                    if maxv_{j} > maxv_{j+1}
-                        maxv_{j}, maxv_{j+1} = maxv_{j+1}, maxv_{j}
-                        maxn_{j}, maxn_{j+1} = maxn_{j+1}, maxn_{j}
-                    end
-                end
-            end
-            top = maxv_1
-        end
-        @ncall $topn tuple i -> maxn_{$topn+1-i}
-    end
-end
-
-function fastmaxindex!(xs::Vector, topn, buf)
-    maxn = view(buf, 1:topn)            .= 1
-    maxv = view(buf, (topn+1):(2*topn)) .= 0
-    top = maxv[1]
+function fastmaxindex!(xs::Vector, topn, maxs)
+    # each element is a pair idx => val
+    maxs .= (1 => 0)
+    top = maxs[1][2]
     for (i, x) in enumerate(xs)
         if x > top
-            maxv[1] = x
-            maxn[1] = i
+            maxs[1] = (i => x)
             for j in 2:topn
-                if maxv[j-1] > maxv[j]
-                    maxv[j-1], maxv[j] = maxv[j], maxv[j-1]
-                    maxn[j-1], maxn[j] = maxn[j], maxn[j-1]
+                if maxs[j-1][2] > maxs[j][2]
+                    maxs[j-1], maxs[j] = maxs[j], maxs[j-1]
                 end
             end
-            top = maxv[1]
+            top = maxs[1][2]
         end
     end
-    reverse!(maxn)
-    maxn
+    reverse!(maxs)
+    first.(maxs)
 end
 
 function related(posts)
@@ -95,7 +64,7 @@ function related(posts)
 end
 
 function related(::Type{T}, posts) where {T}
-    topn = 5
+    buf = Vector{Pair{Int, T}}(undef, topn)
     # key is every possible "tag" used in all posts
     # value is indicies of all "post"s that used this tag
     tagmap = Dict{String,Vector{T}}()
@@ -122,8 +91,7 @@ function related(::Type{T}, posts) where {T}
 
         # don't self count
         taggedpostcount[i] = 0
-
-        maxn = fastmaxindex(taggedpostcount, Val(topn))
+        maxn = fastmaxindex!(taggedpostcount, topn, buf)
         
         relatedpost = RelatedPost(post._id, post.tags, ntuple(i -> posts[maxn[i]], topn))
         relatedposts[i] = relatedpost
