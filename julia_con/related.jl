@@ -3,7 +3,6 @@ using Base.Threads
 using JSON3
 using StructTypes
 using Dates
-using StaticArrays
 using ChunkSplitters
 
 # warmup is done by hyperfine
