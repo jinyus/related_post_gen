@@ -7,12 +7,11 @@ import (
 	"time"
 )
 
-const topN = 5
-const InitialTagMapSize = 100
-
 const (
-	INPUT_FILE  = "../posts.json"
-	OUTPUT_FILE = "../related_posts_go.json"
+	topN              = 5
+	InitialTagMapSize = 100
+	INPUT_FILE        = "../posts.json"
+	OUTPUT_FILE       = "../related_posts_go.json"
 )
 
 type isize uint16
