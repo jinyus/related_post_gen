@@ -454,14 +454,26 @@ run_fsharp() {
 }
 
 run_csharp() {
-    echo "Running CSharp" &&
+    echo "Running CSharp (JIT)" &&
         cd ./csharp &&
-        dotnet restore &&
-        dotnet publish -c release --self-contained -o "bin/release/net7.0/publish" &&
+        dotnet publish -c release --self-contained -o "bin/release/net8.0/jit" &&
         if [ $HYPER == 1 ]; then
-            capture "C#" hyperfine -r $runs -w $warmup --show-output "./bin/release/net7.0/publish/related"
+            capture "C# (JIT)" hyperfine -r $runs -w $warmup --show-output "./bin/release/net8.0/jit/related"
         else
-            command ${time} -f '%es %Mk' ./bin/release/net7.0/publish/related
+            command ${time} -f '%es %Mk' ./bin/release/net8.0/jit/related
+        fi
+
+    check_output "related_posts_csharp.json"
+}
+
+run_csharp_aot() {
+    echo "Running CSharp (AOT)" &&
+        cd ./csharp &&
+        dotnet publish -c release --self-contained -p PublishAot=true -o "bin/release/net8.0/aot" &&
+        if [ $HYPER == 1 ]; then
+            capture "C# (AOT)" hyperfine -r $runs -w $warmup --show-output "./bin/release/net8.0/aot/related"
+        else
+            command ${time} -f '%es %Mk' ./bin/release/net8.0/aot/related
         fi
 
     check_output "related_posts_csharp.json"
@@ -671,6 +683,10 @@ elif [ "$first_arg" = "csharp" ]; then
 
     run_csharp
 
+elif [ "$first_arg" = "csharp_aot" ]; then
+
+    run_csharp_aot
+
 elif [ "$first_arg" = "fsharp_con" ]; then
 
     run_fsharp_con
@@ -723,6 +739,7 @@ elif [ "$first_arg" = "all" ]; then
         run_fsharp || echo -e "\n" &&
         run_fsharp_con || echo -e "\n" &&
         run_csharp || echo -e "\n" &&
+        run_csharp_aot || echo -e "\n" &&
         run_luajit || echo -e "\n" &&
         run_lua || echo -e "\n" &&
         run_ocaml || echo -e "\n" &&
@@ -755,6 +772,6 @@ elif [ "$first_arg" = "clean" ]; then
 
 else
 
-    echo "Valid args: go | go_con | rust | rust_con | d | py | numpy | numba | numba_con | cr | zig | odin | jq | julia | v | dart | swift | swift_con | node | bun | deno | java | java_graal | java_graal_con | nim | luajit | lua | all | clean. Unknown argument: $first_arg"
+    echo "Valid args: go | go_con | rust | rust_con | d | py | numpy | numba | numba_con | cr | zig | odin | jq | julia | v | dart | swift | swift_con | node | bun | deno | java | java_graal | java_graal_con | nim | luajit | lua | csharp | csharp_aot | all | clean. Unknown argument: $first_arg"
 
 fi
