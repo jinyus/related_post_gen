@@ -82,7 +82,7 @@ void main() {
     });
   }
 
-  // getAllRelatedPosts(); // warmup
+  getAllRelatedPosts(); // warmup
 
   final sw = Stopwatch()..start();
 
