@@ -56,8 +56,8 @@ docker run -e TEST_NAME=all -it --rm databench
 
 | Language       | Time (5k posts)                       | 20k posts                              | 60k posts                           | Total    |
 | -------------- | ------------------------------------- | -------------------------------------- | ----------------------------------- | -------- |
-| Go | 24.25 ms | 372.99 ms | 3.28 s | 3.68 s |
-| Rust | 23.81 ms | 386.69 ms | 3.45 s | 3.86 s |
+| Go | 24.25 ms | $\textsf{\color{lightgreen}372.99 ms}$ | $\textsf{\color{lightgreen}3.28 s}$ | 3.68 s |
+| Rust | $\textsf{\color{lightgreen}23.81 ms}$ | 386.69 ms | 3.45 s | 3.86 s |
 | Zig | 29.08 ms | 432.00 ms | 3.85 s | 4.32 s |
 | D | 32.70 ms | 448.78 ms | 3.90 s | 4.39 s |
 | Java (GraalVM) | 33.31 ms | 495.00 ms | 4.22 s | 4.75 s |
@@ -81,7 +81,7 @@ docker run -e TEST_NAME=all -it --rm databench
 | JS (Bun) | 775.77 ms | 11.92 s | 107.60 s | 120.29 s |
 | Lua | 1.10 s | 16.78 s | 150.31 s | 168.19 s |
 | Python | 1.47 s | 23.45 s | 215.48 s | 240.39 s |
-| Numpy | 348.98 ms | 5.90 s | 1.7976931348623156e+305 s | 1.7976931348623156e+305 s |
+| Numpy | 348.98 ms | 5.90 s | OutofMemory | N/A |
 
 ### Multicore Results
 
