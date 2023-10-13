@@ -10,7 +10,6 @@ function relatedIO()
     json_string = read("../posts.json", String)
     posts = JSON3.read(json_string, Vector{PostData})
 
-    related(posts)
 
     start = now()
     all_related_posts = related(posts)
