@@ -4,7 +4,6 @@ using Dates
 using InlineStrings
 # warmup is done by hyperfine
 
-const StringN = String15
 const topn = 5
 
 struct BufferKey{T}
@@ -32,14 +31,14 @@ function relatedIO()
 end
 
 struct PostData
-    _id::StringN
+    _id::String
     title::String
-    tags::Vector{StringN}
+    tags::Vector{String}
 end
 
 struct RelatedPost
-    _id::StringN
-    tags::Vector{StringN}
+    _id::String
+    tags::Vector{String}
     related::NTuple{topn, PostData}
 end
 
@@ -74,7 +73,7 @@ end
 function related(::Type{T}, posts) where {T}
     # key is every possible "tag" used in all posts
     # value is indicies of all "post"s that used this tag
-    tagmap = Dict{StringN, Vector{T}}()
+    tagmap = Dict{String, Vector{T}}()
     for (idx, post) in enumerate(posts)
         for tag in post.tags
             tags = get!(() -> T[], tagmap, tag)
