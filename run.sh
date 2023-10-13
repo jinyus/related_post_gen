@@ -241,9 +241,9 @@ run_julia() {
 run_julia_con() {
     echo "Running Julia Concurrent" &&
         cd ./julia_con &&
-        julia -e 'using Pkg; Pkg.add.(["JSON3", "StructTypes", "ChunkSplitters"])' &&
+        julia -e 'using Pkg; pkg"activate RelatedCon"; pkg"instantiate"' &&
         if [ $HYPER == 1 ]; then
-            capture "Julia Concurrent" hyperfine -r $runs -w $warmup --show-output "julia --threads auto related.jl"
+            capture "Julia Concurrent" hyperfine -r $runs -w $warmup --show-output "julia --project=Related -e \"using RelatedCon; main()\""
         else
             command ${time} -f '%es %Mk' julia --threads auto related.jl
         fi
