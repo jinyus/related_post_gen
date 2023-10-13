@@ -60,7 +60,7 @@ docker run -e TEST_NAME=all -it --rm databench
 
 | Language       | Time (5k posts)                       | 20k posts                              | 60k posts                           | Total    |
 | -------------- | ------------------------------------- | -------------------------------------- | ----------------------------------- | -------- |
-| D | 23.84 ms | 302.34 ms | 2.63 s | 2.95 s |
+| D | $\textsf{\color{lightgreen}23.84 ms}$ | $\textsf{\color{lightgreen}302.34 ms}$ | $\textsf{\color{lightgreen}2.63 s}$ | 2.95 s |
 | Go | 24.41 ms | 370.44 ms | 3.28 s | 3.67 s |
 | Rust | 23.85 ms | 387.30 ms | 3.45 s | 3.86 s |
 | Zig | 28.08 ms | 427.33 ms | 3.82 s | 4.28 s |
@@ -85,14 +85,14 @@ docker run -e TEST_NAME=all -it --rm databench
 | JS (Bun) | 619.38 ms | 12.06 s | 105.76 s | 118.44 s |
 | Lua | 1.10 s | 16.74 s | 150.10 s | 167.94 s |
 | Python | 1.47 s | 23.58 s | 215.95 s | 240.99 s |
-| Numpy | 422.73 ms | 6.88 s | 1.7976931348623156e+305 s | 1.7976931348623156e+305 s |
+| Numpy | 422.73 ms | 6.88 s | OutofMemory | N/A |
 
 ### Multicore Results
 
 | Language       | Time (5k posts) | 20k posts        | 60k posts        | Total     |
 | -------------- | --------------- | ---------------- | ---------------- | --------- |
-| D Concurrent | 14.46 ms | 144.32 ms | 1.17 s | 1.33 s |
-| Go Concurrent | 13.26 ms | 166.52 ms | 1.43 s | 1.61 s |
+| D Concurrent | 14.46 ms | $\textsf{\color{lightgreen}144.32 ms}$ | $\textsf{\color{lightgreen}1.17 s}$ | 1.33 s |
+| Go Concurrent | $\textsf{\color{lightgreen}13.26 ms}$ | 166.52 ms | 1.43 s | 1.61 s |
 | Julia Concurrent | 18.15 ms | 251.67 ms | 2.13 s | 2.40 s |
 | Rust Concurrent | 20.31 ms | 306.10 ms | 2.73 s | 3.06 s |
 | Swift Concurrent | 31.52 ms | 393.47 ms | 3.45 s | 3.88 s |
