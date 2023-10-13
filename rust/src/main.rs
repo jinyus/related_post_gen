@@ -20,7 +20,7 @@ struct Post<'a> {
     tags: Vec<String>,
 }
 
-const NUM_TOP_ITEMS: u32 = 5;
+const NUM_TOP_ITEMS: usize = 5;
 
 #[derive(Serialize)]
 struct RelatedPosts<'a> {
@@ -57,21 +57,6 @@ impl std::cmp::Ord for PostCount {
     }
 }
 
-fn least_n<T: Ord>(n: u32, mut from: impl Iterator<Item = T>) -> impl Iterator<Item = T> {
-    let mut h = BinaryHeap::from_iter(from.by_ref().take(n as usize));
-
-    for it in from {
-        // heap thinks the smallest is the greatest because of reverse order
-        let mut greatest = h.peek_mut().unwrap();
-
-        if it < *greatest {
-            // heap rebalances after the smart pointer is dropped
-            *greatest = it;
-        }
-    }
-    h.into_iter()
-}
-
 fn main() {
     let json_str = std::fs::read_to_string("../posts.json").unwrap();
     let posts: Vec<Post> = from_str(&json_str).unwrap();
@@ -106,17 +91,29 @@ fn main() {
 
             tagged_post_count[post_idx] = 0; // don't recommend the same post
 
-            let top = least_n(
-                NUM_TOP_ITEMS,
-                tagged_post_count
-                    .iter()
-                    .enumerate()
-                    .map(|(post, &count)| PostCount {
-                        post: post as u32,
-                        count,
-                    }),
-            );
-            let related = top.map(|it| &posts[it.post as usize]).collect();
+            let mut iter = tagged_post_count.iter().enumerate();
+            let i = iter
+                .by_ref()
+                .map(|(post, &count)| PostCount {
+                    post: post as u32,
+                    count,
+                })
+                .take(NUM_TOP_ITEMS);
+            let mut top = BinaryHeap::from_iter(i);
+
+            iter.for_each(|(post, &count)| {
+                {
+                    let mut greatest = top.peek_mut().unwrap();
+                    if count > greatest.count {
+                        // heap rebalances after the smart pointer is dropped
+                        *greatest = PostCount {
+                            post: post as u32,
+                            count,
+                        };
+                    }
+                }
+            });
+            let related = top.into_iter().map(|it| &posts[it.post as usize]).collect();
 
             RelatedPosts {
                 _id: &post._id,
