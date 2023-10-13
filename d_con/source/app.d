@@ -34,18 +34,20 @@ void main()
 	auto jsonText = readText("../posts.json");
 	auto posts = deserialize!(Post[])(jsonText);
 	int postsCount = cast(int) posts.length;
+	auto relatedPosts = new RelatedPosts[postsCount];
 
-	auto sw = StopWatch(AutoStart.yes);
+	writeln(postsCount);
 
 	size_t[][string] tagMap;
+
+	auto sw = StopWatch(AutoStart.yes);
 
 	foreach (i, post; posts)
 		foreach (tag; post.tags)
 			tagMap[tag] ~= i;
 
-	auto relatedPosts = new RelatedPosts[postsCount];
 	auto taggedPostsCountThreadPool = taskPool.workerLocalStorage(new ubyte[postsCount]);
-	
+
 	foreach (k, ref post; posts.parallel)
 	{
 		ubyte[] taggedPostsCount = taggedPostsCountThreadPool.get;
@@ -64,20 +66,19 @@ void main()
 		{
 			if (count > minTags)
 			{
-                // Find position to insert
-                auto pos = 4;
-                while (pos >= 0 && top5[pos].sharedTags < count) {
-                    pos--;
-                }
-                pos++;
+				int upperBound = TopN - 2;
 
-                // Shift and insert
-                if (pos < 4) {
-                    foreach_reverse (idx; pos .. 4)
-                        top5.ptr[idx + 1] = top5.ptr[idx];
-                }
-                top5[pos] = PostsWithSharedTags(j, count);
-                minTags = top5[4].sharedTags;
+				ubyte sharedTagsCount = top5[upperBound].sharedTags;
+
+				while (upperBound >= 0 && count > sharedTagsCount)
+				{
+					top5[upperBound + 1] = top5[upperBound];
+					upperBound--;
+				}
+
+				top5[upperBound + 1] = PostsWithSharedTags(j, count);
+
+				minTags = top5[TopN - 1].sharedTags;
 			}
 		}
 
@@ -94,4 +95,3 @@ void main()
 	writeln("Processing time (w/o IO): ", sw.peek.total!"usecs" * 1.0 / 1000, "ms");
 	toFile(serializeToJson(relatedPosts), "../related_posts_d_con.json");
 }
-
