@@ -243,7 +243,7 @@ run_julia_con() {
         cd ./julia_con &&
         julia -e 'using Pkg; pkg"activate RelatedCon"; pkg"instantiate"' &&
         if [ $HYPER == 1 ]; then
-            capture "Julia Concurrent" hyperfine -r $runs -w $warmup --show-output "julia --project=RelatedCon -e \"using RelatedCon; main()\""
+            capture "Julia Concurrent" hyperfine -r $runs -w $warmup --show-output "julia --threads=auto --project=RelatedCon -e \"using RelatedCon; main()\""
         else
             command ${time} -f '%es %Mk' julia --threads auto related.jl
         fi
