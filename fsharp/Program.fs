@@ -2,7 +2,7 @@
 open System.IO
 open FSharp.NativeInterop
 open System.Collections.Generic
-open FSharp.Json
+open FSharp.Json //System.Text.Json not aot friendly
 
 #nowarn "9"
 
