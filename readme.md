@@ -41,6 +41,7 @@ docker run -e TEST_NAME=all -it --rm databench
 -   Specific hardware targeting
 -   Hardcoding number of posts
 -   Lazy evaluation (Unless results are computed at runtime and timed)
+-   Computation Caching
 
 <h3>Must:</h3>
 
