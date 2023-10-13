@@ -60,9 +60,7 @@ void main()
 			{
 				int upperBound = TopN - 2;
 
-				ubyte sharedTagsCount = top5[upperBound].sharedTags;
-
-				while (upperBound >= 0 && count > sharedTagsCount)
+				while (upperBound >= 0 && count > top5[upperBound].sharedTags)
 				{
 					top5[upperBound + 1] = top5[upperBound];
 					upperBound--;
