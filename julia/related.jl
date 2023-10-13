@@ -31,14 +31,14 @@ function relatedIO()
 end
 
 struct PostData
-    _id::String
+    _id::Symbol
     title::String
-    tags::Vector{String}
+    tags::Vector{Symbol}
 end
 
 struct RelatedPost
-    _id::String
-    tags::Vector{String}
+    _id::Symbol
+    tags::Vector{Symbol}
     related::NTuple{topn, PostData}
 end
 
@@ -73,7 +73,7 @@ end
 function related(::Type{T}, posts) where {T}
     # key is every possible "tag" used in all posts
     # value is indicies of all "post"s that used this tag
-    tagmap = Dict{String,Vector{T}}()
+    tagmap = Dict{Symbol,Vector{T}}()
     for (idx, post) in enumerate(posts)
         for tag in post.tags
             tags = get!(() -> T[], tagmap, tag)
