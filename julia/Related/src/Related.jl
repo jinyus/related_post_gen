@@ -42,7 +42,7 @@ function maxindex!(xs::Vector, maxs)
     maxs
 end
 
-function related!(posts, tagmap, relatedposts, taggedpostcount, maxs) where {T}
+function related!(posts, tagmap, relatedposts, taggedpostcount, maxs)
     # key is every possible "tag" used in all posts
     # value is indicies of all "post"s that used this tag
 
@@ -75,7 +75,7 @@ function related!(posts, tagmap, relatedposts, taggedpostcount, maxs) where {T}
 end
 
 function main()
-    json_string = read("../../../posts.json", String)
+    json_string = read(@__DIR__()*"/../../../posts.json", String)
     posts = JSON3.read(json_string, Vector{PostData})
 
     tagmap=Dict{Symbol, Vector{UInt32}}()
@@ -87,14 +87,14 @@ function main()
     all_related_posts = related!(posts, tagmap, relatedposts, taggedpostcount, maxs)
     println("Processing time (w/o IO): $(now() - start)")
 
-    open("../related_posts_julia.json", "w") do f
+    open(@__DIR__()*"/../../../related_posts_julia.json", "w") do f
         JSON3.write(f, all_related_posts)
     end
 end
 
 
-@precompile_workload begin
-    println("Precompiling main workload")
+@compile_workload begin
+    print("Precompiling main workload: ")
     main()
 end
 
