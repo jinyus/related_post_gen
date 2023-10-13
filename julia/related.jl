@@ -1,9 +1,10 @@
 using JSON3
 using StructTypes
 using Dates
+using InlineStrings
 # warmup is done by hyperfine
 
-
+const StringN = String15
 const topn = 5
 
 struct BufferKey{T}
@@ -31,14 +32,14 @@ function relatedIO()
 end
 
 struct PostData
-    _id::Symbol
+    _id::StringN
     title::String
-    tags::Vector{Symbol}
+    tags::Vector{StringN}
 end
 
 struct RelatedPost
-    _id::Symbol
-    tags::Vector{Symbol}
+    _id::StringN
+    tags::Vector{StringN}
     related::NTuple{topn, PostData}
 end
 
@@ -73,7 +74,7 @@ end
 function related(::Type{T}, posts) where {T}
     # key is every possible "tag" used in all posts
     # value is indicies of all "post"s that used this tag
-    tagmap = Dict{Symbol,Vector{T}}()
+    tagmap = Dict{StringN, Vector{T}}()
     for (idx, post) in enumerate(posts)
         for tag in post.tags
             tags = get!(() -> T[], tagmap, tag)
