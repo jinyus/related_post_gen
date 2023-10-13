@@ -1,4 +1,5 @@
 switch("opt", "speed")
-switch("passC", "-flto  -Ofast")
-switch("passL", "-flto  -Ofast")
+switch("passC", "-flto -Ofast")
+switch("passL", "-flto -Ofast")
+switch("cc", "clang")
 switch("panics", "off")
