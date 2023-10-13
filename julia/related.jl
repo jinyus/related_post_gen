@@ -1,7 +1,6 @@
 using JSON3
 using StructTypes
 using Dates
-using InlineStrings
 # warmup is done by hyperfine
 
 const topn = 5
