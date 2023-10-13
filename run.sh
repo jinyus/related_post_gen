@@ -230,7 +230,7 @@ run_julia() {
         cd ./julia &&
         julia -e 'using Pkg; pkg"activate Related"; pkg"instantiate"' &&
         if [ $HYPER == 1 ]; then
-            capture "Julia" hyperfine -r $runs -w $warmup --show-output "julia -e \"using Relate; main()\""
+            capture "Julia" hyperfine -r $runs -w $warmup --show-output "julia -e \"using Related; main()\""
         else
             command ${time} -f '%es %Mk' julia related.jl
         fi
