@@ -229,7 +229,7 @@ run_zig() {
 run_julia() {
     echo "Running Julia" &&
         cd ./julia &&
-        julia -e 'using Pkg; Pkg.add.(["JSON3", "StructTypes", "StaticArrays"])' &&
+        julia -e 'using Pkg; Pkg.add(url="https://github.com/LilithHafner/Jokes", subdir="SuperDataStructures.jl"); Pkg.add(["JSON3", "StructTypes", "StaticArrays"])' &&
         if [ $HYPER == 1 ]; then
             capture "Julia" hyperfine -r $runs -w $warmup --show-output "julia related.jl"
         else
