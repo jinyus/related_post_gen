@@ -4,21 +4,21 @@ using Dates
 using StaticArrays
 using SuperDataStructures
 
-# warmup is done by hyperfine
+function write(filename, data)
+    open(filename, "w") do f
+        JSON3.write(f, data)
+    end
+end
 
 function relatedIO()
     json_string = read("../posts.json", String)
     posts = JSON3.read(json_string, Vector{PostData})
 
-
     start = now()
     all_related_posts = related(posts)
     println("Processing time (w/o IO): $(now() - start)")
 
-
-    open("../related_posts_julia.json", "w") do f
-        JSON3.write(f, all_related_posts)
-    end
+    write("../related_posts_julia.json", all_related_posts)
 end
 
 struct PostData
@@ -66,5 +66,8 @@ function related(posts)
 
     relatedposts
 end
+
+# warmup for writing JSON to disk
+write(joinpath(tempdir(), "warmup_related_posts.json"), [RelatedPost("a", ["b"], fill(PostData("c", "d", ["e"]), 5))])
 
 const res = relatedIO()
