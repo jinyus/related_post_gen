@@ -551,7 +551,7 @@ run_ocaml() {
 run_d() {
     echo "Running D" &&
         cd ./d &&
-        dub build --build=release &&
+        dub build --build=release --vquiet &&
         if [ $HYPER == 1 ]; then
             capture "D" hyperfine -r $runs -w $warmup --show-output "./related"
         else
@@ -564,7 +564,7 @@ run_d() {
 run_d_con() {
     echo "Running D Concurrent" &&
         cd ./d_con &&
-        dub build --build=release &&
+        dub build --build=release --vquiet &&
         if [ $HYPER == 1 ]; then
             capture "D Concurrent" hyperfine -r $runs -w $warmup --show-output "./related_concurrent"
         else
