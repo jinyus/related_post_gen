@@ -23,16 +23,6 @@ struct RelatedPost
     related::NTuple{topn, PostData}
 end
 
-struct BufferKey{T}
-    len::Int
-end
-
-function task_local_buffer(::Type{T}, len) where {T}
-    tls = task_local_storage()
-    key = BufferKey{T}(len)
-    get!(() -> Vector{T}(undef, len), tls, key)::Vector{T}
-end
-
 StructTypes.StructType(::Type{PostData}) = StructTypes.Struct()
 
 function maxindex!(xs::Vector, maxs)
@@ -64,10 +54,10 @@ function related!(posts, tagmap, relatedposts)
         end
     end
 
-    @threads for (postsrange, _) in chunks(posts, nthreads())
+    @threads for (postsrange, _) in chunks(posts, 2*nthreads())
         
-        maxs = task_local_buffer(Pair{Int, Int32}, topn)
-        taggedpostcount = task_local_buffer(Int32, length(posts))
+        maxs = Vector{Pair{Int, Int32}}(undef, topn)
+        taggedpostcount = Vector{Int32}(undef, length(posts))
 
         for i in postsrange
             post = posts[i]
