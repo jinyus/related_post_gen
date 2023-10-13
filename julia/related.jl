@@ -1,7 +1,6 @@
 using JSON3
 using StructTypes
 using Dates
-using Base.Cartesian: @nexprs, @ncall
 # warmup is done by hyperfine
 
 
@@ -45,7 +44,7 @@ end
 
 StructTypes.StructType(::Type{PostData}) = StructTypes.Struct()
 
-function fastmaxindex!(xs::Vector, topn, maxs)
+function fastmaxindex!(xs::Vector, maxs)
     # each element is a pair idx => val
     maxs .= (1 => 0)
     top = maxs[1][2]
@@ -60,8 +59,7 @@ function fastmaxindex!(xs::Vector, topn, maxs)
             top = maxs[1][2]
         end
     end
-    reverse!(maxs)
-    first.(maxs)
+    maxs
 end
 
 function related(posts)
@@ -83,7 +81,7 @@ function related(::Type{T}, posts) where {T}
         end
     end
 
-    buf = task_local_buffer(Pair{Int, T}, topn)
+    maxs = task_local_buffer(Pair{Int, T}, topn)
     relatedposts = Vector{RelatedPost}(undef, length(posts))
     taggedpostcount = Vector{T}(undef, length(posts))
 
@@ -100,9 +98,9 @@ function related(::Type{T}, posts) where {T}
 
         # don't self count
         taggedpostcount[i] = 0
-        maxn = fastmaxindex!(taggedpostcount, topn, buf)
+        maxs= fastmaxindex!(taggedpostcount, maxs)
         
-        relatedpost = RelatedPost(post._id, post.tags, ntuple(i -> posts[maxn[i]], topn))
+        relatedpost = RelatedPost(post._id, post.tags, ntuple(i -> posts[maxs[topn+1-i][1]], topn))
         relatedposts[i] = relatedpost
     end
 
