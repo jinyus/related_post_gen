@@ -101,8 +101,8 @@ function fasterrelated(posts)
     end
     
     topn = 5
-    maxn = Vector{Int}(undef, 5)
-    maxv = Vector{Int}(undef, 5)
+    maxn = Vector{Int}(undef, topn)
+    maxv = Vector{Int}(undef, topn)
     
     relatedposts = Vector{RelatedPost}(undef, length(posts))
     getrelatedposts!(tagmap, posts, topn, maxn, maxv, relatedposts, getContainer(Ct))
