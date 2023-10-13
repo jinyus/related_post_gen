@@ -34,18 +34,32 @@ public class App {
     }
 
     public static void main(String[] args) throws IOException {
-        mainFunc("../posts.json", "../related_posts_java.json");
-    }
-
-    public static void mainFunc(String inputFile, String outputFile) throws IOException {
         DslJson<Object> dslJson = new DslJson<>();
 
         Post[] posts;
-        try (InputStream in = Files.newInputStream(Paths.get(inputFile))) {
+        try (InputStream in = Files.newInputStream(Paths.get("../posts.json"))) {
             posts = Objects.requireNonNull(dslJson.deserialize(Post[].class, in));
         }
 
+        // warmup
+        getAllRelatedPosts(posts);
+
         long start = System.nanoTime();
+
+        var allRelatedPosts = getAllRelatedPosts(posts);
+
+        long end = System.nanoTime();
+
+        System.out.println("Processing time (w/o IO): " + TimeUnit.NANOSECONDS.toMillis(end - start) + " ms");
+
+        try (OutputStream out = Files.newOutputStream(Paths.get("../related_posts_java.json"))) {
+            dslJson.serialize(allRelatedPosts, out);
+        }
+    }
+
+    public static RelatedPosts[] getAllRelatedPosts(Post[] posts) throws IOException {
+        
+
 
         Map<String, IntArrayList> tagMap = HashMap.newHashMap(100);
         for (int i = 0; i < posts.length; i++) {
@@ -61,13 +75,7 @@ public class App {
             allRelatedPosts[i] = getRelatedPosts(posts, i, taggedPostCount, tagMap);
         }
 
-        long end = System.nanoTime();
-
-        System.out.println("Processing time (w/o IO): " + TimeUnit.NANOSECONDS.toMillis(end - start) + " ms");
-
-        try (OutputStream out = Files.newOutputStream(Paths.get(outputFile))) {
-            dslJson.serialize(allRelatedPosts, out);
-        }
+        return allRelatedPosts;
     }
 
     private static RelatedPosts getRelatedPosts(Post[] posts, int i, int[] taggedPostCount, Map<String, IntArrayList> tagMap) {
