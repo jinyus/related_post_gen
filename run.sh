@@ -228,9 +228,9 @@ run_zig() {
 run_julia() {
     echo "Running Julia" &&
         cd ./julia &&
-        julia -e 'using Pkg; Pkg.add.(["JSON3", "StructTypes"])' &&
+        julia -e 'using Pkg; pkg"activate Related"; pkg"instantiate"' &&
         if [ $HYPER == 1 ]; then
-            capture "Julia" hyperfine -r $runs -w $warmup --show-output "julia related.jl"
+            capture "Julia" hyperfine -r $runs -w $warmup --show-output "julia -e \"using Relate; main()\""
         else
             command ${time} -f '%es %Mk' julia related.jl
         fi

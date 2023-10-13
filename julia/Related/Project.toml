@@ -1,0 +1,16 @@
+name = "Related"
+uuid = "892d0954-52c7-4a59-ae8f-9a164aba3227"
+authors = ["Mason Protter <mason.protter@icloud.com>"]
+version = "0.1.0"
+
+[deps]
+Dates = "ade2ca70-3891-5945-98fb-dc099432e06a"
+JSON3 = "0f8b85d8-7281-11e9-16c2-39a750bddbf1"
+PrecompileTools = "aea7be01-6a6a-4083-8856-8a6e6704d82a"
+StructTypes = "856f2bd8-1eba-4b0a-8007-ebc267875bd4"
+
+[compat]
+julia = "1.9"
+JSON3 = "1"
+PrecompileTools = "1"
+StructTypes = "1"
