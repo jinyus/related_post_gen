@@ -1,6 +1,6 @@
 name = "Related"
 uuid = "892d0954-52c7-4a59-ae8f-9a164aba3227"
-authors = ["Mason Protter <mason.protter@icloud.com>"]
+authors = []
 version = "0.1.0"
 
 [deps]
