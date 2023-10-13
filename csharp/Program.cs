@@ -7,6 +7,8 @@ using System.Text.Json.Serialization;
 const int topN = 5;
 var posts = JsonSerializer.Deserialize(File.ReadAllText(@"../posts.json"), MyJsonContext.Default.ListPost)!;
 
+var postsCount = posts.Count;
+
 // slower when warm up manually
 // GetRelatedPosts(posts);
 
@@ -18,12 +20,11 @@ sw.Stop();
 
 Console.WriteLine($"Processing time (w/o IO): {sw.Elapsed.TotalMilliseconds}ms");
 
-File.WriteAllText(@"../related_posts_csharp.json", JsonSerializer.Serialize(allRelatedPosts, MyJsonContext.Default.RelatedPostsArray));
+File.WriteAllText(@"../related_posts_csharp.json", JsonSerializer.Serialize(allRelatedPosts.ToArray(), MyJsonContext.Default.RelatedPostsArray));
 
 
-static RelatedPosts[] GetRelatedPosts(List<Post> posts)
+Span<RelatedPosts> GetRelatedPosts(List<Post> posts)
 {
-    var postsCount = posts.Count;
 
     // Create a dictionary to map tags to post IDs.
     var tagMapTemp = new Dictionary<string, LinkedList<int>>(100);
@@ -47,15 +48,15 @@ static RelatedPosts[] GetRelatedPosts(List<Post> posts)
     }
 
     // Create an array to store all of the related posts.
-    var allRelatedPosts = new RelatedPosts[postsCount];
-    var taggedPostCount = new byte[postsCount];
-    Span<(byte Count, int PostId)> top5 = new (byte Count, int PostId)[topN];
+    Span<RelatedPosts> allRelatedPosts = new RelatedPosts[postsCount];
+    Span<byte> taggedPostCount = stackalloc byte[postsCount];
+    Span<(byte Count, int PostId)> top5 = stackalloc (byte Count, int PostId)[topN];
 
     // Iterate over all of the posts.
     for (var i = 0; i < postsCount; i++)
     {
         // Reset the tagged post counts.
-        ((Span<byte>)taggedPostCount).Fill(0);
+        taggedPostCount.Fill(0);
 
         // Iterate over all of the tags for the current post.
         foreach (var tag in posts[i].Tags)
