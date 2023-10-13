@@ -10,7 +10,7 @@
 	"dependencies": {
 		"asdf": "~>0.7.17"
 	},
-    "dflags-ldc": ["-mcpu=native", "-flto=full", "-defaultlib=phobos2-ldc-lto,druntime-ldc-lto"],
+    "dflags-ldc": ["-mcpu=native", "-flto=thin", "-defaultlib=phobos2-ldc-lto,druntime-ldc-lto"],
     "buildTypes": {
         "release" : {
             "buildOptions": ["optimize", "inline"]

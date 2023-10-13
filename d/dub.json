@@ -11,7 +11,7 @@
             "buildOptions": ["optimize", "inline"]
         }
     },
-    "dflags-ldc": ["-mcpu=native", "-flto=full", "-defaultlib=phobos2-ldc-lto,druntime-ldc-lto"],
+    "dflags-ldc": ["-mcpu=native", "-flto=thin", "-defaultlib=phobos2-ldc-lto,druntime-ldc-lto"],
 	"description": "A sequential D application.",
 	"license": "MIT",
 	"name": "related"
