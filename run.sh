@@ -1,5 +1,4 @@
-#!/usr/bin/env bash
-
+#!/usr/bin/bash
 # Read the first arg passed to the script
 first_arg=$1
 outfile=$2

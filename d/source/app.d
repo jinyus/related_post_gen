@@ -2,6 +2,8 @@ import std.stdio : writeln, toFile;
 import std.datetime.stopwatch : StopWatch, AutoStart;
 import asdf.serialization : deserialize, serializeToJson;
 import std.file : readText;
+import std.algorithm, std.array;
+import schlib.newaa, schlib.lookup;
 
 enum TopN = 5;
 
@@ -25,6 +27,11 @@ struct PostsWithSharedTags
 	ubyte sharedTags;
 }
 
+struct TagMap {
+   string tag;
+   ulong[] posts;
+}
+
 void main()
 {
 	auto jsonText = readText("../posts.json");
@@ -33,14 +40,21 @@ void main()
 	auto relatedPosts = new RelatedPosts[postsCount];
 	auto taggedPostsCount = new ubyte[postsCount];
 	Post[TopN] topPosts;
-	size_t[][string] tagMap;
+	
+	Hash!(string, ulong[]) tagMap;
 
 	auto sw = StopWatch(AutoStart.yes);
 
 	foreach (i, post; posts)
 		foreach (tag; post.tags)
-			tagMap[tag] ~= i;
+			if (auto arr = tag in tagMap)
+				(*arr) ~= i;
+			else
+				tagMap[tag] = [i];
 
+	TagMap[] lookup = tagMap.byKeyValue.map!(kv => TagMap(kv.key, kv.value)).array;
+	auto index = lookup.fieldLookup!"tag";
+	
 	foreach (k, post; posts)
 	{
 		PostsWithSharedTags[TopN] top5;
@@ -48,7 +62,7 @@ void main()
 		taggedPostsCount[] = 0;
 
 		foreach (tag; post.tags)
-			foreach (idx; tagMap[tag])
+			foreach (idx; index[tag].posts)
 				taggedPostsCount.ptr[idx]++;
 
 		taggedPostsCount[k] = 0;

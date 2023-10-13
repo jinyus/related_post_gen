@@ -3,6 +3,8 @@ import std.datetime.stopwatch : StopWatch, AutoStart;
 import asdf.serialization : deserialize, serializeToJson;
 import std.file : readText;
 import std.parallelism : taskPool, parallel;
+import schlib.newaa, schlib.lookup;
+import std.algorithm, std.array;
 
 enum TopN = 5;
 
@@ -26,6 +28,11 @@ struct PostsWithSharedTags
 	ubyte sharedTags;
 }
 
+struct TagMap {
+   string tag;
+   ulong[] posts;
+}
+
 PostsWithSharedTags[TopN] top5;
 Post[TopN] topPosts;
 
@@ -35,13 +42,19 @@ void main()
 	auto posts = deserialize!(Post[])(jsonText);
 	int postsCount = cast(int) posts.length;
 	auto relatedPosts = new RelatedPosts[postsCount];
-	size_t[][string] tagMap;
+	Hash!(string, ulong[]) tagMap;
 
 	auto sw = StopWatch(AutoStart.yes);
 
 	foreach (i, post; posts)
 		foreach (tag; post.tags)
-			tagMap[tag] ~= i;
+			if (auto arr = tag in tagMap)
+				(*arr) ~= i;
+			else
+				tagMap[tag] = [i];
+
+	TagMap[] lookup = tagMap.byKeyValue.map!(kv => TagMap(kv.key, kv.value)).array;
+	auto index = lookup.fieldLookup!"tag";
 
 	auto taggedPostsCountThreadPool = taskPool.workerLocalStorage(new ubyte[postsCount]);
 
@@ -51,7 +64,7 @@ void main()
 		taggedPostsCount[] = 0;
 
 		foreach (tag; post.tags)
-			foreach (idx; tagMap[tag])
+			foreach (idx; index[tag].posts)
 				taggedPostsCount.ptr[idx]++;
 
 		taggedPostsCount[k] = 0;
