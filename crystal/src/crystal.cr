@@ -38,11 +38,12 @@ posts.each_with_index do |post, i|
 end
 
 allRelatedPosts = Array(RelatedPost?).new(posts.size, nil)
-# using raw buffer instead of Array for performance
-tagged_post_count = Pointer(Int32).malloc(posts.size, 0)
+# using Pointer buffer can greatly improve performance but this is unsafe, thus against the benchmark rules
+# https://crystal-lang.org/reference/latest/syntax_and_semantics/unsafe.html
+tagged_post_count = Array(Int32).new(posts.size, 0) # Pointer(Int32).malloc(posts.size, 0)
 
 posts.each_with_index do |post, idx|
-  posts.size.times do |i| tagged_post_count[i] = 0 end
+  tagged_post_count.fill(0) # .clear(posts.size) # for Pointer buffer
 
   post.tags.each do |tag|
     tag_map[tag].each do |other_post_idx|
@@ -52,8 +53,8 @@ posts.each_with_index do |post, idx|
 
   tagged_post_count[idx] = 0 # don't count self
 
-  # size at 6 to avoid resizing. also faster than allocating outside loop
-  top5 = Array(Int32).new(TOPN * 2, 0) # flattened list of (count, id)
+  # flattened list of (count, id), size at 6 to avoid resizing. also faster than allocating outside loop
+  top5 = Array(Int32).new(TOPN * 2, 0) # Pointer(Int32).malloc(TOPN * 2, 0)
   min_tags = 0
 
   posts.size.times do |j|
@@ -67,9 +68,9 @@ posts.each_with_index do |post, idx|
         upper_bound -= 2
       end
 
-      insert_pos = upper_bound + 2
-      top5[insert_pos] = count
-      top5[insert_pos + 1] = j
+      upper_bound += 2
+      top5[upper_bound] = count
+      top5[upper_bound + 1] = j
 
       min_tags = top5[TOPN*2 - 2]
     end
