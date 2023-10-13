@@ -439,14 +439,28 @@ run_nim() {
 }
 
 run_fsharp() {
-    echo "Running FSharp" &&
+    echo "Running FSharp (JIT)" &&
         cd ./fsharp &&
         dotnet restore &&
         dotnet publish -c release &&
         if [ $HYPER == 1 ]; then
-            capture "F#" hyperfine -r $runs -w $warmup --show-output "./bin/release/net7.0/fsharp"
+            capture "F#" hyperfine -r $runs -w $warmup --show-output "./bin/release/net8.0/fsharp"
         else
-            command ${time} -f '%es %Mk' ./bin/release/net7.0/fsharp
+            command ${time} -f '%es %Mk' ./bin/release/net8.0/fsharp
+        fi
+
+    check_output "related_posts_fsharp.json"
+}
+
+run_fsharp_aot() {
+    echo "Running FSharp (AOT)" &&
+        cd ./fsharp &&
+        dotnet restore &&
+        dotnet publish -c release --self-contained -p PublishAot=true -o "bin/release/net8.0/aot" &&
+        if [ $HYPER == 1 ]; then
+            capture "F# (AOT)" hyperfine -r $runs -w $warmup --show-output "./bin/release/net8.0/aot/fsharp"
+        else
+            command ${time} -f '%es %Mk' ./bin/release/net8.0/aot/fsharp
         fi
 
     check_output "related_posts_fsharp.json"
@@ -484,9 +498,9 @@ run_fsharp_con() {
         dotnet restore &&
         dotnet publish -c release &&
         if [ $HYPER == 1 ]; then
-            capture "F# Concurrent" hyperfine -r $runs -w $warmup --show-output "./bin/release/net7.0/fsharp_con"
+            capture "F# Concurrent" hyperfine -r $runs -w $warmup --show-output "./bin/release/net8.0/fsharp_con"
         else
-            command ${time} -f '%es %Mk' ./bin/release/net7.0/fsharp_con
+            command ${time} -f '%es %Mk' ./bin/release/net8.0/fsharp_con
         fi
 
     check_output "related_posts_fsharp_con.json"
@@ -544,6 +558,19 @@ run_d() {
         fi
 
     check_output "related_posts_d.json"
+}
+
+run_d_con() {
+    echo "Running D Concurrent" &&
+        cd ./d_con &&
+        dub build --build=release &&
+        if [ $HYPER == 1 ]; then
+            capture "D Concurrent" hyperfine -r $runs -w $warmup --show-output "./related_concurrent"
+        else
+            command time -f '%es %Mk' ./related_concurrent
+        fi
+
+    check_output "related_posts_d_con.json"
 }
 
 check_output() {
@@ -678,6 +705,10 @@ elif [ "$first_arg" = "fsharp" ]; then
 
     run_fsharp
 
+elif [ "$first_arg" = "fsharp_aot" ]; then
+
+    run_fsharp_aot
+
 elif [ "$first_arg" = "csharp" ]; then
 
     run_csharp
@@ -706,6 +737,10 @@ elif [ "$first_arg" = "d" ]; then
 
     run_d
 
+elif [ "$first_arg" = "d_con" ]; then
+
+    run_d_con
+
 elif [ "$first_arg" = "all" ]; then
 
     echo -e "Running all\n" &&
@@ -714,6 +749,7 @@ elif [ "$first_arg" = "all" ]; then
         run_rust || echo -e "\n" &&
         run_rust_con || echo -e "\n" &&
         run_d || echo -e "\n" &&
+        run_d_con || echo -e "\n" &&
         run_python || echo -e "\n" &&
         run_python_np || echo -e "\n" &&
 
@@ -737,6 +773,7 @@ elif [ "$first_arg" = "all" ]; then
         run_nim || echo -e "\n" &&
         run_fsharp || echo -e "\n" &&
         run_fsharp_con || echo -e "\n" &&
+        run_fsharp_aot || echo -e "\n" &&
         run_csharp || echo -e "\n" &&
         run_csharp_aot || echo -e "\n" &&
         run_luajit || echo -e "\n" &&
@@ -757,6 +794,8 @@ elif [ "$first_arg" = "clean" ]; then
         cd .. &&
         cd d && rm -f related &&
         cd .. &&
+        cd d_con && rm -f related &&
+        cd .. &&
         cd python && rm -rf venv/ &&
         cd .. &&
         cd swift && swift package reset &&
@@ -771,6 +810,6 @@ elif [ "$first_arg" = "clean" ]; then
 
 else
 
-    echo "Valid args: go | go_con | rust | rust_con | d | py | numpy | numba | numba_con | cr | zig | odin | jq | julia | v | dart | swift | swift_con | node | bun | deno | java | java_graal | java_graal_con | nim | luajit | lua | csharp | csharp_aot | all | clean. Unknown argument: $first_arg"
+    echo "Valid args: go | go_con | rust | rust_con | d | d_con | py | numpy | numba | numba_con | cr | zig | odin | jq | julia | v | dart | swift | swift_con | node | bun | deno | java | java_graal | java_graal_con | nim | luajit | lua | fsharp | fsharp_aot | fsharp_con | csharp | csharp_aot | all | clean. Unknown argument: $first_arg"
 
 fi

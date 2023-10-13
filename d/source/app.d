@@ -2,10 +2,6 @@ import std.stdio: writeln, toFile;
 import std.datetime.stopwatch: StopWatch, AutoStart;
 import asdf.serialization: deserialize, serializeToJson;
 import std.file: readText;
-import std.algorithm: copy;
-
-import memutils.hashmap: HashMap;
-import memutils.vector : Array;
 
 enum TopN = 5;
 
@@ -23,7 +19,7 @@ struct RelatedPosts {
 
 struct PostsWithSharedTags {
 	ulong post;
-	uint sharedTags;
+	ubyte sharedTags;
 }
 
 void main()
@@ -32,33 +28,30 @@ void main()
 	auto posts = deserialize!(Post[])(jsonText);
 	int postsCount = cast(int)posts.length;
 
-	auto sw = StopWatch(AutoStart.no);
-    sw.start();
+	auto sw = StopWatch(AutoStart.yes);
 
-    HashMap!(string, Array!size_t) tagMap;
+    size_t[][string] tagMap;
 
 	foreach(i, post; posts)
 		foreach(tag; post.tags) {
-            if (tag in tagMap)
-			    tagMap[tag].pushBack(i);
-            else
-                tagMap[tag] = Array!size_t([i]);
+			tagMap[tag] ~= i;
 		}
 
 	auto relatedPosts = new RelatedPosts[postsCount];
-	auto taggedPostsCount = new uint[postsCount];
-    PostsWithSharedTags[TopN] top5;
+	auto taggedPostsCount = new ubyte[postsCount];
 	Post[TopN] topPosts;
 
 	foreach(k, post; posts) {
+    	PostsWithSharedTags[TopN] top5;
+
 		taggedPostsCount[] = 0;
+
 		foreach(tag; post.tags) {
-			foreach(idx; tagMap[tag][])
-			    taggedPostsCount[idx]++;
+			foreach(idx; tagMap[tag])
+			    taggedPostsCount.ptr[idx]++;
 		}
 		taggedPostsCount[k] = 0;
         
-        top5[] = PostsWithSharedTags(0,0);
         auto minTags = 0;
         foreach(j, count; taggedPostsCount) {
             if (count > minTags) {
@@ -71,7 +64,8 @@ void main()
 
                 // Shift and insert
                 if (pos < 4) {
-                    copy(top5[pos..4], top5[(pos+1)..$]);
+					foreach_reverse (idx; pos .. 4)
+						top5.ptr[idx + 1] = top5.ptr[idx];
                 }
                 top5[pos] = PostsWithSharedTags(j, count);
                 minTags = top5[4].sharedTags;
@@ -82,8 +76,8 @@ void main()
 			topPosts[i] = posts[t.post];
 		
 		relatedPosts[k] = RelatedPosts(
-				posts[k]._id,
-				posts[k].tags,
+				post._id,
+				post.tags,
 				topPosts
 		);
 	}
@@ -91,3 +85,4 @@ void main()
     writeln("Processing time (w/o IO): ", sw.peek.total!"usecs"*1.0/1000, "ms");
 	toFile(serializeToJson(relatedPosts), "../related_posts_d.json");
 }
+

@@ -3,7 +3,7 @@ FROM archlinux:base
 # Update package repository
 RUN pacman -Syu --noconfirm
 
-RUN pacman -S --noconfirm --needed wget unzip sudo base-devel git go clang llvm ldc dub python python-pip ncurses gcc llvm hyperfine rustup dotnet-sdk crystal zig dart nodejs deno maven nim opam dune lua51 luajit luarocks libedit github-cli less
+RUN pacman -S --noconfirm --needed wget unzip sudo base-devel git go clang llvm ldc dub python python-pip ncurses gcc llvm hyperfine rustup crystal zig dart nodejs deno maven nim opam dune lua51 luajit luarocks libedit github-cli less
 
 # user needed to install aur packages
 RUN useradd -ms /bin/bash builduser
@@ -19,6 +19,11 @@ RUN bash -c "source /root/.sdkman/bin/sdkman-init.sh && sdk install java 21-graa
 ENV GRAALVM_HOME=/root/.sdkman/candidates/java/21-graal
 ENV JAVA_HOME=/root/.sdkman/candidates/java/21-graal
 ENV PATH=$PATH:$GRAALVM_HOME/bin:$JAVA_HOME/bin
+
+# install dotnet
+RUN su -c "git clone https://aur.archlinux.org/dotnet-preview-bin.git /home/builduser/dotnet" builduser
+
+RUN su -c "cd /home/builduser/dotnet && makepkg -si --noconfirm --needed --noprogressbar" builduser
 
 # install bunjs
 RUN su -c "curl -fsSL https://bun.sh/install | bash" builduser
