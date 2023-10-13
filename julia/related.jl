@@ -7,7 +7,7 @@ using StaticArrays
 
 function relatedIO()
     json_string = read("../posts.json", String)
-    posts = JSON3.read(json_string, Vector{PostData})    
+    posts = JSON3.read(json_string, Vector{PostData})
 
     related(posts)
 
@@ -65,8 +65,8 @@ function related(posts)
         end
     end
 end
+const topn = 5
 function related(::Type{T}, posts) where {T}
-    topn = 5
     # key is every possible "tag" used in all posts
     # value is indicies of all "post"s that used this tag
     tagmap = Dict{String,Vector{T}}()
@@ -80,8 +80,8 @@ function related(::Type{T}, posts) where {T}
     relatedposts = Vector{RelatedPost}(undef, length(posts))
     taggedpostcount = Vector{T}(undef, length(posts))
 
-    maxn = Vector{T}(undef,topn)
-    maxv = Vector{T}(undef,topn)
+    maxn = zeros(MVector{topn,T})
+    maxv = zeros(MVector{topn,T})
 
     for (i, post) in enumerate(posts)
         taggedpostcount .= 0
