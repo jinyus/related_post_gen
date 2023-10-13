@@ -49,6 +49,7 @@ docker run -e TEST_NAME=all -it --rm databench
 -   Support up to 100 tags
 -   Use a stable release of the compiler/runtime
 -   Represent tags as strings
+-   Be production ready
 </details>
 
 ### Updated Results from github workflow ([raw data](https://github.com/jinyus/related_post_gen/blob/main/raw_results.md))
