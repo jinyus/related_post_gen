@@ -4,7 +4,8 @@ using JSON3
 using StructTypes
 using Dates
 using PrecompileTools
-using Base.Threads: @threads
+using ChunkSplitters
+using Base.Threads: @threads, nthreads
 
 const topn = 5
 
@@ -63,27 +64,10 @@ function related!(posts, tagmap, relatedposts)
         end
     end
 
-    for (i, post) in enumerate(posts)
-        taggedpostcount .= 0
-        # for each post (`i`-th)
-        # and every tag used in the `i`-th post
-        # give all related post +1 in `taggedpostcount` shadow vector
-        for tag in post.tags
-            for idx in tagmap[tag]
-                taggedpostcount[idx] += one(Int32)
-            end
-        end
-
-        # don't self count
-        taggedpostcount[i] = 0
-        maxindex!(taggedpostcount, maxs)
-        
-        relatedposts[i] = RelatedPost(post._id, post.tags, ntuple(i -> posts[maxs[topn+1-i][1]], topn))
-    end
     @threads for (postsrange, _) in chunks(posts, nthreads())
         
         maxs = task_local_buffer(Pair{Int, Int32}, topn)
-        taggedpostcount = task_local_buffer(Pair{Int32}, length(posts))
+        taggedpostcount = task_local_buffer(Int32, length(posts))
 
         for i in postsrange
             post = posts[i]
@@ -115,11 +99,9 @@ function main()
 
     tagmap=Dict{Symbol, Vector{Int32}}()
     relatedposts=Vector{RelatedPost}(undef, length(posts))
-    taggedpostcount = Vector{Int32}(undef, length(posts))
-    maxs=Vector{Pair{Int, Int32}}(undef, topn)
     
     start = now()       
-    all_related_posts = related!(posts, tagmap, relatedposts, taggedpostcount, maxs)
+    all_related_posts = related!(posts, tagmap, relatedposts)
     println("Processing time (w/o IO): $(now() - start)")
 
     open(@__DIR__()*"/../../../related_posts_julia_con.json", "w") do f
