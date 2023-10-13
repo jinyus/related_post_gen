@@ -4,7 +4,6 @@ using JSON3
 using StructTypes
 using Dates
 using PrecompileTools
-# warmup is done by hyperfine
 
 const topn = 5
 
@@ -48,7 +47,7 @@ function related!(posts, tagmap, relatedposts, taggedpostcount, maxs)
 
     for (idx, post) in enumerate(posts)
         for tag in post.tags
-            tags = get!(() -> sizehint!(UInt32[], 1_000), tagmap, tag)
+            tags = get!(() -> sizehint!(Int32[], 1_000), tagmap, tag)
             push!(tags, idx)
         end
     end
@@ -60,13 +59,13 @@ function related!(posts, tagmap, relatedposts, taggedpostcount, maxs)
         # give all related post +1 in `taggedpostcount` shadow vector
         for tag in post.tags
             for idx in tagmap[tag]
-                taggedpostcount[idx] += one(UInt32)
+                taggedpostcount[idx] += one(Int32)
             end
         end
 
         # don't self count
         taggedpostcount[i] = 0
-        maxs= maxindex!(taggedpostcount, maxs)
+        maxs = maxindex!(taggedpostcount, maxs)
         
         relatedposts[i] = RelatedPost(post._id, post.tags, ntuple(i -> posts[maxs[topn+1-i][1]], topn))
     end
@@ -78,10 +77,10 @@ function main()
     json_string = read(@__DIR__()*"/../../../posts.json", String)
     posts = JSON3.read(json_string, Vector{PostData})
 
-    tagmap=Dict{Symbol, Vector{UInt32}}()
+    tagmap=Dict{Symbol, Vector{Int32}}()
     relatedposts=Vector{RelatedPost}(undef, length(posts))
-    taggedpostcount = Vector{UInt32}(undef, length(posts))
-    maxs=Vector{Pair{Int, UInt32}}(undef, topn)
+    taggedpostcount = Vector{Int32}(undef, length(posts))
+    maxs=Vector{Pair{Int, Int32}}(undef, topn)
     
     start = now()       
     all_related_posts = related!(posts, tagmap, relatedposts, taggedpostcount, maxs)
