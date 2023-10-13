@@ -1,3 +1,4 @@
 switch("opt", "speed")
-switch("passC", "-flto -march=native -Ofast")
-switch("passL", "-flto -march=native -Ofast")
+switch("passC", "-flto  -Ofast")
+switch("passL", "-flto  -Ofast")
+switch("panics", "off")

@@ -6,12 +6,14 @@
 	"dependencies": {
 		"asdf": "~>0.7.17"
 	},
-    "buildTypes": {
-        "release" : {
-            "buildOptions": ["optimize", "inline"]
-        }
-    },
-    "dflags-ldc": ["-mcpu=native"],
+	"buildTypes": {
+		"release": {
+			"buildOptions": [
+				"optimize",
+				"inline"
+			]
+		}
+	},
 	"description": "A sequential D application.",
 	"license": "MIT",
 	"name": "related"
