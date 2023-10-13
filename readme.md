@@ -40,7 +40,7 @@ docker run -e TEST_NAME=all -it --rm databench
 -   Disabling runtime checks (bounds etc)
 -   Specific hardware targeting
 -   Hardcoding number of posts
--   Lazy datastructures
+-   Lazy evaluation (Unless results are computed at runtime and timed)
 
 <h3>Must:</h3>
 
