@@ -65,11 +65,11 @@ ENV PATH="$PATH:/home/builduser/julia-1.9.3/bin"
 # you token that will be used to authenticate your fork
 ENV GIT_PAT=""
 
-ENV GIT_USER="masonprotter"
-ENV GIT_EMAIL="protter@ualberta.ca"
+ENV GIT_USER="jinyus"
+ENV GIT_EMAIL="jinyus@users.noreply.github.com"
 
 # the repo that will be clone. Most likely your fork
-ENV GIT_REPO="https://github.com/MasonProtter/related_post_gen"
+ENV GIT_REPO="https://github.com/jinyus/related_post_gen.git"
 
 # incase you use a different name for your fork
 ENV GIT_REPO_NAME="related_post_gen"
