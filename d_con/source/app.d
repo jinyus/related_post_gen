@@ -35,9 +35,6 @@ void main()
 	auto posts = deserialize!(Post[])(jsonText);
 	int postsCount = cast(int) posts.length;
 	auto relatedPosts = new RelatedPosts[postsCount];
-
-	writeln(postsCount);
-
 	size_t[][string] tagMap;
 
 	auto sw = StopWatch(AutoStart.yes);
