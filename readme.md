@@ -50,6 +50,7 @@ docker run -e TEST_NAME=all -it --rm databench
 -   Use a stable release of the compiler/runtime
 -   Represent tags as strings
 -   Be production ready
+-   Use general purpose datastructures
 </details>
 
 ### Updated Results from github workflow ([raw data](https://github.com/jinyus/related_post_gen/blob/main/raw_results.md))
