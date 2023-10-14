@@ -102,7 +102,7 @@ run_rust() {
 run_cpp() {
     echo "Running C++" &&
         cd ./cpp &&
-        g++ -std=c++11 -I./include -O3 main.cpp -o main &&
+        clang++ -std=c++11 -I./include -O3 main.cpp -o main &&
         if [ $HYPER == 1 ]; then
             capture "cpp" hyperfine -r $runs -w $warmup --show-output "./main"
         else
