@@ -67,6 +67,9 @@ RUN wget https://julialang-s3.julialang.org/bin/linux/x64/1.9/julia-1.9.3-linux-
 RUN tar zxvf /home/builduser/julia.tar.gz -C /home/builduser/
 ENV PATH="$PATH:/home/builduser/julia-1.9.3/bin"
 
+# for nim
+RUN cp /usr/lib/LLVMgold.so /home/builduser/swift-5.9-RELEASE-ubuntu22.04/usr/lib/LLVMgold.so
+
 # you token that will be used to authenticate your fork
 ENV GIT_PAT=""
 
