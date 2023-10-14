@@ -426,13 +426,11 @@ run_nim() {
     echo "Running Nim" &&
         cd ./nim &&
         nimble install -y &&
-        nim compile -d:release --threads:off --passL:"-flto -fprofile-generate" --passC:"-flto -fprofile-generate" src/related.nim &&
-        ./src/related &&
-        nim compile -d:release --threads:off --passL:"-flto -fprofile-use" --passC:"-flto -fprofile-use" src/related.nim &&
+        nimble buildopt &&
         if [ $HYPER == 1 ]; then
-            capture "Nim" hyperfine -r $runs -w $warmup --show-output "./src/related"
+            capture "Nim" hyperfine -r $runs -w $warmup --show-output "./related"
         else
-            command ${time} -f '%es %Mk' ./src/related
+            command ${time} -f '%es %Mk' ./related
         fi
 
     check_output "related_posts_nim.json"
