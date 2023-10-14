@@ -2,7 +2,8 @@
 
 Given a list of posts, compute the top 5 related posts for each post based on the number of shared tags.
 
-## Steps:
+<details>
+<summary> Steps </summary>
 
 -   Read the posts JSON file.
 -   Iterate over the posts and populate a map containing: `tag -> List<int>`, with the int representing the post index of each post with that tag.
@@ -12,6 +13,7 @@ Given a list of posts, compute the top 5 related posts for each post based on th
     -   For each post, increment the shared tag count in the map.
 -   Sort the related posts by the number of shared tags.
 -   Write the top 5 related posts for each post to a new JSON file.
+</details>
 
 ### Run Benchmark
 
