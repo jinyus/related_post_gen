@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Numerics;
 using System.Runtime.InteropServices;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -48,14 +49,16 @@ static RelatedPosts[] GetRelatedPosts(List<Post> posts)
 
     // Create an array to store all of the related posts.
     var allRelatedPosts = new RelatedPosts[postsCount];
-    var taggedPostCount = new byte[postsCount];
+
+    Span<byte> taggedPostCount = new byte[((postsCount + Vector<byte>.Count - 1) / Vector<byte>.Count) * Vector<byte>.Count];
+    Span<Vector<byte>> taggedPostVector = MemoryMarshal.Cast<byte, Vector<byte>>(taggedPostCount);
     Span<(byte Count, int PostId)> top5 = new (byte Count, int PostId)[topN];
 
     // Iterate over all of the posts.
     for (var i = 0; i < postsCount; i++)
     {
         // Reset the tagged post counts.
-        ((Span<byte>)taggedPostCount).Fill(0);
+        taggedPostCount.Fill(0);
 
         // Iterate over all of the tags for the current post.
         foreach (var tag in posts[i].Tags)
@@ -70,26 +73,32 @@ static RelatedPosts[] GetRelatedPosts(List<Post> posts)
 
         taggedPostCount[i] = 0; // don't count self
         top5.Clear();
-        byte minTags = 0;
+        Vector<byte> minTags = Vector<byte>.Zero;
 
         //  custom priority queue to find top N
-        for (var j = 0; j < postsCount; j++)
+        for (var j = 0; j < taggedPostVector.Length; j++)
         {
-            byte count = taggedPostCount[j];
+            Vector<byte> counts = Vector.Max(taggedPostVector[j], minTags);
 
-            if (count > minTags)
+            if (counts != minTags)
             {
-                int upperBound = topN - 2;
-
-                while (upperBound >= 0 && count > top5[upperBound].Count)
+                for (int k = 0; k < Vector<byte>.Count; k++)
                 {
-                    top5[upperBound + 1] = top5[upperBound];
-                    upperBound--;
+                    if (counts[k] > minTags[0])
+                    {
+                        int upperBound = topN - 2;
+
+                        while (upperBound >= 0 && counts[k] > top5[upperBound].Count)
+                        {
+                            top5[upperBound + 1] = top5[upperBound];
+                            upperBound--;
+                        }
+
+                        top5[upperBound + 1] = (counts[k], j * Vector<byte>.Count + k);
+
+                        minTags = new Vector<byte>(top5[topN - 1].Count);
+                    }
                 }
-
-                top5[upperBound + 1] = (count, j);
-
-                minTags = top5[topN - 1].Count;
             }
         }
 
