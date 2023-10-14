@@ -49,7 +49,7 @@ void main()
 
 		foreach (tag; post.tags)
 			foreach (idx; tagMap[tag])
-				taggedPostsCount.ptr[idx]++;
+				taggedPostsCount[idx]++;
 
 		taggedPostsCount[k] = 0;
 
