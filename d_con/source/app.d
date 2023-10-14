@@ -33,12 +33,13 @@ void main()
 {
 	auto jsonText = readText("../posts.json");
 	auto posts = deserialize!(Post[])(jsonText);
-	int postsCount = cast(int) posts.length;
-	auto relatedPosts = new RelatedPosts[postsCount];
-	size_t[][string] tagMap;
 
 	auto sw = StopWatch(AutoStart.yes);
 
+	int postsCount = cast(int) posts.length;
+	auto relatedPosts = new RelatedPosts[postsCount];
+	size_t[][string] tagMap;
+	
 	foreach (i, post; posts)
 		foreach (tag; post.tags)
 			tagMap[tag] ~= i;
