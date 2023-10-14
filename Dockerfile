@@ -62,6 +62,9 @@ RUN ln -s /usr/lib/libncursesw.so.6 /usr/lib/libncurses.so.6
 
 RUN chmod +x /home/builduser/odin/odin && odin version && v version && swift --version && java --version
 
+# for nim
+RUN cp /usr/lib/LLVMgold.so /home/builduser/swift-5.9-RELEASE-ubuntu22.04/usr/lib/LLVMgold.so
+
 #install julia
 RUN wget https://julialang-s3.julialang.org/bin/linux/x64/1.9/julia-1.9.3-linux-x86_64.tar.gz -O /home/builduser/julia.tar.gz
 RUN tar zxvf /home/builduser/julia.tar.gz -C /home/builduser/
