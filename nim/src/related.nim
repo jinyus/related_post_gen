@@ -1,5 +1,4 @@
 import std/[hashes, monotimes, times]
-import std/sequtils
 import jsony
 import xxhash
 import fixedtable
@@ -19,13 +18,12 @@ const
     input = "../posts.json"
     output = "../related_posts_nim.json"
 
-proc hash(x: string): Hash =
+func hash(x: string): Hash =
   cast[Hash](XXH3_64bits(x))
 
-proc findTop5(posts: seq[Post], taggedPostCount: seq[uint8]): seq[Post] =
+func findTop5(posts: seq[Post], taggedPostCount: seq[uint8]): seq[Post] =
   result = newSeq[Post](5)
   var top5: array[5, tuple[idx: int, count: uint8]]
-  var min = 0
   for i, count in taggedPostCount:
     if count > top5[4].count:
       top5[4] = (idx: i, count: count)
@@ -35,7 +33,7 @@ proc findTop5(posts: seq[Post], taggedPostCount: seq[uint8]): seq[Post] =
   for i, t in top5:
     result[i] = posts[t.idx]
 
-proc genTagMap(posts: seq[Post]): Table[string, seq[int]] =
+func genTagMap(posts: seq[Post]): Table[string, seq[int]] =
   result = initTable[string, seq[int]](100)
   for i, post in posts:
     for tag in post.tags:
@@ -44,7 +42,7 @@ proc genTagMap(posts: seq[Post]): Table[string, seq[int]] =
       do:
         result[tag] = @[i]
 
-proc countTaggedPost(taggedPostCount: var seq[uint8], i: int, post: Post, tagMap: Table[string, seq[int]]) =
+func countTaggedPost(taggedPostCount: var seq[uint8], i: int, post: Post, tagMap: Table[string, seq[int]]) =
   for tag in post.tags:
     for otherIDX in tagMap[tag]:
       inc(taggedPostCount[otherIDX])
