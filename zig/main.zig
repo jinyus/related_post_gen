@@ -13,19 +13,14 @@ inline fn top5(related: []*Post, score: []u8, ps: []Post) void {
         if (count > min_tags) {
 
             // Find the position to insert
-            var pos: usize = 0;
-            while (top_5[pos] >= count) {
-                pos += 1;
+            var pos: i8 = 3;
+            while (pos >= 0 and count > top_5[@intCast(pos)]) : (pos -= 1) {
+                top_5[@intCast(pos + 1)] = top_5[@intCast(pos)];
+                related[@intCast(pos + 1)] = related[@intCast(pos)];
             }
 
-            // Shift and insert
-            var shift: usize = 4;
-            while (shift > pos) : (shift -= 1) {
-                top_5[shift] = top_5[shift - 1];
-                related[shift] = related[shift - 1];
-            }
-            top_5[pos] = count;
-            related[pos] = &ps[j];
+            top_5[@intCast(pos + 1)] = count;
+            related[@intCast(pos + 1)] = &ps[j];
             min_tags = top_5[4];
         }
     }
