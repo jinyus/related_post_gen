@@ -425,16 +425,14 @@ run_java_graal_con() {
 run_nim() {
     echo "Running Nim" &&
         cd ./nim &&
-        rm -rf nimcache &&
-        nimble -y install -d &&
-        nim c -d:profileGen -d:release related.nim &&
-        ./build/related &&
-        nim c -d:profileUse -d:release related.nim &&
-        rm default.prof* &&
+        nimble install -y &&
+        nim compile -d:release --threads:off --passL:"-flto -fprofile-generate" --passC:"-flto -fprofile-generate" src/related.nim &&
+        ./src/related &&
+        nim compile -d:release --threads:off --passL:"-flto -fprofile-use" --passC:"-flto -fprofile-use" src/related.nim &&
         if [ $HYPER == 1 ]; then
-            capture "Nim" hyperfine -r $runs -w $warmup --show-output "./build/related"
+            capture "Nim" hyperfine -r $runs -w $warmup --show-output "./src/related"
         else
-            command ${time} -f '%es %Mk' ./build/related
+            command ${time} -f '%es %Mk' ./src/related
         fi
 
     check_output "related_posts_nim.json"
