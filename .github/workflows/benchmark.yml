@@ -35,7 +35,9 @@ jobs:
               uses: julia-actions/setup-julia@v1
 
             - name: Install Vlang
-              uses: vlang/setup-v@v1.3
+              uses: vlang/setup-v@v1.2
+              # with:
+              #     version: "stable"
 
             - name: Install odin
               run: |
@@ -87,13 +89,41 @@ jobs:
 
             - name: Install Dotnet
               uses: actions/setup-dotnet@v3
+              with:
+                dotnet-version: '8.0.x'
+                dotnet-quality: 'preview'
 
             - name: Install LuaJit
               run: |
-                sudo apt install luajit lua5.1 luarocks lua-socket:amd64
+                  sudo apt install luajit lua5.1 luarocks lua-socket:amd64
 
-            - name: Run Benchmark
+            - name: Install Python
+              uses: actions/setup-python@v4.7.1
+              with:
+                  python-version: "3.11"
+
+            - name: Install Ocaml
+              uses: ocaml/setup-ocaml@v2
+              with:
+                  ocaml-compiler: "5.1"
+
+            - name: Run Benchmark (5k posts)
               run: ./run.sh all raw_results.md
+
+            - name: Install python deps
+              run: python -m pip install faker --break-system-packages && python -m pip install nanoid --break-system-packages
+
+            - name: Generate 15k posts
+              run: python gen_fake_posts.py 15000
+
+            - name: Run Benchmark (15k posts)
+              run: ./run.sh all raw_results.md append
+
+            - name: Generate 30k posts
+              run: python gen_fake_posts.py 30000
+
+            - name: Run Benchmark (30k posts)
+              run: ./run.sh all raw_results.md append
 
             - name: Clean up
               run: rm -rf odin_exe && rm hyperfine.deb && rm odin.zip && rm -rf vlang

@@ -1,11 +1,10 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"os"
 	"time"
-
-	"github.com/goccy/go-json"
 )
 
 const topN = 5
@@ -22,7 +21,7 @@ type Post struct {
 
 type RelatedPosts struct {
 	ID      string      `json:"_id"`
-	Tags    []string    `json:"tags"`
+	Tags    *[]string   `json:"tags"`
 	Related [topN]*Post `json:"related"`
 }
 
@@ -92,7 +91,7 @@ func main() {
 
 		allRelatedPosts[i] = RelatedPosts{
 			ID:      posts[i].ID,
-			Tags:    posts[i].Tags,
+			Tags:    &posts[i].Tags,
 			Related: topPosts,
 		}
 	}

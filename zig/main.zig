@@ -3,12 +3,27 @@ var allocator = std.heap.c_allocator;
 const Post = struct { _id: []const u8, title: []const u8, tags: [][]const u8 };
 const Posts = []Post;
 const TopPosts = struct { _id: *const []const u8, tags: *const [][]const u8, related: []*Post };
-const PostsWithSharedTag = struct { post: usize, tags: usize };
 const stdout = std.io.getStdOut().writer();
 
-fn lessthan(context: void, lhs: usize, rhs: usize) bool {
-    _ = context;
-    return lhs < rhs;
+inline fn top5(related: []*Post, score: []u8, ps: []Post) void {
+    var top_5 = [5]u8{ 0, 0, 0, 0, 0 };
+    var min_tags: u8 = 0;
+
+    for (score, 0..) |count, j| {
+        if (count > min_tags) {
+
+            // Find the position to insert
+            var pos: i8 = 3;
+            while (pos >= 0 and count > top_5[@intCast(pos)]) : (pos -= 1) {
+                top_5[@intCast(pos + 1)] = top_5[@intCast(pos)];
+                related[@intCast(pos + 1)] = related[@intCast(pos)];
+            }
+
+            top_5[@intCast(pos + 1)] = count;
+            related[@intCast(pos + 1)] = &ps[j];
+            min_tags = top_5[4];
+        }
+    }
 }
 
 pub fn main() !void {
@@ -38,8 +53,13 @@ pub fn main() !void {
     }
 
     var op = try std.ArrayList(TopPosts).initCapacity(allocator, parsed.value.len);
+    op.expandToCapacity();
     defer op.deinit();
-    var tagged_post_count: []usize = try allocator.alloc(usize, parsed.value.len);
+
+    var rl: []*Post = try allocator.alloc(*Post, parsed.value.len * 5);
+    defer allocator.free(rl);
+
+    var tagged_post_count: []u8 = try allocator.alloc(u8, parsed.value.len);
     defer allocator.free(tagged_post_count);
 
     for (0..parsed.value.len) |post_index| {
@@ -54,40 +74,9 @@ pub fn main() !void {
 
         tagged_post_count[post_index] = 0; // Don't count self
 
-        var top_5 = [_]PostsWithSharedTag{.{ .post = 0, .tags = 0 }} ** 5;
-        var min_tags: usize = 0;
-
-        for (0..tagged_post_count.len) |j| {
-            const count = tagged_post_count[j];
-            if (count > min_tags) {
-
-                // Find the position to insert
-                var pos: isize = 0;
-                while (top_5[@intCast(pos)].tags >= count) {
-                    pos += 1;
-                }
-
-                // Shift and insert
-                var shift: usize = 4;
-                while (shift > pos) : (shift -= 1) {
-                    top_5[shift] = top_5[shift - 1];
-                }
-                top_5[@intCast(pos)] = PostsWithSharedTag{ .post = j, .tags = count };
-                min_tags = top_5[4].tags;
-            }
-        }
-
-        // Convert indexes back to Post pointers
-        var top_posts = try std.ArrayList(*Post).initCapacity(allocator, 5);
-
-        for (top_5) |tagged_post| {
-            if (tagged_post.tags == 0) {
-                continue;
-            }
-            try top_posts.append(&parsed.value[tagged_post.post]);
-        }
-
-        try op.append(.{ ._id = &parsed.value[post_index]._id, .tags = &parsed.value[post_index].tags, .related = try top_posts.toOwnedSlice() });
+        var related: []*Post = rl[post_index * 5 .. post_index * 5 + 5];
+        top5(related, tagged_post_count, parsed.value);
+        op.items[post_index] = .{ ._id = &parsed.value[post_index]._id, .tags = &parsed.value[post_index].tags, .related = related };
     }
     const end = try std.time.Instant.now();
     try stdout.print("Processing time (w/o IO): {d}ms\n", .{@divFloor(end.since(start), std.time.ns_per_ms)});
