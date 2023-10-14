@@ -752,6 +752,7 @@ elif [ "$first_arg" = "all" ]; then
         run_rust_con || echo -e "\n" &&
         run_d || echo -e "\n" &&
         run_d_con || echo -e "\n" &&
+        run_cpp || echo -e "\n" &&
         run_python || echo -e "\n" &&
         run_python_np || echo -e "\n" &&
 
