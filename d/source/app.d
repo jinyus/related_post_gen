@@ -2,6 +2,7 @@ import std.stdio : writeln, toFile;
 import std.datetime.stopwatch : StopWatch, AutoStart;
 import asdf.serialization : deserialize, serializeToJson;
 import std.file : readText;
+import core.memory;
 
 enum TopN = 5;
 
@@ -27,6 +28,7 @@ struct PostsWithSharedTags
 
 void main()
 {
+	GC.disable();
 	auto jsonText = readText("../posts.json");
 	auto posts = deserialize!(Post[])(jsonText);
 
