@@ -86,6 +86,32 @@ run_go_concurrent() {
     check_output "related_posts_go_con.json"
 }
 
+run_cpp() {
+    echo "Running C++" &&
+        cd ./cpp &&
+        g++ -std=c++11 -I./include -O3 main.cpp -o main &&
+        if [ $HYPER == 1 ]; then
+            capture "C++" hyperfine -r $runs -w $warmup --show-output "./main"
+        else
+            command ${time} -f '%es %Mk' ./main
+        fi
+
+    check_output "related_posts_cpp.json"
+}
+
+run_cpp_con() {
+    echo "Running C++ Concurrent" &&
+        cd ./cpp_con &&
+        g++ -std=c++11 -pthread -I./include -O3 main.cpp -o main &&
+        if [ $HYPER == 1 ]; then
+            capture "C++ Concurrent" hyperfine -r $runs -w $warmup --show-output "./main"
+        else
+            command ${time} -f '%es %Mk' ./main
+        fi
+
+    check_output "related_posts_cpp_con.json"
+}
+
 run_rust() {
     echo "Running Rust" &&
         cd ./rust &&
@@ -97,19 +123,6 @@ run_rust() {
         fi
 
     check_output "related_posts_rust.json"
-}
-
-run_cpp() {
-    echo "Running C++" &&
-        cd ./cpp &&
-        g++ -std=c++11 -I./include -O3 main.cpp -o main &&
-        if [ $HYPER == 1 ]; then
-            capture "cpp" hyperfine -r $runs -w $warmup --show-output "./main"
-        else
-            command ${time} -f '%es %Mk' ./main
-        fi
-
-    check_output "related_posts_cpp.json"
 }
 
 run_rust_con() {
@@ -598,6 +611,10 @@ elif [ "$first_arg" = "go_con" ]; then
 elif [ "$first_arg" = "cpp" ]; then
 
     run_cpp
+
+elif [ "$first_arg" = "cpp_con" ]; then
+
+    run_cpp_con
 
 elif [ "$first_arg" = "rust" ]; then
 
