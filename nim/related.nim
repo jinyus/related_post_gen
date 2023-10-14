@@ -1,8 +1,11 @@
-import std/[hashes, monotimes, times]
-import std/sequtils
-import jsony
-import xxhash
-import fixedtable
+import std/hashes
+import pkg/[jsony, xxhash]
+import ./related/fixedtable
+
+when defined(profileGen):
+  echo "Generating profile"
+else:
+  import std/[monotimes, times]
 
 type
   Post = ref object
@@ -16,16 +19,17 @@ type
     related : seq[Post]
 
 const
-    input = "../posts.json"
-    output = "../related_posts_nim.json"
+  input = "../posts.json"
+  output = "../related_posts_nim.json"
 
-proc hash(x: string): Hash =
+func hash(x: string): Hash =
   cast[Hash](XXH3_64bits(x))
 
-proc findTop5(posts: seq[Post], taggedPostCount: seq[uint8]): seq[Post] =
+func findTop5(
+    posts: seq[Post],
+    taggedPostCount: seq[uint8]): seq[Post] =
   result = newSeq[Post](5)
   var top5: array[5, tuple[idx: int, count: uint8]]
-  var min = 0
   for i, count in taggedPostCount:
     if count > top5[4].count:
       top5[4] = (idx: i, count: count)
@@ -35,7 +39,7 @@ proc findTop5(posts: seq[Post], taggedPostCount: seq[uint8]): seq[Post] =
   for i, t in top5:
     result[i] = posts[t.idx]
 
-proc genTagMap(posts: seq[Post]): Table[string, seq[int]] =
+func genTagMap(posts: seq[Post]): Table[string, seq[int]] =
   result = initTable[string, seq[int]](100)
   for i, post in posts:
     for tag in post.tags:
@@ -44,41 +48,36 @@ proc genTagMap(posts: seq[Post]): Table[string, seq[int]] =
       do:
         result[tag] = @[i]
 
-proc countTaggedPost(taggedPostCount: var seq[uint8], i: int, post: Post, tagMap: Table[string, seq[int]]) =
+proc countTaggedPost(
+    taggedPostCount: var seq[uint8],
+    i: int,
+    post: Post,
+    tagMap: Table[string, seq[int]]) =
   for tag in post.tags:
     for otherIDX in tagMap[tag]:
       inc(taggedPostCount[otherIDX])
   taggedPostCount[i] = 0 # remove self
 
-proc process(posts: seq[Post]): seq[RelatedPosts] =
-  let start = getMonotime()
-
+func process(posts: seq[Post]): seq[RelatedPosts] =
+  result = newSeq[RelatedPosts](posts.len)
   let tagMap = genTagMap(posts)
-
-  var allRelatedPosts = newSeq[RelatedPosts](posts.len)
-  var taggedPostCount = newSeq[uint8](posts.len)
-
   for i, post in posts.pairs:
-    zeroMem(taggedPostCount[0].addr, posts.len)
+    var taggedPostCount = newSeq[uint8](posts.len)
     taggedPostCount.countTaggedPost(i, post, tagMap)
-
     let relatedPosts = RelatedPosts(
       `"_id"`: post.`"_id"`,
       tags: post.tags,
-      related: posts.findTop5(taggedPostCount)
-      )
-
-    allRelatedPosts[i] = relatedPosts
-
-  let total = getMonotime() - start
-
-  echo "Processing time (w/o IO): ", total.inMicroseconds / 1000, "ms"
-
-  return allRelatedPosts
+      related: posts.findTop5(taggedPostCount))
+    result[i] = relatedPosts
 
 proc main() =
   let posts = readFile(input).fromJson(seq[Post])
+  when not defined(profileGen):
+    let t0 = getMonotime()
   let res = process(posts)
+  when not defined(profileGen):
+    let time = (getMonotime() - t0).inMicroseconds / 1000
+    echo "Processing time (w/o IO): ", time, "ms"
   writeFile(output, res.toJson)
 
 when isMainModule:
