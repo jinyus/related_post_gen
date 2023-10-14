@@ -18,6 +18,6 @@ task buildopt, "build optimized":
   exec "nimble -d:profileGen -d:release build"
   echo "Gen stat"
   exec "./related > /dev/null"
-  exec "llvm-profdata-12 merge default.profraw --output default.profdata"
+  exec "llvm-profdata merge default.profraw --output default.profdata"
   exec "nimble -d:profileUse -d:release build"
 
