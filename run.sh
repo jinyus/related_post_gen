@@ -477,6 +477,20 @@ run_fsharp_aot() {
     check_output "related_posts_fsharp.json"
 }
 
+run_fsharp_con_aot() {
+    echo "Running FSharp (AOT)" &&
+        cd ./fsharp_con &&
+        dotnet restore &&
+        dotnet publish -c release --self-contained -p PublishAot=true -o "bin/release/net8.0/aot" &&
+        if [ $HYPER == 1 ]; then
+            capture "F# Concurrent (AOT)" hyperfine -r $runs -w $warmup --show-output "./bin/release/net8.0/aot/fsharp_con"
+        else
+            command ${time} -f '%es %Mk' ./bin/release/net8.0/aot/fsharp_con
+        fi
+
+    check_output "related_posts_fsharp_con.json"
+}
+
 run_csharp() {
     echo "Running CSharp (JIT)" &&
         cd ./csharp &&
@@ -736,6 +750,10 @@ elif [ "$first_arg" = "fsharp_con" ]; then
 
     run_fsharp_con
 
+elif [ "$first_arg" = "fsharp_con_aot" ]; then
+
+    run_fsharp_con_aot
+
 elif [ "$first_arg" = "luajit" ]; then
 
     run_luajit
@@ -790,6 +808,7 @@ elif [ "$first_arg" = "all" ]; then
         run_nim || echo -e "\n" &&
         run_fsharp || echo -e "\n" &&
         run_fsharp_con || echo -e "\n" &&
+        run_fsharp_con_aot || echo -e "\n" &&
         run_fsharp_aot || echo -e "\n" &&
         run_csharp || echo -e "\n" &&
         run_csharp_aot || echo -e "\n" &&
