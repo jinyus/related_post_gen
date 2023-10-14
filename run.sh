@@ -455,7 +455,7 @@ run_fsharp() {
         dotnet restore &&
         dotnet publish -c release &&
         if [ $HYPER == 1 ]; then
-            capture "F#" hyperfine -r $runs -w $warmup --show-output "./bin/release/net8.0/fsharp"
+            capture "F# (JIT)" hyperfine -r $runs -w $warmup --show-output "./bin/release/net8.0/fsharp"
         else
             command ${time} -f '%es %Mk' ./bin/release/net8.0/fsharp
         fi
