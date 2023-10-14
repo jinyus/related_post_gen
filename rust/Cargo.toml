@@ -9,9 +9,13 @@ edition = "2021"
 bumpalo = { version = "3.14.0", features = ["collections"] }
 mimalloc = "0.1.39"
 rustc_data_structures = "0.0.1"
-serde = { version = "1.0.188", features = ["derive"] }
+serde = { version = "1.0.189", features = ["derive"] }
 serde_json = "1.0.107"
+smallvec = { version = "1.11.1", features = ["serde"] }
 
 [profile.release]
 lto = "fat"
 codegen-units = 1
+panic = "abort"
+debug = false
+strip = true
