@@ -3,7 +3,7 @@ FROM archlinux:base
 # Update package repository
 RUN pacman -Syu --noconfirm
 
-RUN pacman -S --noconfirm --needed wget unzip sudo base-devel git go clang llvm ldc dub python python-pip ncurses gcc llvm hyperfine rustup crystal zig julia dart nodejs deno maven nim opam dune lua51 luajit luarocks libedit github-cli less
+RUN pacman -S --noconfirm --needed wget unzip sudo base-devel git go clang llvm ldc dub python python-pip ncurses gcc llvm hyperfine rustup crystal zig dart nodejs deno maven nim opam dune lua51 luajit luarocks libedit github-cli less
 
 # user needed to install aur packages
 RUN useradd -ms /bin/bash builduser
@@ -61,6 +61,11 @@ RUN ln -s /usr/lib/libedit.so /usr/lib/libedit.so.2
 RUN ln -s /usr/lib/libncursesw.so.6 /usr/lib/libncurses.so.6
 
 RUN chmod +x /home/builduser/odin/odin && odin version && v version && swift --version && java --version
+
+#install julia
+RUN wget https://julialang-s3.julialang.org/bin/linux/x64/1.9/julia-1.9.3-linux-x86_64.tar.gz -O /home/builduser/julia.tar.gz
+RUN tar zxvf /home/builduser/julia.tar.gz -C /home/builduser/
+ENV PATH="$PATH:/home/builduser/julia-1.9.3/bin"
 
 # you token that will be used to authenticate your fork
 ENV GIT_PAT=""
