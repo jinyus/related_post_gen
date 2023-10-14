@@ -29,15 +29,16 @@ inline fn top5(related: []*Post, score: []u8, ps: []Post) void {
 pub fn main() !void {
     const file = try std.fs.cwd().openFile("../posts.json", .{});
     defer file.close();
-    const ArrPosts = std.ArrayList(usize);
-    var map = std.StringHashMap(ArrPosts).init(allocator);
-    defer map.deinit();
     var json_reader = std.json.reader(allocator, file.reader());
     defer json_reader.deinit();
     const parsed = try std.json.parseFromTokenSource(Posts, allocator, &json_reader, .{});
     defer parsed.deinit();
 
     const start = try std.time.Instant.now();
+
+    const ArrPosts = std.ArrayList(usize);
+    var map = std.StringHashMap(ArrPosts).init(allocator);
+    defer map.deinit();
 
     for (parsed.value, 0..) |post_ele, i| {
         for (post_ele.tags) |tag| {

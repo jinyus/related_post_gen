@@ -86,11 +86,12 @@ end
 function main()
     json_string = read(@__DIR__()*"/../../../posts.json", String)
     posts = JSON3.read(json_string, Vector{PostData})
+    
+    start = now()       
 
     tagmap=Dict{Symbol, Vector{Int32}}()
     relatedposts=Vector{RelatedPost}(undef, length(posts))
-    
-    start = now()       
+
     all_related_posts = related!(posts, tagmap, relatedposts)
     println("Processing time (w/o IO): $(now() - start)")
 
