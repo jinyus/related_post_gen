@@ -91,7 +91,7 @@ run_cpp() {
         cd ./cpp &&
         g++ -std=c++11 -I./include -O3 main.cpp -o main &&
         if [ $HYPER == 1 ]; then
-            capture "cpp" hyperfine -r $runs -w $warmup --show-output "./main"
+            capture "C++" hyperfine -r $runs -w $warmup --show-output "./main"
         else
             command ${time} -f '%es %Mk' ./main
         fi
@@ -101,10 +101,10 @@ run_cpp() {
 
 run_cpp_con() {
     echo "Running C++ Concurrent" &&
-        cd ./cpp &&
+        cd ./cpp_con &&
         g++ -std=c++11 -pthread -I./include -O3 main.cpp -o main &&
         if [ $HYPER == 1 ]; then
-            capture "cpp" hyperfine -r $runs -w $warmup --show-output "./main"
+            capture "C++ Concurrent" hyperfine -r $runs -w $warmup --show-output "./main"
         else
             command ${time} -f '%es %Mk' ./main
         fi
