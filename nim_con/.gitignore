@@ -1,0 +1,3 @@
+build/
+default.prof*
+nimcache/
