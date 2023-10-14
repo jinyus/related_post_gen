@@ -1,5 +1,4 @@
-use std::borrow::Cow;
-use std::{collections::BinaryHeap, time::Instant};
+use std::{collections::BinaryHeap, hint, time::Instant};
 
 use bumpalo::collections::Vec as BVec;
 use bumpalo::Bump;
@@ -7,32 +6,32 @@ use rustc_data_structures::fx::FxHashMap;
 use serde::{Deserialize, Serialize};
 use serde_json::from_str;
 
-use mimalloc::MiMalloc;
 #[global_allocator]
-static GLOBAL: MiMalloc = MiMalloc;
+static GLOBAL: mimalloc::MiMalloc = mimalloc::MiMalloc;
 
 #[derive(Serialize, Deserialize)]
+#[repr(align(64))]
 struct Post<'a> {
-    _id: String,
-    #[serde(borrow)]
-    title: Cow<'a, str>,
-    // #[serde(skip_serializing)]
-    tags: Vec<String>,
+    #[serde(rename = "_id")]
+    id: &'a str,
+    title: &'a str,
+    tags: Vec<&'a str>,
 }
 
-const NUM_TOP_ITEMS: u32 = 5;
+const NUM_TOP_ITEMS: usize = 5;
 
 #[derive(Serialize)]
 struct RelatedPosts<'a> {
-    _id: &'a str,
-    tags: &'a [String],
+    #[serde(rename = "_id")]
+    id: &'a str,
+    tags: &'a [&'a str],
     related: Vec<&'a Post<'a>>,
 }
 
 #[derive(Eq)]
 struct PostCount {
     post: u32,
-    count: u32,
+    count: u8,
 }
 
 impl std::cmp::PartialEq for PostCount {
@@ -57,8 +56,8 @@ impl std::cmp::Ord for PostCount {
     }
 }
 
-fn least_n<T: Ord>(n: u32, mut from: impl Iterator<Item = T>) -> impl Iterator<Item = T> {
-    let mut h = BinaryHeap::from_iter(from.by_ref().take(n as usize));
+fn least_n<T: Ord>(n: usize, mut from: impl Iterator<Item = T>) -> impl Iterator<Item = T> {
+    let mut h = BinaryHeap::from_iter(from.by_ref().take(n));
 
     for it in from {
         // heap thinks the smallest is the greatest because of reverse order
@@ -76,15 +75,15 @@ fn main() {
     let json_str = std::fs::read_to_string("../posts.json").unwrap();
     let posts: Vec<Post> = from_str(&json_str).unwrap();
 
-    let cap = (posts.len() * std::mem::size_of::<u32>()).next_power_of_two();
-    let arena = Bump::with_capacity(cap);
-
     let start = Instant::now();
+
+    let cap = (posts.len() * std::mem::size_of::<u8>()).next_power_of_two();
+    let arena = Bump::with_capacity(cap);
 
     let mut post_tags_map: FxHashMap<&str, Vec<u32>> = FxHashMap::default();
 
     for (post_idx, post) in posts.iter().enumerate() {
-        for tag in post.tags.iter() {
+        for tag in &post.tags {
             post_tags_map.entry(tag).or_default().push(post_idx as u32);
         }
     }
@@ -93,12 +92,12 @@ fn main() {
         .iter()
         .enumerate()
         .map(|(post_idx, post)| {
-            let mut tagged_post_count: BVec<u32> = BVec::with_capacity_in(posts.len(), &arena);
+            let mut tagged_post_count: BVec<u8> = BVec::with_capacity_in(posts.len(), &arena);
             tagged_post_count.resize(posts.len(), 0);
 
-            for tag in post.tags.iter() {
-                if let Some(tag_posts) = post_tags_map.get::<str>(tag.as_ref()) {
-                    for other_post_idx in tag_posts.iter() {
+            for tag in &post.tags {
+                if let Some(tag_posts) = post_tags_map.get(tag) {
+                    for other_post_idx in tag_posts {
                         tagged_post_count[*other_post_idx as usize] += 1;
                     }
                 }
@@ -119,19 +118,17 @@ fn main() {
             let related = top.map(|it| &posts[it.post as usize]).collect();
 
             RelatedPosts {
-                _id: &post._id,
+                id: post.id,
                 tags: &post.tags,
                 related,
             }
         })
         .collect();
 
-    let end = Instant::now();
+    // Tell compiler to not delay now() until print is eval'ed.
+    let end = hint::black_box(Instant::now());
 
-    print!(
-        "Processing time (w/o IO): {:?}\n",
-        end.duration_since(start)
-    );
+    println!("Processing time (w/o IO): {:?}", end.duration_since(start));
 
     // I have no explanation for why, but doing this before the print improves performance pretty
     // significantly (15%) when using slices in the hashmap key and RelatedPosts
