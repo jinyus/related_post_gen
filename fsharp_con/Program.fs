@@ -5,6 +5,7 @@ open System.Collections.Generic
 open FSharp.Json //System.Text.Json is not aot friendly
 
 #nowarn "9"
+open System.Collections.Concurrent
 
 let inline stackalloc<'a when 'a: unmanaged> (length: int) : Span<'a> =
     let p = NativePtr.stackalloc<'a> length |> NativePtr.toVoidPtr
@@ -29,19 +30,21 @@ let topN = 5
 
 let getAllRelated (posts: Post[]) =
     // Start work
-    let tagPostsTmp = Dictionary<string, Stack<int>>()
+    let tagPostsTmp = ConcurrentDictionary<string, ConcurrentStack<int>>()
 
     posts
-    |> Array.iteri (fun postId post ->
+    |> Array.Parallel.iteri (fun postId post ->
 
         for tag in post.tags do
 
-            match tagPostsTmp.TryGetValue tag with
-            | true, s -> s.Push postId
-            | false, _ ->
-                let newStack = Stack()
-                newStack.Push postId
-                tagPostsTmp[tag] <- newStack)
+            tagPostsTmp.AddOrUpdate(
+                tag,
+                (fun _ -> ConcurrentStack<int>([| postId |])),
+                (fun _ oldStack ->
+                    oldStack.Push(postId)
+                    oldStack)
+            )
+            |> ignore)
 
     // convert from Dict<_,Stack<int>> to Dict<_,int[]> for faster access
     let tagPosts = Dictionary(tagPostsTmp.Count)
