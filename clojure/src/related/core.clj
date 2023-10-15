@@ -35,37 +35,37 @@
                                                 (let [top5 (make-array Integer/TYPE 10)]
                                                   (doseq [tag (:tags post)
                                                           idx (tag-map tag)]
-                                                    (aset-int tagged-post-count idx (inc (aget tagged-post-count idx))))
+                                                    (aset-int tagged-post-count idx (inc (get tagged-post-count idx))))
 
-                                                  (aset tagged-post-count post-idx 0)
+                                                  (aset-int tagged-post-count post-idx 0)
 
                                                   (loop [i        0
                                                          min-tags 0]
                                                     (if (< i n)
-                                                      (let [cnt (aget tagged-post-count i)]
+                                                      (let [cnt (get tagged-post-count i)]
                                                         (if (> cnt min-tags)
                                                           (let [up (loop [upper-bound 6]
                                                                      (if-not (and (>= upper-bound 0)
-                                                                                  (> cnt (aget top5 upper-bound)))
+                                                                                  (> cnt (get top5 upper-bound)))
                                                                        upper-bound
                                                                        (do
-                                                                         (aset top5 (+ upper-bound 2) (aget top5 upper-bound))
-                                                                         (aset top5 (+ upper-bound 3) (aget top5 (inc upper-bound)))
+                                                                         (aset-int top5 (+ upper-bound 2) (get top5 upper-bound))
+                                                                         (aset-int top5 (+ upper-bound 3) (get top5 (inc upper-bound)))
                                                                          (recur (- upper-bound 2)))))]
-                                                            (aset top5 (+ up 2) cnt)
-                                                            (aset top5 (+ up 3) i)
-                                                            (recur (inc i) (aget top5 8)))
+                                                            (aset-int top5 (+ up 2) cnt)
+                                                            (aset-int top5 (+ up 3) i)
+                                                            (recur (inc i) (get top5 8)))
                                                           (recur (inc i) min-tags)))))
 
                                                   {:_id     (:_id post)
                                                    :tags    (:tags post)
                                                    :related (->> (range 1 10 2)
-                                                                 (mapv #(nth posts (aget top5 %))))})))
+                                                                 (mapv #(nth posts (get top5 %))))})))
                                  doall)
 
           t2                (System/currentTimeMillis)]
 
-      (println "Processing time (w/o IO):" (- t2 t1))
+      (println (format "Processing time (w/o IO): %sms" (- t2 t1)))
       (spit (io/file "../related_posts_clj.json") (json/generate-string related)))
 
     (catch Exception e (prn e))))
