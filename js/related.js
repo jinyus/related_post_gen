@@ -19,6 +19,7 @@ export function genRelatedPosts(posts) {
 
     let record = {}
 
+    // fill array with 0s manually. Array.fill() is slow in bun
     for (let j = 0; j < postsCount; j++) {
       taggedPostCount[j] = 0;
     }
