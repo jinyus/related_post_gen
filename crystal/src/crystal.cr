@@ -2,8 +2,6 @@ require "json"
 require "time"
 
 TOPN = 5
-INITIAL_TAG_MAP_CAP = 100
-INITIAL_TAG_ARRAY_CAP = 256
 
 struct Post
   include JSON::Serializable
@@ -28,10 +26,10 @@ end
 
 posts = Array(Post).from_json(File.read("../posts.json"))
 
-t1 = Time.utc
+t1 = Time.monotonic
 
-tag_map = Hash(String, Array(Int32)).new(INITIAL_TAG_ARRAY_CAP) do |hash, key|
-  hash[key] = Array(Int32).new(INITIAL_TAG_ARRAY_CAP)
+tag_map = Hash(String, Array(Int32)).new(16) do |hash, key|
+  hash[key] = [] of Int32
 end
 
 posts.each_with_index do |post, i|
@@ -85,7 +83,7 @@ posts.each_with_index do |post, idx|
   allRelatedPosts[idx] = RelatedPost.new(id: post.id, tags: post.tags, related: top_posts)
 end
 
-t2 = Time.utc
+t2 = Time.monotonic
 print "Processing time (w/o IO): #{(t2 - t1).total_milliseconds}ms\n"
 
 File.write("../related_posts_cr.json", allRelatedPosts.to_json)
