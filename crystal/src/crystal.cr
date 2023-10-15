@@ -79,8 +79,12 @@ posts.each_with_index do |post, idx|
     end
   end
 
+  top_posts = Array(Post).new(TOPN)
+
   # Convert indexes back to Post pointers
-  top_posts = [posts[top5[1]], posts[top5[3]], posts[top5[5]], posts[top5[7]], posts[top5[9]]]
+  (1...10).step(2) do |i|
+    top_posts << posts[top5[i]]
+  end
 
   allRelatedPosts[idx] = RelatedPost.new(id: post.id, tags: post.tags, related: top_posts)
 end
