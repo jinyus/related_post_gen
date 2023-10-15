@@ -35,7 +35,7 @@ if command -v hyperfine &>/dev/null; then
     HYPER=1
 fi
 
-time="$(which gtime || which time)"
+time="$(which gtime 2>/dev/null || which time)"
 
 # capture the output of a command and write it to stout or to a file
 capture() {
