@@ -56,6 +56,7 @@ docker run -e TEST_NAME=all -it --rm databench
 -   Represent tags as strings
 -   Be production ready
 -   Use general purpose datastructures (not tailored for this benchmark)
+-   Use less than 8GB of memory
 </details>
 
 ### Updated Results from github workflow ([raw data](https://github.com/jinyus/related_post_gen/blob/main/raw_results.md))
