@@ -36,7 +36,7 @@ pub fn main() !void {
 
     const start = try std.time.Instant.now();
 
-    const ArrPosts = std.ArrayList(usize);
+    const ArrPosts = std.ArrayList(u32);
     var map = std.StringHashMap(ArrPosts).init(allocator);
     defer map.deinit();
 
@@ -44,10 +44,10 @@ pub fn main() !void {
         for (post_ele.tags) |tag| {
             var get_or_put = try map.getOrPut(tag);
             if (get_or_put.found_existing) {
-                try get_or_put.value_ptr.*.append(i);
+                try get_or_put.value_ptr.*.append(@intCast(i));
             } else {
                 var temp = ArrPosts.init(allocator);
-                try temp.append(i);
+                try temp.append(@intCast(i));
                 get_or_put.value_ptr.* = temp;
             }
         }
