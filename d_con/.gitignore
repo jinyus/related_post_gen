@@ -15,3 +15,4 @@ d_con-test-*
 *.obj
 *.lst
 related_con
+related_concurrent
