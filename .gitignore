@@ -35,5 +35,11 @@ dart/related
 nim/src/nim
 nim/src/related
 
+# Clojure
+clojure/target
+clojure/.idea
+clojure/.*iml
+clojure/.nrepl-port
+
 .fake
 cpp/main
