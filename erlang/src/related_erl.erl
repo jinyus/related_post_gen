@@ -20,7 +20,7 @@ main(_) ->
 
     file:write_file(?OUT_JSON, jsone:encode(Posts1)),
 
-    io:format("Processing time (w/o IO): ~f sec~n", [(T2-T1) / 1000000000]),
+    io:format("Processing time (w/o IO): ~f s~n", [(T2-T1) / 1000000000]),
     erlang:halt(0).
 
 %%====================================================================
