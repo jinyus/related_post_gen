@@ -29,7 +29,6 @@
           tagged-post-count (make-array Integer/TYPE n)
 
           related           (->> posts
-                                 ; (take 100)
                                  (map-indexed (fn [post-idx post]
                                                 (java.util.Arrays/fill tagged-post-count 0)
 
@@ -68,6 +67,8 @@
                                  doall)
 
           t2                (System/currentTimeMillis)]
+
       (println "Processing time (w/o IO):" (- t2 t1))
       (spit (io/file "../related_posts_clj.json") (json/generate-string related)))
+
     (catch Exception e (prn e))))

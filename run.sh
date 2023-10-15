@@ -616,6 +616,19 @@ run_erlang() {
 }
 
 
+run_clojure() {
+    echo "Running Clojure" &&
+        cd ./clojure &&
+        lein uberjar
+        if [ $HYPER == 1 ]; then
+            capture "Clojure" hyperfine -r $runs -w $warmup --show-output "java $VM_OPTIONS -jar ./target/related.jar"
+        else
+            command ${time} -f '%es %Mk' java $VM_OPTIONS -jar ./target/related.jar
+        fi
+
+    check_output "related_posts_clj.json"
+}
+
 check_output() {
     cd ..
 
@@ -795,6 +808,10 @@ elif [ "$first_arg" = "d_con" ]; then
 elif [ "$first_arg" = "erlang" ]; then
 
     run_erlang
+
+elif [ "$first_arg" = "clj" ]; then
+
+    run_clojure
 
 
 elif [ "$first_arg" = "all" ]; then
