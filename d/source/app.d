@@ -21,7 +21,7 @@ struct RelatedPosts
 
 struct PostsWithSharedTags
 {
-	int post;
+	ulong post;
 	ubyte sharedTags;
 }
 
@@ -36,13 +36,13 @@ void main()
 	auto relatedPosts = new RelatedPosts[postsCount];
 	auto taggedPostsCount = new ubyte[postsCount];
 	Post[TopN] topPosts;
-	int[][string] tagMap;
+	size_t[][string] tagMap;
 
-	foreach (int i, post; posts)
+	foreach (i, post; posts)
 		foreach (tag; post.tags)
 			tagMap[tag] ~= i;
 
-	foreach (const k, post; posts)
+	foreach (k, post; posts)
 	{
 		PostsWithSharedTags[TopN] top5;
 
@@ -55,7 +55,7 @@ void main()
 		taggedPostsCount[k] = 0;
 
 		auto minTags = 0;
-		foreach (int j, count; taggedPostsCount)
+		foreach (j, count; taggedPostsCount)
 		{
 			if (count > minTags)
 			{
