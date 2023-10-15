@@ -39,6 +39,7 @@ nim/src/related
 clojure/target
 clojure/.idea
 clojure/.*iml
+clojure/related.iml
 clojure/.nrepl-port
 
 .fake
