@@ -1,7 +1,9 @@
 require "json"
 require "time"
 
-TOPN = 5
+TOPN                  =   5
+INITIAL_TAG_MAP_CAP   = 100
+INITIAL_TAG_ARRAY_CAP = 256
 
 struct Post
   include JSON::Serializable
@@ -28,8 +30,8 @@ posts = Array(Post).from_json(File.read("../posts.json"))
 
 t1 = Time.monotonic
 
-tag_map = Hash(String, Array(Int32)).new(16) do |hash, key|
-  hash[key] = [] of Int32
+tag_map = Hash(String, Array(Int32)).new(INITIAL_TAG_ARRAY_CAP) do |hash, key|
+  hash[key] = Array(Int32).new(INITIAL_TAG_ARRAY_CAP)
 end
 
 posts.each_with_index do |post, i|
