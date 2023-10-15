@@ -3,13 +3,15 @@
             [clojure.java.io :as io])
   (:gen-class))
 
+(def ^:const input-file "../posts.json")
+(def ^:const output-file "../related_posts_clj.json")
 
-;; TODO: use deftype or class instance?
-(deftype Post [^String id tags])
+;; TODO: use deftype or class instance(?), faster json lib mapping to array of objects
+; (deftype Post [^String id tags])
 
 (defn -main []
   (try
-    (let [posts             (vec (json/parse-string (slurp (io/file "../posts.json")) true))
+    (let [posts             (into-array (json/parse-string (slurp (io/file input-file)) true))
 
           t1                (System/currentTimeMillis)
 
@@ -19,53 +21,59 @@
           tag-map           (loop [i 0 res {}]
                               (if (= i n)
                                 res
-                                (let [post (nth posts i)
+                                (let [post (get posts i)
                                       res  (reduce (fn [res tag]
-                                                     (update-in res [tag] conj i))
+                                                     (update res tag conj i))
                                                    res
                                                    (:tags post))]
                                   (recur (inc i) res))))
 
           tagged-post-count (make-array Integer/TYPE n)
 
-          related           (->> posts
-                                 (map-indexed (fn [post-idx post]
-                                                (java.util.Arrays/fill tagged-post-count 0)
+          results           (make-array Object n)
 
-                                                (let [top5 (make-array Integer/TYPE 10)]
-                                                  (doseq [tag (:tags post)
-                                                          idx (tag-map tag)]
-                                                    (aset-int tagged-post-count idx (inc (get tagged-post-count idx))))
+          _                 (loop [post-idx 0]
+                              (if (< post-idx n)
+                                (let [post (get posts post-idx)]
+                                  (java.util.Arrays/fill tagged-post-count 0)
 
-                                                  (aset-int tagged-post-count post-idx 0)
+                                  (let [top5 (make-array Integer/TYPE 10)]
+                                    (doseq [tag (:tags post)
+                                            idx (tag-map tag)]
+                                      (aset-int tagged-post-count idx (inc (get tagged-post-count idx))))
 
-                                                  (loop [i        0
-                                                         min-tags 0]
-                                                    (if (< i n)
-                                                      (let [cnt (get tagged-post-count i)]
-                                                        (if (> cnt min-tags)
-                                                          (let [up (loop [upper-bound 6]
-                                                                     (if-not (and (>= upper-bound 0)
-                                                                                  (> cnt (get top5 upper-bound)))
-                                                                       upper-bound
-                                                                       (do
-                                                                         (aset-int top5 (+ upper-bound 2) (get top5 upper-bound))
-                                                                         (aset-int top5 (+ upper-bound 3) (get top5 (inc upper-bound)))
-                                                                         (recur (- upper-bound 2)))))]
-                                                            (aset-int top5 (+ up 2) cnt)
-                                                            (aset-int top5 (+ up 3) i)
-                                                            (recur (inc i) (get top5 8)))
-                                                          (recur (inc i) min-tags)))))
+                                    (aset-int tagged-post-count post-idx 0)
 
-                                                  {:_id     (:_id post)
-                                                   :tags    (:tags post)
-                                                   :related (->> (range 1 10 2)
-                                                                 (mapv #(nth posts (get top5 %))))})))
-                                 doall)
+                                    (loop [i        0
+                                           min-tags 0]
+                                      (if (< i n)
+                                        (let [cnt (get tagged-post-count i)]
+                                          (if (> cnt min-tags)
+                                            (let [up (loop [upper-bound 6]
+                                                       (if-not (and (>= upper-bound 0)
+                                                                    (> cnt (get top5 upper-bound)))
+                                                         upper-bound
+                                                         (do
+                                                           (aset-int top5 (+ upper-bound 2) (get top5 upper-bound))
+                                                           (aset-int top5 (+ upper-bound 3) (get top5 (inc upper-bound)))
+                                                           (recur (- upper-bound 2)))))]
+                                              (aset-int top5 (+ up 2) cnt)
+                                              (aset-int top5 (+ up 3) i)
+                                              (recur (inc i) (get top5 8)))
+                                            (recur (inc i) min-tags)))))
+
+                                    (aset results post-idx
+                                          {:_id     (:_id post)
+                                           :tags    (:tags post)
+                                           :related (->> (range 1 10 2)
+                                                         (mapv #(get posts (get top5 %))))}))
+                                  (recur (inc post-idx)))))
+
+          results           (seq results)
 
           t2                (System/currentTimeMillis)]
 
       (println (format "Processing time (w/o IO): %sms" (- t2 t1)))
-      (spit (io/file "../related_posts_clj.json") (json/generate-string related)))
+      (spit (io/file output-file) (json/generate-string results)))
 
     (catch Exception e (prn e))))
