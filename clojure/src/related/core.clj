@@ -34,39 +34,39 @@
 
           _                 (loop [post-idx 0]
                               (if (< post-idx n)
-                                (let [post (get posts post-idx)]
+                                (let [post (get posts post-idx)
+                                      top5 (make-array Integer/TYPE 10)]
                                   (java.util.Arrays/fill tagged-post-count 0)
+                                  (doseq [tag (:tags post)
+                                          idx (tag-map tag)]
+                                    (aset-int tagged-post-count idx (inc (get tagged-post-count idx))))
 
-                                  (let [top5 (make-array Integer/TYPE 10)]
-                                    (doseq [tag (:tags post)
-                                            idx (tag-map tag)]
-                                      (aset-int tagged-post-count idx (inc (get tagged-post-count idx))))
+                                  (aset-int tagged-post-count post-idx 0)
 
-                                    (aset-int tagged-post-count post-idx 0)
+                                  (loop [i        0
+                                         min-tags 0]
+                                    (if (< i n)
+                                      (let [cnt (get tagged-post-count i)]
+                                        (if (> cnt min-tags)
+                                          (let [up (loop [upper-bound 6]
+                                                     (if-not (and (>= upper-bound 0)
+                                                                  (> cnt (get top5 upper-bound)))
+                                                       upper-bound
+                                                       (do
+                                                         (aset-int top5 (+ upper-bound 2) (get top5 upper-bound))
+                                                         (aset-int top5 (+ upper-bound 3) (get top5 (inc upper-bound)))
+                                                         (recur (- upper-bound 2)))))]
+                                            (aset-int top5 (+ up 2) cnt)
+                                            (aset-int top5 (+ up 3) i)
+                                            (recur (inc i) (get top5 8)))
+                                          (recur (inc i) min-tags)))))
 
-                                    (loop [i        0
-                                           min-tags 0]
-                                      (if (< i n)
-                                        (let [cnt (get tagged-post-count i)]
-                                          (if (> cnt min-tags)
-                                            (let [up (loop [upper-bound 6]
-                                                       (if-not (and (>= upper-bound 0)
-                                                                    (> cnt (get top5 upper-bound)))
-                                                         upper-bound
-                                                         (do
-                                                           (aset-int top5 (+ upper-bound 2) (get top5 upper-bound))
-                                                           (aset-int top5 (+ upper-bound 3) (get top5 (inc upper-bound)))
-                                                           (recur (- upper-bound 2)))))]
-                                              (aset-int top5 (+ up 2) cnt)
-                                              (aset-int top5 (+ up 3) i)
-                                              (recur (inc i) (get top5 8)))
-                                            (recur (inc i) min-tags)))))
+                                  (aset results post-idx
+                                        {:_id     (:_id post)
+                                         :tags    (:tags post)
+                                         :related (->> (range 1 10 2)
+                                                       (mapv #(get posts (get top5 %))))})
 
-                                    (aset results post-idx
-                                          {:_id     (:_id post)
-                                           :tags    (:tags post)
-                                           :related (->> (range 1 10 2)
-                                                         (mapv #(get posts (get top5 %))))}))
                                   (recur (inc post-idx)))))
 
           results           (seq results)
