@@ -35,7 +35,11 @@ if command -v hyperfine &>/dev/null; then
     HYPER=1
 fi
 
-time="$(which gtime 2>/dev/null || which time)"
+time="$(which gtime 2>/dev/null || which time 2>/dev/null)"
+if [[ -z "${time}" && -z "$(which hyperfine 2>/dev/null)" ]]; then
+  echo 'time, gtime, or hyperfine must be available in $PATH'
+  exit 1
+fi
 
 # capture the output of a command and write it to stout or to a file
 capture() {
