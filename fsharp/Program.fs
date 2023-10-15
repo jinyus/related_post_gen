@@ -31,7 +31,7 @@ let getAllRelated (posts: Post[]) =
     // Start work
     let tagPostsTmp = Dictionary<string, Stack<int>>()
 
-    for postId = 0 to (Array.length posts - 1) do
+    for postId in 0 .. (Array.length posts - 1) do
         let post = posts.[postId]
 
         for tag in post.tags do
@@ -62,7 +62,7 @@ let getAllRelated (posts: Post[]) =
         let top5 = Array.zeroCreate<struct {| count: byte; postId: int |}> topN
         let mutable minTags = 0uy
 
-        for i = 0 to (taggedPostCount.Length - 1) do
+        for i in 0 .. taggedPostCount.Length - 1 do
             let count = taggedPostCount[i]
 
             if count > minTags then
