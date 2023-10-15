@@ -101,7 +101,7 @@ int main()
             const auto it = tagMap.find(tag);
             for (auto otherPostIdx : it->second)
             {
-                *(taggedPostCount.data() + otherPostIdx) += 1;
+                taggedPostCount.at(otherPostIdx) += 1;
             }
         }
 
