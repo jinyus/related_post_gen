@@ -49,7 +49,7 @@ docker run -e TEST_NAME=all -it --rm databench
 <h3>Must:</h3>
 
 -   Support up to 100,000 posts
--   Support UTF8
+-   Support UTF8 strings
 -   Parse json at runtime
 -   Support up to 100 tags
 -   Use a stable release of the compiler/runtime
