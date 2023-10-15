@@ -11,14 +11,18 @@ export function genRelatedPosts(posts) {
     }
   });
 
-  const taggedPostCount = Array(posts.length);
+  const postsCount = posts.length;
+  const taggedPostCount = Array(postsCount);
+  const allRelated = Array(postsCount);
 
-  return Array(posts.length)
-    .fill()
-    .map((record, i) => {
+  for (let i = 0; i < postsCount; i++) {
+    let record = {};
 
-    record = {}
-    taggedPostCount.fill(0);
+    // fill array with 0s manually. Array.fill() is slow in bun
+    for (let j = 0; j < postsCount; j++) {
+      taggedPostCount[j] = 0;
+    }
+
     let post = posts[i];
 
     for (const tag of post.tags) {
@@ -29,16 +33,16 @@ export function genRelatedPosts(posts) {
 
     taggedPostCount[i] = 0; // exclude self
 
-    let top5 = Array(5).fill({
-      idx: 0,
-      count: 0,
-    });
+    let top5 = Array(5);
+
+    for (let j = 0; j < 5; j++) {
+      top5[j] = { idx: -1, count: 0 };
+    }
 
     let minTags = 0;
 
     // custom priority queue to find top 5
     taggedPostCount.forEach((count, i2) => {
-
       if (count > minTags) {
         let pos = 4;
 
@@ -51,7 +55,6 @@ export function genRelatedPosts(posts) {
         top5.pop();
         minTags = top5[4].count;
       }
-
     });
 
     record._id = post._id;
@@ -59,6 +62,8 @@ export function genRelatedPosts(posts) {
     record.tags = post.tags;
     record.related = top5.map((p) => posts[p.idx]);
 
-    return record;
-  });
+    allRelated[i] = record;
+  }
+
+  return allRelated;
 }
