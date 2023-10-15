@@ -602,6 +602,20 @@ run_d_con() {
     check_output "related_posts_d_con.json"
 }
 
+run_erlang() {
+    echo "Running Erlang" &&
+        cd ./erlang &&
+        rebar3 escriptize
+        if [ $HYPER == 1 ]; then
+            capture "Erlang" hyperfine -r $runs -w $warmup --show-output "_build/default/bin/related_erl"
+        else
+            command ${time} -f '%es %Mk' ./_build/default/bin/related_erl
+        fi
+
+    check_output "related_posts_erlang.json"
+}
+
+
 check_output() {
     cd ..
 
@@ -778,6 +792,11 @@ elif [ "$first_arg" = "d_con" ]; then
 
     run_d_con
 
+elif [ "$first_arg" = "erlang" ]; then
+
+    run_erlang
+
+
 elif [ "$first_arg" = "all" ]; then
 
     echo -e "Running all\n" &&
@@ -819,6 +838,7 @@ elif [ "$first_arg" = "all" ]; then
         run_luajit || echo -e "\n" &&
         run_lua || echo -e "\n" &&
         run_ocaml || echo -e "\n" &&
+        run_erlang || echo -e "\n" &&
         echo -e "Finished running all\n"
 
 elif [ "$first_arg" = "clean" ]; then
@@ -835,6 +855,8 @@ elif [ "$first_arg" = "clean" ]; then
         cd d && rm -f related &&
         cd .. &&
         cd d_con && rm -f related &&
+        cd .. &&
+        cd erlang && rm -rf _build/ rebar.lock &&
         cd .. &&
         cd python && rm -rf venv/ &&
         cd .. &&
