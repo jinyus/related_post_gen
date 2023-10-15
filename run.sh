@@ -799,6 +799,7 @@ elif [ "$first_arg" = "all" ]; then
         run_luajit || echo -e "\n" &&
         run_lua || echo -e "\n" &&
         run_ocaml || echo -e "\n" &&
+        run_erlang || echo -e "\n" &&
         echo -e "Finished running all\n"
 
 elif [ "$first_arg" = "clean" ]; then
@@ -815,6 +816,8 @@ elif [ "$first_arg" = "clean" ]; then
         cd d && rm -f related &&
         cd .. &&
         cd d_con && rm -f related &&
+        cd .. &&
+        cd erlang && rm -rf _build/ rebar.lock &&
         cd .. &&
         cd python && rm -rf venv/ &&
         cd .. &&

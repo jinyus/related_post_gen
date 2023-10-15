@@ -6,32 +6,26 @@
 
 -define(IN_JSON, "../posts.json").
 -define(OUT_JSON, "../related_posts_erlang.json").
--define(PROF_INIT, put('$prof', [{?LINE, erlang:system_time(microsecond)}])).
--define(PROF_STEP, put('$prof', [{?LINE, erlang:system_time(microsecond)} | get('$prof')])).
 
 %%====================================================================
 %% API functions
 %%====================================================================
 main(_) ->
-    ?PROF_INIT, %all PROF* stuff will be removed
-    {ok, BData} = file:read_file(?IN_JSON), ?PROF_STEP,
-    Posts0 = lists:enumerate(jsone:decode(BData)), ?PROF_STEP,
-    TagsMap = lists:foldl(fun build_tag_idx/2, #{}, Posts0), ?PROF_STEP,
-    Posts1 = add_related(Posts0, TagsMap), ?PROF_STEP,
-    OutJson = jsone:encode(Posts1), ?PROF_STEP,
-    file:write_file(?OUT_JSON, OutJson), ?PROF_STEP,
-    report_prof(),
+    {ok, BData} = file:read_file(?IN_JSON),
+    Posts0 = lists:enumerate(jsone:decode(BData)),
+
+    T1 = erlang:system_time(nanosecond),
+    Posts1 = add_related(Posts0),
+    T2 = erlang:system_time(nanosecond),
+
+    file:write_file(?OUT_JSON, jsone:encode(Posts1)),
+
+    io:format("Processing time (w/o IO): ~f sec~n", [(T2-T1) / 1000000000]),
     erlang:halt(0).
 
 %%====================================================================
 %% Internal functions
 %%====================================================================
-report_prof() ->
-    lists:foldl(fun({L, T}, LastTime) ->
-                        io:format("~p: +~p us~n", [L, T - LastTime]),
-                        T
-                end, 0, lists:reverse(get('$prof'))).
-
 build_tag_idx({Idx, #{<<"tags">> := List}}, Acc) ->
     build_tag_idx(Idx, List, Acc).
 
@@ -46,13 +40,13 @@ build_tag_idx(Idx, [Tag | Rest], Acc) ->
     end.
 
 
-add_related(Posts, TagsMap) ->
+add_related(Posts) ->
+    TagsMap = lists:foldl(fun build_tag_idx/2, #{}, Posts),
     PostsM = maps:from_list(Posts),
     [P#{<<"related">> => [map_get(I, PostsM) || I <- top5_related_idx(Idx, P, TagsMap)]} || {Idx, P} <- Posts].
 
 top5_related_idx(SelfIdx, #{<<"tags">> := Tags}, TagsMap) ->
     Idxs = [Idx || Tag <- Tags, Idx <- map_get(Tag, TagsMap), Idx /= SelfIdx],
-    %% Related0 = maps:map(fun(_, V)-> length(V) end, maps:groups_from_list(fun(K)-> K end, Idxs)), %slow
     Related0 = lists:foldl(fun(Idx, Acc) -> Acc#{Idx => maps:get(Idx, Acc, 0) + 1} end, #{}, Idxs),
     lists:reverse(stalin_sort(5, maps:to_list(Related0))).
 
