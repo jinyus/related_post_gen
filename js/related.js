@@ -16,8 +16,7 @@ export function genRelatedPosts(posts) {
   const allRelated = Array(postsCount);
 
   for (let i = 0; i < postsCount; i++) {
-
-    let record = {}
+    let record = {};
 
     // fill array with 0s manually. Array.fill() is slow in bun
     for (let j = 0; j < postsCount; j++) {
@@ -44,7 +43,6 @@ export function genRelatedPosts(posts) {
 
     // custom priority queue to find top 5
     taggedPostCount.forEach((count, i2) => {
-
       if (count > minTags) {
         let pos = 4;
 
@@ -57,7 +55,6 @@ export function genRelatedPosts(posts) {
         top5.pop();
         minTags = top5[4].count;
       }
-
     });
 
     record._id = post._id;
@@ -66,7 +63,6 @@ export function genRelatedPosts(posts) {
     record.related = top5.map((p) => posts[p.idx]);
 
     allRelated[i] = record;
-
   }
 
   return allRelated;
