@@ -104,5 +104,5 @@ let main args =
 
     let json = Json.serialize allRelatedPosts
 
-    File.WriteAllText($"{srcDir}/../related_posts_fsharp.json", json)
+    File.WriteAllText($"{srcDir}/../related_posts_fsharp_con.json", json)
     0
