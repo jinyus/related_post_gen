@@ -22,7 +22,7 @@ struct RelatedPosts
 
 struct PostsWithSharedTags
 {
-	ulong post;
+	int post;
 	ubyte sharedTags;
 }
 
@@ -38,9 +38,9 @@ void main()
 
 	int postsCount = cast(int) posts.length;
 	auto relatedPosts = new RelatedPosts[postsCount];
-	size_t[][string] tagMap;
+	int[][string] tagMap;
 
-	foreach (i, post; posts)
+	foreach (int i, post; posts)
 		foreach (tag; post.tags)
 			if (auto arr = tag in tagMap)
 				(*arr) ~= i; //This is safe, just don't lookup twice
@@ -63,7 +63,7 @@ void main()
 		top5[] = PostsWithSharedTags(0, 0);
 
 		ubyte minTags = 0;
-		foreach (j, count; taggedPostsCount)
+		foreach (int j, count; taggedPostsCount)
 		{
 			if (count > minTags)
 			{
