@@ -232,7 +232,7 @@ run_crystal() {
 run_zig() {
     echo "Running Zig" &&
         cd ./zig &&
-        zig build-exe -lc -O ReleaseSafe main.zig
+        zig build-exe -lc -O ReleaseFast main.zig
     if [ $HYPER == 1 ]; then
         capture "Zig" hyperfine -r $runs -w $warmup --show-output "./main"
     else
