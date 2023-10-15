@@ -59,11 +59,8 @@
 
                                                   {:_id     (:_id post)
                                                    :tags    (:tags post)
-                                                   :related [(nth posts (aget top5 1))
-                                                             (nth posts (aget top5 3))
-                                                             (nth posts (aget top5 5))
-                                                             (nth posts (aget top5 7))
-                                                             (nth posts (aget top5 9))]})))
+                                                   :related (->> (range 1 10 2)
+                                                                 (mapv #(nth posts (aget top5 %))))})))
                                  doall)
 
           t2                (System/currentTimeMillis)]
