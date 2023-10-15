@@ -76,14 +76,15 @@ int main()
 
     auto start = std::chrono::high_resolution_clock::now();
 
-    std::unordered_map<std::string, std::vector<size_t>> tagMap;
+    std::unordered_map<std::string, std::vector<int>> tagMap;
     tagMap.reserve(INITIAL_TAGGED_COUNT_SIZE);
 
-    for (size_t i = 0; i < posts.size(); ++i)
+    int total = static_cast<int>(posts.size());
+    for (int i = 0; i < total; ++i)
     {
         for (const auto &tag : posts[i].tags)
         {
-            auto it = tagMap.insert({tag, std::vector<size_t>{i}});
+            auto it = tagMap.insert({tag, std::vector<int>{i}});
             if (!it.second) {
                 it.first->second.push_back(i);
             }
@@ -91,22 +92,23 @@ int main()
     }
 
     std::vector<RelatedPosts> allRelatedPosts;
-    allRelatedPosts.resize(posts.size());
+    allRelatedPosts.resize(total);
 
-    auto calculate = [&posts, &allRelatedPosts, &tagMap](size_t id) -> void {
-        std::vector<uint8_t> taggedPostCount(posts.size());
-        for (size_t i = 0; i < posts.size(); ++i)
+    auto calculate = [&posts, &allRelatedPosts, &tagMap, total](size_t id) -> void {
+        std::vector<uint8_t> taggedPostCount(total);
+        for (size_t i = id; i < total; i += 4)
         {
-            if ((i & 3) != id) continue;
-            std::memset(taggedPostCount.data(), 0, posts.size());
+            std::memset(taggedPostCount.data(), 0, total);
+            const Post& p = posts[i];
             RelatedPosts& relatedPost = allRelatedPosts[i];
-            relatedPost = {posts[i]._id, posts[i].tags, std::vector<Post*>{5}};
+            relatedPost = {p._id, p.tags, std::vector<Post*>{5}};
 
-            for (const auto &tag : posts[i].tags)
+            for (const auto &tag : p.tags)
             {
-                for (const auto &otherPostIdx : tagMap[tag])
+                const auto it = tagMap.find(tag);
+                for (auto otherPostIdx : it->second)
                 {
-                    taggedPostCount[otherPostIdx] += 1;
+                    *(taggedPostCount.data() + otherPostIdx) += 1;
                 }
             }
 
