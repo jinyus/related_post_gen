@@ -42,10 +42,7 @@ void main()
 
 	foreach (int i, post; posts)
 		foreach (tag; post.tags)
-			if (auto arr = tag in tagMap)
-				(*arr) ~= i; //This is safe, just don't lookup twice
-			else
-				tagMap[tag] = [i];
+			tagMap[tag] ~= i;
 
 	auto taggedPostsCountThreadPool = taskPool.workerLocalStorage(new ubyte[postsCount]);
 

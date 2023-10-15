@@ -37,8 +37,8 @@ fi
 
 time="$(which gtime 2>/dev/null || which time 2>/dev/null)"
 if [[ -z "${time}" && -z "$(which hyperfine 2>/dev/null)" ]]; then
-  echo 'time, gtime, or hyperfine must be available in $PATH'
-  exit 1
+    echo 'time, gtime, or hyperfine must be available in $PATH'
+    exit 1
 fi
 
 # capture the output of a command and write it to stout or to a file
@@ -606,15 +606,14 @@ run_erlang() {
     echo "Running Erlang" &&
         cd ./erlang &&
         rebar3 escriptize
-        if [ $HYPER == 1 ]; then
-            capture "Erlang" hyperfine -r $runs -w $warmup --show-output "_build/default/bin/related_erl"
-        else
-            command ${time} -f '%es %Mk' ./_build/default/bin/related_erl
-        fi
+    if [ $HYPER == 1 ]; then
+        capture "Erlang" hyperfine -r $runs -w $warmup --show-output "_build/default/bin/related_erl"
+    else
+        command ${time} -f '%es %Mk' ./_build/default/bin/related_erl
+    fi
 
     check_output "related_posts_erlang.json"
 }
-
 
 run_clojure() {
     echo "Running Clojure" &&
@@ -813,7 +812,6 @@ elif [ "$first_arg" = "clj" ]; then
 
     run_clojure
 
-
 elif [ "$first_arg" = "all" ]; then
 
     echo -e "Running all\n" &&
@@ -855,7 +853,7 @@ elif [ "$first_arg" = "all" ]; then
         run_luajit || echo -e "\n" &&
         run_lua || echo -e "\n" &&
         run_ocaml || echo -e "\n" &&
-        run_erlang || echo -e "\n" &&
+        # run_erlang || echo -e "\n" && # erlang is too slow right now
         echo -e "Finished running all\n"
 
 elif [ "$first_arg" = "clean" ]; then
