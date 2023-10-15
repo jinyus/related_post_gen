@@ -574,6 +574,20 @@ run_d_con() {
     check_output "related_posts_d_con.json"
 }
 
+run_erlang() {
+    echo "Running Erlang" &&
+        cd ./erlang &&
+        rebar3 escriptize
+        if [ $HYPER == 1 ]; then
+            capture "Erlang" hyperfine -r $runs -w $warmup --show-output "_build/default/bin/related_erl"
+        else
+            command ${time} -f '%es %Mk' ./_build/default/bin/related_erl
+        fi
+
+    check_output "related_posts_erlang.json"
+}
+
+
 check_output() {
     cd ..
 
@@ -741,6 +755,11 @@ elif [ "$first_arg" = "d" ]; then
 elif [ "$first_arg" = "d_con" ]; then
 
     run_d_con
+
+elif [ "$first_arg" = "erlang" ]; then
+
+    run_erlang
+
 
 elif [ "$first_arg" = "all" ]; then
 
