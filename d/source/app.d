@@ -40,7 +40,10 @@ void main()
 
 	foreach (i, post; posts)
 		foreach (tag; post.tags)
-			tagMap[tag] ~= i;
+			if (auto arr = tag in tagMap)
+				(*arr) ~= i; // This is safe, don't lookup twice
+			else
+				tagMap[tag] = [i];
 
 	foreach (k, post; posts)
 	{

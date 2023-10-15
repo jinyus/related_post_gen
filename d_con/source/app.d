@@ -39,10 +39,13 @@ void main()
 	int postsCount = cast(int) posts.length;
 	auto relatedPosts = new RelatedPosts[postsCount];
 	size_t[][string] tagMap;
-	
+
 	foreach (i, post; posts)
 		foreach (tag; post.tags)
-			tagMap[tag] ~= i;
+			if (auto arr = tag in tagMap)
+				(*arr) ~= i; //This is safe, just don't lookup twice
+			else
+				tagMap[tag] = [i];
 
 	auto taggedPostsCountThreadPool = taskPool.workerLocalStorage(new ubyte[postsCount]);
 
