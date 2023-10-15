@@ -62,7 +62,7 @@ let getAllRelated (posts: Post[]) =
         let top5 = Array.zeroCreate<struct {| count: byte; postId: int |}> topN
         let mutable minTags = 0uy
 
-        for i in 0 .. taggedPostCount.Length - 1 do
+        for i = 0 to (taggedPostCount.Length - 1) do
             let count = taggedPostCount[i]
 
             if count > minTags then
