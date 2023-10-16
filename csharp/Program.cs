@@ -7,8 +7,8 @@ using System.Text.Json.Serialization;
 const int topN = 5;
 var posts = JsonSerializer.Deserialize(File.ReadAllText(@"../posts.json"), MyJsonContext.Default.ListPost)!;
 
-// slower when warm up manually
-// GetRelatedPosts(posts);
+GetRelatedPosts(posts);
+GC.Collect();
 
 var sw = Stopwatch.StartNew();
 
