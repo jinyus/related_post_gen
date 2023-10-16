@@ -93,7 +93,9 @@ run_go_concurrent() {
 run_cpp() {
     echo "Running C++" &&
         cd ./cpp &&
-        g++ -std=c++11 -I./include -O3 main.cpp -o main &&
+        if [ -z "$appendToFile" ]; then # only build on 5k run
+            g++ -std=c++11 -I./include -O3 main.cpp -o main
+        fi &&
         if [ $HYPER == 1 ]; then
             capture "C++" hyperfine -r $runs -w $warmup --show-output "./main"
         else
@@ -106,7 +108,9 @@ run_cpp() {
 run_cpp_con() {
     echo "Running C++ Concurrent" &&
         cd ./cpp &&
-        g++ -std=c++11 -pthread -I./include -O3 main_con.cpp -o main_con &&
+        if [ -z "$appendToFile" ]; then # only build on 5k run
+            g++ -std=c++11 -pthread -I./include -O3 main_con.cpp -o main_con
+        fi &&
         if [ $HYPER == 1 ]; then
             capture "C++ Concurrent" hyperfine -r $runs -w $warmup --show-output "./main_con"
         else
@@ -232,12 +236,14 @@ run_crystal() {
 run_zig() {
     echo "Running Zig" &&
         cd ./zig &&
-        zig build-exe -lc -O ReleaseSafe main.zig
-    if [ $HYPER == 1 ]; then
-        capture "Zig" hyperfine -r $runs -w $warmup --show-output "./main"
-    else
-        command ${time} -f '%es %Mk' ./main
-    fi
+        if [ -z "$appendToFile" ]; then # only build on 5k run
+            zig build-exe -lc -O ReleaseSafe main.zig
+        fi &&
+        if [ $HYPER == 1 ]; then
+            capture "Zig" hyperfine -r $runs -w $warmup --show-output "./main"
+        else
+            command ${time} -f '%es %Mk' ./main
+        fi
 
     check_output "related_posts_zig.json"
 }
@@ -322,7 +328,9 @@ run_dart() {
 run_dart_aot() {
     echo "Running Dart AOT" &&
         cd ./dart &&
-        dart compile exe related.dart -o related &&
+        if [ -z "$appendToFile" ]; then # only build on 5k run
+            dart compile exe related.dart -o related
+        fi &&
         if [ $HYPER == 1 ]; then
             capture "Dart AOT" hyperfine -r $runs -w $warmup --show-output "./related"
         else
@@ -395,8 +403,10 @@ run_java() {
     VM_OPTIONS="-XX:+UseSerialGC"
     echo "Running Java (JIT)" &&
         cd ./java &&
-        java -version &&
-        mvn -q -B -Pjvm clean package &&
+        if [ -z "$appendToFile" ]; then # only build on 5k run
+            java -version &&
+                mvn -q -B -Pjvm clean package
+        fi &&
         if [ $HYPER == 1 ]; then
             capture "Java (JIT)" hyperfine -r $runs -w $warmup --show-output "java $VM_OPTIONS -jar ./target/main.jar"
         else
@@ -411,9 +421,11 @@ run_java_graal() {
     export JAVA_HOME="$GRAALVM_HOME"
     echo "Running Java (GraalVM)" &&
         cd ./java &&
-        java -version &&
-        mvn -q -B clean package &&
-        mvn -q -B -Pnative,pgo package &&
+        if [ -z "$appendToFile" ]; then # only build on 5k run
+            java -version &&
+                mvn -q -B clean package &&
+                mvn -q -B -Pnative,pgo package
+        fi &&
         if [ $HYPER == 1 ]; then
             capture "Java (GraalVM)" hyperfine -r $runs -w $warmup --show-output "./target/related"
         else
@@ -427,8 +439,10 @@ run_java_graal() {
 run_java_graal_con() {
     echo "Running Java (GraalVM) Concurrent" &&
         cd ./java &&
-        java -version &&
-        mvn -q -B -Pnative,pgo,parallel clean package &&
+        if [ -z "$appendToFile" ]; then # only build on 5k run
+            java -version &&
+                mvn -q -B -Pnative,pgo,parallel clean package
+        fi &&
         if [ $HYPER == 1 ]; then
             capture "Java (GraalVM) Concurrent" hyperfine -r $runs -w $warmup --show-output "./target/related"
         else
@@ -442,8 +456,10 @@ run_java_graal_con() {
 run_nim() {
     echo "Running Nim" &&
         cd ./nim &&
-        nimble install -y &&
-        nimble buildopt &&
+        if [ -z "$appendToFile" ]; then # only build on 5k run
+            nimble install -y &&
+                nimble buildopt
+        fi &&
         if [ $HYPER == 1 ]; then
             capture "Nim" hyperfine -r $runs -w $warmup --show-output "./related"
         else
@@ -456,8 +472,10 @@ run_nim() {
 run_fsharp() {
     echo "Running FSharp (JIT)" &&
         cd ./fsharp &&
-        dotnet restore &&
-        dotnet publish -c release &&
+        if [ -z "$appendToFile" ]; then # only build on 5k run
+            dotnet restore &&
+                dotnet publish -c release
+        fi &&
         if [ $HYPER == 1 ]; then
             capture "F# (JIT)" hyperfine -r $runs -w $warmup --show-output "./bin/release/net8.0/fsharp"
         else
@@ -470,8 +488,10 @@ run_fsharp() {
 run_fsharp_aot() {
     echo "Running FSharp (AOT)" &&
         cd ./fsharp &&
-        dotnet restore &&
-        dotnet publish -c release --self-contained -p PublishAot=true -o "bin/release/net8.0/aot" &&
+        if [ -z "$appendToFile" ]; then # only build on 5k run
+            dotnet restore &&
+                dotnet publish -c release --self-contained -p PublishAot=true -o "bin/release/net8.0/aot"
+        fi &&
         if [ $HYPER == 1 ]; then
             capture "F# (AOT)" hyperfine -r $runs -w $warmup --show-output "./bin/release/net8.0/aot/fsharp"
         else
@@ -484,8 +504,10 @@ run_fsharp_aot() {
 run_fsharp_con() {
     echo "Running FSharp Concurrent" &&
         cd ./fsharp_con &&
-        dotnet restore &&
-        dotnet publish -c release &&
+        if [ -z "$appendToFile" ]; then # only build on 5k run
+            dotnet restore &&
+                dotnet publish -c release
+        fi &&
         if [ $HYPER == 1 ]; then
             capture "F# Concurrent (JIT)" hyperfine -r $runs -w $warmup --show-output "./bin/release/net8.0/fsharp_con"
         else
@@ -498,8 +520,10 @@ run_fsharp_con() {
 run_fsharp_con_aot() {
     echo "Running FSharp Concurrent (AOT)" &&
         cd ./fsharp_con &&
-        dotnet restore &&
-        dotnet publish -c release --self-contained -p PublishAot=true -o "bin/release/net8.0/aot" &&
+        if [ -z "$appendToFile" ]; then # subsequent runs
+            dotnet restore &&
+                dotnet publish -c release --self-contained -p PublishAot=true -o "bin/release/net8.0/aot"
+        fi &&
         if [ $HYPER == 1 ]; then
             capture "F# Concurrent (AOT)" hyperfine -r $runs -w $warmup --show-output "./bin/release/net8.0/aot/fsharp_con"
         else
@@ -512,7 +536,9 @@ run_fsharp_con_aot() {
 run_csharp() {
     echo "Running CSharp (JIT)" &&
         cd ./csharp &&
-        dotnet publish -c release --self-contained -o "bin/release/net8.0/jit" &&
+        if [ -z "$appendToFile" ]; then # subsequent runs
+            dotnet publish -c release --self-contained -o "bin/release/net8.0/jit"
+        fi &&
         if [ $HYPER == 1 ]; then
             capture "C# (JIT)" hyperfine -r $runs -w $warmup --show-output "./bin/release/net8.0/jit/related"
         else
@@ -525,7 +551,9 @@ run_csharp() {
 run_csharp_aot() {
     echo "Running CSharp (AOT)" &&
         cd ./csharp &&
-        dotnet publish -c release --self-contained -p PublishAot=true -o "bin/release/net8.0/aot" &&
+        if [ -z "$appendToFile" ]; then # subsequent runs
+            dotnet publish -c release --self-contained -p PublishAot=true -o "bin/release/net8.0/aot"
+        fi &&
         if [ $HYPER == 1 ]; then
             capture "C# (AOT)" hyperfine -r $runs -w $warmup --show-output "./bin/release/net8.0/aot/related"
         else
@@ -565,8 +593,10 @@ run_lua() {
 run_ocaml() {
     echo "Running Ocaml" &&
         cd ./ocaml &&
-        opam install . --deps-only -y &&
-        opam exec -- dune build &&
+        if [ -z "$appendToFile" ]; then # only build on 5k run
+            opam install . --deps-only -y &&
+                opam exec -- dune build
+        fi &&
         if [ $HYPER == 1 ]; then
             capture "ocaml" hyperfine -r $runs -w $warmup --show-output "./_build/default/bin/main.exe"
         else
@@ -619,11 +649,11 @@ run_clojure() {
     echo "Running Clojure" &&
         cd ./clojure &&
         lein uberjar
-        if [ $HYPER == 1 ]; then
-            capture "Clojure" hyperfine -r $runs -w $warmup --show-output "java $VM_OPTIONS -jar ./target/related.jar"
-        else
-            command ${time} -f '%es %Mk' java $VM_OPTIONS -jar ./target/related.jar
-        fi
+    if [ $HYPER == 1 ]; then
+        capture "Clojure" hyperfine -r $runs -w $warmup --show-output "java $VM_OPTIONS -jar ./target/related.jar"
+    else
+        command ${time} -f '%es %Mk' java $VM_OPTIONS -jar ./target/related.jar
+    fi
 
     check_output "related_posts_clj.json"
 }
