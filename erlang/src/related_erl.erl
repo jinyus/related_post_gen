@@ -48,20 +48,26 @@ add_related(Posts) ->
     [P#{related => [map_get(I, PostsM) || I <- top5_related_idx(Idx, P, TagsMap, Len)]} || {Idx, P} <- Posts].
 
 top5_related_idx(SelfIdx, #{tags := Tags}, TagsMap, Len) ->
-    Idxs = [Idx || Tag <- Tags, Idx <- map_get(Tag, TagsMap), Idx /= SelfIdx],
     Cnt = counters:new(Len, []),
-    lists:foreach(fun(Idx) -> counters:add(Cnt, Idx, 1) end, Idxs),
-    {Top5, _} = lists:foldl(fun(I, {Set, Min} = Acc) ->
-                                    V = counters:get(Cnt, I),
-                                    case V > Min of
-                                        true ->
-                                            Set1 = tl(ordsets:add_element({V,I}, Set)),
-                                            {Set1, element(1, hd(Set1))};
-                                        false ->
-                                            Acc
-                                    end
-                            end, {dummy_ordset(?TOP_N), 0}, lists:seq(1, Len)),
-    lists:reverse([Idx || {_, Idx} <- Top5]).
+    _ = [counters:add(Cnt, Idx, 1) || Tag <- Tags, Idx <- map_get(Tag, TagsMap)],
+    counters:put(Cnt, SelfIdx, 0),
+    top5(Len, Cnt).
+
+top5(N, Cnt) ->
+    top5(N, Cnt, {dummy_ordset(?TOP_N), 0}).
+
+top5(0, _, {Set, _}) ->
+    lists:reverse([Idx || {_, Idx} <- Set]);
+top5(N, Cnt, {Set, Min} = Acc) ->
+    V = counters:get(Cnt, N),
+    case V > Min of
+        true ->
+            Set1 = tl(ordsets:add_element({V,N}, Set)),
+            top5(N-1, Cnt, {Set1, element(1, hd(Set1))});
+        false ->
+            top5(N-1, Cnt, Acc)
+    end.
+
 
 dummy_ordset(Size) ->
     [{0,0} || _ <- lists:seq(1, Size)].

@@ -255,7 +255,7 @@ run_julia() {
         if [ $HYPER == 1 ]; then
             capture "Julia" hyperfine -r $runs -w $warmup --show-output "julia --project=Related -e \"using Related; main()\""
         else
-            command ${time} -f '%es %Mk' julia related.jl
+            command ${time} -f '%es %Mk' julia --project=Related -e "using Related; main()"
         fi
 
     check_output "related_posts_julia.json"
