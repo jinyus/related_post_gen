@@ -44,6 +44,11 @@ RUN unzip /home/builduser/odin.zip -d /home/builduser/odin
 # install vlang
 RUN wget 'https://github.com/vlang/v/releases/download/weekly.2023.40.1/v_linux.zip' -O /home/builduser/v.zip
 
+# install rebars for elang
+RUN su -c "git clone https://aur.archlinux.org/rebar3.git /home/builduser/rebar3" builduser
+
+RUN su -c "cd /home/builduser/rebar3 && makepkg -si --noconfirm --needed --noprogressbar" builduser
+
 RUN unzip /home/builduser/v.zip -d /home/builduser/v
 
 ENV PATH="/home/builduser/odin:/home/builduser/v/v:/home/builduser/swift-5.9-RELEASE-ubuntu22.04/usr/bin:${PATH}"
