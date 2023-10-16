@@ -9,9 +9,11 @@ fi
 ## hardwired
 # nproc=4
 
+threads=$((2 * ${nproc}))
+
 chansize=${2}
 if [[ -z "${chansize}" ]]; then
-    chansize=$((2 * ${nproc}))
+    chansize=$((2 * ${threads}))
 fi
 ## hardwired
 # chansize=16
@@ -27,7 +29,7 @@ fi
 
 echo "Compiling profiled executable"
 nim c -d:FixedChanSize=${chansize} \
-      -d:ThreadPoolSize=${nproc} \
+      -d:ThreadPoolSize=${threads} \
       -d:profileGen \
       -d:${build_kind} \
       related_con.nim
@@ -42,7 +44,7 @@ fi
 
 echo "Compiling optimized executable"
 nim c -d:FixedChanSize=${chansize} \
-      -d:ThreadPoolSize=${nproc} \
+      -d:ThreadPoolSize=${threads} \
       -d:profileUse \
       -d:${build_kind} \
       related_con.nim
