@@ -72,8 +72,6 @@
 
                                   (recur (inc post-idx)))))
 
-          results           (seq results)
-
           t2                (System/currentTimeMillis)]
 
       (println (format "Processing time (w/o IO): %sms" (- t2 t1)))
