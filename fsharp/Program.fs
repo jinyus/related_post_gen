@@ -96,6 +96,8 @@ let main args =
     // Warmup
     getAllRelated posts |> ignore
 
+    GC.Collect()
+
     let stopwatch = Diagnostics.Stopwatch.StartNew()
 
     let allRelatedPosts = getAllRelated posts
