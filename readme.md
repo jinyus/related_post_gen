@@ -66,7 +66,7 @@ docker run -e TEST_NAME=all -it --rm databench
 | Language       | Time (5k posts)                       | 20k posts | 60k posts | Total    |
 | -------------- | ------------------------------------- | --------- | --------- | -------- |
 | D | 24.77 ms | 314.11 ms | 2.70 s | 3.04 s |
-| Rust | 23.50 ms | 340.67 ms | 3.04 s | 3.40 s |
+| Rust | $\textsf{\color{lightgreen}23.50 ms}$ | 340.67 ms | 3.04 s | 3.40 s |
 | Go | 24.39 ms | 371.09 ms | 3.28 s | 3.67 s |
 | Zig | 28.46 ms | 429.67 ms | 3.82 s | 4.28 s |
 | Nim | 30.40 ms | 434.66 ms | 3.83 s | 4.29 s |
@@ -90,15 +90,15 @@ docker run -e TEST_NAME=all -it --rm databench
 | ocaml | 139.31 ms | 2.61 s | 32.77 s | 35.53 s |
 | Lua | 1.09 s | 16.73 s | 149.89 s | 167.72 s |
 | Python | 1.47 s | 23.59 s | 220.17 s | 245.23 s |
-| Numpy | 348.35 ms | 6.92 s | 1.7976931348623156e+305 s | 1.7976931348623156e+305 s |
-| Java (JIT) | 54.08 ms | 1.7976931348623156e+305 s | 1.7976931348623156e+305 s | Infinity s |
+| Numpy | 348.35 ms | 6.92 s | OOM | N/A |
+| Java (JIT) | 54.08 ms | OOM | OOM | N/A |
 
 ### Multicore Results
 
 | Language       | Time (5k posts) | 20k posts        | 60k posts        | Total     |
 | -------------- | --------------- | ---------------- | ---------------- | --------- |
 | D Concurrent | 17.02 ms | 172.09 ms | 1.40 s | 1.59 s |
-| Go Concurrent | 12.97 ms | 165.89 ms | 1.42 s | 1.60 s |
+| Go Concurrent | $\textsf{\color{lightgreen}12.97 ms}$ | 165.89 ms | 1.42 s | 1.60 s |
 | Rust Concurrent | 14.58 ms | 181.13 ms | 1.57 s | 1.77 s |
 | C++ Concurrent | 16.69 ms | 204.67 ms | 1.75 s | 1.97 s |
 | Julia Concurrent | 16.77 ms | 221.67 ms | 1.94 s | 2.18 s |
