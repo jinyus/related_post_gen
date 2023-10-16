@@ -37,8 +37,9 @@ func main() {
 	if err != nil {
 		fmt.Println(err)
 	}
-	postsLen := len(posts)
 	start := time.Now()
+
+	postsLen := len(posts)
 	// assumes that there are less than 100 tags
 	tagMap := make(map[string][]isize, InitialTagMapSize)
 

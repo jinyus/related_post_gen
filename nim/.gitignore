@@ -1,0 +1,4 @@
+build/
+nimcache/
+related
+default.profraw

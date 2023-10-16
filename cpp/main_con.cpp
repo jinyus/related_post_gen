@@ -8,6 +8,7 @@
 #include <array>
 #include <stdint.h>
 #include "include/json.hpp" // Assuming this path is correct
+#include <thread>
 
 // NEEDS IMPROVEMENT: Excluded from charts until then
 
@@ -15,20 +16,25 @@ using json = nlohmann::json;
 
 const size_t INITIAL_TAGGED_COUNT_SIZE = 100;
 const size_t TOP_N = 5;
+const size_t CACHE_LINE_SIZE = 64;
 
 struct Post
 {
     std::string _id;
     std::string title;
     std::vector<std::string> tags;
+    char padding[2 * CACHE_LINE_SIZE - 88];
 };
+static_assert(sizeof(Post) == 2 * CACHE_LINE_SIZE, "");
 
 struct RelatedPosts
 {
     std::string _id;
     std::vector<std::string> tags;
     std::vector<Post *> related;
+    char padding[2 * CACHE_LINE_SIZE - 80];
 };
+static_assert(sizeof(RelatedPosts) == 2 * CACHE_LINE_SIZE, "");
 
 void to_json(json &j, const RelatedPosts &rp)
 {
@@ -88,48 +94,58 @@ int main()
     std::vector<RelatedPosts> allRelatedPosts;
     allRelatedPosts.resize(total);
 
-    std::vector<uint8_t> taggedPostCount(total);
-    for (size_t i = 0; i < total; ++i)
-    {
-        std::memset(taggedPostCount.data(), 0, total);
-        const Post& p = posts[i];
-        RelatedPosts& relatedPost = allRelatedPosts[i];
-        relatedPost = {p._id, p.tags, std::vector<Post*>{5}};
-
-        for (const auto &tag : p.tags)
+    auto calculate = [&posts, &allRelatedPosts, &tagMap, total](size_t id) -> void {
+        std::vector<uint8_t> taggedPostCount(total);
+        for (size_t i = id; i < total; i += 4)
         {
-            const auto it = tagMap.find(tag);
-            for (auto otherPostIdx : it->second)
+            std::memset(taggedPostCount.data(), 0, total);
+            const Post& p = posts[i];
+            RelatedPosts& relatedPost = allRelatedPosts[i];
+            relatedPost = {p._id, p.tags, std::vector<Post*>{5}};
+
+            for (const auto &tag : p.tags)
             {
-                taggedPostCount.at(otherPostIdx) += 1;
-            }
-        }
-
-        taggedPostCount[i] = 0;
-
-        uint8_t top5[5] = {0, 0, 0, 0, 0};
-        uint8_t minTags = 0;
-
-        //  custom priority queue to find top N
-        for (int j = 0; j < taggedPostCount.size(); j++)
-        {
-            uint8_t count = taggedPostCount[j];
-
-            if (count > minTags)
-            {
-                int upperBound = 3;
-                while (upperBound >= 0 && count > top5[upperBound])
+                const auto it = tagMap.find(tag);
+                for (auto otherPostIdx : it->second)
                 {
-                    top5[upperBound + 1] = top5[upperBound];
-                    relatedPost.related[upperBound + 1] = relatedPost.related[upperBound];
-                    upperBound -= 1;
+                    taggedPostCount.at(otherPostIdx) += 1;
                 }
+            }
 
-                top5[upperBound + 1] = count;
-                relatedPost.related[upperBound + 1] = &posts[j];
-                minTags = top5[4];
+            taggedPostCount[i] = 0;
+
+            uint8_t top5[5] = {0, 0, 0, 0, 0};
+            uint8_t minTags = 0;
+
+            //  custom priority queue to find top N
+            for (int j = 0; j < taggedPostCount.size(); j++)
+            {
+                uint8_t count = taggedPostCount[j];
+
+                if (count > minTags)
+                {
+                    int upperBound = 3;
+                    while (upperBound >= 0 && count > top5[upperBound])
+                    {
+                        top5[upperBound + 1] = top5[upperBound];
+                        relatedPost.related[upperBound + 1] = relatedPost.related[upperBound];
+                        upperBound -= 1;
+                    }
+
+                    top5[upperBound + 1] = count;
+                    relatedPost.related[upperBound + 1] = &posts[j];
+                    minTags = top5[4];
+                }
             }
         }
+    };
+    std::vector<std::thread> workers;
+    for (auto&id : {0, 1, 2, 3}) {
+        workers.emplace_back(std::thread(calculate, id));
+    }
+
+    for (auto& w: workers) {
+        w.join();
     }
 
     auto end = std::chrono::high_resolution_clock::now();
@@ -145,7 +161,7 @@ int main()
         j_array.push_back(j);
     }
 
-    std::ofstream out("../related_posts_cpp.json");
+    std::ofstream out("../related_posts_cpp_con.json");
     if (out.is_open())
     {
         out << j_array.dump(4);

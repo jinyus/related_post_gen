@@ -2,7 +2,7 @@
 open System.IO
 open FSharp.NativeInterop
 open System.Collections.Generic
-open FSharp.Json
+open FSharp.Json //System.Text.Json is not aot friendly
 
 #nowarn "9"
 
@@ -10,11 +10,13 @@ let inline stackalloc<'a when 'a: unmanaged> (length: int) : Span<'a> =
     let p = NativePtr.stackalloc<'a> length |> NativePtr.toVoidPtr
     Span<'a>(p, length)
 
+[<Struct>]
 type Post =
     { _id: string
       title: string
       tags: string[] }
 
+[<Struct>]
 type RelatedPosts =
     { _id: string
       tags: string[]
@@ -31,17 +33,16 @@ let getAllRelated (posts: Post[]) =
     // Start work
     let tagPostsTmp = Dictionary<string, Stack<int>>()
 
-    posts
-    |> Array.iteri (fun postId post ->
+    for postId in 0 .. (Array.length posts - 1) do
+        let post = posts[postId]
 
         for tag in post.tags do
-
             match tagPostsTmp.TryGetValue tag with
             | true, s -> s.Push postId
             | false, _ ->
                 let newStack = Stack()
                 newStack.Push postId
-                tagPostsTmp[tag] <- newStack)
+                tagPostsTmp[tag] <- newStack
 
     // convert from Dict<_,Stack<int>> to Dict<_,int[]> for faster access
     let tagPosts = Dictionary(tagPostsTmp.Count)
@@ -94,6 +95,8 @@ let main args =
 
     // Warmup
     getAllRelated posts |> ignore
+
+    GC.Collect()
 
     let stopwatch = Diagnostics.Stopwatch.StartNew()
 

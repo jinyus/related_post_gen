@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Directives>
+	<Application>
+		<Assembly Name="FSharp_Con">
+			<Type Name="Program+Post" Dynamic="Required All">
+			</Type>
+			<Type Name="Program+RelatedPosts" Dynamic="Required All">
+			</Type>
+		</Assembly>
+	</Application>
+</Directives>
