@@ -272,7 +272,7 @@ run_julia_highly_optimized() {
         cd ./julia_highly_optimized &&
         julia --project -e 'import Pkg; Pkg.instantiate()' &&
         if [ $HYPER == 1 ]; then
-            capture "Julia" hyperfine -r $runs -w $warmup --show-output "julia --project related.jl"
+            capture "Julia HO" hyperfine -r $runs -w $warmup --show-output "julia --project related.jl"
         else
             command ${time} -f '%es %Mk' julia --project related.jl
         fi
