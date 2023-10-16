@@ -229,14 +229,27 @@ run_zig() {
 run_julia() {
     echo "Running Julia" &&
         cd ./julia &&
-        julia -e 'using Pkg; Pkg.add(url="https://github.com/LilithHafner/Jokes", subdir="SuperDataStructures.jl"); Pkg.add(["JSON3", "StructTypes", "StaticArrays"])' &&
+        julia -e 'using Pkg; pkg"activate Related"; pkg"instantiate"' &&
         if [ $HYPER == 1 ]; then
-            capture "Julia" hyperfine -r $runs -w $warmup --show-output "julia related.jl"
+            capture "Julia" hyperfine -r $runs -w $warmup --show-output "julia --project=Related -e \"using Related; main()\""
         else
             command ${time} -f '%es %Mk' julia related.jl
         fi
 
     check_output "related_posts_julia.json"
+}
+
+run_julia_highly_optimized() {
+    echo "Running Julia Highly Optimized" &&
+        cd ./julia_highly_optimized &&
+        julia --project -e 'using Pkg; pkg"instantiate"' &&
+        if [ $HYPER == 1 ]; then
+            capture "Julia" hyperfine -r $runs -w $warmup --show-output "julia --project related.jl"
+        else
+            command ${time} -f '%es %Mk' julia --project related.jl
+        fi
+
+    check_output "related_posts_julia_highly_optimized.json"
 }
 
 run_julia_con() {
@@ -638,6 +651,10 @@ elif [ "$first_arg" = "julia" ]; then
 
     run_julia
 
+elif [ "$first_arg" = "julia_highly_optimize" ]; then
+
+    run_julia_highly_optimized
+
 elif [ "$first_arg" = "julia_con" ]; then
 
     run_julia_con
@@ -758,6 +775,7 @@ elif [ "$first_arg" = "all" ]; then
         run_crystal || echo -e "\n" &&
         run_zig || echo -e "\n" &&
         run_julia || echo -e "\n" &&
+        run_julia_highly_optimized || echo -e "\n" &&
         run_julia_con || echo -e "\n" &&
         run_odin || echo -e "\n" &&
         run_vlang || echo -e "\n" &&
