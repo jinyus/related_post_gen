@@ -10,7 +10,7 @@ final tTimeRegex = RegExp(r'Time[^0-9]*([\d.]+ (ms|s))');
 const multiCoreHeading = '''
 ### Multicore Results
 
-| Language       | Time (5k posts) | 15k posts        | 30k posts        | Total     |
+| Language       | Time (5k posts) | 20k posts        | 60k posts        | Total     |
 | -------------- | --------------- | ---------------- | ---------------- | --------- |
 ''';
 

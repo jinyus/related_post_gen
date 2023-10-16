@@ -6,6 +6,7 @@
 #include <chrono>
 #include <algorithm>
 #include <array>
+#include <stdint.h>
 #include "include/json.hpp" // Assuming this path is correct
 
 // NEEDS IMPROVEMENT: Excluded from charts until then
@@ -69,72 +70,66 @@ int main()
 
     auto start = std::chrono::high_resolution_clock::now();
 
-    std::unordered_map<std::string, std::vector<size_t>> tagMap;
+    std::unordered_map<std::string, std::vector<int>> tagMap;
     tagMap.reserve(INITIAL_TAGGED_COUNT_SIZE);
 
-    for (size_t i = 0; i < posts.size(); ++i)
+    int total = static_cast<int>(posts.size());
+    for (int i = 0; i < total; ++i)
     {
         for (const auto &tag : posts[i].tags)
         {
-            tagMap[tag].push_back(i);
+            auto it = tagMap.insert({tag, std::vector<int>{i}});
+            if (!it.second) {
+                it.first->second.push_back(i);
+            }
         }
     }
 
     std::vector<RelatedPosts> allRelatedPosts;
-    allRelatedPosts.reserve(posts.size());
+    allRelatedPosts.resize(total);
 
-    std::vector<size_t> taggedPostCount(posts.size(), 0);
-
-    for (size_t i = 0; i < posts.size(); ++i)
+    std::vector<uint8_t> taggedPostCount(total);
+    for (size_t i = 0; i < total; ++i)
     {
-        std::fill(taggedPostCount.begin(), taggedPostCount.end(), 0);
+        std::memset(taggedPostCount.data(), 0, total);
+        const Post& p = posts[i];
+        RelatedPosts& relatedPost = allRelatedPosts[i];
+        relatedPost = {p._id, p.tags, std::vector<Post*>{5}};
 
-        for (const auto &tag : posts[i].tags)
+        for (const auto &tag : p.tags)
         {
-            for (const auto &otherPostIdx : tagMap[tag])
+            const auto it = tagMap.find(tag);
+            for (auto otherPostIdx : it->second)
             {
-                taggedPostCount[otherPostIdx]++;
+                taggedPostCount.at(otherPostIdx) += 1;
             }
         }
 
         taggedPostCount[i] = 0;
 
-        std::vector<size_t> top5(TOP_N * 2, 0);
-        int minTags = 0;
+        uint8_t top5[5] = {0, 0, 0, 0, 0};
+        uint8_t minTags = 0;
 
         //  custom priority queue to find top N
         for (int j = 0; j < taggedPostCount.size(); j++)
         {
-            int count = taggedPostCount[j];
+            uint8_t count = taggedPostCount[j];
 
             if (count > minTags)
             {
-                int upperBound = (TOP_N - 2) * 2;
-
+                int upperBound = 3;
                 while (upperBound >= 0 && count > top5[upperBound])
                 {
-                    top5[upperBound + 2] = top5[upperBound];
-                    top5[upperBound + 3] = top5[upperBound + 1];
-                    upperBound -= 2;
+                    top5[upperBound + 1] = top5[upperBound];
+                    relatedPost.related[upperBound + 1] = relatedPost.related[upperBound];
+                    upperBound -= 1;
                 }
 
-                int insertPos = upperBound + 2;
-                top5[insertPos] = count;
-                top5[insertPos + 1] = j;
-
-                minTags = top5[TOP_N * 2 - 2];
+                top5[upperBound + 1] = count;
+                relatedPost.related[upperBound + 1] = &posts[j];
+                minTags = top5[4];
             }
         }
-
-        std::vector<Post *> topPosts(TOP_N);
-
-        for (int j = 1; j < 10; j += 2)
-        {
-            topPosts[j / 2] = &posts[top5[j]];
-        }
-
-        RelatedPosts relatedPost = {posts[i]._id, posts[i].tags, topPosts};
-        allRelatedPosts.push_back(relatedPost);
     }
 
     auto end = std::chrono::high_resolution_clock::now();

@@ -1,0 +1,20 @@
+{
+	"authors": [
+		"Sergei Giniatulin"
+	],
+	"copyright": "Copyright © 2023, Sergei Giniatulin",
+	"dependencies": {
+		"asdf": "~>0.7.17"
+	},
+	"buildTypes": {
+		"release": {
+			"buildOptions": [
+				"optimize",
+				"inline"
+			]
+		}
+	},
+	"description": "A sequential D application.",
+	"license": "MIT",
+	"name": "related"
+}

@@ -236,6 +236,7 @@
                         <configuration>
                             <buildArgs>
                                 <buildArg>--pgo=${pgo-file}</buildArg>
+                                <buildArg>-march=compatibility</buildArg>
                             </buildArgs>
                         </configuration>
                     </plugin>

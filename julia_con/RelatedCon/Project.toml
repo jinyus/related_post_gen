@@ -1,0 +1,18 @@
+name = "RelatedCon"
+uuid = "045f84bf-1d98-4bab-996f-194c825a3b8b"
+authors = []
+version = "0.1.0"
+
+[deps]
+ChunkSplitters = "ae650224-84b6-46f8-82ea-d812ca08434e"
+Dates = "ade2ca70-3891-5945-98fb-dc099432e06a"
+JSON3 = "0f8b85d8-7281-11e9-16c2-39a750bddbf1"
+PrecompileTools = "aea7be01-6a6a-4083-8856-8a6e6704d82a"
+StructTypes = "856f2bd8-1eba-4b0a-8007-ebc267875bd4"
+
+[compat]
+julia = "1.9"
+ChunkSplitters = "2"
+JSON3 = "1"
+PrecompileTools = "1"
+StructTypes = "1"
