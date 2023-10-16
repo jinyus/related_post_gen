@@ -1,22 +1,27 @@
 (ns related.core
-  (:require [cheshire.core :as json]
-            [clojure.java.io :as io])
+  (:require #_[cheshire.core :as json]
+    [clojure.java.io :as io]
+    #_[jsonista.core :as j])
+  (:import (com.google.gson Gson))
   (:gen-class))
 
 (def ^:const input-file "../posts.json")
 (def ^:const output-file "../related_posts_clj.json")
 
 ;; TODO: use deftype or class instance(?), faster json lib mapping to array of objects
-; (deftype Post [^String id tags])
+(deftype Post [^String _id tags title])
+(deftype PostRelated [^String _id tags related])
+
 
 (defn -main []
   (try
-    (let [posts             (into-array (json/parse-string (slurp (io/file input-file)) true))
+    (let [posts             (.fromJson (Gson.)
+                                       (slurp (io/file input-file))
+                                       (class (make-array Post 0)))
 
           t1                (System/currentTimeMillis)
 
           n                 (count posts)
-          ; posts-arr         (make-array Post (count posts))
 
           tag-map           (loop [i 0 res {}]
                               (if (= i n)
@@ -25,19 +30,19 @@
                                       res  (reduce (fn [res tag]
                                                      (update res tag conj i))
                                                    res
-                                                   (:tags post))]
+                                                   (.tags post))]
                                   (recur (inc i) res))))
 
           tagged-post-count (make-array Integer/TYPE n)
 
-          results           (make-array Object n)
+          results           (make-array PostRelated n)
 
           _                 (loop [post-idx 0]
                               (if (< post-idx n)
                                 (let [post (get posts post-idx)
                                       top5 (make-array Integer/TYPE 10)]
                                   (java.util.Arrays/fill tagged-post-count 0)
-                                  (doseq [tag (:tags post)
+                                  (doseq [tag (.tags post)
                                           idx (tag-map tag)]
                                     (aset-int tagged-post-count idx (inc (get tagged-post-count idx))))
 
@@ -62,10 +67,8 @@
                                           (recur (inc i) min-tags)))))
 
                                   (aset results post-idx
-                                        {:_id     (:_id post)
-                                         :tags    (:tags post)
-                                         :related (->> (range 1 10 2)
-                                                       (mapv #(get posts (get top5 %))))})
+                                        (PostRelated. (._id post) (.tags post) (->> (range 1 10 2)
+                                                                                    (mapv #(get posts (get top5 %))))))
 
                                   (recur (inc post-idx)))))
 
@@ -74,6 +77,6 @@
           t2                (System/currentTimeMillis)]
 
       (println (format "Processing time (w/o IO): %sms" (- t2 t1)))
-      (spit (io/file output-file) (json/generate-string results)))
+      (spit (io/file output-file) (.toJson (Gson.) results)))
 
     (catch Exception e (prn e))))
