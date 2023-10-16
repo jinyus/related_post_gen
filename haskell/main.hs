@@ -56,7 +56,7 @@ createMap posts postsByTag (i, p) = V.foldl f M.empty $ tags p
     f m t = L.foldl increase m related
       where
         related = L.filter (/=i) $ fromMaybe [] $ M.lookup t postsByTag
-        increase m' j = M.insertWith (+) j 1 m
+        increase m' j = M.insertWith (+) j 1 m'
 
 makeResultPost :: Vector Post -> (Post, Map Int Int) -> Post'
 makeResultPost posts (p, m) = Post'
