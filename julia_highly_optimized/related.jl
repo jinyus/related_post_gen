@@ -67,7 +67,4 @@ function related(posts)
     relatedposts
 end
 
-# warmup for writing JSON to disk
-write(joinpath(tempdir(), "warmup_related_posts.json"), [RelatedPost("a", ["b"], fill(PostData("c", "d", ["e"]), 5))])
-
 const res = relatedIO()
