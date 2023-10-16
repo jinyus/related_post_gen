@@ -17,7 +17,7 @@ function relatedIO()
 
     all_related_posts = related(posts)
 
-    write("../related_posts_julia.json", all_related_posts)
+    write("../related_posts_julia_highly_optimized.json", all_related_posts)
     println("Processing time (with IO): $(now() - start)")
 end
 
