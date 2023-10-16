@@ -13,12 +13,11 @@
 %%====================================================================
 main(_) ->
     {ok, BData} = file:read_file(?IN_JSON),
-    Posts0 = lists:enumerate(jsone:decode(BData, [{keys, atom}])),
+    Posts0 = jsone:decode(BData, [{keys, atom}]),
 
     T1 = erlang:system_time(nanosecond),
     Posts1 = add_related(Posts0),
     T2 = erlang:system_time(nanosecond),
-
     file:write_file(?OUT_JSON, jsone:encode(Posts1)),
 
     io:format("Processing time (w/o IO): ~f s~n", [(T2-T1) / 1000000000]),
@@ -27,25 +26,27 @@ main(_) ->
 %%====================================================================
 %% Internal functions
 %%====================================================================
-build_tag_idx({Idx, #{tags := List}}, Acc) ->
-    build_tag_idx(Idx, List, Acc).
+add_related(Posts0) ->
+    Posts = list_to_tuple(Posts0),
+    NPosts = tuple_size(Posts),
+    TagsMap = build_tag_idx(NPosts, Posts, #{}),
+    [P#{related => [element(I, Posts) || I <- top5_related_idx(Idx, P, TagsMap, NPosts)]} || {Idx, P} <- lists:enumerate(Posts0)].
 
-build_tag_idx(_Idx, [], Acc) ->
+build_tag_idx(0, _, Acc) ->
     Acc;
-build_tag_idx(Idx, [Tag | Rest], Acc) ->
+build_tag_idx(Idx, Posts, Acc) ->
+    #{tags := Tags} = element(Idx, Posts),
+    build_tag_idx(Idx-1, Posts, collect_tags(Idx, Tags, Acc)).
+
+collect_tags(_, [], Acc) ->
+    Acc;
+collect_tags(Idx, [Tag | Rest], Acc) ->
     case Acc of
         #{Tag := Ids} ->
-            build_tag_idx(Idx, Rest, Acc#{Tag := [Idx | Ids]});
+            collect_tags(Idx, Rest, Acc#{Tag := [Idx | Ids]});
         _ ->
-            build_tag_idx(Idx, Rest, Acc#{Tag => [Idx]})
+            collect_tags(Idx, Rest, Acc#{Tag => [Idx]})
     end.
-
-
-add_related(Posts) ->
-    TagsMap = lists:foldl(fun build_tag_idx/2, #{}, Posts),
-    PostsM = maps:from_list(Posts),
-    Len = map_size(PostsM),
-    [P#{related => [map_get(I, PostsM) || I <- top5_related_idx(Idx, P, TagsMap, Len)]} || {Idx, P} <- Posts].
 
 top5_related_idx(SelfIdx, #{tags := Tags}, TagsMap, Len) ->
     Cnt = counters:new(Len, []),
