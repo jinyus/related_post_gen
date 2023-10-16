@@ -32,7 +32,7 @@ let getAllRelated (posts: Post[]) =
     let tagPostsTmp = Dictionary<string, Stack<int>>()
 
     for postId in 0 .. (Array.length posts - 1) do
-        let post = posts.[postId]
+        let post = posts[postId]
 
         for tag in post.tags do
             match tagPostsTmp.TryGetValue tag with
@@ -40,7 +40,7 @@ let getAllRelated (posts: Post[]) =
             | false, _ ->
                 let newStack = Stack()
                 newStack.Push postId
-                tagPostsTmp.[tag] <- newStack
+                tagPostsTmp[tag] <- newStack
 
     // convert from Dict<_,Stack<int>> to Dict<_,int[]> for faster access
     let tagPosts = Dictionary(tagPostsTmp.Count)
