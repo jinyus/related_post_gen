@@ -11,14 +11,14 @@ function write(filename, data)
 end
 
 function relatedIO()
-    start = now()
     json_string = read("../posts.json", String)
     posts = JSON3.read(json_string, Vector{PostData})
 
+    start = now()
     all_related_posts = related(posts)
+    println("Processing time (w/o IO): $(now() - start)")
 
     write("../related_posts_julia_highly_optimized.json", all_related_posts)
-    println("Processing time (with IO): $(now() - start)")
 end
 
 struct PostData
