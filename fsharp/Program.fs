@@ -10,11 +10,13 @@ let inline stackalloc<'a when 'a: unmanaged> (length: int) : Span<'a> =
     let p = NativePtr.stackalloc<'a> length |> NativePtr.toVoidPtr
     Span<'a>(p, length)
 
+[<Struct>]
 type Post =
     { _id: string
       title: string
       tags: string[] }
 
+[<Struct>]
 type RelatedPosts =
     { _id: string
       tags: string[]
