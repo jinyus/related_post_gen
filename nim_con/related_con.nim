@@ -7,37 +7,29 @@ type
 
   Meta = object
     index: PostIndex
-    related : PostIndices
-
-  Metas = seq[Meta]
+    related : seq[PostIndex]
 
   Post = object
     `"_id"`: string
     title: string
-    tags : Tags
+    tags : seq[Tag]
 
   Posts = seq[ref Post]
 
   PostIndex = int
 
-  PostIndices = seq[PostIndex]
-
   PostOut = object
     `"_id"`: string
-    tags : Tags
+    tags : seq[Tag]
     related : Posts
 
   RelCount = uint8
 
-  RelCounts = seq[RelCount]
-
   Tag = distinct string
 
-  Tags = seq[Tag]
+  TagCol = seq[seq[Tag]]
 
-  TagCol = seq[Tags]
-
-  TagMap = Table[Tag, PostIndices]
+  TagMap = Table[Tag, seq[PostIndex]]
 
   TaskGroup = tuple[first, last: PostIndex]
 
@@ -48,8 +40,6 @@ type
 const
   input = "../posts.json"
   output = "../related_posts_nim_con.json"
-
-var digest: Digest
 
 func `$`(x: Tag): string {.used.} =
   x.string
@@ -78,10 +68,10 @@ func init(T: typedesc[Digest], posts: Posts): T =
   (tagCol: tagCol, tagMap: tagMap)
 
 func init(T: typedesc[TaskGroups], taskCount: int): T =
-  var groups = newSeq[TaskGroup](ThreadPoolSize)
+  var groups = newSeqOfCap[TaskGroup](ThreadPoolSize)
   let step = taskCount div ThreadPoolSize
   for i in 0..<ThreadPoolSize:
-    groups[i] = (first: step * i, last: step * (i + 1) - 1)
+    groups.add (first: step * i, last: step * (i + 1) - 1)
     if i == ThreadPoolSize - 1:
       groups[i].last = groups[i].last + taskCount mod ThreadPoolSize
 
@@ -90,14 +80,18 @@ func init(T: typedesc[TaskGroups], taskCount: int): T =
 func size(group: TaskGroup): int =
   group.last - group.first + 1
 
-proc tally(relCounts: var RelCounts, index: PostIndex) =
-  for tag in digest.tagCol[index]:
-    for index in digest.tagMap[tag]:
-      inc relCounts[index]
+proc tally(
+    relCounts: var seq[RelCount],
+    index: PostIndex,
+    tagCol: ptr TagCol,
+    tagMap: ptr TagMap) =
+  for tag in tagCol[][index]:
+    for relIndex in tagMap[][tag]:
+      inc relCounts[relIndex]
 
   relCounts[index] = 0 # remove self
 
-proc top5(relCounts: var RelCounts): PostIndices =
+proc top5(relCounts: var seq[RelCount]): seq[PostIndex] =
   result = newSeq[PostIndex](5)
   var top5: array[5, tuple[index: PostIndex, count: RelCount]]
   for index, count in relCounts:
@@ -110,56 +104,56 @@ proc top5(relCounts: var RelCounts): PostIndices =
   for i in 0..<top5.len:
     result[i] = top5[i].index
 
-proc process(group: TaskGroup, metaCol: ptr seq[Metas], L: ptr TicketLock) =
-  var
-    i = 0
-    metas = newSeq[Meta](group.size)
-
+proc process(
+    group: TaskGroup,
+    tagCol: ptr TagCol,
+    tagMap: ptr TagMap,
+    metas: ptr seq[Meta],
+    L: ptr TicketLock) =
+  var pMetas = newSeqOfCap[Meta](group.size)
   for index in (group.first)..(group.last):
-    var relCounts = newSeq[RelCount](digest.tagCol.len)
-    relCounts.tally(index)
-    metas[i] = Meta(index: index, related: relCounts.top5)
-    inc i
+    var relCounts = newSeq[RelCount](tagCol[].len)
+    relCounts.tally(index, tagCol, tagMap)
+    pMetas.add Meta(index: index, related: relCounts.top5)
 
   withLock L[]:
-    metaCol[].add(metas)
+    for meta in pMetas:
+      metas[].add meta
 
 proc readPosts(path: string): Posts =
   readFile(path).fromJson(Posts)
 
-func resolve(metaCol: seq[Metas], posts: Posts): seq[PostOut] =
+func resolve(metas: var seq[Meta], posts: var Posts): seq[PostOut] =
   collect(newSeqOfCap(posts.len)):
-    for metas in metaCol:
-      for meta in metas:
-        PostOut(
-          `"_id"`: posts[meta.index].`"_id"`,
-          tags: posts[meta.index].tags,
-          related: meta.related.mapIt(posts[it]))
+    for meta in metas:
+      PostOut(
+        `"_id"`: posts[meta.index].`"_id"`,
+        tags: posts[meta.index].tags,
+        related: meta.related.mapIt(posts[it]))
 
 proc main() =
+  var posts = readPosts(input)
+  let t0 = getMonotime()
+
   let
-    posts = readPosts(input)
-    t0 = getMonotime()
-
-  digest = Digest.init(posts)
-
-  let groups = TaskGroups.init(posts.len)
+    groups = TaskGroups.init(posts.len)
+    (tagCol, tagMap) = Digest.init(posts)
 
   var
-    metaCol = newSeqOfCap[Metas](groups.size)
     L = initTicketLock()
+    metas = newSeqOfCap[Meta](posts.len)
     tasks = createMaster()
 
   tasks.awaitAll:
     for i in 0..<groups.size:
-      tasks.spawn process(groups[i], addr metaCol, addr L)
+      tasks.spawn process(
+        groups[i], addr tagCol, addr tagMap, addr metas, addr L)
 
   let
-    postsOut = metaCol.resolve(posts)
+    postsOut = metas.resolve(posts)
     time = (getMonotime() - t0).inMicroseconds / 1000
 
-  # echo "ThreadPoolSize: ", ThreadPoolSize
-  # echo "FixedChanSize: ", FixedChanSize
+  # echo "Threads: ", ThreadPoolSize, ", Chan size: ", FixedChanSize
   echo "Processing time (w/o IO): ", time, "ms"
   writeFile(output, postsOut.toJson)
 

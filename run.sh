@@ -494,7 +494,7 @@ run_nim_con() {
         nimble -y install -d &&
         ./buildopt.sh ${nproc} &&
         if [ $HYPER == 1 ]; then
-            capture "Nim Concurrent" hyperfine -r $runs -w $warmup --show-output "./build/related_con"
+            capture "Nim Concurrent (nproc=${nproc})" hyperfine -r $runs -w $warmup --show-output "./build/related_con"
         else
             command ${time} -f '%es %Mk' ./build/related_con
         fi
