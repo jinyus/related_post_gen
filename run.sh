@@ -492,8 +492,10 @@ run_nim_con() {
     echo "Running Nim Concurrent" &&
         cd ./nim_con &&
         echo "using ${nproc} threads" &&
-        nimble -y install -d &&
-        ./buildopt.sh ${nproc} &&
+        if [ -z "$appendToFile" ]; then # only build on 5k run
+            nimble install -y &&
+                ./buildopt.sh ${nproc}
+        fi &&
         if [ $HYPER == 1 ]; then
             capture "Nim Concurrent" hyperfine -r $runs -w $warmup --show-output "./build/related_con"
         else
