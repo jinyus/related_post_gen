@@ -41,6 +41,12 @@ if [[ -z "${time}" && -z "$(which hyperfine 2>/dev/null)" ]]; then
     exit 1
 fi
 
+if [[ -n "$(which nproc 2>/dev/null)" ]]; then
+    nproc=$(nproc)
+else
+    nproc=4
+fi
+
 # capture the output of a command and write it to stout or to a file
 capture() {
     title=$1
@@ -482,6 +488,21 @@ run_nim() {
     check_output "related_posts_nim.json"
 }
 
+run_nim_con() {
+    echo "Running Nim Concurrent" &&
+        cd ./nim_con &&
+        echo "using ${nproc} threads" &&
+        nimble -y install -d &&
+        ./buildopt.sh ${nproc} &&
+        if [ $HYPER == 1 ]; then
+            capture "Nim Concurrent" hyperfine -r $runs -w $warmup --show-output "./build/related_con"
+        else
+            command ${time} -f '%es %Mk' ./build/related_con
+        fi
+
+    check_output "related_posts_nim_con.json"
+}
+
 run_fsharp() {
     echo "Running FSharp (JIT)" &&
         cd ./fsharp &&
@@ -807,6 +828,10 @@ elif [ "$first_arg" = "nim" ]; then
 
     run_nim
 
+elif [ "$first_arg" = "nim_con" ]; then
+
+    run_nim_con
+
 elif [ "$first_arg" = "fsharp" ]; then
 
     run_fsharp
@@ -892,6 +917,7 @@ elif [ "$first_arg" = "all" ]; then
         run_java_graal || echo -e "\n" &&
         run_java_graal_con || echo -e "\n" &&
         run_nim || echo -e "\n" &&
+        #run_nim_con || echo -e "\n" && #too slow, excluded for now
         run_fsharp || echo -e "\n" &&
         run_fsharp_con || echo -e "\n" &&
         run_fsharp_con_aot || echo -e "\n" &&
