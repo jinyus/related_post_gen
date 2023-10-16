@@ -1,13 +1,9 @@
 import std/[hashes, monotimes, sequtils, sugar, times]
-import pkg/[jsony, malebolgia, malebolgia/ticketlocks, xxhash]
+import pkg/[jsony, malebolgia, xxhash]
 import ./related_con/fixedtable
 
 type
   Digest = tuple[tagCol: TagCol, tagMap: TagMap]
-
-  Meta = object
-    index: PostIndex
-    related : seq[PostIndex]
 
   Post = object
     `"_id"`: string
@@ -18,12 +14,18 @@ type
 
   PostIndex = int
 
+  PostMeta = object
+    index: PostIndex
+    related: Top5
+
   PostOut = object
     `"_id"`: string
     tags : seq[Tag]
     related : Posts
 
   RelCount = uint8
+
+  RelMeta = tuple[index: PostIndex, count: RelCount]
 
   Tag = distinct string
 
@@ -36,6 +38,8 @@ type
   TaskGroups = object
     groups: seq[TaskGroup]
     size: int
+
+  Top5 = array[5, RelMeta]
 
 const
   input = "../posts.json"
@@ -71,14 +75,11 @@ func init(T: typedesc[TaskGroups], taskCount: int): T =
   var groups = newSeqOfCap[TaskGroup](ThreadPoolSize)
   let step = taskCount div ThreadPoolSize
   for i in 0..<ThreadPoolSize:
-    groups.add (first: step * i, last: step * (i + 1) - 1)
+    groups.add((first: step * i, last: step * (i + 1) - 1))
     if i == ThreadPoolSize - 1:
       groups[i].last = groups[i].last + taskCount mod ThreadPoolSize
 
   T(groups: groups, size: groups.len)
-
-func size(group: TaskGroup): int =
-  group.last - group.first + 1
 
 proc tally(
     relCounts: var seq[RelCount],
@@ -91,9 +92,7 @@ proc tally(
 
   relCounts[index] = 0 # remove self
 
-proc top5(relCounts: var seq[RelCount]): seq[PostIndex] =
-  result = newSeq[PostIndex](5)
-  var top5: array[5, tuple[index: PostIndex, count: RelCount]]
+proc top5(relCounts: var seq[RelCount], top5: var Top5) =
   for index, count in relCounts:
     if count > top5[4].count:
       top5[4] = (index: index, count: count)
@@ -101,35 +100,27 @@ proc top5(relCounts: var seq[RelCount]): seq[PostIndex] =
         if count > top5[rank].count:
           swap(top5[rank + 1], top5[rank])
 
-  for i in 0..<top5.len:
-    result[i] = top5[i].index
-
 proc process(
     group: TaskGroup,
     tagCol: ptr TagCol,
     tagMap: ptr TagMap,
-    metas: ptr seq[Meta],
-    L: ptr TicketLock) =
-  var pMetas = newSeqOfCap[Meta](group.size)
+    metas: ptr seq[PostMeta]) =
   for index in (group.first)..(group.last):
     var relCounts = newSeq[RelCount](tagCol[].len)
     relCounts.tally(index, tagCol, tagMap)
-    pMetas.add Meta(index: index, related: relCounts.top5)
-
-  withLock L[]:
-    for meta in pMetas:
-      metas[].add meta
+    metas[][index].index = index
+    relCounts.top5(metas[][index].related)
 
 proc readPosts(path: string): Posts =
   readFile(path).fromJson(Posts)
 
-func resolve(metas: var seq[Meta], posts: var Posts): seq[PostOut] =
+func resolve(metas: var seq[PostMeta], posts: var Posts): seq[PostOut] =
   collect(newSeqOfCap(posts.len)):
     for meta in metas:
       PostOut(
         `"_id"`: posts[meta.index].`"_id"`,
         tags: posts[meta.index].tags,
-        related: meta.related.mapIt(posts[it]))
+        related: meta.related.mapIt(posts[it.index]))
 
 proc main() =
   var posts = readPosts(input)
@@ -140,14 +131,12 @@ proc main() =
     (tagCol, tagMap) = Digest.init(posts)
 
   var
-    L = initTicketLock()
-    metas = newSeqOfCap[Meta](posts.len)
+    metas = newSeq[PostMeta](posts.len)
     tasks = createMaster()
 
   tasks.awaitAll:
     for i in 0..<groups.size:
-      tasks.spawn process(
-        groups[i], addr tagCol, addr tagMap, addr metas, addr L)
+      tasks.spawn process(groups[i], addr tagCol, addr tagMap, addr metas)
 
   let
     postsOut = metas.resolve(posts)
