@@ -491,10 +491,11 @@ run_nim() {
 run_nim_con() {
     echo "Running Nim Concurrent" &&
         cd ./nim_con &&
+        echo "using ${nproc} threads" &&
         nimble -y install -d &&
         ./buildopt.sh ${nproc} &&
         if [ $HYPER == 1 ]; then
-            capture "Nim Concurrent (nproc=${nproc})" hyperfine -r $runs -w $warmup --show-output "./build/related_con"
+            capture "Nim Concurrent" hyperfine -r $runs -w $warmup --show-output "./build/related_con"
         else
             command ${time} -f '%es %Mk' ./build/related_con
         fi
@@ -916,7 +917,7 @@ elif [ "$first_arg" = "all" ]; then
         run_java_graal || echo -e "\n" &&
         run_java_graal_con || echo -e "\n" &&
         run_nim || echo -e "\n" &&
-        run_nim_con || echo -e "\n" &&
+        #run_nim_con || echo -e "\n" && #too slow, excluded for now
         run_fsharp || echo -e "\n" &&
         run_fsharp_con || echo -e "\n" &&
         run_fsharp_con_aot || echo -e "\n" &&
