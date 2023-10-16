@@ -255,7 +255,7 @@ run_julia() {
         if [ $HYPER == 1 ]; then
             capture "Julia" hyperfine -r $runs -w $warmup --show-output "julia --project=Related -e \"using Related; main()\""
         else
-            command ${time} -f '%es %Mk' julia related.jl
+            command ${time} -f '%es %Mk' julia --project=Related -e "using Related; main()"
         fi
 
     check_output "related_posts_julia.json"
@@ -883,7 +883,7 @@ elif [ "$first_arg" = "all" ]; then
         run_luajit || echo -e "\n" &&
         run_lua || echo -e "\n" &&
         run_ocaml || echo -e "\n" &&
-        # run_erlang || echo -e "\n" && # erlang is too slow right now
+        run_erlang || echo -e "\n" && # now it's fast
         echo -e "Finished running all\n"
 
 elif [ "$first_arg" = "clean" ]; then
