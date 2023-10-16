@@ -1,5 +1,5 @@
 import std/[hashes, monotimes, sequtils, sugar, times]
-import pkg/[jsony, malebolgia, xxhash]
+import pkg/[jsony, malebolgia, malebolgia/ticketlocks, xxhash]
 import ./related_con/fixedtable
 
 type
@@ -110,14 +110,19 @@ proc top5(relCounts: var RelCounts): PostIndices =
   for i in 0..<top5.len:
     result[i] = top5[i].index
 
-proc process(group: TaskGroup): Metas =
-  result = newSeq[Meta](group.size)
-  var i = 0
+proc process(group: TaskGroup, metaCol: ptr seq[Metas], L: ptr TicketLock) =
+  var
+    i = 0
+    metas = newSeq[Meta](group.size)
+
   for index in (group.first)..(group.last):
     var relCounts = newSeq[RelCount](digest.tagCol.len)
     relCounts.tally(index)
-    result[i] = Meta(index: index, related: relCounts.top5)
+    metas[i] = Meta(index: index, related: relCounts.top5)
     inc i
+
+  withLock L[]:
+    metaCol[].add(metas)
 
 proc readPosts(path: string): Posts =
   readFile(path).fromJson(Posts)
@@ -141,12 +146,13 @@ proc main() =
   let groups = TaskGroups.init(posts.len)
 
   var
-    metaCol = newSeq[Metas](groups.size)
+    metaCol = newSeqOfCap[Metas](groups.size)
+    L = initTicketLock()
     tasks = createMaster()
 
   tasks.awaitAll:
     for i in 0..<groups.size:
-      tasks.spawn process(groups[i]) -> metaCol[i]
+      tasks.spawn process(groups[i], addr metaCol, addr L)
 
   let
     postsOut = metaCol.resolve(posts)
