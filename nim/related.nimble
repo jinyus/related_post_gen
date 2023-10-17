@@ -23,6 +23,8 @@ task buildopt, "build optimized":
     echo "Gen stat ", i, "/", STAT_STEPS
     exec "./related > /dev/null"
     mvFile "default.profraw", "default.profraw." & $i
-  exec "llvm-profdata merge default.profraw.* --output default.profdata"
+  when defined(macosx):
+    exec "xcrun llvm-profdata merge default.profraw.* --output default.profdata"
+  else:
+    exec "llvm-profdata merge default.profraw.* --output default.profdata"
   exec "nimble -d:profileUse -d:release build"
-
