@@ -1,5 +1,7 @@
 module RelatedHO
 
+export main
+
 using JSON3
 using StructTypes
 using Dates
