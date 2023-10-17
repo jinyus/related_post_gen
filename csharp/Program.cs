@@ -1,3 +1,4 @@
+using System.Collections.Frozen;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Text.Json;
@@ -7,8 +8,8 @@ using System.Text.Json.Serialization;
 const int topN = 5;
 var posts = JsonSerializer.Deserialize(File.ReadAllText(@"../posts.json"), MyJsonContext.Default.ListPost)!;
 
-// slower when warm up manually
-// GetRelatedPosts(posts);
+GetRelatedPosts(posts);
+GC.Collect();
 
 var sw = Stopwatch.StartNew();
 
@@ -39,20 +40,22 @@ static RelatedPosts[] GetRelatedPosts(List<Post> posts)
         }
     }
 
-    var tagMap = new Dictionary<string, int[]>(tagMapTemp.Count);
-
-    foreach (var (tag, postIds) in tagMapTemp)
-    {
-        tagMap[tag] = postIds.ToArray();
-    }
+    var tagMap = FrozenDictionary.ToFrozenDictionary(
+        tagMapTemp,
+        s => s.Key,
+        s => s.Value.ToArray());
 
     // Create an array to store all of the related posts.
     var allRelatedPosts = new RelatedPosts[postsCount];
     var taggedPostCount = new byte[postsCount];
-    Span<(byte Count, int PostId)> top5 = new (byte Count, int PostId)[topN];
 
     // Iterate over all of the posts.
     for (var i = 0; i < postsCount; i++)
+    {
+        allRelatedPosts[i] = GetRelatedPosts(i, tagMap, taggedPostCount, posts);
+    }
+
+    static RelatedPosts GetRelatedPosts(int i, FrozenDictionary<string, int[]> tagMap, byte[] taggedPostCount, List<Post> posts)
     {
         // Reset the tagged post counts.
         ((Span<byte>)taggedPostCount).Fill(0);
@@ -69,16 +72,19 @@ static RelatedPosts[] GetRelatedPosts(List<Post> posts)
         }
 
         taggedPostCount[i] = 0; // don't count self
-        top5.Clear();
+        Span<(byte Count, int PostId)> top5 = stackalloc (byte, int)[5];
         byte minTags = 0;
 
         //  custom priority queue to find top N
-        for (var j = 0; j < postsCount; j++)
+        int p = 0;
+        while ((uint)p < (uint)taggedPostCount.Length)
         {
-            byte count = taggedPostCount[j];
+            while ((uint)p < (uint)taggedPostCount.Length && taggedPostCount[p] <= minTags)
+                p++;
 
-            if (count > minTags)
+            if ((uint)p < (uint)taggedPostCount.Length)
             {
+                byte count = taggedPostCount[p];
                 int upperBound = topN - 2;
 
                 while (upperBound >= 0 && count > top5[upperBound].Count)
@@ -87,10 +93,12 @@ static RelatedPosts[] GetRelatedPosts(List<Post> posts)
                     upperBound--;
                 }
 
-                top5[upperBound + 1] = (count, j);
+                top5[upperBound + 1] = (count, p);
 
                 minTags = top5[topN - 1].Count;
             }
+
+            p++;
         }
 
         var topPosts = new Post[topN];
@@ -101,14 +109,14 @@ static RelatedPosts[] GetRelatedPosts(List<Post> posts)
             topPosts[j] = posts[top5[j].PostId];
         }
 
-        allRelatedPosts[i] = new RelatedPosts
+        return new RelatedPosts
         {
             Id = posts[i].Id,
             Tags = posts[i].Tags,
             Related = topPosts
         };
-
     }
+
     return allRelatedPosts;
 }
 

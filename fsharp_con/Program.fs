@@ -95,6 +95,8 @@ let main args =
     // Warmup
     getAllRelated posts |> ignore
 
+    GC.Collect()
+
     let stopwatch = Diagnostics.Stopwatch.StartNew()
 
     let allRelatedPosts = getAllRelated posts
@@ -104,5 +106,5 @@ let main args =
 
     let json = Json.serialize allRelatedPosts
 
-    File.WriteAllText($"{srcDir}/../related_posts_fsharp.json", json)
+    File.WriteAllText($"{srcDir}/../related_posts_fsharp_con.json", json)
     0

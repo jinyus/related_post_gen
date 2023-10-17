@@ -1,4 +1,3 @@
 build/
-nimcache/
-related
 default.prof*
+nimcache/
