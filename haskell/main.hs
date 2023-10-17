@@ -1,5 +1,5 @@
 #!/usr/bin/env stack
--- stack script --resolver lts-21.11 --optimize --package bytestring,aeson,text,vector,containers
+-- stack script --resolver lts-21.11 --optimize --package time,bytestring,aeson,text,vector,containers
 {-# LANGUAGE OverloadedStrings #-}
 
 import Data.Text
@@ -10,6 +10,7 @@ import Data.Aeson as A
 import Data.Vector as V
 import GHC.Generics
 import Data.Map as M
+import Data.Time.Clock.POSIX
 
 data Post = Post
   { _id :: Text
@@ -34,6 +35,7 @@ instance ToJSON Post' where
 main :: IO ()
 main = do
     -- Just posts <- A.decode <$> BSL.getContents :: IO (Maybe (Vector Post)) -- get from stdin instead
+    t1 <- getMillis
     Just posts <- A.decode <$> BSL.readFile "../posts.json" :: IO (Maybe (Vector Post))
     let indexedPosts = L.zip [0..] $ V.toList posts
     let postsByTag = L.foldl populateMap M.empty indexedPosts
@@ -41,6 +43,11 @@ main = do
     let result = L.map (makeResultPost posts) postsWithMaps
     -- BSL.putStr $ A.encode result -- write to stdout instead
     BSL.writeFile "../related_posts_haskell.json" $ A.encode result
+    t2 <- getMillis -- putting this before writeFile yields 0ms
+    putStrLn $ "Processing time (w/o IO): " L.++ show (t2 - t1) L.++ "ms"
+
+getMillis :: IO Int
+getMillis = (round . (*1000)) <$> getPOSIXTime
 
 populateMap :: Map Text [Int] -> (Int, Post) -> Map Text [Int]
 populateMap m (i, p) = V.foldl (\m' t -> M.alter (Just . (i:) . fromMaybe []) t m') m $ tags p
@@ -62,5 +69,6 @@ makeResultPost :: Vector Post -> (Post, Map Int Int) -> Post'
 makeResultPost posts (p, m) = Post'
   { _id' = _id p
   , tags' = tags p
+  -- TODO implement take 5 using foldl and omit sort
   , related = L.map (unsafeIndex posts . fst) $ L.take 5 $ sortOn ((0-) . snd) $ M.toList m
   }
