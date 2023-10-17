@@ -6,6 +6,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <ServerGarbageCollection>true</ServerGarbageCollection>
+    <OptimizationPreference>Speed</OptimizationPreference>
   </PropertyGroup>
 
 </Project>
