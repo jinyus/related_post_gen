@@ -59,8 +59,7 @@ posts.each_with_index do |post, idx|
   top_posts = Array(Post?).new(TOPN, nil)
   min_tags = 0
 
-  posts.size.times do |j|
-    count = tagged_post_count[j]
+  tagged_post_count.each_with_index do |count, j|
     if count > min_tags
       upper_bound = (TOPN - 2)
 
