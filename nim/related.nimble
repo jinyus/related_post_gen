@@ -14,17 +14,13 @@ requires "nim >= 2.0.0"
 requires "jsony#head"
 requires "xxhash"
 
-const STAT_STEPS = 10
-
 task buildopt, "build optimized":
-  exec "rm -f default.profdata default.profraw.*"
+  exec "rm -f default.prof*"
   exec "nimble -d:profileGen -d:release build"
-  for i in 1..STAT_STEPS:
-    echo "Gen stat ", i, "/", STAT_STEPS
-    exec "./related > /dev/null"
-    mvFile "default.profraw", "default.profraw." & $i
+  echo "Gen stat"
+  exec "./related > /dev/null"
   when defined(macosx):
-    exec "xcrun llvm-profdata merge default.profraw.* --output default.profdata"
+    exec "xcrun llvm-profdata merge default.profraw --output default.profdata"
   else:
-    exec "llvm-profdata merge default.profraw.* --output default.profdata"
-  exec "nimble -d:profileUse -d:release build"
+    exec "llvm-profdata merge default.profraw --output default.profdata"
+  exec "nimble --verbose -d:profileUse -d:release build"
