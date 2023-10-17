@@ -476,7 +476,7 @@ run_nim() {
     echo "Running Nim" &&
         cd ./nim &&
         if [ -z "$appendToFile" ]; then # only build on 5k run
-            nimble install -y &&
+            nimble -y install -d &&
                 nimble buildopt
         fi &&
         if [ $HYPER == 1 ]; then
@@ -493,7 +493,7 @@ run_nim_con() {
         cd ./nim_con &&
         echo "using $((2 * ${nproc})) threads" &&
         if [ -z "$appendToFile" ]; then # only build on 5k run
-            nimble install -y &&
+            nimble -y install -d &&
                 ./buildopt.sh ${nproc}
         fi &&
         if [ $HYPER == 1 ]; then
