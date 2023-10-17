@@ -1,3 +1,12 @@
+import std/os
+
+const
+  cfgPath = currentSourcePath.parentDir
+  cacheSubdirHead = joinPath(cfgPath, "nimcache")
+  cacheSubdir = joinPath(cacheSubdirHead,
+    (if defined(release): "release" else: "debug"), projectName())
+
+switch("nimcache", cacheSubdir)
 switch("opt", "speed")
 switch("panics", "off")
 switch("passC", "-s -flto")
