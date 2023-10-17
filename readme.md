@@ -64,7 +64,7 @@ docker run -e TEST_NAME=all -it --rm databench
 
 | Language       | Time (5k posts)                       | 20k posts | 60k posts | Total    |
 | -------------- | ------------------------------------- | --------- | --------- | -------- |
-| Julia HO* | 7.54 ms | 58.67 ms | 136.67 ms | 202.87 ms |
+| *Julia HO*[^1] | 7.54 ms | 58.67 ms | 136.67 ms | 202.87 ms |
 | D | 25.03 ms | 316.96 ms | 2.71 s | 3.06 s |
 | Rust | 23.44 ms | 341.99 ms | 3.04 s | 3.40 s |
 | Go | 24.40 ms | 372.79 ms | 3.30 s | 3.69 s |
@@ -93,6 +93,7 @@ docker run -e TEST_NAME=all -it --rm databench
 | Erlang | 1.52 s | 24.55 s | 227.40 s | 253.48 s |
 | Numpy | 457.74 ms | 7.34 s | OOM | N/A |
 | Java (JIT) | 54.77 ms | OOM | OOM | N/A |
+
 
 ### Multicore Results
 
@@ -149,3 +150,6 @@ docker run -e TEST_NAME=all -it --rm databench
 | Zig        | 80ms            | 110ms         | Provided by [akhildevelops](https://github.com/jinyus/related_post_gen/pull/30)                                                                                                                                                                                                                 |
 
 </details>
+
+[^1]: Uses specialized datastructures meant for demonstation purposes: [more](https://github.com/LilithHafner/Jokes/tree/main/SuperDataStructures.jl)
+
