@@ -257,7 +257,7 @@ run_zig() {
 run_julia() {
     echo "Running Julia" &&
         cd ./julia &&
-        julia -e 'using Pkg; pkg"activate Related"; pkg"instantiate"' &&
+        julia -e 'using Pkg; Pkg.activate("Related"); Pkg.instantiate()' &&
         if [ $HYPER == 1 ]; then
             capture "Julia" hyperfine -r $runs -w $warmup --show-output "julia --project=Related -e \"using Related; main()\""
         else
@@ -270,7 +270,7 @@ run_julia() {
 run_julia_highly_optimized() {
     echo "Running Julia Highly Optimized" &&
         cd ./julia_highly_optimized &&
-        julia -e 'using Pkg; pkg"activate RelatedHO"; pkg"instantiate"' &&
+        julia -e 'using Pkg; Pkg.activate("RelatedHO"); Pkg.instantiate()' &&
         if [ $HYPER == 1 ]; then
             capture "Julia HO" hyperfine -r $runs -w $warmup --show-output "julia --project=RelatedHO -e \"using RelatedHO; main()\""
         else
@@ -283,7 +283,7 @@ run_julia_highly_optimized() {
 run_julia_con() {
     echo "Running Julia Concurrent" &&
         cd ./julia_con &&
-        julia -e 'using Pkg; pkg"activate RelatedCon"; pkg"instantiate"' &&
+        julia -e 'using Pkg; Pkg.activate("RelatedCon"); Pkg.instantiate()' &&
         if [ $HYPER == 1 ]; then
             capture "Julia Concurrent" hyperfine -r $runs -w $warmup --show-output "julia --threads=auto --project=RelatedCon -e \"using RelatedCon; main()\""
         else
