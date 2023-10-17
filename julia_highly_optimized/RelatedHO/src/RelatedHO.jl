@@ -1,8 +1,13 @@
+module RelatedHO
+
+export main
+
 using JSON3
 using StructTypes
 using Dates
 using StaticArrays
 using SuperDataStructures
+using PrecompileTools
 
 function write(filename, data)
     open(filename, "w") do f
@@ -10,15 +15,15 @@ function write(filename, data)
     end
 end
 
-function relatedIO()
-    json_string = read("../posts.json", String)
+function main()
+    json_string = read(@__DIR__() * "/../../..//posts.json", String)
     posts = JSON3.read(json_string, Vector{PostData})
 
     start = now()
     all_related_posts = related(posts)
     println("Processing time (w/o IO): $(now() - start)")
 
-    write("../related_posts_julia_highly_optimized.json", all_related_posts)
+    write(@__DIR__() * "/../../../related_posts_julia_highly_optimized.json", all_related_posts)
 end
 
 struct PostData
@@ -67,4 +72,11 @@ function related(posts)
     relatedposts
 end
 
-const res = relatedIO()
+@compile_workload begin
+    print("Precompiling julia workload: ")
+    main()
+end
+
+
+
+end # RelatedHO
