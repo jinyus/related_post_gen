@@ -1,4 +1,5 @@
 ﻿open System
+open System.Collections.Frozen
 open System.IO
 open FSharp.NativeInterop
 open System.Collections.Generic
@@ -28,7 +29,6 @@ let srcDir = __SOURCE_DIRECTORY__
 [<Literal>]
 let topN = 5
 
-
 let getAllRelated (posts: Post[]) =
     // Start work
     let tagPostsTmp = Dictionary<string, Stack<int>>()
@@ -45,13 +45,9 @@ let getAllRelated (posts: Post[]) =
                 tagPostsTmp[tag] <- newStack
 
     // convert from Dict<_,Stack<int>> to Dict<_,int[]> for faster access
-    let tagPosts = Dictionary(tagPostsTmp.Count)
+    let tagPosts = FrozenDictionary.ToFrozenDictionary(tagPostsTmp, (fun s -> s.Key), fun s -> s.Value.ToArray())
 
-    for kv in tagPostsTmp do
-        tagPosts[kv.Key] <- kv.Value.ToArray()
-
-
-    let getRelated (idx: int) (post: Post) =
+    let inline getRelated (idx: int) (post: Post) =
         let taggedPostCount = stackalloc posts.Length
 
         for tagId in post.tags do
