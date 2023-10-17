@@ -1,4 +1,13 @@
+import std/os
+
+const
+  cfgPath = currentSourcePath.parentDir
+  cacheSubdirHead = joinPath(cfgPath, "nimcache")
+  cacheSubdir = joinPath(cacheSubdirHead,
+    (if defined(release): "release" else: "debug"), projectName())
+
 switch("cc", "clang")
+switch("nimcache", cacheSubdir)
 switch("passC", "-flto")
 switch("passL", "-flto")
 when not defined(profileGen):
