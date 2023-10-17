@@ -270,11 +270,11 @@ run_julia() {
 run_julia_highly_optimized() {
     echo "Running Julia Highly Optimized" &&
         cd ./julia_highly_optimized &&
-        julia --project -e 'import Pkg; Pkg.instantiate()' &&
+        julia -e 'using Pkg; pkg"activate RelatedHO"; pkg"instantiate"' &&
         if [ $HYPER == 1 ]; then
-            capture "Julia HO" hyperfine -r $runs -w $warmup --show-output "julia --project related.jl"
+            capture "Julia HO" hyperfine -r $runs -w $warmup --show-output "julia --project=RelatedHO -e \"using RelatedHO; main()\""
         else
-            command ${time} -f '%es %Mk' julia --project related.jl
+            command ${time} -f '%es %Mk' julia --project=RelatedHO -e "using RelatedHO; main()"
         fi
 
     check_output "related_posts_julia_highly_optimized.json"
@@ -287,7 +287,7 @@ run_julia_con() {
         if [ $HYPER == 1 ]; then
             capture "Julia Concurrent" hyperfine -r $runs -w $warmup --show-output "julia --threads=auto --project=RelatedCon -e \"using RelatedCon; main()\""
         else
-            command ${time} -f '%es %Mk' julia --threads auto related.jl
+            command ${time} -f '%es %Mk' julia --threads auto --project=RelatedCon -e "using RelatedCon; main()"
         fi
 
     check_output "related_posts_julia_con.json"
