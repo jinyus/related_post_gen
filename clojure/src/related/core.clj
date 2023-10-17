@@ -34,14 +34,13 @@
                                                    (.tags post))]
                                   (recur (inc i) res))))
 
-          tagged-post-count (make-array Integer/TYPE n)
-
-          results           (make-array PostRelated n)
+          tagged-post-count (Array/newInstance Integer/TYPE n)
+          results           (Array/newInstance PostRelated n)
 
           _                 (loop [post-idx 0]
                               (if (< post-idx n)
                                 (let [post (Array/get posts post-idx)
-                                      top5 (make-array Integer/TYPE 10)]
+                                      top5 (Array/newInstance Integer/TYPE 10)]
                                   (java.util.Arrays/fill tagged-post-count 0)
                                   (doseq [tag (.tags post)
                                           idx (tag-map tag)]
@@ -58,10 +57,9 @@
                                                      (if-not (and (>= upper-bound 0)
                                                                   (> cnt (Array/getInt top5 upper-bound)))
                                                        upper-bound
-                                                       (do
-                                                         (Array/setInt top5 (+ upper-bound 2) (Array/getInt top5 upper-bound))
-                                                         (Array/setInt top5 (+ upper-bound 3) (Array/getInt top5 (inc upper-bound)))
-                                                         (recur (- upper-bound 2)))))]
+                                                       (recur (- upper-bound 2))))]
+                                            (if (< up 6)
+                                              (System/arraycopy top5 (+ 2 up) top5 (+ 4 up) (- 6 up)))
                                             (Array/setInt top5 (+ up 2) cnt)
                                             (Array/setInt top5 (+ up 3) i)
                                             (recur (inc i) (Array/getInt top5 8)))
