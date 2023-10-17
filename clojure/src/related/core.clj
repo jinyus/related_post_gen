@@ -22,7 +22,7 @@
 
           t1                (System/currentTimeMillis)
 
-          n                 (int (count posts))
+          n                 (alength posts)
 
           tag-map           (loop [i (int 0) res {}]
                               (if (= i n)
