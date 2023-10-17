@@ -27,19 +27,27 @@
           tag-map           (loop [i (int 0) res {}]
                               (if (= i n)
                                 res
-                                (let [post (Array/get posts i)
+                                (let [post ^Post (Array/get posts i)
                                       res  (reduce (fn [res tag]
-                                                     (update res tag conj i))
+                                                     (update res tag (fn [v]
+                                                                       (if (some? v)
+                                                                         (conj! v i)
+                                                                         (transient [i])))))
                                                    res
                                                    (.tags post))]
                                   (recur (inc i) res))))
+
+          tag-map           (->> tag-map
+                                 (mapv (fn [[k v]]
+                                         [k (persistent! v)]))
+                                 (into {}))
 
           tagged-post-count (Array/newInstance Integer/TYPE n)
           results           (Array/newInstance PostRelated n)
 
           _                 (loop [post-idx (int 0)]
                               (if (< post-idx n)
-                                (let [post (Array/get posts post-idx)
+                                (let [post ^Post (Array/get posts post-idx)
                                       top5 (Array/newInstance Integer/TYPE 10)]
                                   (java.util.Arrays/fill tagged-post-count 0)
                                   (doseq [tag (.tags post)
