@@ -22,9 +22,9 @@
 
           t1                (System/currentTimeMillis)
 
-          n                 (count posts)
+          n                 (alength posts)
 
-          tag-map           (loop [i 0 res {}]
+          tag-map           (loop [i (int 0) res {}]
                               (if (= i n)
                                 res
                                 (let [post (Array/get posts i)
@@ -34,14 +34,13 @@
                                                    (.tags post))]
                                   (recur (inc i) res))))
 
-          tagged-post-count (make-array Integer/TYPE n)
+          tagged-post-count (Array/newInstance Integer/TYPE n)
+          results           (Array/newInstance PostRelated n)
 
-          results           (make-array PostRelated n)
-
-          _                 (loop [post-idx 0]
+          _                 (loop [post-idx (int 0)]
                               (if (< post-idx n)
                                 (let [post (Array/get posts post-idx)
-                                      top5 (make-array Integer/TYPE 10)]
+                                      top5 (Array/newInstance Integer/TYPE 10)]
                                   (java.util.Arrays/fill tagged-post-count 0)
                                   (doseq [tag (.tags post)
                                           idx (tag-map tag)]
@@ -49,19 +48,18 @@
 
                                   (Array/setInt tagged-post-count post-idx 0)
 
-                                  (loop [i        0
-                                         min-tags 0]
+                                  (loop [i        (int 0)
+                                         min-tags (int 0)]
                                     (if (< i n)
                                       (let [cnt (Array/getInt tagged-post-count i)]
                                         (if (> cnt min-tags)
-                                          (let [up (loop [upper-bound 6]
+                                          (let [up (loop [upper-bound (int 6)]
                                                      (if-not (and (>= upper-bound 0)
                                                                   (> cnt (Array/getInt top5 upper-bound)))
                                                        upper-bound
-                                                       (do
-                                                         (Array/setInt top5 (+ upper-bound 2) (Array/getInt top5 upper-bound))
-                                                         (Array/setInt top5 (+ upper-bound 3) (Array/getInt top5 (inc upper-bound)))
-                                                         (recur (- upper-bound 2)))))]
+                                                       (recur (- upper-bound 2))))]
+                                            (if (< up 6)
+                                              (System/arraycopy top5 (+ 2 up) top5 (+ 4 up) (- 6 up)))
                                             (Array/setInt top5 (+ up 2) cnt)
                                             (Array/setInt top5 (+ up 3) i)
                                             (recur (inc i) (Array/getInt top5 8)))
