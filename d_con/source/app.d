@@ -29,37 +29,11 @@ struct PostsWithSharedTags
 	ubyte sharedTags;
 }
 
-PostsWithSharedTags[TopN] top5;
-Post[TopN] topPosts;
-
 enum vSize = 16;
 alias hashmap = size_t[][string];
-alias vec_u = Vector!(byte[vSize]);
+alias vec_u = Vector!(ubyte[vSize]);
 
-bool vecLessThan(vec_u a, vec_u b)
-{
-	foreach (index; 0 .. vSize)
-	{
-		if (a[index] > b[index])
-		{
-			return false;
-		}
-	}
-	return true;
-}
 
-vec_u vecMax(vec_u a, vec_u b)
-{
-	vec_u result;
-
-	foreach (index; 0 .. vSize)
-	{
-		auto value = max(a[index], b[index]);
-		result[index] = value;
-	}
-
-	return result;
-}
 
 void main()
 {
@@ -69,7 +43,6 @@ void main()
 	auto posts = deserialize!(Post[])(jsonText);
 
 	GC.collect();
-	GC.disable();
 
 	auto sw = StopWatch(AutoStart.yes);
 
@@ -84,9 +57,12 @@ void main()
 	auto nVectors = (postsCount + vSize - 1) / vSize;
 	auto taggedPostsVecThreadPool = taskPool.workerLocalStorage(new vec_u[nVectors]);
 
-	foreach (k, ref post; parallel(posts, 5))
+	foreach (k, ref post; parallel(posts, 1))
 	{
-		vec_u[] taggedPostsVec = taggedPostsVecThreadPool.get;
+		PostsWithSharedTags[TopN] top5;
+		Post[TopN] topPosts;
+
+		auto taggedPostsVec = taggedPostsVecThreadPool.get;
 		auto taggedPostsCount = cast(ubyte[]) taggedPostsVec;
 		taggedPostsCount[] = 0;
 
@@ -95,38 +71,35 @@ void main()
 				taggedPostsCount[idx]++;
 
 		taggedPostsCount[k] = 0;
-		auto posVecLen = taggedPostsVec.length;
 
 		top5[] = PostsWithSharedTags(0, 0);
 
 		vec_u minTags = 0;
 		ulong pv = 0;
-		vec_u neqMask = 0;
-		while (pv < posVecLen)
+		vec_u eqMask = cast(ubyte)-1;
+		while (pv < nVectors)
 		{
-			while (pv < posVecLen && vecLessThan(taggedPostsVec[pv], minTags))
+			while (pv < nVectors && ((taggedPostsVec[pv] <= minTags) is eqMask))
 				pv++;
-			if (pv < posVecLen)
+			if (pv < nVectors)
 			{
-				vec_u counts = vecMax(taggedPostsVec[pv], minTags);
-				if ((counts != minTags) is neqMask)
+				vec_u counts = taggedPostsVec[pv];
+
+				foreach (l; 0 .. vSize)
 				{
-					foreach (l; 0 .. posVecLen)
+					if (counts[l] > minTags[0])
 					{
-						if (counts[l] > minTags[0])
+						int upperBound = TopN - 2;
+
+						while (upperBound >= 0 && counts[l] > top5[upperBound].sharedTags)
 						{
-							int upperBound = TopN - 2;
-
-							while (upperBound >= 0 && counts[l] > top5[upperBound].sharedTags)
-							{
-								top5[upperBound + 1] = top5[upperBound];
-								upperBound--;
-							}
-
-							top5[upperBound + 1] = PostsWithSharedTags(pv * vSize + l, counts[k]);
-
-							minTags = cast(vec_u) top5[TopN - 1].sharedTags;
+							top5[upperBound + 1] = top5[upperBound];
+							upperBound--;
 						}
+
+						top5[upperBound + 1] = PostsWithSharedTags(pv * vSize + l, counts[l]);
+
+						minTags = cast(vec_u) top5[TopN - 1].sharedTags;
 					}
 				}
 			}
@@ -143,7 +116,6 @@ void main()
 		);
 	}
 	sw.stop();
-	GC.enable();
 	writeln("Processing time (w/o IO): ", sw.peek.total!"usecs" * 1.0 / 1000, "ms");
 	toFile(serializeToJson(relatedPosts), "../related_posts_d_con.json");
 }
