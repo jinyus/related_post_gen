@@ -38,8 +38,8 @@ instance ToJSON Post' where
 main :: IO ()
 main = do
     -- Just posts <- A.decodeStrict <$> BS.getContents :: IO (Maybe (Vector Post)) -- get from stdin instead
-    t1 <- getMillis
     Just posts <- A.decodeStrict <$> BS.readFile "../posts.json" :: IO (Maybe (Vector Post))
+    t1 <- getMillis
     let indexedPosts = L.zip [0..] $ V.toList posts
     let postsByTag = L.foldl populateMap M.empty indexedPosts
     let postsWithMaps = L.map (\(i, p) -> (p, createMap posts postsByTag (i, p))) indexedPosts
