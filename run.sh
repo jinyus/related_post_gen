@@ -473,7 +473,7 @@ run_nim() {
         cd ./nim &&
         if [ -z "$appendToFile" ]; then # only build on 5k run
             nimble -y install -d &&
-                nimble buildopt
+                nimble --verbose build -d:release
         fi &&
         if [ $HYPER == 1 ]; then
             capture "Nim" hyperfine -r $runs -w $warmup --show-output "./related"
