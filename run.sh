@@ -679,6 +679,7 @@ run_haskell() {
         fi
 
     check_output "related_posts_haskell.json"
+}
 
 run_d() {
     echo "Running D" &&
