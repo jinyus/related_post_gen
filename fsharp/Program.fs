@@ -37,8 +37,6 @@ module Work =
         for tag in posts[i].tags do
             for otherPostIdx in tagMap[tag] do
                 taggedPostCount[otherPostIdx] <- taggedPostCount[otherPostIdx] + 1uy
-                // let mutable relatedPostTagCount = &taggedPostCount[otherPostIdx]
-                // relatedPostTagCount <- relatedPostTagCount + 1uy
         
         taggedPostCount[i] <- 0uy // ignore self
         let top5 = Array.zeroCreate<struct {| count: byte; postId: int |}> topN
@@ -67,15 +65,13 @@ module Work =
         while j < 5 do
             topPosts[j] <- posts[top5[j].postId]
             j <- j + 1
-        // for j in 0..topN - 1 do
-            // topPosts[j] <- posts[top5[j].postId]
-        
+            
         
         { _id = posts[i]._id
           tags = posts[i].tags
           related = topPosts }
         
-    let workNew (posts: ResizeArray<Post>) =
+    let getAllRelated (posts: ResizeArray<Post>) =
         let postsCount = posts.Count
         
         // Start work
@@ -89,12 +85,7 @@ module Work =
                     let stack = LinkedList()
                     stack.AddLast i |> ignore
                     tagPostsTmp[tag] <- stack
-                // let mutable out = false
-                // let mutable stack = CollectionsMarshal.GetValueRefOrAddDefault(tagPostsTmp, tag, &out)
-                // if isNull stack then
-                //     stack <- LinkedList<int>()
-                // stack.AddLast(i) |> ignore
-
+                    
         // convert from Dict<_,LinkedList<int>> to Dict<_,int[]> for faster access
         let tagMap = FrozenDictionary.ToFrozenDictionary(tagPostsTmp, (fun s -> s.Key), fun s -> System.Linq.Enumerable.ToArray(s.Value))
         
@@ -105,75 +96,18 @@ module Work =
             allRelatedPosts[i] <- getRelatedPosts(i,tagMap, taggedPostCount, posts) 
         allRelatedPosts
         
-
-let getAllRelated (posts: Post[]) =
-    // Start work
-    let tagPostsTmp = Dictionary<string, Stack<int>>()
-
-    for postId in 0 .. posts.Length - 1 do
-        let post = posts[postId]
-
-        for tag in post.tags do
-            match tagPostsTmp.TryGetValue tag with
-            | true, s -> s.Push postId
-            | false, _ ->
-                let newStack = Stack()
-                newStack.Push postId
-                tagPostsTmp[tag] <- newStack
-
-    // convert from Dict<_,Stack<int>> to Dict<_,int[]> for faster access
-    let tagPosts = FrozenDictionary.ToFrozenDictionary(tagPostsTmp, (fun s -> s.Key), fun s -> s.Value.ToArray())
-
-    let inline getRelated (idx: int) (post: Post) =
-        let taggedPostCount = stackalloc posts.Length
-
-        for tagId in post.tags do
-            for relatedPostId in tagPosts[tagId] do
-                let mutable relatedPostTagCount = &taggedPostCount[relatedPostId]
-                relatedPostTagCount <- relatedPostTagCount + 1uy
-
-        taggedPostCount[idx] <- 0uy // ignore self
-
-        let top5 = Array.zeroCreate<struct {| count: byte; postId: int |}> topN
-        let mutable minTags = 0uy
-
-        for i in 0 .. taggedPostCount.Length - 1 do
-            let count = taggedPostCount[i]
-
-            if count > minTags then
-                // Find upper bound: pos at which count is larger than current one.
-                let mutable pos = topN - 2
-
-                while pos >= 0 && count > top5[pos].count do
-                    top5[pos + 1] <- top5[pos]
-                    pos <- pos - 1
-
-                top5[pos + 1] <- {| count = count; postId = i |}
-                minTags <- top5[topN - 1].count
-                
-
-        { _id = post._id
-          tags = post.tags
-          related = top5 |> Array.map (fun top -> posts[top.postId]) }
-
-
-    posts |> Array.mapi getRelated
-
-
-
-
 [<EntryPoint>]
 let main args =
     let posts = Json.deserialize<Post[]> (File.ReadAllText $"{srcDir}/../posts.json")
     let posts = ResizeArray(posts)
     // Warmup
-    Work.workNew posts |> ignore
+    Work.getAllRelated posts |> ignore
 
     GC.Collect()
 
     let stopwatch = Diagnostics.Stopwatch.StartNew()
 
-    let allRelatedPosts = Work.workNew posts
+    let allRelatedPosts = Work.getAllRelated posts
 
     stopwatch.Stop()
     Console.WriteLine($"Processing time (w/o IO): %d{stopwatch.ElapsedMilliseconds}ms")
