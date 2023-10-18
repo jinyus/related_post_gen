@@ -7,6 +7,7 @@ const
     (if defined(release): "release" else: "debug"), projectName())
 
 switch("cc", "clang")
+switch("mm", "arc")
 switch("nimcache", cacheSubdir)
 switch("passC", "-flto")
 switch("passL", "-flto")
