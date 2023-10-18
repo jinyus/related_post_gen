@@ -599,6 +599,36 @@ run_csharp_aot() {
     check_output "related_posts_csharp.json"
 }
 
+run_csharp_con() {
+    echo "Running CSharp Concurrent (JIT)" &&
+        cd ./csharp_con &&
+        if [ -z "$appendToFile" ]; then # subsequent runs
+            dotnet publish -c release --self-contained -o "bin/release/net8.0/jit"
+        fi &&
+        if [ $HYPER == 1 ]; then
+            capture "C# Concurrent (JIT)" hyperfine -r $runs -w $warmup --show-output "./bin/release/net8.0/jit/related"
+        else
+            command ${time} -f '%es %Mk' ./bin/release/net8.0/jit/related
+        fi
+
+    check_output "related_posts_csharp_con.json"
+}
+
+run_csharp_con_aot() {
+    echo "Running CSharp Concurrent (AOT)" &&
+        cd ./csharp_con &&
+        if [ -z "$appendToFile" ]; then # subsequent runs
+            dotnet publish -c release --self-contained -p PublishAot=true -o "bin/release/net8.0/aot"
+        fi &&
+        if [ $HYPER == 1 ]; then
+            capture "C# Concurrent (AOT)" hyperfine -r $runs -w $warmup --show-output "./bin/release/net8.0/aot/related"
+        else
+            command ${time} -f '%es %Mk' ./bin/release/net8.0/aot/related
+        fi
+
+    check_output "related_posts_csharp_con.json"
+}
+
 run_luajit() {
     echo "Running LuaJIT" &&
         cd ./lua &&
@@ -850,6 +880,14 @@ elif [ "$first_arg" = "csharp_aot" ]; then
 
     run_csharp_aot
 
+elif [ "$first_arg" = "csharp_con" ]; then
+
+    run_csharp_con
+
+elif [ "$first_arg" = "csharp_con_aot" ]; then
+
+    run_csharp_con_aot
+
 elif [ "$first_arg" = "fsharp_con" ]; then
 
     run_fsharp_con
@@ -926,6 +964,8 @@ elif [ "$first_arg" = "all" ]; then
         run_fsharp_aot || echo -e "\n" &&
         run_csharp || echo -e "\n" &&
         run_csharp_aot || echo -e "\n" &&
+        run_csharp_con || echo -e "\n" &&
+        run_csharp_con_aot || echo -e "\n" &&
         run_luajit || echo -e "\n" &&
         run_lua || echo -e "\n" &&
         run_ocaml || echo -e "\n" &&
