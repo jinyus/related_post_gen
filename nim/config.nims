@@ -1,6 +1,4 @@
-switch("opt", "speed")
 switch("cc", "clang")
-switch("panics", "off")
 switch("passC", "-flto")
 switch("passL", "-flto")
 
@@ -13,4 +11,3 @@ when defined(profileUse):
   echo "Build with profileUse"
   switch("passC", "-fprofile-instr-use")
   switch("passL", "-fprofile-instr-use")
-
