@@ -668,6 +668,18 @@ run_ocaml() {
     check_output "related_posts_ocaml.json"
 }
 
+run_haskell() {
+    echo "Running Haskell" &&
+        cd ./haskell &&
+        ./main.hs &&
+        if [ $HYPER == 1 ]; then
+            capture "haskell" hyperfine -r $runs -w $warmup --show-output "./main"
+        else
+            command time -f '%es %Mk' ./main
+        fi
+
+    check_output "related_posts_haskell.json"
+
 run_d() {
     echo "Running D" &&
         cd ./d &&
@@ -903,6 +915,10 @@ elif [ "$first_arg" = "lua" ]; then
 elif [ "$first_arg" = "ocaml" ]; then
 
     run_ocaml
+
+elif [ "$first_arg" = "haskell" ]; then
+
+    run_haskell
 
 elif [ "$first_arg" = "d" ]; then
 
