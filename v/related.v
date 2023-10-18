@@ -2,6 +2,10 @@ import json
 import os
 import time
 
+// ATTENTION: This const must be declared before declaration of RelatedPosts because of fixed array declaration bug.
+// This const can be moved wherever you want after the https://github.com/vlang/v/issues/19593 is fixed.
+const top_posts_count = 5
+
 struct Post {
 	id    string   [json: '_id']
 	title string   [json: 'title']
@@ -14,9 +18,9 @@ struct PostWithSharedTags {
 }
 
 struct RelatedPosts {
-	id      string   [json: '_id']
+	id      string                [json: '_id']
 	tags    []string
-	related []Post
+	related [top_posts_count]Post
 }
 
 fn main() {
@@ -54,36 +58,31 @@ fn main() {
 
 		tagged_post_count[i] = 0
 
-		mut top5 := []PostWithSharedTags{len: 5, cap: 6}
+		mut top5 := [top_posts_count]PostWithSharedTags{}
 		mut min_tags := 0
 
 		// custom priority queue
 		for idx, count in tagged_post_count {
 			if count > min_tags {
-				mut pos := 4
+				mut pos := top_posts_count - 2
 
 				for pos >= 0 && top5[pos].shared_tags < count {
+					top5[pos + 1] = top5[pos]
 					pos -= 1
 				}
 
-				pos += 1
-
-				if pos < 5 {
-					top5.insert(pos, PostWithSharedTags{ post: idx, shared_tags: count })
-
-					if top5.len > 5 {
-						top5.pop()
-					}
-
-					min_tags = top5[4].shared_tags
+				top5[pos + 1] = PostWithSharedTags{
+					post: idx
+					shared_tags: count
 				}
+				min_tags = top5[top_posts_count - 1].shared_tags
 			}
 		}
 
-		mut top_posts := []Post{cap: 5}
+		mut top_posts := [top_posts_count]Post{}
 
-		for p in top5 {
-			top_posts << posts[p.post]
+		for top_post_index, p in top5 {
+			top_posts[top_post_index] = posts[p.post]
 		}
 
 		all_related_posts << RelatedPosts{
