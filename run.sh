@@ -440,11 +440,9 @@ run_java_graal() {
     export JAVA_HOME="$GRAALVM_HOME"
     echo "Running Java (GraalVM)" &&
         cd ./java &&
-        if [ -z "$appendToFile" ]; then # only build on 5k run
-            java -version &&
-                mvn -q -B clean package &&
-                mvn -q -B -Pnative,pgo package
-        fi &&
+        java -version &&
+        mvn -q -B clean package &&
+        mvn -q -B -Pnative,pgo package &&
         if [ $HYPER == 1 ]; then
             capture "Java (GraalVM)" hyperfine -r $runs -w $warmup --show-output "./target/related"
         else
@@ -458,10 +456,8 @@ run_java_graal() {
 run_java_graal_con() {
     echo "Running Java (GraalVM) Concurrent" &&
         cd ./java &&
-        if [ -z "$appendToFile" ]; then # only build on 5k run
-            java -version &&
-                mvn -q -B -Pnative,pgo,parallel clean package
-        fi &&
+        java -version &&
+        mvn -q -B -Pnative,pgo,parallel clean package &&
         if [ $HYPER == 1 ]; then
             capture "Java (GraalVM) Concurrent" hyperfine -r $runs -w $warmup --show-output "./target/related"
         else
