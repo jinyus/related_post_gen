@@ -14,10 +14,6 @@ type
 
   PostIndex = int
 
-  PostMeta = object
-    index: PostIndex
-    related: Top5
-
   PostOut = object
     `"_id"`: string
     tags : seq[Tag]
@@ -58,8 +54,8 @@ func hash(x: Tag): Hash {.used.} =
 
 func init(T: typedesc[Digest], posts: Posts): T =
   var
-    tagCol: TagCol
-    tagMap: TagMap
+    tagCol = newSeqOfCap[seq[Tag]](posts.len)
+    tagMap = initTable[Tag, seq[PostIndex]](100)
 
   for i, post in posts:
     tagCol.add(post.tags)
@@ -92,7 +88,7 @@ proc tally(
 
   relCounts[index] = 0 # remove self
 
-proc top5(relCounts: var seq[RelCount], top5: var Top5) =
+proc top5(relCounts: seq[RelCount], top5: var Top5) =
   for index, count in relCounts:
     if count > top5[4].count:
       top5[4] = (index: index, count: count)
@@ -104,47 +100,45 @@ proc process(
     group: TaskGroup,
     tagCol: ptr TagCol,
     tagMap: ptr TagMap,
-    metas: ptr seq[PostMeta]) =
+    top5s: ptr seq[Top5]) =
   for index in (group.first)..(group.last):
     var relCounts = newSeq[RelCount](tagCol[].len)
     relCounts.tally(index, tagCol, tagMap)
-    metas[][index].index = index
-    relCounts.top5(metas[][index].related)
+    relCounts.top5(top5s[][index])
 
 proc readPosts(path: string): Posts =
-  readFile(path).fromJson(Posts)
+  path.readFile.fromJson(Posts)
 
-func resolve(metas: var seq[PostMeta], posts: var Posts): seq[PostOut] =
+func resolve(posts: Posts, top5s: seq[Top5]): seq[PostOut] =
   collect(newSeqOfCap(posts.len)):
-    for meta in metas:
+    for index, top5 in top5s:
       PostOut(
-        `"_id"`: posts[meta.index].`"_id"`,
-        tags: posts[meta.index].tags,
-        related: meta.related.mapIt(posts[it.index]))
+        `"_id"`: posts[index].`"_id"`,
+        tags: posts[index].tags,
+        related: top5.mapIt(posts[it.index]))
 
 proc main() =
-  var posts = readPosts(input)
-  let t0 = getMonotime()
-
   let
+    posts = input.readPosts
+    t0 = getMonotime()
     groups = TaskGroups.init(posts.len)
     (tagCol, tagMap) = Digest.init(posts)
 
   var
-    metas = newSeq[PostMeta](posts.len)
+    top5s = newSeq[Top5](posts.len)
     tasks = createMaster()
 
   tasks.awaitAll:
     for i in 0..<groups.size:
-      tasks.spawn process(groups[i], addr tagCol, addr tagMap, addr metas)
+      tasks.spawn groups[i].process(addr tagCol, addr tagMap, addr top5s)
 
   let
-    postsOut = metas.resolve(posts)
+    postsOut = posts.resolve(top5s)
     time = (getMonotime() - t0).inMicroseconds / 1000
 
   # echo "Threads: ", ThreadPoolSize, ", Chan size: ", FixedChanSize
   echo "Processing time (w/o IO): ", time, "ms"
-  writeFile(output, postsOut.toJson)
+  output.writeFile(postsOut.toJson)
 
 when isMainModule:
   main()
