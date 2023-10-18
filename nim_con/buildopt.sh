@@ -9,7 +9,7 @@ fi
 ## hardwired
 # nproc=4
 
-threads=$((2 * ${nproc}))
+threads=$((1 * ${nproc}))
 
 chansize=${2}
 if [[ -z "${chansize}" ]]; then

@@ -487,7 +487,7 @@ run_nim() {
 run_nim_con() {
     echo "Running Nim Concurrent" &&
         cd ./nim_con &&
-        echo "using $((2 * ${nproc})) threads" &&
+        echo "using ${nproc} threads" &&
         if [ -z "$appendToFile" ]; then # only build on 5k run
             nimble -y install -d &&
                 ./buildopt.sh ${nproc}
