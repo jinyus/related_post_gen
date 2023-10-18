@@ -9,6 +9,7 @@ const
 switch("nimcache", cacheSubdir)
 
 --cc:clang
+--mm:arc
 --outdir:build
 --tlsEmulation:off # default on|off varies by platform
 --warning:"Effect:off" # suppress noisy compiler warnings re: malebolgia
