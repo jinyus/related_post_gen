@@ -21,7 +21,7 @@ struct RelatedPosts
 
 struct PostsWithSharedTags
 {
-	ulong post;
+	uint post;
 	ubyte sharedTags;
 }
 
