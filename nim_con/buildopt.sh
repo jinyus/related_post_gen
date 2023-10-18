@@ -27,24 +27,7 @@ else
     build_kind=release
 fi
 
-echo "Compiling profiled executable"
 nim c -d:FixedChanSize=${chansize} \
       -d:ThreadPoolSize=${threads} \
-      -d:profileGen \
-      -d:${build_kind} \
-      related_con.nim
-
-echo "Generating profile"
-./build/related_con >/dev/null
-if [[ "$(uname)" = "Darwin" ]]; then
-    xcrun llvm-profdata merge -output="${profdata}" "${profraw}"
-else
-    llvm-profdata merge -output="${profdata}" "${profraw}"
-fi
-
-echo "Compiling optimized executable"
-nim c -d:FixedChanSize=${chansize} \
-      -d:ThreadPoolSize=${threads} \
-      -d:profileUse \
       -d:${build_kind} \
       related_con.nim
