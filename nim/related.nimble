@@ -17,6 +17,8 @@ requires "xxhash"
 const STAT_STEPS = 10
 
 task buildopt, "build optimized":
+  exec "gcc --version | head -1"
+  exec "clang --version | head -1"
   exec "rm -f default.profdata default.profraw.*"
   exec "nimble -d:profileGen -d:release build"
   for i in 1..STAT_STEPS:
