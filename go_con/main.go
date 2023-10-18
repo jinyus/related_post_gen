@@ -56,6 +56,8 @@ func main() {
 		log.Panicln(err)
 	}
 
+	runtime.GC()
+
 	start := time.Now()
 
 	postsLength := len(posts)
