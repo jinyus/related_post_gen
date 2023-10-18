@@ -32,30 +32,30 @@ void main()
 
 	auto sw = StopWatch(AutoStart.yes);
 
-	int postsCount = cast(int) posts.length;
+	uint postsCount = cast(uint) posts.length;
 	auto relatedPosts = new RelatedPosts[postsCount];
 	auto taggedPostsCount = new ubyte[postsCount];
 	Post[TopN] topPosts;
-	size_t[][string] tagMap;
+	uint[][string] tagMap;
 
-	foreach (i, post; posts)
+	foreach (uint i, post; posts)
 		foreach (tag; post.tags)
 			tagMap[tag] ~= i;
 
-	foreach (k, post; posts)
+	foreach (uint k, post; posts)
 	{
 		PostsWithSharedTags[TopN] top5;
 
 		taggedPostsCount[] = 0;
 
 		foreach (tag; post.tags)
-			foreach (idx; tagMap[tag])
+			foreach (uint idx; tagMap[tag])
 				taggedPostsCount[idx]++;
 
 		taggedPostsCount[k] = 0;
 
 		auto minTags = 0;
-		foreach (j, count; taggedPostsCount)
+		foreach (uint j, count; taggedPostsCount)
 		{
 			if (count > minTags)
 			{
