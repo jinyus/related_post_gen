@@ -1,22 +1,25 @@
 #!/usr/bin/env stack
--- stack script --resolver lts-21.11 --optimize --package time,bytestring,aeson,text,vector,containers
+-- stack script --resolver lts-21.11 --optimize --package time,bytestring,aeson,text,vector,containers,deepseq
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE DeriveAnyClass #-}
 
 import Data.Text
 import Data.List as L
 import Data.Maybe
-import Data.ByteString.Lazy as BSL
+import Data.ByteString as BS
 import Data.Aeson as A
 import Data.Vector as V
 import GHC.Generics
 import Data.Map as M
 import Data.Time.Clock.POSIX
+import Control.Exception
+import Control.DeepSeq
 
 data Post = Post
   { _id :: Text
   , title :: Text
   , tags :: Vector Text
-  } deriving (Generic, Show)
+  } deriving (Generic, Show, NFData)
 
 instance FromJSON Post
 instance ToJSON Post
@@ -25,7 +28,7 @@ data Post' = Post'
   { _id' :: Text
   , tags' :: Vector Text
   , related :: [Post]
-  } deriving (Generic, Show)
+  } deriving (Generic, Show, NFData)
 
 instance FromJSON Post'
 instance ToJSON Post' where
@@ -34,17 +37,18 @@ instance ToJSON Post' where
 
 main :: IO ()
 main = do
-    -- Just posts <- A.decode <$> BSL.getContents :: IO (Maybe (Vector Post)) -- get from stdin instead
+    -- Just posts <- A.decodeStrict <$> BS.getContents :: IO (Maybe (Vector Post)) -- get from stdin instead
     t1 <- getMillis
-    Just posts <- A.decode <$> BSL.readFile "../posts.json" :: IO (Maybe (Vector Post))
+    Just posts <- A.decodeStrict <$> BS.readFile "../posts.json" :: IO (Maybe (Vector Post))
     let indexedPosts = L.zip [0..] $ V.toList posts
     let postsByTag = L.foldl populateMap M.empty indexedPosts
     let postsWithMaps = L.map (\(i, p) -> (p, createMap posts postsByTag (i, p))) indexedPosts
     let result = L.map (makeResultPost posts) postsWithMaps
-    -- BSL.putStr $ A.encode result -- write to stdout instead
-    BSL.writeFile "../related_posts_haskell.json" $ A.encode result
+    Control.Exception.evaluate $ Control.DeepSeq.force result
     t2 <- getMillis -- putting this before writeFile yields 0ms
     putStrLn $ "Processing time (w/o IO): " L.++ show (t2 - t1) L.++ "ms"
+    -- BS.putStr $ BS.toStrict $ A.encode result -- write to stdout instead
+    A.encodeFile "../related_posts_haskell.json" result
 
 getMillis :: IO Int
 getMillis = (round . (*1000)) <$> getPOSIXTime
