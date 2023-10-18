@@ -18,15 +18,16 @@ void main() {
   final postsJson =
       jsonDecode(File('../posts.json').readAsStringSync()) as List<dynamic>;
 
-  final posts = postsJson.map(Post.fromJson).toList();
+  final posts = postsJson.map(Post.fromJson).toList(growable: false);
 
   final sw = Stopwatch()..start();
 
   final tagMap = <String, TaggedPosts>{};
 
   for (var i = 0; i < posts.length; i++) {
-    for (var tag in posts[i].tags) {
-      (tagMap[tag] ??= TaggedPosts()).posts.add(i);
+    final tags = posts[i].tags;
+    for (var j = 0; j < tags.length; j++) {
+      (tagMap[tags[j]] ??= TaggedPosts()).posts.add(i);
     }
   }
 
@@ -41,8 +42,10 @@ void main() {
       taggedPostCount[i] = 0;
     }
 
-    for (var tag in post.tags) {
-      for (var otherPostIdx in tagMap[tag]!.posts) {
+    for (var j = 0; j < post.tags.length; j++) {
+      final taggedPosts = tagMap[post.tags[j]]!.posts;
+      for (var k = 0; k < taggedPosts.length; k++) {
+        final otherPostIdx = taggedPosts[k];
         taggedPostCount[otherPostIdx] += 1;
       }
     }
@@ -81,7 +84,7 @@ void main() {
         for (var i = 1; i < 10; i += 2) posts[top5[i]],
       ],
     };
-  });
+  }, growable: false);
 
   print('Processing time (w/o IO): ${sw.elapsedMilliseconds}ms');
 
