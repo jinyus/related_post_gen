@@ -1,8 +1,11 @@
 import std.stdio : writeln, toFile;
 import std.datetime.stopwatch : StopWatch, AutoStart;
-import asdf.serialization : deserialize, serializeToJson;
 import std.file : readText;
 import std.parallelism : taskPool, parallel;
+import core.simd : Vector;
+import ldc.simd;
+import std.algorithm : max;
+import asdf.serialization : deserialize, serializeToJson;
 
 enum TopN = 5;
 
@@ -29,26 +32,62 @@ struct PostsWithSharedTags
 PostsWithSharedTags[TopN] top5;
 Post[TopN] topPosts;
 
+enum vSize = 16;
+alias hashmap = size_t[][string];
+alias vec_u = Vector!(byte[vSize]);
+
+bool vecLessThan(vec_u a, vec_u b)
+{
+	foreach (index; 0 .. vSize)
+	{
+		if (a[index] > b[index])
+		{
+			return false;
+		}
+	}
+	return true;
+}
+
+vec_u vecMax(vec_u a, vec_u b)
+{
+	vec_u result;
+
+	foreach (index; 0 .. vSize)
+	{
+		auto value = max(a[index], b[index]);
+		result[index] = value;
+	}
+
+	return result;
+}
+
 void main()
 {
+	import core.memory : GC;
+
 	auto jsonText = readText("../posts.json");
 	auto posts = deserialize!(Post[])(jsonText);
+
+	GC.collect();
+	GC.disable();
 
 	auto sw = StopWatch(AutoStart.yes);
 
 	int postsCount = cast(int) posts.length;
 	auto relatedPosts = new RelatedPosts[postsCount];
-	size_t[][string] tagMap;
+	hashmap tagMap;
 
 	foreach (i, post; posts)
 		foreach (tag; post.tags)
 			tagMap[tag] ~= i;
 
-	auto taggedPostsCountThreadPool = taskPool.workerLocalStorage(new ubyte[postsCount]);
+	auto nVectors = (postsCount + vSize - 1) / vSize;
+	auto taggedPostsVecThreadPool = taskPool.workerLocalStorage(new vec_u[nVectors]);
 
-	foreach (k, ref post; posts.parallel)
+	foreach (k, ref post; parallel(posts, 5))
 	{
-		ubyte[] taggedPostsCount = taggedPostsCountThreadPool.get;
+		vec_u[] taggedPostsVec = taggedPostsVecThreadPool.get;
+		auto taggedPostsCount = cast(ubyte[]) taggedPostsVec;
 		taggedPostsCount[] = 0;
 
 		foreach (tag; post.tags)
@@ -56,26 +95,42 @@ void main()
 				taggedPostsCount[idx]++;
 
 		taggedPostsCount[k] = 0;
+		auto posVecLen = taggedPostsVec.length;
 
 		top5[] = PostsWithSharedTags(0, 0);
 
-		ubyte minTags = 0;
-		foreach (j, count; taggedPostsCount)
+		vec_u minTags = 0;
+		ulong pv = 0;
+		vec_u neqMask = 0;
+		while (pv < posVecLen)
 		{
-			if (count > minTags)
+			while (pv < posVecLen && vecLessThan(taggedPostsVec[pv], minTags))
+				pv++;
+			if (pv < posVecLen)
 			{
-				int upperBound = TopN - 2;
-
-				while (upperBound >= 0 && count > top5[upperBound].sharedTags)
+				vec_u counts = vecMax(taggedPostsVec[pv], minTags);
+				if ((counts != minTags) is neqMask)
 				{
-					top5[upperBound + 1] = top5[upperBound];
-					upperBound--;
+					foreach (l; 0 .. posVecLen)
+					{
+						if (counts[l] > minTags[0])
+						{
+							int upperBound = TopN - 2;
+
+							while (upperBound >= 0 && counts[l] > top5[upperBound].sharedTags)
+							{
+								top5[upperBound + 1] = top5[upperBound];
+								upperBound--;
+							}
+
+							top5[upperBound + 1] = PostsWithSharedTags(pv * vSize + l, counts[k]);
+
+							minTags = cast(vec_u) top5[TopN - 1].sharedTags;
+						}
+					}
 				}
-
-				top5[upperBound + 1] = PostsWithSharedTags(j, count);
-
-				minTags = top5[TopN - 1].sharedTags;
 			}
+			pv++;
 		}
 
 		foreach (i, t; top5)
@@ -88,6 +143,7 @@ void main()
 		);
 	}
 	sw.stop();
+	GC.enable();
 	writeln("Processing time (w/o IO): ", sw.peek.total!"usecs" * 1.0 / 1000, "ms");
 	toFile(serializeToJson(relatedPosts), "../related_posts_d_con.json");
 }
