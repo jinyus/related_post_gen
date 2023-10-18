@@ -1,6 +1,8 @@
 switch("cc", "clang")
 switch("passC", "-flto")
 switch("passL", "-flto")
+when not defined(profileGen):
+  switch("passL", "-s")
 switch("threads", "off")
 
 when defined(profileGen):
