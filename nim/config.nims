@@ -1,6 +1,7 @@
 switch("cc", "clang")
 switch("passC", "-flto")
 switch("passL", "-flto")
+switch("threads", "off")
 
 when defined(profileGen):
   echo "Build with profileGen"
