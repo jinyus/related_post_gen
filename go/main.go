@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"time"
+	"runtime"
 )
 
 const topN = 5
@@ -37,6 +38,9 @@ func main() {
 	if err != nil {
 		fmt.Println(err)
 	}
+
+	runtime.GC()
+
 	start := time.Now()
 
 	postsLen := len(posts)
