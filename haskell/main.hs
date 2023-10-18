@@ -39,6 +39,7 @@ main :: IO ()
 main = do
     -- Just posts <- A.decodeStrict <$> BS.getContents :: IO (Maybe (Vector Post)) -- get from stdin instead
     Just posts <- A.decodeStrict <$> BS.readFile "../posts.json" :: IO (Maybe (Vector Post))
+    Control.Exception.evaluate $ Control.DeepSeq.force posts
     t1 <- getMillis
     let indexedPosts = L.zip [0..] $ V.toList posts
     let postsByTag = L.foldl populateMap M.empty indexedPosts
