@@ -20,7 +20,10 @@ task buildopt, "build optimized":
   exec "rm -rf default*.prof* nimcache"
   exec "nimble --silent build -d:profileGen -d:release"
   echo "Gen stats"
-  exec "./related > /dev/null"
+  exec "cd .. && cp posts.json posts_orig.json"
+  exec "cd .. && python gen_fake_posts.py 60000"
+  exec "./related >/dev/null"
+  exec "cd .. && mv posts_orig.json posts.json"
   when defined(clang):
     when defined(macosx):
       exec "xcrun llvm-profdata merge default*.profraw --output default.profdata"
