@@ -77,16 +77,16 @@ static RelatedPosts[] GetRelatedPosts(List<Post> posts)
 
         //  custom priority queue to find top N
         int pv = 0;
-        while ((uint)pv < (uint)taggedPostVector.Length) 
+        while ((uint)pv < (uint)taggedPostVector.Length)
         {
-            while ((uint)pv < (uint)taggedPostVector.Length 
+            while ((uint)pv < (uint)taggedPostVector.Length
                 && Vector.LessThanOrEqualAll(taggedPostVector[pv], minTags))
                 pv++;
-                    
+
             if ((uint)pv < (uint)taggedPostVector.Length)
             {
-                Vector<byte> counts = Vector.Max(taggedPostVector[pv], minTags);
-                        
+                Vector<byte> counts = taggedPostVector[pv];
+
                 if (counts != minTags)
                 {
                     for (int k = 0; k < Vector<byte>.Count; k++)
@@ -94,21 +94,21 @@ static RelatedPosts[] GetRelatedPosts(List<Post> posts)
                         if (counts[k] > minTags[0])
                         {
                             int upperBound = topN - 2;
-                
+
                             while (upperBound >= 0 && counts[k] > top5[upperBound].Count)
                             {
                                 top5[upperBound + 1] = top5[upperBound];
                                 upperBound--;
                             }
-                
+
                             top5[upperBound + 1] = (counts[k], pv * Vector<byte>.Count + k);
-                
+
                             minTags = new Vector<byte>(top5[topN - 1].Count);
                         }
                     }
                 }
             }
-                
+
             pv++;
         }
 
