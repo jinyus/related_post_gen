@@ -100,7 +100,7 @@ run_cpp() {
     echo "Running C++" &&
         cd ./cpp &&
         if [ -z "$appendToFile" ]; then # only build on 5k run
-            g++ -std=c++11 -I./include -O3 main.cpp -o main
+            clang++ -std=c++11 -I./include -O3 main.cpp -o main
         fi &&
         if [ $HYPER == 1 ]; then
             capture "C++" hyperfine -r $runs -w $warmup --show-output "./main"
@@ -115,7 +115,7 @@ run_cpp_con() {
     echo "Running C++ Concurrent" &&
         cd ./cpp &&
         if [ -z "$appendToFile" ]; then # only build on 5k run
-            g++ -std=c++11 -pthread -I./include -O3 main_con.cpp -o main_con
+            clang++ -std=c++11 -pthread -I./include -O3 main_con.cpp -o main_con
         fi &&
         if [ $HYPER == 1 ]; then
             capture "C++ Concurrent" hyperfine -r $runs -w $warmup --show-output "./main_con"
