@@ -18,16 +18,33 @@ fi
 ## hardwired
 # chansize=16
 
-profdata="default.profdata"
-profraw="default.profraw"
-
 if [[ ${DANGER} = true ]]; then
     build_kind=danger
 else
     build_kind=release
 fi
 
+echo "Compiling profiled executable"
+rm -rf default*.prof* nimcache
 nim c -d:FixedChanSize=${chansize} \
       -d:ThreadPoolSize=${threads} \
+      -d:profileGen \
+      -d:${build_kind} \
+      related_con.nim
+
+echo "Generating profile"
+./build/related_con >/dev/null
+if [[ "$(cc --version 2>/dev/null | head -1)" = *"clang"* ]]; then
+    if [[ -n "$(which xcrun 2>/dev/null)" ]]; then
+        xcrun llvm-profdata merge default*.profraw --output default.profdata
+    else
+        llvm-profdata merge default*.profraw --output default.profdata
+    fi
+fi
+
+echo "Compiling optimized executable"
+nim c -d:FixedChanSize=${chansize} \
+      -d:ThreadPoolSize=${threads} \
+      -d:profileUse \
       -d:${build_kind} \
       related_con.nim
