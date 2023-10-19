@@ -23,8 +23,8 @@ when defined(profileUse):
   --passL:"-fprofile-use"
 
 when defined(release):
-  --passC:"-flto"
-  --passL:"-flto"
+  --passC:"-flto=auto"
+  --passL:"-flto=auto"
   when not defined(profileGen):
     --passL:"-s"
 else:
