@@ -33,7 +33,14 @@ nim c -d:FixedChanSize=${chansize} \
       related_con.nim
 
 echo "Generating profile"
+cd ..
+cp posts.json posts_orig.json
+python gen_fake_posts.py 60000
+cd nim_con
 ./build/related_con >/dev/null
+cd ..
+mv posts_orig.json posts.json
+cd nim_con
 if [[ "$(cc --version 2>/dev/null | head -1)" = *"clang"* ]]; then
     if [[ -n "$(which xcrun 2>/dev/null)" ]]; then
         xcrun llvm-profdata merge default*.profraw --output default.profdata
