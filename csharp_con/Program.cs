@@ -56,9 +56,10 @@ static RelatedPosts[] GetRelatedPosts(List<Post> posts)
 
     static RelatedPosts GetRelatedPosts(int i, FrozenDictionary<string, int[]> tagMap, List<Post> posts)
     {
-        Span<byte> taggedPostCount =
-            new byte[((posts.Count + Vector<byte>.Count - 1) / Vector<byte>.Count) * Vector<byte>.Count];
+        Span<byte> taggedPostCount = t_taggedPostCount ??
+            (t_taggedPostCount = new byte[((posts.Count + Vector<byte>.Count - 1) / Vector<byte>.Count) * Vector<byte>.Count]);
         Span<Vector<byte>> taggedPostVector = MemoryMarshal.Cast<byte, Vector<byte>>(taggedPostCount);
+        taggedPostCount.Fill(0);
 
         // Iterate over all of the tags for the current post.
         foreach (var tag in posts[i].Tags)
@@ -131,6 +132,11 @@ static RelatedPosts[] GetRelatedPosts(List<Post> posts)
     return allRelatedPosts;
 }
 
+partial class Program
+{
+    [ThreadStatic]
+    static byte[] t_taggedPostCount;
+}
 
 public record struct Post
 {
