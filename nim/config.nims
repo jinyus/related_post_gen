@@ -5,8 +5,8 @@ switch("passC", "-s -flto")
 switch("passL", "-s -flto")
 
 when defined(profileGen):
-  switch("cc", "clang")
   echo "Build with profileGen"
+  switch("cc", "clang")
   switch("passC", "-fprofile-instr-generate")
   switch("passL", "-fprofile-instr-generate")
 
