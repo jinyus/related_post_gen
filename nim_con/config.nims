@@ -9,10 +9,10 @@ const
 switch("nimcache", cacheSubdir)
 
 --cc:clang
+--mm:arc
 --outdir:build
---threads:on
---tlsEmulation:off
---warning:"Effect:off"
+--tlsEmulation:off # default on|off varies by platform
+--warning:"Effect:off" # suppress noisy compiler warnings re: malebolgia
 
 when defined(profileGen):
   --hints:off
