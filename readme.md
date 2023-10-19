@@ -64,9 +64,9 @@ docker run -e TEST_NAME=all -it --rm databench
 
 | Language       | Time (5k posts) | 20k posts | 60k posts | Total     |
 | -------------- | --------------- | --------- | --------- | --------- |
-| Julia HO | 8.00 ms | 52.33 ms | 142.00 ms | 202.33 ms |
-| D | 24.95 ms | 316.59 ms | 2.70 s | 3.04 s |
-| Rust | 23.48 ms | 340.42 ms | 3.03 s | 3.40 s |
+| _Julia HO_[^1]| 8.00 ms | 52.33 ms | 142.00 ms | 202.33 ms |
+| D | 24.95 ms | $\textsf{\color{lightgreen}316.59 ms}$ | $\textsf{\color{lightgreen}2.70 s}$ | 3.04 s |
+| Rust | $\textsf{\color{lightgreen}23.48 ms}$ | 340.42 ms | 3.03 s | 3.40 s |
 | C# (AOT) | 26.42 ms | 370.59 ms | 3.25 s | 3.64 s |
 | C# (JIT) | 27.14 ms | 373.85 ms | 3.26 s | 3.66 s |
 | Go | 24.38 ms | 373.79 ms | 3.27 s | 3.67 s |
@@ -91,17 +91,17 @@ docker run -e TEST_NAME=all -it --rm databench
 | Lua | 1.09 s | 16.76 s | 149.75 s | 167.60 s |
 | Python | 1.47 s | 23.50 s | 214.35 s | 239.32 s |
 | Erlang | 1.52 s | 24.39 s | 229.07 s | 254.98 s |
-| Numpy | 353.03 ms | 6.66 s | 1.7976931348623156e+305 s | 1.7976931348623156e+305 s |
-| Java (JIT) | 54.08 ms | 1.7976931348623156e+305 s | 1.7976931348623156e+305 s | Infinity s |
+| Numpy | 353.03 ms | 6.66 s | OOM | N/A |
+| Java (JIT) | 54.08 ms | OOM | OOM | N/A |
 
 ### Multicore Results
 
 | Language       | Time (5k posts) | 20k posts        | 60k posts        | Total     |
 | -------------- | --------------- | ---------------- | ---------------- | --------- |
-| D Concurrent | 13.09 ms | 122.86 ms | 969.66 ms | 1.11 s |
+| D Concurrent | 13.09 ms | $\textsf{\color{lightgreen}122.86 ms}$ | $\textsf{\color{lightgreen}969.66 ms}$ | 1.11 s |
 | C# Concurrent (JIT) | 23.23 ms | 161.49 ms | 1.29 s | 1.47 s |
 | C# Concurrent (AOT) | 16.67 ms | 169.15 ms | 1.41 s | 1.59 s |
-| Go Concurrent | 11.97 ms | 163.40 ms | 1.42 s | 1.60 s |
+| Go Concurrent | $\textsf{\color{lightgreen}11.97 ms}$ | 163.40 ms | 1.42 s | 1.60 s |
 | Rust Concurrent | 12.19 ms | 173.90 ms | 1.52 s | 1.70 s |
 | C++ Concurrent | 16.69 ms | 205.00 ms | 1.75 s | 1.97 s |
 | Julia Concurrent | 17.15 ms | 222.33 ms | 1.94 s | 2.18 s |
