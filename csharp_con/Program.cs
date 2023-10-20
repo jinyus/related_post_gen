@@ -56,9 +56,10 @@ static RelatedPosts[] GetRelatedPosts(List<Post> posts)
 
     static RelatedPosts GetRelatedPosts(int i, FrozenDictionary<string, int[]> tagMap, List<Post> posts)
     {
-        Span<byte> taggedPostCount =
-            new byte[((posts.Count + Vector<byte>.Count - 1) / Vector<byte>.Count) * Vector<byte>.Count];
+        Span<byte> taggedPostCount = t_taggedPostCount ??
+            (t_taggedPostCount = new byte[((posts.Count + Vector<byte>.Count - 1) / Vector<byte>.Count) * Vector<byte>.Count]);
         Span<Vector<byte>> taggedPostVector = MemoryMarshal.Cast<byte, Vector<byte>>(taggedPostCount);
+        taggedPostCount.Fill(0);
 
         // Iterate over all of the tags for the current post.
         foreach (var tag in posts[i].Tags)
@@ -77,16 +78,16 @@ static RelatedPosts[] GetRelatedPosts(List<Post> posts)
 
         //  custom priority queue to find top N
         int pv = 0;
-        while ((uint)pv < (uint)taggedPostVector.Length) 
+        while ((uint)pv < (uint)taggedPostVector.Length)
         {
-            while ((uint)pv < (uint)taggedPostVector.Length 
+            while ((uint)pv < (uint)taggedPostVector.Length
                 && Vector.LessThanOrEqualAll(taggedPostVector[pv], minTags))
                 pv++;
-                    
+
             if ((uint)pv < (uint)taggedPostVector.Length)
             {
-                Vector<byte> counts = Vector.Max(taggedPostVector[pv], minTags);
-                        
+                Vector<byte> counts = taggedPostVector[pv];
+
                 if (counts != minTags)
                 {
                     for (int k = 0; k < Vector<byte>.Count; k++)
@@ -94,21 +95,21 @@ static RelatedPosts[] GetRelatedPosts(List<Post> posts)
                         if (counts[k] > minTags[0])
                         {
                             int upperBound = topN - 2;
-                
+
                             while (upperBound >= 0 && counts[k] > top5[upperBound].Count)
                             {
                                 top5[upperBound + 1] = top5[upperBound];
                                 upperBound--;
                             }
-                
+
                             top5[upperBound + 1] = (counts[k], pv * Vector<byte>.Count + k);
-                
+
                             minTags = new Vector<byte>(top5[topN - 1].Count);
                         }
                     }
                 }
             }
-                
+
             pv++;
         }
 
@@ -131,6 +132,11 @@ static RelatedPosts[] GetRelatedPosts(List<Post> posts)
     return allRelatedPosts;
 }
 
+partial class Program
+{
+    [ThreadStatic]
+    static byte[] t_taggedPostCount;
+}
 
 public record struct Post
 {
