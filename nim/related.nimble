@@ -14,7 +14,7 @@ requires "nim >= 2.0.0"
 requires "jsony"
 requires "xxhash"
 
-const STAT_STEPS = 10
+const STAT_STEPS = 100
 
 task buildopt, "build optimized":
   exec "gcc --version | head -1"
