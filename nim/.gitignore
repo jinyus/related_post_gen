@@ -1,4 +1,4 @@
 build/
 nimcache/
 related
-default.prof*
+default*.prof*
