@@ -41,7 +41,6 @@ impl std::cmp::PartialOrd for PostCount {
 impl std::cmp::Ord for PostCount {
     #[inline]
     fn cmp(&self, other: &Self) -> std::cmp::Ordering {
-        // reverse order
-        other.count.cmp(&self.count)
+        self.count.cmp(&other.count)
     }
 }
