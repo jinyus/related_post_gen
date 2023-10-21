@@ -1,20 +1,19 @@
 [package]
-name = "rust_rayon"
+name = "rust"
 version = "0.1.0"
 edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+bumpalo = { version = "3.14.0", features = ["collections"] }
 mimalloc = "0.1.39"
-num_cpus = "1.16.0"
-rayon = "1.8.0"
 rustc_data_structures = "0.0.1"
 serde = { version = "1.0.189", features = ["derive"] }
 serde_json = "1.0.107"
 
 [profile.release]
-lto = true
+lto = "fat"
 codegen-units = 1
 panic = "abort"
 debug = false

@@ -141,7 +141,7 @@ run_rust() {
 
 run_rust_con() {
     echo "Running Rust Rayon" &&
-        cd ./rust_con &&
+        cd ./rust &&
         cargo build --release &&
         if [ $HYPER == 1 ]; then
             capture "Rust Concurrent" hyperfine -r $runs -w $warmup --show-output "./target/release/rust_rayon"
@@ -993,8 +993,6 @@ elif [ "$first_arg" = "clean" ]; then
         cd go_con && rm -f related_concurrent &&
         cd .. &&
         cd rust && cargo clean &&
-        cd .. &&
-        cd rust_con && cargo clean &&
         cd .. &&
         cd d && rm -f related &&
         cd .. &&
