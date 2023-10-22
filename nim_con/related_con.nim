@@ -63,13 +63,13 @@ func init(T: typedesc[TagMap], posts: seq[Post]): T =
       do:
         result[tag] = @[i]
 
-func init(T: typedesc[TaskGroups], threadCount, taskCount: int): T =
-  var groups = newSeqOfCap[TaskGroup](threadCount)
-  let step = taskCount div threadCount
-  for i in 0..<threadCount:
-    groups.add((first: step * i, last: step * (i + 1) - 1))
-    if i == threadCount - 1:
-      groups[i].last = groups[i].last + taskCount mod threadCount
+func init(T: typedesc[TaskGroups], taskCount, groupCount: int): T =
+  var groups = newSeqOfCap[TaskGroup](groupCount)
+  let width = taskCount div groupCount
+  for i in 0..<groupCount:
+    groups.add((first: width * i, last: width * (i + 1) - 1))
+    if i == groupCount - 1:
+      groups[i].last = groups[i].last + taskCount mod groupCount
   T(groups: groups, size: groups.len)
 
 {.push inline.}
@@ -131,7 +131,7 @@ proc main() =
     posts = input.readPosts
     t0 = getMonotime()
     threadCount = countProcessors()
-    groups = TaskGroups.init(threadCount, posts.len)
+    groups = TaskGroups.init(posts.len, threadCount)
     tagMap = TagMap.init(posts)
   var
     postsOut = newSeq[PostOut](posts.len)
