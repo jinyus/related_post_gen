@@ -1,5 +1,5 @@
-import std/[hashes, monotimes, times]
-import pkg/[jsony, malebolgia, xxhash]
+import std/[cpuinfo, hashes, monotimes, times]
+import pkg/[jsony, taskpools, xxhash]
 import ./related_con/fixedtable
 
 const N = 5
@@ -65,13 +65,13 @@ func init(T: typedesc[TagMap], posts: seq[Post]): T =
       do:
         result[tag] = @[i]
 
-func init(T: typedesc[TaskGroups], taskCount: int): T =
-  var groups = newSeqOfCap[TaskGroup](ThreadPoolSize)
-  let step = taskCount div ThreadPoolSize
-  for i in 0..<ThreadPoolSize:
+func init(T: typedesc[TaskGroups], threadCount, taskCount: int): T =
+  var groups = newSeqOfCap[TaskGroup](threadCount)
+  let step = taskCount div threadCount
+  for i in 0..<threadCount:
     groups.add((first: step * i, last: step * (i + 1) - 1))
-    if i == ThreadPoolSize - 1:
-      groups[i].last = groups[i].last + taskCount mod ThreadPoolSize
+    if i == threadCount - 1:
+      groups[i].last = groups[i].last + taskCount mod threadCount
   T(groups: groups, size: groups.len)
 
 {.push inline.}
@@ -82,8 +82,11 @@ proc tally(
     tagMap: ptr TagMap,
     index: PostIndex) =
   for tag in posts[index].tags:
-    for relIndex in tagMap[][tag]:
-      inc counts[relIndex]
+    try:
+      for relIndex in tagMap[][tag]:
+        inc counts[relIndex]
+    except KeyError as e:
+      raise (ref Defect)(msg: e.msg)
   counts[index] = 0 # remove self
 
 proc topN(
@@ -129,18 +132,19 @@ proc main() =
   let
     posts = input.readPosts
     t0 = getMonotime()
-    groups = TaskGroups.init(posts.len)
+    threadCount = countProcessors()
+    groups = TaskGroups.init(threadCount, posts.len)
     tagMap = TagMap.init(posts)
   var
-    m = createMaster()
     postsOut = newSeq[PostOut](posts.len)
-  # echo "threads: ", ThreadPoolSize, ", chanSize: ", FixedChanSize
-  m.awaitAll:
-    for i in 0..<groups.size:
-      m.spawn groups[i].process(addr posts, addr tagMap, addr postsOut)
+    tp = Taskpool.new(threadCount)
+  for i in 0..<groups.size:
+    tp.spawn groups[i].process(addr posts, addr tagMap, addr postsOut)
+  tp.syncAll
   let time = (getMonotime() - t0).inMicroseconds / 1000
   echo "Processing time (w/o IO): ", time, "ms"
   output.writeFile(postsOut.toJson)
+  tp.shutdown
 
 when isMainModule:
   main()

@@ -2,34 +2,17 @@
 
 set -eo pipefail
 
-nproc=${1}
-if [[ -z "${nproc}" ]]; then
-    nproc=4
-fi
-## hardwired
-# nproc=4
-
-threads=$((1 * ${nproc}))
-
-chansize=${2}
-if [[ -z "${chansize}" ]]; then
-    chansize=$((2 * ${threads}))
-fi
-## hardwired
-# chansize=16
-
 if [[ ${DANGER} = true ]]; then
     build_kind=danger
 else
     build_kind=release
 fi
 
-echo "Compiling profiled executable"
 rm -rf default*.prof* nimcache
-nim c -d:FixedChanSize=${chansize} \
-      -d:ThreadPoolSize=${threads} \
+
+echo "Compiling profiled executable"
+nim c -d:${build_kind} \
       -d:profileGen \
-      -d:${build_kind} \
       related_con.nim
 
 echo "Generating profile"
@@ -50,8 +33,6 @@ if [[ "$(cc --version 2>/dev/null | head -1)" = *"clang"* ]]; then
 fi
 
 echo "Compiling optimized executable"
-nim c -d:FixedChanSize=${chansize} \
-      -d:ThreadPoolSize=${threads} \
+nim c -d:${build_kind} \
       -d:profileUse \
-      -d:${build_kind} \
       related_con.nim

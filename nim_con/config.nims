@@ -11,7 +11,6 @@ switch("nimcache", cacheSubdir)
 --mm:arc
 --outdir:build
 --tlsEmulation:off # default on|off varies by platform
---warning:"Effect:off" # suppress noisy compiler warnings re: malebolgia
 
 when defined(profileGen):
   --hints:off
