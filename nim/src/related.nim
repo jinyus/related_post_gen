@@ -9,7 +9,7 @@ type
     title: string
     tags : seq[string]
 
-  RelatedPosts = object
+  RelatedPosts = ref object
     `"_id"`: string
     tags : seq[string]
     related : seq[Post]
