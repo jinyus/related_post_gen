@@ -47,7 +47,7 @@ func `==`(x, y: Tag): bool {.borrow.}
 func `[]`(groups: TaskGroups, i: int): TaskGroup =
   groups.groups[i]
 
-proc dumpHook(s: var string, v: ptr) {.used.} =
+proc dumpHook(s: var string, v: ptr) {.inline, used.} =
   if v == nil:
     s.add("null")
   else:
@@ -73,6 +73,8 @@ func init(T: typedesc[TaskGroups], taskCount: int): T =
     if i == ThreadPoolSize - 1:
       groups[i].last = groups[i].last + taskCount mod ThreadPoolSize
   T(groups: groups, size: groups.len)
+
+{.push inline.}
 
 proc tally(
     counts: var seq[RelCount],
@@ -117,6 +119,8 @@ proc process(
     postsOut[index].`"_id"` = posts[index].`"_id"`
     postsOut[index].tags = addr posts[index].tags
     counts.topN(posts, metas, postsOut[index].related)
+
+{.pop.}
 
 proc readPosts(path: string): seq[Post] =
   path.readFile.fromJson(seq[Post])
