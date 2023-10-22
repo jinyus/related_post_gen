@@ -8,10 +8,28 @@ else
     build_kind=release
 fi
 
+compiler="${1}"
+if [[ -z "${compiler}" ]]; then
+    if [[ $(uname) = Darwin ]]; then
+        compiler=clang
+    else
+        compiler=gcc
+    fi
+fi
+## hardwired
+# compiler=clang
+
+echo
+echo "\${compiler} = ${compiler}"
+echo "${compiler}" --version
+"${compiler}" --version
+echo
+
 rm -rf default*.prof* nimcache
 
 echo "Compiling profiled executable"
 nim c -d:${build_kind} \
+      --cc:"${compiler}" \
       -d:profileGen \
       related_con.nim
 
@@ -24,7 +42,7 @@ cd nim_con
 cd ..
 mv posts_orig.json posts.json
 cd nim_con
-if [[ "$(cc --version 2>/dev/null | head -1)" = *"clang"* ]]; then
+if [[ "${compiler}" = *"clang"* ]]; then
     if [[ -n "$(which xcrun 2>/dev/null)" ]]; then
         xcrun llvm-profdata merge default*.profraw --output default.profdata
     else
@@ -34,5 +52,6 @@ fi
 
 echo "Compiling optimized executable"
 nim c -d:${build_kind} \
+      --cc:"${compiler}" \
       -d:profileUse \
       related_con.nim
