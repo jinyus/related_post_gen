@@ -8,24 +8,22 @@ const
 
 switch("nimcache", cacheSubdir)
 
---cc:clang
 --mm:arc
 --outdir:build
 --tlsEmulation:off # default on|off varies by platform
---warning:"Effect:off" # suppress noisy compiler warnings re: malebolgia
 
 when defined(profileGen):
   --hints:off
-  --passC:"-fprofile-instr-generate"
-  --passL:"-fprofile-instr-generate"
+  --passC:"-fprofile-generate"
+  --passL:"-fprofile-generate"
 
 when defined(profileUse):
-  --passC:"-fprofile-instr-use"
-  --passL:"-fprofile-instr-use"
+  --passC:"-fprofile-use"
+  --passL:"-fprofile-use"
 
 when defined(release):
-  --passC:"-flto"
-  --passL:"-flto"
+  --passC:"-flto=auto"
+  --passL:"-flto=auto"
   when not defined(profileGen):
     --passL:"-s"
 else:
