@@ -969,7 +969,7 @@ elif [ "$first_arg" = "all" ]; then
         run_java_graal || echo -e "\n" &&
         run_java_graal_con || echo -e "\n" &&
         run_nim || echo -e "\n" &&
-        #run_nim_con || echo -e "\n" && #too slow, excluded for now
+        run_nim_con || echo -e "\n" &&
         run_fsharp || echo -e "\n" &&
         run_fsharp_con || echo -e "\n" &&
         run_fsharp_con_aot || echo -e "\n" &&
