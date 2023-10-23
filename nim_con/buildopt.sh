@@ -34,8 +34,8 @@ rm -rf default*.prof* nimcache
 echo
 echo "Compiling profiled executable"
 nim c -d:${build_kind} \
-      --cc:"${compiler}" \
       -d:profileGen \
+      --cc:"${compiler}" \
       related_con.nim
 
 echo
@@ -59,6 +59,6 @@ fi
 echo
 echo "Compiling optimized executable"
 nim c -d:${build_kind} \
-      --cc:"${compiler}" \
       -d:profileUse \
+      --cc:"${compiler}" \
       related_con.nim
