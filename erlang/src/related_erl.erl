@@ -49,9 +49,9 @@ collect_tags(Idx, [Tag | Rest], Acc) ->
     end.
 
 top5_related_idx(SelfIdx, #{tags := Tags}, TagsMap, Len) ->
-    Cnt = atomics:new(Len, []),
-    _ = [atomics:add(Cnt, Idx, 1) || Tag <- Tags, Idx <- map_get(Tag, TagsMap)],
-    atomics:put(Cnt, SelfIdx, 0),
+    Cnt = erts_internal:counters_new(Len),
+    _ = [erts_internal:counters_add(Cnt, Idx, 1) || Tag <- Tags, Idx <- map_get(Tag, TagsMap)],
+    erts_internal:counters_put(Cnt, SelfIdx, 0),
     top5(Len, Cnt).
 
 top5(N, Cnt) ->
@@ -60,7 +60,7 @@ top5(N, Cnt) ->
 top5(0, _, {Set, _}) ->
     lists:reverse([Idx || {_, Idx} <- Set]);
 top5(N, Cnt, {Set, Min} = Acc) ->
-    V = atomics:get(Cnt, N),
+    V = erts_internal:counters_get(Cnt, N),
     case V > Min of
         true ->
             Set1 = tl(ordsets:add_element({V,N}, Set)),
