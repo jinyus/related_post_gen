@@ -3,6 +3,7 @@ switch("cc", "gcc")
 switch("panics", "off")
 switch("passC", "-s -flto")
 switch("passL", "-s -flto")
+switch("overflowChecks", "off")
 
 when defined(profileGen):
   echo "Build with profileGen"
