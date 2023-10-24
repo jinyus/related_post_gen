@@ -2,6 +2,11 @@
 
 set -eo pipefail
 
+echo
+echo "origin: $(git remote get-url origin)"
+echo "branch: $(git rev-parse --abbrev-ref HEAD)"
+echo "commit: $(git rev-parse HEAD | cut -c1-7)"
+
 if [[ ${DANGER} = true ]]; then
     build_kind=danger
 else
@@ -20,13 +25,13 @@ fi
 # compiler=clang
 
 echo
-echo "\${compiler} = ${compiler}"
+echo "\$compiler=${compiler}"
 echo "${compiler}" --version
 "${compiler}" --version
-echo
 
 rm -rf nimcache
 
+echo
 nim c -d:${build_kind} \
       --cc:"${compiler}" \
       related_con.nim
