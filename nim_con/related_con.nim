@@ -125,19 +125,19 @@ proc main() =
   let
     posts = input.readPosts
     t0 = getMonotime()
+    tagMap = TagMap.init(posts)
     threadCount = countProcessors()
     groups = TaskGroups.init(posts.len, threadCount)
-    tagMap = TagMap.init(posts)
   var
+    pool = Taskpool.new(threadCount)
     postsOut = newSeq[PostOut](posts.len)
-    tp = Taskpool.new(threadCount)
   for i in 0..<groups.size:
-    tp.spawn groups[i].process(addr posts, addr tagMap, addr postsOut)
-  tp.syncAll
+    pool.spawn groups[i].process(addr posts, addr tagMap, addr postsOut)
+  pool.syncAll
   let time = (getMonotime() - t0).inMicroseconds / 1000
-  echo "Processing time (w/o IO): ", time, "ms"
+  pool.shutdown
   output.writePosts(postsOut)
-  tp.shutdown
+  echo "Processing time (w/o IO): ", time, "ms"
 
 when isMainModule:
   main()
