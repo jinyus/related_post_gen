@@ -78,7 +78,10 @@ int main()
     {
         for (const auto &tag : posts[i].tags)
         {
-            tagMap[tag].push_back(i);
+            auto it = tagMap.insert({tag, std::vector<int>{i}});
+            if (!it.second) {
+                it.first->second.push_back(i);
+            }
         }
     }
 
