@@ -64,10 +64,10 @@ docker run -e TEST_NAME=all -it --rm databench
 
 | Language       | Time (5k posts)                       | 20k posts                              | 60k posts                           | Total     |
 | -------------- | ------------------------------------- | -------------------------------------- | ----------------------------------- | --------- |
-| Julia HO | 8.00 ms | 51.67 ms | 134.33 ms | 194.00 ms |
-| D | 24.90 ms | 314.84 ms | 2.70 s | 3.04 s |
+| _Julia HO_[^1] | 8.00 ms | 51.67 ms | 134.33 ms | 194.00 ms |
+| D | 24.90 ms | $\textsf{\color{lightgreen}314.84 ms}$ | $\textsf{\color{lightgreen}2.70 s}$ | 3.04 s |
 | C++ | 24.85 ms | 339.00 ms | 2.92 s | 3.28 s |
-| Rust | 23.48 ms | 342.17 ms | 3.04 s | 3.40 s |
+| Rust | $\textsf{\color{lightgreen}23.48 ms}$ | 342.17 ms | 3.04 s | 3.40 s |
 | Nim | 24.96 ms | 349.57 ms | 3.06 s | 3.44 s |
 | C# (AOT) | 26.58 ms | 369.90 ms | 3.25 s | 3.65 s |
 | C# (JIT) | 27.07 ms | 374.41 ms | 3.26 s | 3.67 s |
@@ -91,16 +91,16 @@ docker run -e TEST_NAME=all -it --rm databench
 | Erlang | 885.68 ms | 14.45 s | 131.12 s | 146.46 s |
 | Lua | 1.09 s | 16.75 s | 149.97 s | 167.81 s |
 | Python | 1.46 s | 23.55 s | 217.83 s | 242.85 s |
-| Numpy | 351.82 ms | 6.83 s | 1.7976931348623156e+305 s | 1.7976931348623156e+305 s |
-| Java (JIT) | 53.77 ms | 1.7976931348623156e+305 s | 1.7976931348623156e+305 s | Infinity s |
+| Numpy | 351.82 ms | 6.83 s | OOM | N/A |
+| Java (JIT) | 53.77 ms | OOM | OOM | N/A |
 
 ### Multicore Results
 
 | Language       | Time (5k posts) | 20k posts        | 60k posts        | Total     |
 | -------------- | --------------- | ---------------- | ---------------- | --------- |
-| D Concurrent | 13.13 ms | 123.03 ms | 970.49 ms | 1.11 s |
-| C# Concurrent (JIT) | 13.76 ms | 122.50 ms | 1.01 s | 1.15 s |
-| C# Concurrent (AOT) | 10.84 ms | 135.60 ms | 1.13 s | 1.28 s |
+| D Concurrent | 13.13 ms | 123.03 ms | $\textsf{\color{lightgreen}970.49 ms}$ | 1.11 s |
+| C# Concurrent (JIT) | 13.76 ms | $\textsf{\color{lightgreen}122.50 ms}$ | 1.01 s | 1.15 s |
+| C# Concurrent (AOT) | $\textsf{\color{lightgreen}10.84 ms}$ | 135.60 ms | 1.13 s | 1.28 s |
 | Go Concurrent | 12.00 ms | 163.91 ms | 1.43 s | 1.60 s |
 | Rust Concurrent | 12.22 ms | 176.34 ms | 1.52 s | 1.71 s |
 | C++ Concurrent | 18.08 ms | 220.00 ms | 1.88 s | 2.12 s |
