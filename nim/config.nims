@@ -1,5 +1,4 @@
 switch("opt", "speed")
-switch("cc", "gcc")
 switch("panics", "off")
 switch("passC", "-s -flto")
 switch("passL", "-s -flto")
