@@ -1,5 +1,5 @@
 import std/[cpuinfo, hashes, monotimes, times]
-import pkg/[jsony, taskpools, xxhash]
+import pkg/[jsony, taskpools]
 import ./related_con/fixedtable
 
 const N: Positive = 5
@@ -21,7 +21,7 @@ type
 
   RelMeta = tuple[count: RelCount, index: PostIndex]
 
-  Tag = distinct string
+  Tag = string
 
   TagMap = Table[Tag, seq[PostIndex]]
 
@@ -37,11 +37,6 @@ const
   input = "../posts.json"
   output = "../related_posts_nim_con.json"
 
-func `$`(x: Tag): string =
-  x.string
-
-func `==`(x, y: Tag): bool {.borrow.}
-
 func `[]`(groups: TaskGroups, i: int): TaskGroup =
   groups.groups[i]
 
@@ -50,9 +45,6 @@ proc dumpHook(s: var string, v: ptr) {.inline, used.} =
     s.add("null")
   else:
     s.dumpHook(v[])
-
-func hash(x: Tag): Hash {.used.} =
-  cast[Hash](XXH3_64bits($x))
 
 func init(T: typedesc[TagMap], posts: seq[Post]): T =
   result = initTable[Tag, seq[PostIndex]](100)
