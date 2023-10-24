@@ -72,6 +72,12 @@ func init(T: typedesc[TaskGroups], taskCount, groupCount: int): T =
       groups[i].last = groups[i].last + taskCount mod groupCount
   T(groups: groups, size: groups.len)
 
+proc readPosts(path: string): seq[Post] =
+  path.readFile.fromJson(seq[Post])
+
+proc writePosts(path: string, posts: seq[PostOut]) =
+  path.writeFile(posts.toJson)
+
 {.push inline.}
 
 proc tally(
@@ -123,9 +129,6 @@ proc process(
 
 {.pop.}
 
-proc readPosts(path: string): seq[Post] =
-  path.readFile.fromJson(seq[Post])
-
 proc main() =
   let
     posts = input.readPosts
@@ -141,7 +144,7 @@ proc main() =
   tp.syncAll
   let time = (getMonotime() - t0).inMicroseconds / 1000
   echo "Processing time (w/o IO): ", time, "ms"
-  output.writeFile(postsOut.toJson)
+  output.writePosts(postsOut)
   tp.shutdown
 
 when isMainModule:
