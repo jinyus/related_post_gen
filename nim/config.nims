@@ -1,6 +1,5 @@
 switch("passC", "-s -flto")
 switch("passL", "-s -flto")
-switch("overflowChecks", "off")
 
 when defined(profileGen):
   echo "Build with profileGen"
@@ -13,4 +12,3 @@ when defined(profileUse):
   switch("cc", "clang")
   switch("passC", "-fprofile-instr-use")
   switch("passL", "-fprofile-instr-use")
-
