@@ -2,9 +2,7 @@ import std/[cpuinfo, hashes, monotimes, times]
 import pkg/[jsony, taskpools, xxhash]
 import ./related_con/fixedtable
 
-const N = 5
-when N < 1:
-  {.fatal: "N must be greater than zero!".}
+const N: Positive = 5
 
 type
   Post = object
