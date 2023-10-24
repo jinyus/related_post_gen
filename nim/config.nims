@@ -1,5 +1,3 @@
-switch("opt", "speed")
-switch("panics", "off")
 switch("passC", "-s -flto")
 switch("passL", "-s -flto")
 switch("overflowChecks", "off")
