@@ -1,5 +1,5 @@
-switch("passC", "-s -flto")
-switch("passL", "-s -flto")
+switch("passC", "-s -flto=auto")
+switch("passL", "-s -flto=auto")
 switch("threads", "off")
 
 when defined(profileGen):
