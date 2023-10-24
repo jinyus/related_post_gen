@@ -21,17 +21,13 @@ const
 func hash(x: string): Hash =
   cast[Hash](XXH3_64bits(x))
 
-func findTop5(posts: seq[Post], taggedPostCount: seq[uint8]): seq[Post] =
-  result = newSeq[Post](5)
-  var top5: array[5, tuple[idx: int, count: uint8]]
+func findTop5(posts: seq[Post], taggedPostCount: seq[uint8]): array[5, tuple[idx: int, count: uint8]] =
   for i, count in taggedPostCount:
-    if count > top5[4].count:
-      top5[4] = (idx: i, count: count)
+    if count > result[4].count:
+      result[4] = (idx: i, count: count)
       for pos in countdown(3, 0):
-        if count > top5[pos].count:
-          swap(top5[pos+1], top5[pos])
-  for i, t in top5:
-    result[i] = posts[t.idx]
+        if count > result[pos].count:
+          swap(result[pos+1], result[pos])
 
 func genTagMap(posts: seq[Post]): Table[string, seq[int]] =
   result = initTable[string, seq[int]](100)
@@ -63,8 +59,11 @@ proc process(posts: seq[Post]): seq[RelatedPosts] =
     let relatedPosts = RelatedPosts(
       `"_id"`: post.`"_id"`,
       tags: post.tags,
-      related: posts.findTop5(taggedPostCount)
+      related: newSeqOfCap[Post](5)
       )
+
+    for t in posts.findTop5(taggedPostCount):
+      relatedPosts.related.add posts[t.idx]
 
     allRelatedPosts[i] = relatedPosts
 
