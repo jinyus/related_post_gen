@@ -1,10 +1,8 @@
 import std/[cpuinfo, hashes, monotimes, times]
-import pkg/[jsony, taskpools, xxhash]
+import pkg/[jsony, taskpools]
 import ./related_con/fixedtable
 
-const N = 5
-when N < 1:
-  {.fatal: "N must be greater than zero!".}
+const N: Positive = 5
 
 type
   Post = object
@@ -23,7 +21,7 @@ type
 
   RelMeta = tuple[count: RelCount, index: PostIndex]
 
-  Tag = distinct string
+  Tag = string
 
   TagMap = Table[Tag, seq[PostIndex]]
 
@@ -39,11 +37,6 @@ const
   input = "../posts.json"
   output = "../related_posts_nim_con.json"
 
-func `$`(x: Tag): string =
-  x.string
-
-func `==`(x, y: Tag): bool {.borrow.}
-
 func `[]`(groups: TaskGroups, i: int): TaskGroup =
   groups.groups[i]
 
@@ -52,9 +45,6 @@ proc dumpHook(s: var string, v: ptr) {.inline, used.} =
     s.add("null")
   else:
     s.dumpHook(v[])
-
-func hash(x: Tag): Hash {.used.} =
-  cast[Hash](XXH3_64bits($x))
 
 func init(T: typedesc[TagMap], posts: seq[Post]): T =
   result = initTable[Tag, seq[PostIndex]](100)
@@ -65,14 +55,20 @@ func init(T: typedesc[TagMap], posts: seq[Post]): T =
       do:
         result[tag] = @[i]
 
-func init(T: typedesc[TaskGroups], threadCount, taskCount: int): T =
-  var groups = newSeqOfCap[TaskGroup](threadCount)
-  let step = taskCount div threadCount
-  for i in 0..<threadCount:
-    groups.add((first: step * i, last: step * (i + 1) - 1))
-    if i == threadCount - 1:
-      groups[i].last = groups[i].last + taskCount mod threadCount
+func init(T: typedesc[TaskGroups], taskCount, groupCount: int): T =
+  var groups = newSeqOfCap[TaskGroup](groupCount)
+  let width = taskCount div groupCount
+  for i in 0..<groupCount:
+    groups.add((first: width * i, last: width * (i + 1) - 1))
+    if i == groupCount - 1:
+      groups[i].last = groups[i].last + taskCount mod groupCount
   T(groups: groups, size: groups.len)
+
+proc readPosts(path: string): seq[Post] =
+  path.readFile.fromJson(seq[Post])
+
+proc writePosts(path: string, posts: seq[PostOut]) =
+  path.writeFile(posts.toJson)
 
 {.push inline.}
 
@@ -125,26 +121,23 @@ proc process(
 
 {.pop.}
 
-proc readPosts(path: string): seq[Post] =
-  path.readFile.fromJson(seq[Post])
-
 proc main() =
   let
     posts = input.readPosts
     t0 = getMonotime()
-    threadCount = countProcessors()
-    groups = TaskGroups.init(threadCount, posts.len)
     tagMap = TagMap.init(posts)
+    threadCount = countProcessors()
+    groups = TaskGroups.init(posts.len, threadCount)
   var
+    pool = Taskpool.new(threadCount)
     postsOut = newSeq[PostOut](posts.len)
-    tp = Taskpool.new(threadCount)
   for i in 0..<groups.size:
-    tp.spawn groups[i].process(addr posts, addr tagMap, addr postsOut)
-  tp.syncAll
+    pool.spawn groups[i].process(addr posts, addr tagMap, addr postsOut)
+  pool.syncAll
   let time = (getMonotime() - t0).inMicroseconds / 1000
+  pool.shutdown
+  output.writePosts(postsOut)
   echo "Processing time (w/o IO): ", time, "ms"
-  output.writeFile(postsOut.toJson)
-  tp.shutdown
 
 when isMainModule:
   main()

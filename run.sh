@@ -489,7 +489,7 @@ run_nim_con() {
         cd ./nim_con &&
         if [ -z "$appendToFile" ]; then # only build on 5k run
             nimble -y install -d &&
-                ./build.sh
+                ./build.sh clang
         fi &&
         if [ $HYPER == 1 ]; then
             capture "Nim Concurrent" hyperfine -r $runs -w $warmup --show-output "./build/related_con"
