@@ -1,3 +1,4 @@
+switch("mm", "arc")
 switch("passC", "-s -flto=auto")
 switch("passL", "-s -flto=auto")
 switch("threads", "off")
