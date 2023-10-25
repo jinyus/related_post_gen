@@ -21,13 +21,13 @@ echo "Run Benchmark (5k posts)" &&
     echo "Generate $RUN2 posts" &&
     python gen_fake_posts.py "$RUN2" &&
     #
-    echo "Run Benchmark (15k posts)" &&
+    echo "Run Benchmark ($RUN2 posts)" &&
     ./run.sh "$TEST_NAME" raw_results.md append &&
     #
     echo "Generate $RUN3 posts" &&
     python gen_fake_posts.py "$RUN3" &&
     #
-    echo "Run Benchmark (30k posts)" &&
+    echo "Run Benchmark ($RUN3 posts)" &&
     ./run.sh "$TEST_NAME" raw_results.md append &&
     #
     dart extract_results.dart raw_results.md verbose &&
