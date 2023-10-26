@@ -732,6 +732,18 @@ run_clojure() {
     check_output "related_posts_clj.json"
 }
 
+run_ruby() {
+    echo "Running ruby" &&
+        cd ./ruby &&
+        if [ $HYPER == 1 ]; then
+            capture "Ruby" hyperfine -r $runs -w $warmup --show-output "ruby related.rb"
+        else
+            command ${time} -f '%es %Mk' java $VM_OPTIONS ruby related.rb
+        fi
+
+    check_output "related_posts_clj.json"
+}
+
 check_output() {
     cd ..
 
