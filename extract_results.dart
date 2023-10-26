@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:math';
 
 // script to extract benchmark results and update readme.md
 
@@ -148,6 +149,8 @@ class Score {
   String avgTimeString() {
     final avg = avgTimeMS();
 
+    if (avg >= double.maxFinite) return 'OOM';
+
     if (avg < 1000) return avgTimeMS().toStringAsFixed(2) + ' ms';
 
     return (avg / 1000).toStringAsFixed(2) + ' s';
@@ -163,12 +166,19 @@ class Score {
   }
 }
 
+// var min5k = double.maxFinite;
+// var min20k = double.maxFinite;
+// var min60k = double.maxFinite;
+
 extension on List<Score> {
   String toRowString() {
-    return '| ${first.name} | ${first.avgTimeString()} | ${this[1].avgTimeString()} | ${this[2].avgTimeString()} | ${this.totalString} |';
+    final name = first.name == "Julia HO" ? "_Julia HO_[^1]" : first.name;
+    return '| ${name} | ${first.avgTimeString()} | ${this[1].avgTimeString()} | ${this[2].avgTimeString()} | ${this.totalString} |';
   }
 
   String get totalString {
+    if (this[2].avgTimeString() == 'OOM') return 'N/A';
+
     final sum = fold(0.0, (total, sc) => sc.avgTimeMS() + total);
 
     if (sum < 1000) return sum.toStringAsFixed(2) + ' ms';
