@@ -738,10 +738,10 @@ run_ruby() {
         if [ $HYPER == 1 ]; then
             capture "Ruby" hyperfine -r $runs -w $warmup --show-output "ruby related.rb"
         else
-            command ${time} -f '%es %Mk' java $VM_OPTIONS ruby related.rb
+            command ${time} -f '%es %Mk' ruby related.rb
         fi
 
-    check_output "related_posts_clj.json"
+    check_output "related_posts_ruby.json"
 }
 
 check_output() {
