@@ -1,5 +1,7 @@
 -module(related_erl).
 -mode(compile).
+-compile(inline).
+-compile({inline_size,100}).
 
 %% API exports
 -export([main/1]).
@@ -12,6 +14,7 @@
 %% API functions
 %%====================================================================
 main(_) ->
+    erlang:process_flag(priority, max),
     {ok, BData} = file:read_file(?IN_JSON),
     Posts0 = jsone:decode(BData, [{keys, atom}]),
 
