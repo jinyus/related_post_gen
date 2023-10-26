@@ -948,6 +948,10 @@ elif [ "$first_arg" = "clj" ]; then
 
     run_clojure
 
+elif [ "$first_arg" = "ruby" ]; then
+
+    run_ruby
+
 elif [ "$first_arg" = "all" ]; then
 
     echo -e "Running all\n" &&
@@ -994,6 +998,7 @@ elif [ "$first_arg" = "all" ]; then
         run_lua || echo -e "\n" &&
         run_ocaml || echo -e "\n" &&
         run_erlang || echo -e "\n" &&
+        run_ruby || echo -e "\n" &&
         echo -e "Finished running all\n"
 
 elif [ "$first_arg" = "clean" ]; then
