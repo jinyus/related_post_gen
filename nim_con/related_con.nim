@@ -1,6 +1,5 @@
-import std/[cpuinfo, hashes, monotimes, times]
+import std/[cpuinfo, monotimes, tables, times]
 import pkg/[jsony, taskpools]
-import ./related_con/fixedtable
 
 const N: Positive = 5
 
