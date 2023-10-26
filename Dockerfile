@@ -81,6 +81,8 @@ ENV PATH="$PATH:/home/builduser/julia-1.9.3/bin"
 # install lein for clojure and stack for haskell
 RUN pacman -S --noconfirm --needed leiningen stack
 
+RUN pacman -S --noconfirm --needed ruby
+
 # use global versions
 RUN rm /home/builduser/swift-5.9-RELEASE-ubuntu22.04/usr/bin/clang
 RUN rm /home/builduser/swift-5.9-RELEASE-ubuntu22.04/usr/bin/llvm*
