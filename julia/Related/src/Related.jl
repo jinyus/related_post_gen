@@ -4,6 +4,7 @@ using JSON3
 using StructTypes
 using Dates
 using PrecompileTools
+using StaticArrays
 
 const topn = 5
 
@@ -18,39 +19,52 @@ end
 struct RelatedPost
     _id::String
     tags::Vector{Symbol}
-    related::NTuple{topn, PostData}
+    related::SVector{topn, PostData}
 end
 
 StructTypes.StructType(::Type{PostData}) = StructTypes.Struct()
 
-function maxindex!(xs::Vector, maxs)
-    # each element is a pair idx => val
-    maxs .= (1 => 0)
-    top = maxs[1][2]
+function fastmaxindex!(xs::Vector, topn, maxn, maxv)
+    maxn .= 1
+    maxv .= 0
+    top = maxv[1]
     for (i, x) in enumerate(xs)
         if x > top
-            maxs[1] = (i => x)
+            maxv[1] = x
+            maxn[1] = i
             for j in 2:topn
-                if maxs[j-1][2] > maxs[j][2]
-                    maxs[j-1], maxs[j] = maxs[j], maxs[j-1]
+                if maxv[j-1] > maxv[j]
+                    maxv[j-1], maxv[j] = maxv[j], maxv[j-1]
+                    maxn[j-1], maxn[j] = maxn[j], maxn[j-1]
                 end
             end
-            top = maxs[1][2]
+            top = maxv[1]
         end
     end
-    maxs
+
+    reverse!(maxn)
+
+    return maxn
 end
 
-function related!(posts, tagmap, relatedposts, taggedpostcount, maxs)
+function related(posts)
+    T = UInt32
+    topn = 5
     # key is every possible "tag" used in all posts
     # value is indicies of all "post"s that used this tag
-
+    tagmap = Dict{Symbol,Vector{T}}()
     for (idx, post) in enumerate(posts)
         for tag in post.tags
-            tags = get!(() -> sizehint!(Int32[], 1_000), tagmap, tag)
+            tags = get!(() -> T[], tagmap, tag)
             push!(tags, idx)
         end
     end
+
+    relatedposts = Vector{RelatedPost}(undef, length(posts))
+    taggedpostcount = Vector{T}(undef, length(posts))
+
+    maxn = MVector{topn, T}(undef)
+    maxv = MVector{topn, T}(undef)
 
     for (i, post) in enumerate(posts)
         taggedpostcount .= 0
@@ -59,15 +73,17 @@ function related!(posts, tagmap, relatedposts, taggedpostcount, maxs)
         # give all related post +1 in `taggedpostcount` shadow vector
         for tag in post.tags
             for idx in tagmap[tag]
-                taggedpostcount[idx] += one(Int32)
+                taggedpostcount[idx] += one(T)
             end
         end
 
         # don't self count
         taggedpostcount[i] = 0
-        maxs = maxindex!(taggedpostcount, maxs)
-        
-        relatedposts[i] = RelatedPost(post._id, post.tags, ntuple(i -> posts[maxs[topn+1-i][1]], topn))
+
+        fastmaxindex!(taggedpostcount, topn, maxn, maxv)
+
+        relatedpost = RelatedPost(post._id, post.tags, SVector{topn}(@view posts[maxn]))
+        relatedposts[i] = relatedpost
     end
 
     return relatedposts
@@ -78,13 +94,7 @@ function main()
     posts = JSON3.read(json_string, Vector{PostData})
     
     start = now()       
-
-    tagmap=Dict{Symbol, Vector{Int32}}()
-    relatedposts=Vector{RelatedPost}(undef, length(posts))
-    taggedpostcount = Vector{Int32}(undef, length(posts))
-    maxs=Vector{Pair{Int, Int32}}(undef, topn)
-
-    all_related_posts = related!(posts, tagmap, relatedposts, taggedpostcount, maxs)
+    all_related_posts = related(posts)
     println("Processing time (w/o IO): $(now() - start)")
 
     open(@__DIR__()*"/../../../related_posts_julia.json", "w") do f
