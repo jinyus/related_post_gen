@@ -91,9 +91,10 @@ docker run -e TEST_NAME=all -it --rm databench
 | Erlang | 887.40 ms | 14.74 s | 132.22 s | 147.85 s |
 | Lua | 1.10 s | 16.84 s | 149.95 s | 167.89 s |
 | Python | 1.47 s | 23.52 s | 212.98 s | 237.97 s |
+| Ruby | 3.07 s | 47.94 s | 440.81 s | 491.82 s |
 | Numpy | 352.42 ms | 6.84 s | OOM | N/A |
 | Java (JIT) | 53.46 ms | OOM | OOM | N/A |
-| Ruby | OOM | OOM | OOM | N/A |
+
 
 ### Multicore Results
 
