@@ -779,7 +779,23 @@ Erlang:
 	 
 Ruby:
 
-	Benchmark 1: ruby related.rb
+        Benchmark 1: ruby related.rb
+        Processing time (w/o IO): 3007ms
+        Processing time (w/o IO): 3139ms
+        Processing time (w/o IO): 3025ms
+        Processing time (w/o IO): 3040ms
+        Processing time (w/o IO): 3018ms
+        Processing time (w/o IO): 3178ms
+        Processing time (w/o IO): 3006ms
+        Processing time (w/o IO): 3117ms
+        Processing time (w/o IO): 3175ms
+        Processing time (w/o IO): 3096ms
+        Processing time (w/o IO): 3005ms
+        Processing time (w/o IO): 3055ms
+        Processing time (w/o IO): 3043ms
+          Time (mean ± σ):      3.188 s ±  0.065 s    [User: 3.163 s, System: 0.024 s]
+          Range (min … max):    3.120 s …  3.293 s    10 runs
+	  
 Go:
 
 	Benchmark 1: ./related
@@ -1141,7 +1157,13 @@ Erlang:
 	 
 Ruby:
 
-	Benchmark 1: ruby related.rb
+        Benchmark 1: ruby related.rb
+        Processing time (w/o IO): 47681ms
+        Processing time (w/o IO): 48392ms
+        Processing time (w/o IO): 47741ms
+          Time (mean ± σ):     48.356 s ±  0.457 s    [User: 48.268 s, System: 0.082 s]
+          Range (min … max):   48.033 s … 48.679 s    2 runs
+
 Go:
 
 	Benchmark 1: ./related
@@ -1497,4 +1519,10 @@ Erlang:
 	 
 Ruby:
 
-	Benchmark 1: ruby related.rb
+        Benchmark 1: ruby related.rb
+        Processing time (w/o IO): 434895ms
+        Processing time (w/o IO): 430766ms
+        Processing time (w/o IO): 456764ms
+          Time (mean ± σ):     444.566 s ± 18.382 s    [User: 444.383 s, System: 0.143 s]
+          Range (min … max):   431.568 s … 457.564 s    2 runs
+
