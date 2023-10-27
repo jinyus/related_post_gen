@@ -4,6 +4,7 @@ const Post = struct { _id: []const u8, title: []const u8, tags: [][]const u8 };
 const Posts = []Post;
 const TopPosts = struct { _id: *const []const u8, tags: *const [][]const u8, related: []*Post };
 const stdout = std.io.getStdOut().writer();
+const fxhash = @import("fxhash.zig");
 
 inline fn top5(related: []*Post, score: []u8, ps: []Post) void {
     var top_5 = [5]u8{ 0, 0, 0, 0, 0 };
@@ -37,7 +38,7 @@ pub fn main() !void {
     const start = try std.time.Instant.now();
 
     const ArrPosts = std.ArrayList(u32);
-    var map = std.StringHashMap(ArrPosts).init(allocator);
+    var map = fxhash.StringHashMap(ArrPosts).init(allocator);
     defer map.deinit();
 
     for (parsed.value, 0..) |post_ele, i| {
