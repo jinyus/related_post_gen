@@ -3,7 +3,6 @@ module Related
 using JSON3
 using StructTypes
 using Dates
-using PrecompileTools
 using StaticArrays
 
 const topn = 5
@@ -13,12 +12,12 @@ export main
 struct PostData
     _id::String
     title::String
-    tags::Vector{Symbol}
+    tags::Vector{String}
 end
 
 struct RelatedPost
     _id::String
-    tags::Vector{Symbol}
+    tags::Vector{String}
     related::SVector{topn, PostData}
 end
 
@@ -58,7 +57,7 @@ function related(::Type{T}, posts) where {T}
     topn = 5
     # key is every possible "tag" used in all posts
     # value is indicies of all "post"s that used this tag
-    tagmap = Dict{Symbol,Vector{T}}()
+    tagmap = Dict{String,Vector{T}}()
     for (idx, post) in enumerate(posts)
         for tag in post.tags
             tags = get!(() -> T[], tagmap, tag)
@@ -98,6 +97,8 @@ end
 function main()
     json_string = read(@__DIR__()*"/../../../posts.json", String)
     posts = JSON3.read(json_string, Vector{PostData})
+    fake_posts = fill(posts[1], length(posts))
+    related(fake_posts) #warmup
 
     start = now()
     all_related_posts = related(posts)
@@ -106,12 +107,6 @@ function main()
     open(@__DIR__()*"/../../../related_posts_julia.json", "w") do f
         JSON3.write(f, all_related_posts)
     end
-end
-
-
-@compile_workload begin
-    print("Precompiling main workload: ")
-    main()
 end
 
 
