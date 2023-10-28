@@ -20,7 +20,7 @@ end
 
 StructTypes.StructType(::Type{PostData}) = StructTypes.Struct()
 
-function fastmaxindex!(xs::Vector, topn, maxv)
+function fastmaxindex!(xs::Vector, maxn, maxv)
     maxn .= 1
     maxv .= 0
     top = maxv[1]
