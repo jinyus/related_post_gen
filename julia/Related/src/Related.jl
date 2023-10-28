@@ -2,9 +2,9 @@ module Related
 
 using JSON3, StructTypes, Dates, StaticArrays
 
-const topn = 5
-
 export main
+
+const topn = 5
 
 struct PostData
     _id::String
