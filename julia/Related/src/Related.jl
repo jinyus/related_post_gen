@@ -1,9 +1,6 @@
 module Related
 
-using JSON3
-using StructTypes
-using Dates
-using StaticArrays
+using JSON3, StructTypes, Dates, StaticArrays
 
 const topn = 5
 
