@@ -48,7 +48,13 @@ function fastmaxindex!(xs::Vector, topn, maxn, maxv)
 end
 
 function related(posts)
-    T = UInt32
+    for T in (UInt8, UInt16, UInt32, UInt64)
+        if length(posts) < typemax(T)
+            return related(T, posts)
+        end
+    end
+end
+function related(::Type{T}, posts) where {T}
     topn = 5
     # key is every possible "tag" used in all posts
     # value is indicies of all "post"s that used this tag
@@ -92,8 +98,8 @@ end
 function main()
     json_string = read(@__DIR__()*"/../../../posts.json", String)
     posts = JSON3.read(json_string, Vector{PostData})
-    
-    start = now()       
+
+    start = now()
     all_related_posts = related(posts)
     println("Processing time (w/o IO): $(now() - start)")
 
