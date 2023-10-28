@@ -29,8 +29,7 @@ function fastmaxindex!(xs::Vector, topn, maxn, maxv)
     top = maxv[1]
     for (i, x) in enumerate(xs)
         if x > top
-            maxv[1] = x
-            maxn[1] = i
+            maxn[1], maxv[1] = i, x
             for j in 2:topn
                 if maxv[j-1] > maxv[j]
                     maxv[j-1], maxv[j] = maxv[j], maxv[j-1]
@@ -47,11 +46,9 @@ function fastmaxindex!(xs::Vector, topn, maxn, maxv)
 end
 
 function related(posts)
-    for T in (UInt8, UInt16, UInt32, UInt64)
-        if length(posts) < typemax(T)
-            return related(T, posts)
-        end
-    end
+    Ts = (UInt8, UInt16, UInt32, UInt64)
+    i = findfirst(T -> length(posts) < typemax(T), Ts)
+    return related(Ts[i], posts)
 end
 function related(::Type{T}, posts) where {T}
     topn = 5
@@ -108,6 +105,5 @@ function main()
         JSON3.write(f, all_related_posts)
     end
 end
-
 
 end # module Related
