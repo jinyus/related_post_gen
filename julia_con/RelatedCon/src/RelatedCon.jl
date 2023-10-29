@@ -1,6 +1,3 @@
-module RelatedCon
-
-using JSON3, StructTypes, Dates, StaticArrays, ChunkSplitters
 using Base.Threads: @threads, nthreads
 
 export main
@@ -21,9 +18,9 @@ end
 
 StructTypes.StructType(::Type{PostData}) = StructTypes.Struct()
 
-function fastmaxindex!(xs::Vector, topn, maxn, maxv)
-    maxn .= 1
-    maxv .= 0
+function fastmaxindex!(xs::Vector{T}, topn, maxn, maxv) where {T}
+    maxn .= one(T)
+    maxv .= zero(T)
     top = maxv[1]
     for (i, x) in enumerate(xs)
         if x > top
@@ -68,7 +65,7 @@ function related(::Type{T}, posts) where {T}
         for i in postsrange
             post = posts[i]
 
-            taggedpostcount .= 0
+            taggedpostcount .= zero(T)
             # for each post (`i`-th)
             # and every tag used in the `i`-th post
             # give all related post +1 in `taggedpostcount` shadow vector
@@ -79,7 +76,7 @@ function related(::Type{T}, posts) where {T}
             end
 
             # don't self count
-            taggedpostcount[i] = 0
+            taggedpostcount[i] = zero(T)
 
             fastmaxindex!(taggedpostcount, topn, maxn, maxv)
 
