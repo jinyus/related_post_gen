@@ -101,7 +101,7 @@ function main()
     all_related_posts = related(posts)
     println("Processing time (w/o IO): $(now() - start)")
 
-    open(@__DIR__()*"/../../../related_posts_julia.json", "w") do f
+    open(@__DIR__()*"/../../../related_posts_julia_con.json", "w") do f
         JSON3.write(f, all_related_posts)
     end
 end
