@@ -36,6 +36,9 @@ const
   input = "../posts.json"
   output = "../related_posts_nim_con.json"
 
+func `[]`(t: TagMap, key: Tag): lent seq[PostIndex] =
+  tables.`[]`(t.addr[], key)
+
 func `[]`(groups: TaskGroups, i: int): TaskGroup =
   groups.groups[i]
 
