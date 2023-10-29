@@ -61,7 +61,7 @@ function related(posts)
     maxv = MVector{topn,T}(undef)
 
     for (i, post) in enumerate(posts)
-        taggedpostcount .= zero(UInt32)
+        taggedpostcount .= zero(T)
         # for each post (`i`-th)
         # and every tag used in the `i`-th post
         # give all related post +1 in `taggedpostcount` shadow vector
