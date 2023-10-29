@@ -20,9 +20,9 @@ end
 
 StructTypes.StructType(::Type{PostData}) = StructTypes.Struct()
 
-function fastmaxindex!(xs::Vector, topn, maxn, maxv)
-    maxn .= 1
-    maxv .= 0
+function fastmaxindex!(xs::Vector{T}, topn, maxn, maxv) where {T}
+    maxn .= one(T)
+    maxv .= zero(T)
     top = maxv[1]
     for (i, x) in enumerate(xs)
         if x > top
@@ -36,10 +36,8 @@ function fastmaxindex!(xs::Vector, topn, maxn, maxv)
             top = maxv[1]
         end
     end
-
     reverse!(maxn)
-
-    return maxn
+    return 
 end
 
 function related(posts)
@@ -62,11 +60,11 @@ function related(::Type{T}, posts) where {T}
     relatedposts = Vector{RelatedPost}(undef, length(posts))
     taggedpostcount = Vector{T}(undef, length(posts))
 
-    maxn = MVector{topn, T}(undef)
-    maxv = MVector{topn, T}(undef)
+    maxn = MVector{topn,T}(undef)
+    maxv = MVector{topn,T}(undef)
 
     for (i, post) in enumerate(posts)
-        taggedpostcount .= 0
+        taggedpostcount .= zero(T)
         # for each post (`i`-th)
         # and every tag used in the `i`-th post
         # give all related post +1 in `taggedpostcount` shadow vector
@@ -77,7 +75,7 @@ function related(::Type{T}, posts) where {T}
         end
 
         # don't self count
-        taggedpostcount[i] = 0
+        taggedpostcount[i] = zero(T)
 
         fastmaxindex!(taggedpostcount, topn, maxn, maxv)
 
