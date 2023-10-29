@@ -20,9 +20,9 @@ struct RelatedPost
 end
 
 
-function fastmaxindex!(xs::Vector{T}, topn, maxn, maxv) where {T}
-    maxn .= one(T)
-    maxv .= zero(T)
+function fastmaxindex!(xs::Vector, topn, maxn, maxv)
+    maxn .= 1
+    maxv .= zero(UInt32)
     top = maxv[1]
     for (i, x) in enumerate(xs)
         if x > top
@@ -41,19 +41,12 @@ function fastmaxindex!(xs::Vector{T}, topn, maxn, maxv) where {T}
 end
 
 function related(posts)
-    for T in (UInt8, UInt16, UInt32, UInt64)
-        if length(posts) < typemax(T)
-            return related(T, posts)
-        end
-    end
-end
-function related(::Type{T}, posts) where {T}
     # key is every possible "tag" used in all posts
     # value is indicies of all "post"s that used this tag
-    tagmap = Dict{String,Vector{T}}()
+    tagmap = Dict{String,Vector{UInt32}}()
     for (idx, post) in enumerate(posts)
         for tag in post.tags
-            tags = get!(() -> T[], tagmap, tag)
+            tags = get!(() -> UInt32[], tagmap, tag)
             push!(tags, idx)
         end
     end
@@ -62,24 +55,24 @@ function related(::Type{T}, posts) where {T}
 
     @threads for (postsrange, _) in chunks(posts, nthreads())
         topn = 5
-        maxn = MVector{topn,T}(undef)
-        maxv = MVector{topn,T}(undef)
-        taggedpostcount = Vector{T}(undef, length(posts))
+        maxn = MVector{topn,Int}(undef)
+        maxv = MVector{topn,UInt32}(undef)
+        taggedpostcount = Vector{UInt32}(undef, length(posts))
 
         for i in postsrange
             post = posts[i]
 
-            taggedpostcount .= zero(T)
+            taggedpostcount .= zero(UInt32)
             # for each post (`i`-th)
             # and every tag used in the `i`-th post
             # give all related post +1 in `taggedpostcount` shadow vector
             for tag in post.tags
                 for idx in tagmap[tag]
-                    taggedpostcount[idx] += one(T)
+                    taggedpostcount[idx] += one(UInt32)
                 end
             end
             # don't self count
-            taggedpostcount[i] = zero(T)
+            taggedpostcount[i] = zero(UInt32)
 
             fastmaxindex!(taggedpostcount, topn, maxn, maxv)
 
@@ -93,8 +86,7 @@ end
 function main()
     json_string = read(@__DIR__()*"/../../../posts.json", String)
     posts = JSON3.read(json_string, Vector{PostData})
-    fake_posts = fill(posts[1], length(posts))
-    related(fake_posts) #warmup
+    related(posts[1:2]) #warmup
 
     start = now()
     all_related_posts = related(posts)
