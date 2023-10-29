@@ -259,9 +259,11 @@ run_julia() {
         cd ./julia &&
         julia -e 'using Pkg; Pkg.activate("Related"); Pkg.instantiate()' &&
         if [ $HYPER == 1 ]; then
-            capture "Julia" hyperfine -r $runs -w $warmup --show-output "julia --startup-file=no --project=Related -e \"using Related; main()\""
+
+            capture "Julia" hyperfine -r $runs -w $warmup --show-output "julia -O3 --project=Related -e \"using Related; main()\""
         else
-            command ${time} -f '%es %Mk' julia --startup-file=no --project=Related -e "using Related; main()"
+            command ${time} -f '%es %Mk' julia -O3 --project=Related -e "using Related; main()"
+
         fi
 
     check_output "related_posts_julia.json"
