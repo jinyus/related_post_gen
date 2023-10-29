@@ -41,11 +41,9 @@ function fastmaxindex!(xs::Vector{T}, topn, maxn, maxv) where {T}
 end
 
 function related(posts)
-    for T in (UInt8, UInt16, UInt32, UInt64)
-        if length(posts) < typemax(T)
-            return related(T, posts)
-        end
-    end
+    Ts = (UInt8, UInt16, UInt32, UInt64)
+    i = findfirst(T -> length(posts) < typemax(T), Ts)
+    return related(Ts[i], posts)
 end
 function related(::Type{T}, posts) where {T}
     topn = 5
