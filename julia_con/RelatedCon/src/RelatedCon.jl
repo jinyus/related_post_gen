@@ -1,6 +1,6 @@
 module RelatedCon
 
-using JSON3, StructTypes, Dates, StaticArrays, ChunkSplitters
+using JSON3, Dates, StaticArrays, ChunkSplitters
 using Base.Threads: @threads, nthreads
 
 export main
@@ -19,23 +19,24 @@ struct RelatedPost
     related::SVector{topn, PostData}
 end
 
-StructTypes.StructType(::Type{PostData}) = StructTypes.Struct()
 
-function fastmaxindex!(xs::Vector{T}, topn, maxs) where {T}
-    # each element is a pair idx => val
-    maxs .= (1 => zero(T))
-    top = maxs[1][2]
+function fastmaxindex!(xs::Vector{T}, topn, maxn, maxv) where {T}
+    maxn .= one(T)
+    maxv .= zero(T)
+    top = maxv[1]
     for (i, x) in enumerate(xs)
         if x > top
-            maxs[1] = (i => x)
+            maxn[1], maxv[1] = i, x
             for j in 2:topn
-                if maxs[j-1][2] > maxs[j][2]
-                    maxs[j-1], maxs[j] = maxs[j], maxs[j-1]
+                if maxv[j-1] > maxv[j]
+                    maxv[j-1], maxv[j] = maxv[j], maxv[j-1]
+                    maxn[j-1], maxn[j] = maxn[j], maxn[j-1]
                 end
             end
-            top = maxs[1][2]
+            top = maxv[1]
         end
     end
+    reverse!(maxn)
     return
 end
 
@@ -61,7 +62,8 @@ function related(::Type{T}, posts) where {T}
 
     @threads for (postsrange, _) in chunks(posts, nthreads())
         topn = 5
-        maxs = MVector{topn, Pair{Int, T}}(undef)
+        maxn = MVector{topn,T}(undef)
+        maxv = MVector{topn,T}(undef)
         taggedpostcount = Vector{T}(undef, length(posts))
 
         for i in postsrange
@@ -76,17 +78,15 @@ function related(::Type{T}, posts) where {T}
                     taggedpostcount[idx] += one(T)
                 end
             end
-
             # don't self count
             taggedpostcount[i] = zero(T)
 
-            fastmaxindex!(taggedpostcount, topn, maxs)
+            fastmaxindex!(taggedpostcount, topn, maxn, maxv)
 
-            relatedpost = RelatedPost(post._id, post.tags, SVector{topn}(posts[maxs[i][1]] for i in 1:topn))
+            relatedpost = RelatedPost(post._id, post.tags, SVector{topn}(@view posts[maxn]))
             relatedposts[i] = relatedpost
         end
     end
-
     return relatedposts
 end
 
