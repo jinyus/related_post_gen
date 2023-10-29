@@ -1,5 +1,5 @@
-import std/[cpuinfo, monotimes, tables, times]
-import pkg/[jsony, taskpools]
+import std/[cpuinfo, hashes, monotimes, tables, times]
+import pkg/[jsony, taskpools, xxhash]
 
 const N: Positive = 5
 
@@ -35,6 +35,9 @@ type
 const
   input = "../posts.json"
   output = "../related_posts_nim_con.json"
+
+func hash(x: Tag): Hash {.inline, used.} =
+  cast[Hash](XXH3_64bits(x))
 
 func `[]`(t: TagMap, key: Tag): lent seq[PostIndex] =
   tables.`[]`(t.addr[], key)

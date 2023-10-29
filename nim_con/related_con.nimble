@@ -5,4 +5,5 @@ license       = "MIT"
 
 requires "nim >= 2.0.0",
          "jsony#head",
-         "taskpools#head"
+         "taskpools#head",
+         "xxhash"
