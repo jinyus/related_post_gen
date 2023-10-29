@@ -21,7 +21,7 @@ end
 
 
 function fastmaxindex!(xs::Vector, topn, maxn, maxv)
-    maxn .= 1
+    maxn .= one(UInt32)
     maxv .= zero(UInt32)
     top = maxv[1]
     for (i, x) in enumerate(xs)
@@ -55,7 +55,7 @@ function related(posts)
 
     @threads for (postsrange, _) in chunks(posts, nthreads())
         topn = 5
-        maxn = MVector{topn,Int}(undef)
+        maxn = MVector{topn,UInt32}(undef)
         maxv = MVector{topn,UInt32}(undef)
         taggedpostcount = Vector{UInt32}(undef, length(posts))
 
