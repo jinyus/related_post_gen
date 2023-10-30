@@ -1,4 +1,2 @@
-build/
-nimcache/
+default*.prof*
 related
-default.prof*

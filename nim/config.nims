@@ -1,9 +1,7 @@
-switch("opt", "speed")
-switch("cc", "gcc")
-switch("panics", "off")
-switch("passC", "-s -flto")
-switch("passL", "-s -flto")
-switch("overflowChecks", "off")
+switch("mm", "arc")
+switch("passC", "-s -flto=auto")
+switch("passL", "-s -flto=auto")
+switch("threads", "off")
 
 when defined(profileGen):
   echo "Build with profileGen"
@@ -16,4 +14,3 @@ when defined(profileUse):
   switch("cc", "clang")
   switch("passC", "-fprofile-instr-use")
   switch("passL", "-fprofile-instr-use")
-

@@ -11,7 +11,7 @@ bin           = @["related"]
 # Dependencies
 
 requires "nim >= 2.0.0"
-requires "jsony"
+requires "jsony#head"
 requires "xxhash"
 
 const STAT_STEPS = 10
