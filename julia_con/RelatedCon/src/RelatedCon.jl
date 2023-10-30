@@ -21,12 +21,13 @@ end
 
 
 function fastmaxindex!(xs::Vector, topn, maxn, maxv)
-    maxn .= one(UInt32)
-    maxv .= zero(UInt32)
+    maxn .= 1
+    maxv .= 0
     top = maxv[1]
     for (i, x) in enumerate(xs)
         if x > top
-            maxn[1], maxv[1] = i, x
+            maxn[1] = i
+            maxv[1] = x
             for j in 2:topn
                 if maxv[j-1] > maxv[j]
                     maxv[j-1], maxv[j] = maxv[j], maxv[j-1]
@@ -37,7 +38,7 @@ function fastmaxindex!(xs::Vector, topn, maxn, maxv)
         end
     end
     reverse!(maxn)
-    return
+    return maxn
 end
 
 function related(posts)
@@ -62,7 +63,7 @@ function related(posts)
         for i in postsrange
             post = posts[i]
 
-            taggedpostcount .= zero(UInt32)
+            taggedpostcount .= 0
             # for each post (`i`-th)
             # and every tag used in the `i`-th post
             # give all related post +1 in `taggedpostcount` shadow vector
@@ -72,7 +73,7 @@ function related(posts)
                 end
             end
             # don't self count
-            taggedpostcount[i] = zero(UInt32)
+            taggedpostcount[i] = 0
 
             fastmaxindex!(taggedpostcount, topn, maxn, maxv)
 
