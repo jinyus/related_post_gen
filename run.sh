@@ -287,9 +287,9 @@ run_julia_con() {
         cd ./julia_con &&
         julia -e 'using Pkg; Pkg.activate("RelatedCon"); Pkg.instantiate()' &&
         if [ $HYPER == 1 ]; then
-            capture "Julia Concurrent" hyperfine -r $runs -w $warmup --show-output "julia -O3 --threads=auto --project=RelatedCon -e \"using RelatedCon; main()\""
+            capture "Julia Concurrent" hyperfine -r $runs -w $warmup --show-output "julia --threads=auto --project=RelatedCon -e \"using RelatedCon; main()\""
         else
-            command ${time} -f '%es %Mk' julia -O3 --threads auto --project=RelatedCon -e "using RelatedCon; main()"
+            command ${time} -f '%es %Mk' julia --threads auto --project=RelatedCon -e "using RelatedCon; main()"
         fi
 
     check_output "related_posts_julia_con.json"
