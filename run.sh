@@ -260,9 +260,9 @@ run_julia() {
         julia -e 'using Pkg; Pkg.activate("Related"); Pkg.instantiate()' &&
         if [ $HYPER == 1 ]; then
 
-            capture "Julia" hyperfine -r $runs -w $warmup --show-output "julia -O3 --project=Related -e \"using Related; main()\""
+            capture "Julia" hyperfine -r $runs -w $warmup --show-output "julia --project=Related -e \"using Related; main()\""
         else
-            command ${time} -f '%es %Mk' julia -O3 --project=Related -e "using Related; main()"
+            command ${time} -f '%es %Mk' julia --project=Related -e "using Related; main()"
 
         fi
 
