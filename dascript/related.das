@@ -81,7 +81,9 @@ def main
 
     var processing_time_ms = float(get_time_usec(start_time)) / 1000.0
 
-    var jsonResultStr = JV(allRelatedPosts) |> write_json()
-    fopen("related_posts_dascript.json", "w") |> fwrite(jsonResultStr)
-
     print("Processing time (w/o IO): {format("%.2f", processing_time_ms)} ms\n")
+
+    var jsonResultStr = JV(allRelatedPosts) |> write_json()
+    
+    fopen("../related_posts_dascript.json", "w") |> fwrite(jsonResultStr)
+
