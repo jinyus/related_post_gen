@@ -100,7 +100,7 @@ run_cpp() {
     echo "Running C++" &&
         cd ./cpp &&
         if [ -z "$appendToFile" ]; then # only build on 5k run
-            clang++ -std=c++11 -I./include -O3 main.cpp -o main
+            g++ -O3 -std=c++20  -I./include main.cpp -o main
         fi &&
         if [ $HYPER == 1 ]; then
             capture "C++" hyperfine -r $runs -w $warmup --show-output "./main"
