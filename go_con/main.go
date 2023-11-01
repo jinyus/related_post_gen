@@ -134,7 +134,7 @@ func computeRelatedPost(i isize, posts []Post, tagMap map[string][]isize, tagged
 	for j, count := range taggedPostCount {
 		if count > minTags {
 			// Find the position to insert
-			pos := 4
+			pos := 3
 			for pos >= 0 && top5[pos].SharedTags < count {
 				pos--
 			}
