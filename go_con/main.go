@@ -28,7 +28,7 @@ type Post struct {
 
 type PostWithSharedTags struct {
 	Post       isize
-	SharedTags byte
+	SharedTags isize
 }
 
 type RelatedPosts struct {
@@ -78,7 +78,7 @@ func main() {
 	var w isize
 	for ; w < isize(concurrency); w++ {
 		// allocate taggedPostCount for each worker once, zero out for each task
-		taggedPostCount := make([]byte, postsLengthISize)
+		taggedPostCount := make([]isize, postsLengthISize)
 		go func(workerID isize) {
 			for i := workerID; i < postsLengthISize; i += concurrency {
 				// provide taggedPostCount and binary heap for each task
@@ -113,7 +113,7 @@ func main() {
 	}
 }
 
-func computeRelatedPost(i isize, posts []Post, tagMap map[string][]isize, taggedPostCount []byte) RelatedPosts {
+func computeRelatedPost(i isize, posts []Post, tagMap map[string][]isize, taggedPostCount []isize) RelatedPosts {
 	// Zero out tagged post count
 	for j := range taggedPostCount {
 		taggedPostCount[j] = 0
@@ -129,7 +129,7 @@ func computeRelatedPost(i isize, posts []Post, tagMap map[string][]isize, tagged
 	taggedPostCount[i] = 0 // Don't count self
 
 	top5 := [topN]PostWithSharedTags{}
-	minTags := byte(0) // Updated initialization
+	minTags := isize(0) // Updated initialization
 
 	for j, count := range taggedPostCount {
 		if count > minTags {
