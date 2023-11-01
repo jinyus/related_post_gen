@@ -87,7 +87,7 @@ end
 function main()
     json_string = read(@__DIR__()*"/../../../posts.json", String)
     posts = JSON3.read(json_string, Vector{PostData})
-    related(posts[1:2]) #warmup
+    related(first(posts, 1000)) #warmup
 
     start = now()
     all_related_posts = related(posts)
@@ -97,5 +97,7 @@ function main()
         JSON3.write(f, all_related_posts)
     end
 end
+
+main()
 
 end # module RelatedCon

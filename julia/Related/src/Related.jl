@@ -86,7 +86,7 @@ end
 function main()
     json_string = read(@__DIR__()*"/../../../posts.json", String)
     posts = JSON3.read(json_string, Vector{PostData})
-    fake_posts = posts[1:2]
+    fake_posts = first(posts, 1000)
     related(fake_posts) #warmup
 
     start = now()
@@ -97,5 +97,7 @@ function main()
         JSON3.write(f, all_related_posts)
     end
 end
+
+main()
 
 end # module Related
