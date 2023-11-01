@@ -41,6 +41,7 @@ function fastmaxindex!(xs::Vector{T}, topn, maxn, maxv) where {T}
 end
 
 function related(posts)
+    L = length(posts)
     T = UInt32
     topn = 5
     # key is every possible "tag" used in all posts
@@ -54,8 +55,8 @@ function related(posts)
         end
     end
 
-    relatedposts = Vector{RelatedPost}(undef, length(posts))
-    taggedpostcount = Vector{T}(undef, length(posts))
+    relatedposts = Vector{RelatedPost}(undef, L)
+    taggedpostcount = Vector{T}(undef, L)
 
     maxn = MVector{topn,T}(undef)
     maxv = MVector{topn,T}(undef)
@@ -67,7 +68,8 @@ function related(posts)
         # give all related post +1 in `taggedpostcount` shadow vector
         for tag in post.tags
             for idx in tagmap[tag]
-                taggedpostcount[idx] += one(T)
+                # all length are bounded by L = length(posts) we know at runtime
+                @inbounds taggedpostcount[idx] += one(T)
             end
         end
 
