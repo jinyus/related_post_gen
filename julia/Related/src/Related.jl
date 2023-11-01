@@ -48,8 +48,8 @@ function related(posts)
     # value is indicies of all "post"s that used this tag
     tagmap = Dict{String,Vector{T}}()
     sizehint!(tagmap, 100)
-    for (idx, post) in enumerate(posts)
-        for tag in post.tags
+    @inbounds for idx in 1:L
+        for tag in posts[idx].tags
             tags = get!(() -> T[], tagmap, tag)
             push!(tags, idx)
         end
@@ -61,7 +61,8 @@ function related(posts)
     maxn = MVector{topn,T}(undef)
     maxv = MVector{topn,T}(undef)
 
-    for (i, post) in enumerate(posts)
+    @inbounds for i in 1:L
+        post = posts[i]
         taggedpostcount .= zero(T)
         # for each post (`i`-th)
         # and every tag used in the `i`-th post
