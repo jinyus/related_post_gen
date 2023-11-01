@@ -48,11 +48,13 @@ function related(posts)
     # value is indicies of all "post"s that used this tag
     tagmap = Dict{String,Vector{T}}()
     sizehint!(tagmap, 100)
-    @inbounds for idx in 1:L
+    idx = 1
+    @inbounds while idx <= L
         for tag in posts[idx].tags
             tags = get!(() -> T[], tagmap, tag)
             push!(tags, idx)
         end
+        idx += 1
     end
 
     relatedposts = Vector{RelatedPost}(undef, L)
@@ -61,7 +63,8 @@ function related(posts)
     maxn = MVector{topn,T}(undef)
     maxv = MVector{topn,T}(undef)
 
-    @inbounds for i in 1:L
+    i = 1
+    @inbounds while i<=L
         post = posts[i]
         taggedpostcount .= zero(T)
         # for each post (`i`-th)
@@ -69,6 +72,7 @@ function related(posts)
         # give all related post +1 in `taggedpostcount` shadow vector
         for tag in post.tags
             for idx in tagmap[tag]
+                @assert idx <= L
                 # all length are bounded by L = length(posts) we know at runtime
                 taggedpostcount[idx] += one(T)
             end
@@ -81,6 +85,7 @@ function related(posts)
 
         relatedpost = RelatedPost(post._id, post.tags, SVector{topn}(@view posts[maxn]))
         relatedposts[i] = relatedpost
+        i+=1
     end
 
     return relatedposts
