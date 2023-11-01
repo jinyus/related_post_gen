@@ -1,6 +1,7 @@
 #include <iostream>
 #include <vector>
 #include <string>
+#include <array>
 #include <fstream>
 #include <chrono>
 #include <stdint.h>
@@ -23,7 +24,7 @@ struct RelatedPosts
 {
     std::string _id;
     std::vector<std::string> tags;
-    std::vector<Post const*> related;
+    std::array<Post const*, TOPN> related;
 };
 
 void to_json(json &j, const RelatedPosts &rp)
@@ -50,7 +51,7 @@ map_t get_tagMap(std::vector<Post> const& posts){
     int total = static_cast<int>(posts.size());
     for (int i = 0; i < total; ++i)
     {
-        for (auto const&tag : posts[i].tags)
+        for (auto const&tag : posts.at(i).tags)
         {
             tagMap[tag].emplace_back(i);
         }
@@ -96,9 +97,9 @@ std::vector<RelatedPosts> do_work(std::vector<Post>const& posts,
     for (size_t i = 0; i < total; ++i)
     {
         std::memset(taggedPostCount.data(), 0, total);
-        const Post& p = posts[i];
-        RelatedPosts& relatedPost = allRelatedPosts[i];
-        relatedPost = {p._id, p.tags, std::vector<Post const*>{TOPN}};
+        const Post& p = posts.at(i);
+        RelatedPosts& relatedPost = allRelatedPosts.at(i);
+        relatedPost = {p._id, p.tags, {0,0,0,0,0}};
 
         for (const auto &tag : p.tags)
         {
@@ -109,34 +110,34 @@ std::vector<RelatedPosts> do_work(std::vector<Post>const& posts,
             }
         }
 
-        taggedPostCount[i] = 0;
+        taggedPostCount.at(i) = 0;
 
-        uint8_t top5[TOPN] = {0, 0, 0, 0, 0};
-        int related[TOPN] = {0, 0, 0, 0, 0};
+        std::array<uint8_t, TOPN> top5 = {0, 0, 0, 0, 0};
+        std::array<int, TOPN> related = {0, 0, 0, 0, 0};
         uint8_t minTags = 0;
 
         //  custom priority queue to find top N
         for (size_t j = 0; j < total; j++)
         {
-            uint8_t count = taggedPostCount[j];
+            uint8_t count = taggedPostCount.at(j);
 
             if (count > minTags)
             {
                 int upperBound = 3;
-                while (upperBound >= 0 && count > top5[upperBound])
+                while (upperBound >= 0 && count > top5.at(upperBound))
                 {
-                    top5[upperBound + 1] = top5[upperBound];
-                    related[upperBound+1] = related[upperBound];
+                    top5.at(upperBound + 1) = top5.at(upperBound);
+                    related.at(upperBound + 1) = related.at(upperBound);
                     upperBound -= 1;
                 }
 
-                top5[upperBound + 1] = count;
-                related[upperBound + 1] = j;
-                minTags = top5[4];
+                top5.at(upperBound + 1) = count;
+                related.at(upperBound + 1) = j;
+                minTags = top5.at(4);
             }
         }
         for (size_t i{0}; i<TOPN; ++i){
-          relatedPost.related[i] = &posts[related[i]];
+          relatedPost.related.at(i) = &posts.at(related.at(i));
         }
     }
 
