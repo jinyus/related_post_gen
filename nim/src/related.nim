@@ -53,7 +53,7 @@ proc countTaggedPost(
   for tag in posts[i].tags:
     try:
       for relatedIDX in tagMap[tag]:
-        inc(taggedPostCount[relatedIDX])
+        inc taggedPostCount[relatedIDX]
     except KeyError as e:
       raise (ref Defect)(msg: e.msg)
   taggedPostCount[i] = 0 # remove self
@@ -63,14 +63,21 @@ proc findTop5(
     posts: seq[Post],
     top5: var array[5, tuple[idx: int, count: uint8]],
     related: var array[5, ptr Post]) =
+  var minCount = 0'u8
   for i, count in taggedPostCount:
-    if count > top5[4].count:
-      top5[4].idx = i
-      top5[4].count = count
-      for pos in countdown(3, 0):
-        if count > top5[pos].count:
-          swap(top5[pos+1], top5[pos])
-  for i in 0..<top5.len:
+    if count > minCount:
+      var pos = 3
+      while (pos >= 0) and (count > top5[pos].count):
+        dec pos
+      inc pos
+      if pos < 4:
+        for j in countdown(3, pos):
+          top5[j+1].count = top5[j].count
+          top5[j+1].idx = top5[j].idx
+      top5[pos].count = count
+      top5[pos].idx = i
+      minCount = top5[4].count
+  for i in 0..<5:
     related[i] = addr posts[top5[i].idx]
     top5[i].idx = 0
     top5[i].count = 0
