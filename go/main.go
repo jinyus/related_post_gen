@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
-	"time"
 	"runtime"
+	"time"
 )
 
 const topN = 5
