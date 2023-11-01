@@ -28,7 +28,7 @@ type RelatedPosts struct {
 
 type PostWithSharedTags struct {
 	Post       isize
-	SharedTags isize
+	SharedTags byte
 }
 
 func main() {
@@ -54,7 +54,7 @@ func main() {
 	}
 
 	allRelatedPosts := make([]RelatedPosts, postsLen)
-	taggedPostCount := make([]isize, postsLen)
+	taggedPostCount := make([]byte, postsLen)
 
 	for i := range posts {
 		for j := range taggedPostCount {
@@ -68,12 +68,14 @@ func main() {
 		}
 		taggedPostCount[i] = 0 // Don't count self
 		top5 := [topN]PostWithSharedTags{}
-		minTags := isize(0) // Updated initialization
+		minTags := byte(0) // Updated initialization
+
 
 		for j, count := range taggedPostCount {
 			if count > minTags {
 				// Find the position to insert
-				pos := 4
+
+				pos := 3
 				for pos >= 0 && top5[pos].SharedTags < count {
 					pos--
 				}
