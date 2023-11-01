@@ -1,20 +1,16 @@
 #include <iostream>
 #include <vector>
 #include <string>
-#include <unordered_map>
 #include <fstream>
 #include <chrono>
-#include <algorithm>
-#include <array>
 #include <stdint.h>
+#include <unordered_map>
 #include "include/json.hpp" // Assuming this path is correct
 
-// NEEDS IMPROVEMENT: Excluded from charts until then
-
 using json = nlohmann::json;
-
-const size_t INITIAL_TAGGED_COUNT_SIZE = 100;
-const size_t TOP_N = 5;
+using map_t = std::unordered_map<std::string, std::vector<int>>;
+constexpr size_t INITIAL_TAGGED_COUNT_SIZE = 100;
+constexpr size_t TOPN=5;
 
 struct Post
 {
@@ -27,7 +23,7 @@ struct RelatedPosts
 {
     std::string _id;
     std::vector<std::string> tags;
-    std::vector<Post *> related;
+    std::vector<Post const*> related;
 };
 
 void to_json(json &j, const RelatedPosts &rp)
@@ -45,13 +41,30 @@ void to_json(json &j, const RelatedPosts &rp)
     j["related"] = related;
 }
 
-int main()
-{
+
+
+map_t get_tagMap(std::vector<Post> const& posts){
+    map_t tagMap;
+    tagMap.reserve(INITIAL_TAGGED_COUNT_SIZE);
+
+    int total = static_cast<int>(posts.size());
+    for (int i = 0; i < total; ++i)
+    {
+        for (auto const&tag : posts[i].tags)
+        {
+            tagMap[tag].emplace_back(i);
+        }
+    }
+
+    return tagMap;
+}
+
+std::vector<Post> read_posts(){
     std::ifstream file("../posts.json");
     if (!file.is_open())
     {
         std::cerr << "Could not open the file.\n";
-        return 1;
+        throw std::runtime_error("Could not open file!");
     }
 
     json j;
@@ -67,34 +80,25 @@ int main()
         p.tags = post["tags"].get<std::vector<std::string>>();
         posts.push_back(p);
     }
+    return posts;
+}
 
-    auto start = std::chrono::high_resolution_clock::now();
 
-    std::unordered_map<std::string, std::vector<int>> tagMap;
-    tagMap.reserve(INITIAL_TAGGED_COUNT_SIZE);
+std::vector<RelatedPosts> do_work(std::vector<Post>const& posts, 
+             map_t const& tagMap){
 
-    int total = static_cast<int>(posts.size());
-    for (int i = 0; i < total; ++i)
-    {
-        for (const auto &tag : posts[i].tags)
-        {
-            auto it = tagMap.insert({tag, std::vector<int>{i}});
-            if (!it.second) {
-                it.first->second.push_back(i);
-            }
-        }
-    }
-
+    auto const total = posts.size();
     std::vector<RelatedPosts> allRelatedPosts;
     allRelatedPosts.resize(total);
 
     std::vector<uint8_t> taggedPostCount(total);
+
     for (size_t i = 0; i < total; ++i)
     {
         std::memset(taggedPostCount.data(), 0, total);
         const Post& p = posts[i];
         RelatedPosts& relatedPost = allRelatedPosts[i];
-        relatedPost = {p._id, p.tags, std::vector<Post*>{5}};
+        relatedPost = {p._id, p.tags, std::vector<Post const*>{TOPN}};
 
         for (const auto &tag : p.tags)
         {
@@ -107,11 +111,12 @@ int main()
 
         taggedPostCount[i] = 0;
 
-        uint8_t top5[5] = {0, 0, 0, 0, 0};
+        uint8_t top5[TOPN] = {0, 0, 0, 0, 0};
+        int related[TOPN] = {0, 0, 0, 0, 0};
         uint8_t minTags = 0;
 
         //  custom priority queue to find top N
-        for (int j = 0; j < taggedPostCount.size(); j++)
+        for (size_t j = 0; j < total; j++)
         {
             uint8_t count = taggedPostCount[j];
 
@@ -121,22 +126,24 @@ int main()
                 while (upperBound >= 0 && count > top5[upperBound])
                 {
                     top5[upperBound + 1] = top5[upperBound];
-                    relatedPost.related[upperBound + 1] = relatedPost.related[upperBound];
+                    related[upperBound+1] = related[upperBound];
                     upperBound -= 1;
                 }
 
                 top5[upperBound + 1] = count;
-                relatedPost.related[upperBound + 1] = &posts[j];
+                related[upperBound + 1] = j;
                 minTags = top5[4];
             }
         }
+        for (size_t i{0}; i<TOPN; ++i){
+          relatedPost.related[i] = &posts[related[i]];
+        }
     }
 
-    auto end = std::chrono::high_resolution_clock::now();
-    auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
+  return allRelatedPosts;
+}
 
-    std::cout << "Processing time (w/o IO): " << elapsed.count() << " ms\n";
-
+void write(std::vector<RelatedPosts>const & allRelatedPosts){
     json j_array = json::array();
     for (const auto &rp : allRelatedPosts)
     {
@@ -151,6 +158,24 @@ int main()
         out << j_array.dump(4);
         out.close();
     }
+}
+
+int main()
+{
+    auto const posts = read_posts();
+
+    auto start = std::chrono::high_resolution_clock::now();
+
+    auto const tagMap = get_tagMap(posts);
+
+    auto const allRelatedPosts = do_work(posts, tagMap);
+
+    auto end = std::chrono::high_resolution_clock::now();
+    auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
+
+    std::cout << "Processing time (w/o IO): " << elapsed.count() << " ms\n";
+
+    write(allRelatedPosts);
 
     return 0;
 }
