@@ -70,7 +70,7 @@ function related(posts)
         for tag in post.tags
             for idx in tagmap[tag]
                 # all length are bounded by L = length(posts) we know at runtime
-                @inbounds taggedpostcount[idx] += one(T)
+                taggedpostcount[idx] += one(T)
             end
         end
 
