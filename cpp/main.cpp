@@ -22,14 +22,14 @@ struct Post
 
 struct RelatedPosts
 {
-    std::string _id;
-    std::vector<std::string> tags;
+    std::string const* _id;
+    std::vector<std::string> const* tags;
     std::array<Post const*, TOPN> related;
 };
 
 void to_json(json &j, const RelatedPosts &rp)
 {
-    j = json{{"_id", rp._id}, {"tags", rp.tags}};
+    j = json{{"_id", *rp._id}, {"tags", *rp.tags}};
     json related;
     for (auto &post : rp.related)
     {
@@ -88,18 +88,16 @@ std::vector<Post> read_posts(){
 std::vector<RelatedPosts> do_work(std::vector<Post>const& posts, 
              map_t const& tagMap){
 
-    auto const total = posts.size();
-    std::vector<RelatedPosts> allRelatedPosts;
-    allRelatedPosts.resize(total);
+    std::vector<RelatedPosts> allRelatedPosts(posts.size());
+    std::vector<uint8_t> taggedPostCount(posts.size());
 
-    std::vector<uint8_t> taggedPostCount(total);
-
-    for (size_t i = 0; i < total; ++i)
+    for (size_t i = 0; i < posts.size(); ++i)
     {
-        std::memset(taggedPostCount.data(), 0, total);
+        std::memset(taggedPostCount.data(), 0, posts.size());
         const Post& p = posts.at(i);
         RelatedPosts& relatedPost = allRelatedPosts.at(i);
-        relatedPost = {p._id, p.tags, {0,0,0,0,0}};
+        relatedPost._id = &p._id;
+        relatedPost.tags = &p.tags;
 
         for (const auto &tag : p.tags)
         {
@@ -112,32 +110,29 @@ std::vector<RelatedPosts> do_work(std::vector<Post>const& posts,
 
         taggedPostCount.at(i) = 0;
 
-        std::array<uint8_t, TOPN> top5 = {0, 0, 0, 0, 0};
-        std::array<int, TOPN> related = {0, 0, 0, 0, 0};
+        std::array<std::pair<uint8_t, int>, TOPN> top5{};
         uint8_t minTags = 0;
 
         //  custom priority queue to find top N
-        for (size_t j = 0; j < total; j++)
+        for (size_t j = 0; j < taggedPostCount.size(); j++)
         {
             uint8_t count = taggedPostCount.at(j);
 
             if (count > minTags)
             {
                 int upperBound = 3;
-                while (upperBound >= 0 && count > top5.at(upperBound))
+                while (upperBound >= 0 && count > top5.at(upperBound).first)
                 {
                     top5.at(upperBound + 1) = top5.at(upperBound);
-                    related.at(upperBound + 1) = related.at(upperBound);
                     upperBound -= 1;
                 }
 
-                top5.at(upperBound + 1) = count;
-                related.at(upperBound + 1) = j;
-                minTags = top5.at(4);
+                top5.at(upperBound + 1) = {count, j};
+                minTags = top5.at(4).first;
             }
         }
-        for (size_t i{0}; i<TOPN; ++i){
-          relatedPost.related.at(i) = &posts.at(related.at(i));
+        for (size_t i{0}; i<top5.size(); ++i){
+          relatedPost.related.at(i) = &posts.at(top5.at(i).second);
         }
     }
 
@@ -165,14 +160,14 @@ int main()
 {
     auto const posts = read_posts();
 
-    auto start = std::chrono::high_resolution_clock::now();
+    auto const start = std::chrono::high_resolution_clock::now();
 
     auto const tagMap = get_tagMap(posts);
 
     auto const allRelatedPosts = do_work(posts, tagMap);
 
-    auto end = std::chrono::high_resolution_clock::now();
-    auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
+    auto const end = std::chrono::high_resolution_clock::now();
+    auto const elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
 
     std::cout << "Processing time (w/o IO): " << elapsed.count() << " ms\n";
 
