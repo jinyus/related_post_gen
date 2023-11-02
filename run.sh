@@ -746,6 +746,18 @@ run_ruby() {
     check_output "related_posts_ruby.json"
 }
 
+run_dascript() {
+    echo "Running daScript" &&
+        cd ./dascript &&
+        if [ $HYPER == 1 ]; then
+            capture "daScript" hyperfine -r $slow_lang_runs -w $warmup --show-output "das related.das"
+        else
+            command ${time} -f '%es %Mk' das related.das
+        fi
+
+    check_output "related_posts_dascript.json"
+}
+
 check_output() {
     cd ..
 
@@ -954,6 +966,10 @@ elif [ "$first_arg" = "ruby" ]; then
 
     run_ruby
 
+elif [ "$first_arg" = "dascript" ]; then
+
+    run_dascript
+
 elif [ "$first_arg" = "all" ]; then
 
     echo -e "Running all\n" &&
@@ -1001,6 +1017,7 @@ elif [ "$first_arg" = "all" ]; then
         run_ocaml || echo -e "\n" &&
         run_erlang || echo -e "\n" &&
         run_ruby || echo -e "\n" &&
+        run_dascript || echo -e "\n" &&
         echo -e "Finished running all\n"
 
 elif [ "$first_arg" = "clean" ]; then
@@ -1034,6 +1051,6 @@ elif [ "$first_arg" = "clean" ]; then
 
 else
 
-    echo "Valid args: go | go_con | rust | rust_con | d | d_con | py | numpy | numba | numba_con | cr | zig | odin | jq | julia | julia_highly_optimized | julia_con | v | dart | swift | swift_con | node | bun | deno | java | java_graal | java_graal_con | nim | luajit | lua | fsharp | fsharp_aot | fsharp_con | csharp | csharp_aot | all | clean. Unknown argument: $first_arg"
+    echo "Valid args: go | go_con | rust | rust_con | d | d_con | py | numpy | numba | numba_con | cr | zig | odin | jq | julia | julia_highly_optimized | julia_con | v | dart | swift | swift_con | node | bun | deno | java | java_graal | java_graal_con | nim | luajit | lua | fsharp | fsharp_aot | fsharp_con | csharp | csharp_aot | dascript | all | clean. Unknown argument: $first_arg"
 
 fi
