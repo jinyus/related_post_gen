@@ -88,10 +88,8 @@ function main()
     posts = JSON3.read(json_string, Vector{PostData})
     fake_posts = first(posts, 1000)
     related(fake_posts) #warmup
-
     stats = @timed related(posts)
     println("Processing time (w/o IO): $(1000*stats.time)ms")
-
     open(@__DIR__()*"/../../../related_posts_julia.json", "w") do f
         JSON3.write(f, stats.value)
     end
