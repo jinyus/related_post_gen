@@ -1,6 +1,6 @@
 module Related
 
-using JSON3, StructTypes, Dates, StaticArrays
+using JSON3, StructTypes, StaticArrays
 
 export main
 
@@ -89,12 +89,11 @@ function main()
     fake_posts = first(posts, 1000)
     related(fake_posts) #warmup
 
-    start = now()
-    all_related_posts = related(posts)
-    println("Processing time (w/o IO): $(now() - start)")
+    stats = @timed related(posts)
+    println("Processing time (w/o IO): $(1000*stats.time)ms")
 
     open(@__DIR__()*"/../../../related_posts_julia.json", "w") do f
-        JSON3.write(f, all_related_posts)
+        JSON3.write(f, stats.value)
     end
 end
 
