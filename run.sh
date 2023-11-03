@@ -747,10 +747,10 @@ run_ruby() {
 }
 
 run_dascript() {
-    echo "Running daScript" &&
+    echo "Running daScript (interpreted)" &&
         cd ./dascript &&
         if [ $HYPER == 1 ]; then
-            capture "daScript" hyperfine -r $slow_lang_runs -w $warmup --show-output "das related.das"
+            capture "daScript (interpreted)" hyperfine -r $slow_lang_runs -w $warmup --show-output "das related.das"
         else
             command ${time} -f '%es %Mk' das related.das
         fi
