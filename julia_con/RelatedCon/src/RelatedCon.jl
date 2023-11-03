@@ -1,6 +1,6 @@
 module RelatedCon
 
-using JSON3, Dates, StaticArrays, ChunkSplitters
+using JSON3, StaticArrays, ChunkSplitters
 using Base.Threads: @threads, nthreads
 
 export main
