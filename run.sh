@@ -100,7 +100,7 @@ run_cpp() {
     echo "Running C++" &&
         cd ./cpp &&
         if [ -z "$appendToFile" ]; then # only build on 5k run
-            g++ -O3 -std=c++20  -I./include main.cpp -o main
+            g++ -O3 -std=c++20 -I./include main.cpp -o main
         fi &&
         if [ $HYPER == 1 ]; then
             capture "C++" hyperfine -r $runs -w $warmup --show-output "./main"
@@ -640,6 +640,20 @@ run_luajit() {
 
 }
 
+run_luajit_jit_off() {
+    echo "Running LuaJIT" &&
+        cd ./lua &&
+        sudo luarocks --lua-version 5.1 install luasocket &&
+        if [ $HYPER == 1 ]; then
+            capture "LuaJIT (JIT OFF)" hyperfine -r $runs -w $warmup --show-output "luajit -joff only_lua.lua"
+        else
+            command ${time} -f '%es %Mk' luajit -joff only_lua.lua
+        fi
+
+    check_output "related_posts_lua.json"
+
+}
+
 run_lua() {
     echo "Running Lua" &&
         sudo luarocks install luasocket &&
@@ -934,6 +948,10 @@ elif [ "$first_arg" = "luajit" ]; then
 
     run_luajit
 
+elif [ "$first_arg" = "luajit_off" ]; then
+
+    run_luajit_jit_off
+
 elif [ "$first_arg" = "lua" ]; then
 
     run_lua
@@ -1013,6 +1031,7 @@ elif [ "$first_arg" = "all" ]; then
         run_csharp_con || echo -e "\n" &&
         run_csharp_con_aot || echo -e "\n" &&
         run_luajit || echo -e "\n" &&
+        run_luajit_jit_off || echo -e "\n" &&
         run_lua || echo -e "\n" &&
         run_ocaml || echo -e "\n" &&
         run_erlang || echo -e "\n" &&
