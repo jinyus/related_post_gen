@@ -641,7 +641,7 @@ run_luajit() {
 }
 
 run_luajit_jit_off() {
-    echo "Running LuaJIT" &&
+    echo "Running LuaJIT (JIT OFF)" &&
         cd ./lua &&
         sudo luarocks --lua-version 5.1 install luasocket &&
         if [ $HYPER == 1 ]; then
