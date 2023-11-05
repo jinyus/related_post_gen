@@ -1,4 +1,5 @@
 use serde::{Deserialize, Serialize};
+use smallvec::SmallVec;
 
 #[derive(Serialize, Deserialize)]
 #[repr(align(64))]
@@ -9,13 +10,16 @@ pub struct Post<'a> {
     pub tags: Vec<&'a str>,
 }
 
+// pub type RelatedVec<'a> = Vec<&'a Post<'a>>;
+pub type RelatedVec<'a> = SmallVec<[&'a Post<'a>; crate::NUM_TOP_ITEMS]>;
+
 #[derive(Serialize)]
 #[repr(align(64))]
 pub struct RelatedPosts<'a> {
     #[serde(rename = "_id")]
     pub id: &'a str,
     pub tags: &'a [&'a str],
-    pub related: Vec<&'a Post<'a>>,
+    pub related: RelatedVec<'a>,
 }
 
 #[derive(Eq)]

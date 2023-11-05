@@ -9,9 +9,10 @@ edition = "2021"
 mimalloc = "0.1.39"
 num_cpus = "1.16.0"
 rayon = "1.8.0"
-rustc_data_structures = "0.0.1"
-serde = { version = "1.0.189", features = ["derive"] }
-serde_json = "1.0.107"
+rustc-hash = "1.1.0"
+serde = { version = "1.0.190", features = ["derive"] }
+serde_json = "1.0.108"
+smallvec = { version = "1.11.1", features = ["serde", "const_generics", "union", "const_new"] }
 
 [profile.release]
 lto = "thin"

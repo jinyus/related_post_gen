@@ -13,7 +13,7 @@ use types::{Post, RelatedPosts};
 #[global_allocator]
 static GLOBAL: mimalloc::MiMalloc = mimalloc::MiMalloc;
 
-const NUM_TOP_ITEMS: usize = 5;
+pub const NUM_TOP_ITEMS: usize = 5;
 
 fn main() {
     // setup the runtime
@@ -65,7 +65,7 @@ fn get_related<'a>(posts: &'a [Post]) -> Vec<RelatedPosts<'a>> {
                 let rp = RelatedPosts {
                     id: post.id,
                     tags: &post.tags,
-                    related: utils::get_related(NUM_TOP_ITEMS, tagged_post_count, posts),
+                    related: utils::get_related(tagged_post_count, posts),
                 };
                 tagged_post_count.fill(0);
                 rp
