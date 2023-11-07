@@ -1,8 +1,9 @@
 {
 	"authors": [
-		"Sergei Giniatulin"
+		"Sergei Giniatulin",
+        "Bruce Carneal"
 	],
-	"copyright": "Copyright © 2023, Sergei Giniatulin",
+	"copyright": "Copyright © 2023",
 	"dependencies": {
 		"asdf": "~>0.7.17"
 	},

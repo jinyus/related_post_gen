@@ -5,6 +5,14 @@ import std.file : readText;
 
 enum TopN = 5;
 
+union Chunk
+{
+	enum bytesPerChunk = 64;
+	ulong[bytesPerChunk / ulong.sizeof] ula;
+	ubyte[ula.sizeof] counts;
+	static auto allocChunksFor(size_t n) => new Chunk[(n + counts.length - 1) / counts.length];
+}
+
 struct Post
 {
 	string _id;
@@ -19,12 +27,6 @@ struct RelatedPosts
 	Post[TopN] related;
 }
 
-struct PostsWithSharedTags
-{
-	ulong post;
-	ubyte sharedTags;
-}
-
 void main()
 {
 	auto jsonText = readText("../posts.json");
@@ -32,57 +34,106 @@ void main()
 
 	auto sw = StopWatch(AutoStart.yes);
 
-	int postsCount = cast(int) posts.length;
-	auto relatedPosts = new RelatedPosts[postsCount];
-	auto taggedPostsCount = new ubyte[postsCount];
-	Post[TopN] topPosts;
-	size_t[][string] tagMap;
+	auto relatedPosts = new RelatedPosts[posts.length];
 
-	foreach (i, post; posts)
-		foreach (tag; post.tags)
-			tagMap[tag] ~= i;
+	auto mapper = PostIdxMapper(posts[]);
 
-	foreach (k, post; posts)
+	auto chunks = Chunk.allocChunksFor(posts.length);
+	auto relatedCounts = (cast(ubyte[])(chunks))[0 .. posts.length];
+
+	foreach (myPostIdx, ref post; posts)
 	{
-		PostsWithSharedTags[TopN] top5;
+		relatedCounts[] = 0;
+		foreach (tagIdx; mapper.postIdxToTagIDs[myPostIdx])
+			foreach (postIdx; mapper.tagIDToPostIdxs[tagIdx])
+				relatedCounts[postIdx]++;
 
-		taggedPostsCount[] = 0;
+		relatedCounts[myPostIdx] = 0; // exclude ourselves
 
-		foreach (tag; post.tags)
-			foreach (idx; tagMap[tag])
-				taggedPostsCount[idx]++;
+		enum evenOperandMask = (255UL << 48) | (255UL << 32) | (255UL << 16) | (255UL << 0);
+		enum overflowMask = ~evenOperandMask;
+		ulong primedForOverflow = evenOperandMask; // primed to overflow for anything gt 0
+		ubyte least;
+		ulong[TopN] topn;
+		enum idxOfLeast = topn.length - 1U;
 
-		taggedPostsCount[k] = 0;
-
-		auto minTags = 0;
-		foreach (j, count; taggedPostsCount)
+		foreach (chunkIdx, ref const chunk; chunks)
 		{
-			if (count > minTags)
+			ulong aggregatedOverflow;
+			static foreach (i; 0 .. chunk.ula.length)
 			{
-				int upperBound = TopN - 2;
-
-				while (upperBound >= 0 && count > top5[upperBound].sharedTags)
+				aggregatedOverflow |= (chunk.ula[i] & evenOperandMask) + primedForOverflow;
+				aggregatedOverflow |= ((chunk.ula[i] >>> 8) & evenOperandMask) + primedForOverflow; // now do the odd operands
+			}
+			if (const sawSomethingGreaterThanLeast = aggregatedOverflow & overflowMask)
+			{
+				ulong shiftedIdx = (chunkIdx * Chunk.sizeof) << 8;
+				foreach (count; chunk.counts)
 				{
-					top5[upperBound + 1] = top5[upperBound];
-					upperBound--;
+					if (count > least)
+					{
+						const newElement = shiftedIdx | count;
+						topn[idxOfLeast] = newElement; // prep for the case where we are the new 'least'
+						static foreach_reverse (i; 0 .. idxOfLeast)
+						{
+							if (count <= cast(ubyte) topn[i])
+								goto doneShuffling;
+							topn[i + 1] = topn[i];
+							topn[i] = newElement;
+						}
+					doneShuffling:
+						least = cast(ubyte) topn[idxOfLeast];
+					}
+					shiftedIdx += 256UL;
 				}
-
-				top5[upperBound + 1] = PostsWithSharedTags(j, count);
-
-				minTags = top5[TopN - 1].sharedTags;
+				// update given the new 'least'
+				primedForOverflow = ubyte.max - least;
+				primedForOverflow |= primedForOverflow << 16;
+				primedForOverflow |= primedForOverflow << 32;
 			}
 		}
+		foreach (ref val; topn)
+			val >>>= 8; // drop the count, recover the index
 
-		foreach (i, t; top5)
-			topPosts[i] = posts[t.post];
-
-		relatedPosts[k] = RelatedPosts(
-			post._id,
-			post.tags,
-			topPosts
-		);
+		auto rp = &relatedPosts[myPostIdx];
+		rp._id = post._id;
+		rp.tags = post.tags;
+		foreach (i, ref relatedPost; rp.related)
+			relatedPost = posts[topn[i]];
 	}
+
 	sw.stop();
 	writeln("Processing time (w/o IO): ", sw.peek.total!"usecs" * 1.0 / 1000, "ms");
 	toFile(serializeToJson(relatedPosts), "../related_posts_d.json");
+}
+
+struct PostIdxMapper
+{
+	size_t[][] postIdxToTagIDs;
+	size_t[][] tagIDToPostIdxs;
+
+	this(const(Post)[] posts)
+	{
+		size_t tagIDCount;
+		foreach (ref const post; posts)
+			tagIDCount += post.tags.length;
+		size_t[] remaining;
+		remaining.length = tagIDCount;
+
+		size_t[string] tag2ID;
+
+		postIdxToTagIDs.length = posts.length;
+		foreach (myPostIdx, ref const post; posts)
+		{
+			foreach (i, ref const tag; post.tags)
+				remaining[i] = tag2ID.require(tag, tag2ID.length - 1U);
+			postIdxToTagIDs[myPostIdx] = remaining[0 .. post.tags.length];
+			remaining = remaining[post.tags.length .. $];
+		}
+
+		tagIDToPostIdxs.length = tag2ID.length;
+		foreach (myPostIdx, tagIDs; postIdxToTagIDs)
+			foreach (tagID; tagIDs)
+				tagIDToPostIdxs[tagID] ~= myPostIdx;
+	}
 }
