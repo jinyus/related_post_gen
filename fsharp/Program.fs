@@ -1,11 +1,9 @@
 ﻿open System
 open System.Collections.Frozen
 open System.IO
-open System.Runtime.InteropServices
 open FSharp.NativeInterop
 open System.Collections.Generic
-open FSharp.Json
-open ObjectLayoutInspector //System.Text.Json is not aot friendly
+open FSharp.Json //System.Text.Json is not aot friendly
 
 #nowarn "9"
 
@@ -41,7 +39,6 @@ module Work =
         for tag in post.tags do
             for otherPostIdx in tagMap[tag] do
                 incv &taggedPostCount[otherPostIdx]
-                // taggedPostCount[otherPostIdx] <- taggedPostCount[otherPostIdx] + 1uy
         
         taggedPostCount[i] <- 0uy // ignore self
         let top5 = Span.op_Implicit(Array.zeroCreate<struct {| count: byte; postId: int |}> topN)
