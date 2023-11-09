@@ -70,12 +70,8 @@ pub fn main() {
                 |> list.fold(
                   acc,
                   fn(acc, o_idx) {
-                    let assert Ok(current_count) =
-                      acc
-                      |> map.get(o_idx)
-
-                    acc
-                    |> map.insert(o_idx, current_count + 1)
+                    let assert Ok(current_count) = map.get(acc, o_idx)
+                    map.insert(acc, o_idx, current_count + 1)
                   },
                 )
               },
@@ -90,9 +86,7 @@ pub fn main() {
         |> list.sort(fn(a, b) { int.compare(b.1, a.1) })
         |> list.take(top_n)
         |> list.map(fn(a) {
-          let assert Ok(post) =
-            posts
-            |> list.at(a.0)
+          let assert Ok(post) = list.at(posts, a.0)
           post
         })
 
