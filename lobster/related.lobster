@@ -22,8 +22,6 @@ def main():
 
     let posts = JSON.parse<[Post]>(json_content)
 
-    print("Found {posts.length} posts")
-
     let start = seconds_elapsed()
 
     let tag_map = dictionary<string, [int]> ( 100 )
