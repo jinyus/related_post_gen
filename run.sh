@@ -772,6 +772,22 @@ run_dascript() {
     check_output "related_posts_dascript.json"
 }
 
+run_racket() {
+    echo "Running Racket" &&
+        cd ./racket &&
+        if [ -z "$appendToFile" ]; then # only build on 5k run
+            raco pkg install --auto --name related --no-docs --skip-installed &&
+                raco make related.rkt
+        fi &&
+        if [ $HYPER == 1 ]; then
+            capture "Racket" hyperfine -r $runs -w $warmup --show-output "racket related.rkt"
+        else
+            command ${time} -f '%es %Mk' racket related.rkt
+        fi
+
+    check_output "related_posts_racket.json"
+}
+
 check_output() {
     cd ..
 
@@ -987,6 +1003,10 @@ elif [ "$first_arg" = "ruby" ]; then
 elif [ "$first_arg" = "dascript" ]; then
 
     run_dascript
+
+elif [ "$first_arg" = "racket" ]; then
+
+    run_racket
 
 elif [ "$first_arg" = "all" ]; then
 
