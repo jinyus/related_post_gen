@@ -814,7 +814,7 @@ run_lobster_cpp() {
     current_directory=$(pwd)
 
     echo "Running Lobster (C++ Backend)" &&
-        cp lobster "$LOBSTER_GIT_LOCATION/lobster" --force &&
+        cp lobster "$LOBSTER_GIT_LOCATION/lobster" -r --force &&
         cd "$LOBSTER_GIT_LOCATION" &&
         lobster --cpp lobster/related.lobster &&
         cd dev/compiled_lobster/src &&
