@@ -24,7 +24,7 @@ def main():
 
     let start = seconds_elapsed()
 
-    let tag_map = dictionary<string, [int]> ( 100 )
+    let tag_map = dictionary<string, [int]> ( 101 )
 
     for (posts) post,i:
         for (post.tags) tag:
@@ -33,7 +33,7 @@ def main():
             if not indexes:
                 tag_map.set(tag, [i])
             else:
-                tag_map.set(tag, push(indexes, i))
+                indexes.push(i)
 
     let posts_count = posts.length
     var all_related_posts = []::RelatedPost.vector_capacity(posts_count)
