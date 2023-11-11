@@ -12,12 +12,10 @@ def parse<T>(json_string: string) -> T:
 
     return value
 
-def encode<T>(value: T) -> string:
-    let flexbuffer, err = flexbuffers_value_to_binary(value)
+def encode(value) -> string:
+    let flexbuffer = flexbuffers_value_to_binary(value)
 
-    assert(err == nil)
-
-    let json_string, err2 = flexbuffers_binary_to_json(flexbuffer)
+    let json_string, err2 = flexbuffers_binary_to_json(flexbuffer,true,"")
 
     assert(err2 == nil)
     assert(json_string != nil)
