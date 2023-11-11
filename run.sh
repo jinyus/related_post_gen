@@ -817,15 +817,14 @@ run_lobster_cpp() {
         cp lobster "$LOBSTER_GIT_LOCATION/lobster" -r --force &&
         cd "$LOBSTER_GIT_LOCATION" &&
         lobster --cpp lobster/related.lobster &&
-        cd dev/compiled_lobster/src &&
-        g++ compiled_lobster.cpp -o related -I '../../include' -I '../../src' -I '../../external/SDL/include' &&
-        cp related "$current_directory/lobster/related" &&
+        cd dev &&
+        cmake -DCMAKE_BUILD_TYPE=Release -DLOBSTER_ENGINE=OFF -DLOBSTER_TOCPP=ON && make -j8 &&
         cd "$current_directory" &&
         cd ./lobster &&
         if [ $HYPER == 1 ]; then
-            capture "Lobster (C++)" hyperfine -r $slow_lang_runs -w $warmup --show-output "./related"
+            capture "Lobster (C++)" hyperfine -r $slow_lang_runs -w $warmup --show-output "compiled_lobster"
         else
-            command ${time} -f '%es %Mk' ./related
+            command ${time} -f '%es %Mk' compiled_lobster
         fi
 
     check_output "related_posts_lobster.json"
