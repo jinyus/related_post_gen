@@ -36,7 +36,7 @@ def main():
                 indexes.push(i)
 
     let posts_count = posts.length
-    var all_related_posts = []::RelatedPost.vector_capacity(posts_count)
+    let all_related_posts = []::RelatedPost.vector_capacity(posts_count)
 
     for(posts) post,i:
 
@@ -71,7 +71,7 @@ def main():
             let index = topn[j*2+1]
             posts[index]
 
-        all_related_posts = all_related_posts.push(RelatedPost {post._id, post.tags, top_posts}) 
+        all_related_posts.push(RelatedPost {post._id, post.tags, top_posts}) 
 
 
     let end = seconds_elapsed()
