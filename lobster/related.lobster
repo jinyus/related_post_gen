@@ -6,8 +6,8 @@ import json
 let TOPN = 5
 
 struct Post:
-    title: string
     _id: string
+    title: string
     tags: [string]
 
 struct RelatedPost:
