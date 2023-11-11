@@ -640,6 +640,20 @@ run_luajit() {
 
 }
 
+run_luajit_jit_off() {
+    echo "Running LuaJIT (JIT OFF)" &&
+        cd ./lua &&
+        sudo luarocks --lua-version 5.1 install luasocket &&
+        if [ $HYPER == 1 ]; then
+            capture "LuaJIT (JIT OFF)" hyperfine -r $runs -w $warmup --show-output "luajit -joff only_lua.lua"
+        else
+            command ${time} -f '%es %Mk' luajit -joff only_lua.lua
+        fi
+
+    check_output "related_posts_lua.json"
+
+}
+
 run_lua() {
     echo "Running Lua" &&
         sudo luarocks install luasocket &&
@@ -758,6 +772,22 @@ run_dascript() {
     check_output "related_posts_dascript.json"
 }
 
+run_racket() {
+    echo "Running Racket" &&
+        cd ./racket &&
+        if [ -z "$appendToFile" ]; then # only build on 5k run
+            raco pkg install --auto --name related --no-docs --skip-installed &&
+                raco make related.rkt
+        fi &&
+        if [ $HYPER == 1 ]; then
+            capture "Racket" hyperfine -r $runs -w $warmup --show-output "racket related.rkt"
+        else
+            command ${time} -f '%es %Mk' racket related.rkt
+        fi
+
+    check_output "related_posts_racket.json"
+}
+
 run_lobster() {
     echo "Running Lobster" &&
         cd ./lobster &&
@@ -768,7 +798,6 @@ run_lobster() {
         fi
 
     check_output "related_posts_lobster.json"
-}
 
 check_output() {
     cd ..
@@ -946,6 +975,10 @@ elif [ "$first_arg" = "luajit" ]; then
 
     run_luajit
 
+elif [ "$first_arg" = "luajit_off" ]; then
+
+    run_luajit_jit_off
+
 elif [ "$first_arg" = "lua" ]; then
 
     run_lua
@@ -981,6 +1014,10 @@ elif [ "$first_arg" = "ruby" ]; then
 elif [ "$first_arg" = "dascript" ]; then
 
     run_dascript
+
+elif [ "$first_arg" = "racket" ]; then
+
+    run_racket
 
 elif [ "$first_arg" = "lobster" ]; then
 
@@ -1029,6 +1066,7 @@ elif [ "$first_arg" = "all" ]; then
         run_csharp_con || echo -e "\n" &&
         run_csharp_con_aot || echo -e "\n" &&
         run_luajit || echo -e "\n" &&
+        run_luajit_jit_off || echo -e "\n" &&
         run_lua || echo -e "\n" &&
         run_ocaml || echo -e "\n" &&
         run_erlang || echo -e "\n" &&
