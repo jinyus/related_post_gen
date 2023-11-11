@@ -35,10 +35,8 @@ def main():
             else:
                 tag_map.set(tag, push(indexes, i))
 
-    var all_related_posts = []::RelatedPost
     let posts_count = posts.length
-
-    vector_capacity(all_related_posts, posts_count)
+    var all_related_posts = []::RelatedPost.vector_capacity(posts_count)
 
     for(posts) post,i:
 
