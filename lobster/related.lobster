@@ -84,7 +84,7 @@ def main():
 
     let related_json = JSON.encode(all_related_posts)
 
-    write_file("../related.json", related_json)
+    write_file("../related_posts_lobster.json", related_json)
 
 
 main()
