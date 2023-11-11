@@ -758,13 +758,44 @@ run_dascript() {
     check_output "related_posts_dascript.json"
 }
 
-run_lobster() {
-    echo "Running Lobster" &&
+run_lobster_jit() {
+    echo "Running Lobster (JIT)" &&
         cd ./lobster &&
         if [ $HYPER == 1 ]; then
-            capture "Lobster" hyperfine -r $slow_lang_runs -w $warmup --show-output "lobster related.lobster"
+            capture "Lobster (JIT)" hyperfine -r $slow_lang_runs -w $warmup --show-output "lobster related.lobster"
         else
             command ${time} -f '%es %Mk' lobster related.lobster
+        fi
+
+    check_output "related_posts_lobster.json"
+}
+
+run_lobster_cpp() {
+    if [ -z "$LOBSTER_GIT_LOCATION" ]; then
+        echo "Error: LOBSTER_GIT_LOCATION environment variable is not set."
+        exit 1
+    fi
+
+    if [ ! -d "$LOBSTER_GIT_LOCATION" ]; then
+        echo "Error: $LOBSTER_GIT_LOCATION is not a valid directory or does not exist."
+        exit 1
+    fi
+
+    current_directory=$(pwd)
+
+    echo "Running Lobster (C++ Backend)" &&
+        cp lobster "$LOBSTER_GIT_LOCATION/lobster" --force &&
+        cd "$LOBSTER_GIT_LOCATION" &&
+        lobster --cpp lobster/related.lobster &&
+        cd dev/compiled_lobster/src &&
+        g++ compiled_lobster.cpp -o related -I '../../include' -I '../../src' -I '../../external/SDL/include' &&
+        cp related "$current_directory/lobster/related" &&
+        cd "$current_directory" &&
+        cd ./lobster &&
+        if [ $HYPER == 1 ]; then
+            capture "Lobster (C++)" hyperfine -r $slow_lang_runs -w $warmup --show-output "./related"
+        else
+            command ${time} -f '%es %Mk' ./related
         fi
 
     check_output "related_posts_lobster.json"
@@ -984,7 +1015,11 @@ elif [ "$first_arg" = "dascript" ]; then
 
 elif [ "$first_arg" = "lobster" ]; then
 
-    run_lobster
+    run_lobster_jit
+
+elif [ "$first_arg" = "lobster_cpp" ]; then
+
+    run_lobster_cpp
 
 elif [ "$first_arg" = "all" ]; then
 
