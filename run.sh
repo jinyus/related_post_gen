@@ -100,7 +100,7 @@ run_cpp() {
     echo "Running C++" &&
         cd ./cpp &&
         if [ -z "$appendToFile" ]; then # only build on 5k run
-            g++ -O3 -std=c++20  -I./include main.cpp -o main
+            g++ -O3 -std=c++20 -I./include main.cpp -o main
         fi &&
         if [ $HYPER == 1 ]; then
             capture "C++" hyperfine -r $runs -w $warmup --show-output "./main"
@@ -758,6 +758,18 @@ run_dascript() {
     check_output "related_posts_dascript.json"
 }
 
+run_lobster() {
+    echo "Running Lobster" &&
+        cd ./lobster &&
+        if [ $HYPER == 1 ]; then
+            capture "Lobster" hyperfine -r $slow_lang_runs -w $warmup --show-output "lobster related.lobster"
+        else
+            command ${time} -f '%es %Mk' lobster related.lobster
+        fi
+
+    check_output "related_posts_lobster.json"
+}
+
 check_output() {
     cd ..
 
@@ -969,6 +981,10 @@ elif [ "$first_arg" = "ruby" ]; then
 elif [ "$first_arg" = "dascript" ]; then
 
     run_dascript
+
+elif [ "$first_arg" = "lobster" ]; then
+
+    run_lobster
 
 elif [ "$first_arg" = "all" ]; then
 
