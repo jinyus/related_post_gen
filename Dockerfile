@@ -88,6 +88,11 @@ RUN pacman -S --noconfirm --needed ruby
 RUN pacman -S --noconfirm --needed racket-minimal
 RUN raco pkg install --auto compiler-lib
 
+# install lobster
+RUN git clone https://github.com/aardappel/lobster.git /home/builduser/lobster
+RUN su -c "cd /home/builduser/lobster/dev && cmake -DCMAKE_BUILD_TYPE=Release && make -j8" builduser
+ENV PATH="$PATH:/home/builduser/lobster/bin"
+
 # use global versions
 RUN rm /home/builduser/swift-5.9-RELEASE-ubuntu22.04/usr/bin/clang
 RUN rm /home/builduser/swift-5.9-RELEASE-ubuntu22.04/usr/bin/llvm*

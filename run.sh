@@ -788,6 +788,47 @@ run_racket() {
     check_output "related_posts_racket.json"
 }
 
+run_lobster_jit() {
+    echo "Running Lobster (JIT)" &&
+        cd ./lobster &&
+        if [ $HYPER == 1 ]; then
+            capture "Lobster (JIT)" hyperfine -r $slow_lang_runs -w $warmup --show-output "lobster related.lobster"
+        else
+            command ${time} -f '%es %Mk' lobster related.lobster
+        fi
+
+    check_output "related_posts_lobster.json"
+}
+
+run_lobster_cpp() {
+    lobster_bin=$(which lobster)
+
+    if [ -z "$lobster_bin" ]; then
+        echo "Error: Lobster binary not found in PATH."
+        exit 1
+    fi
+
+    lobster_git_dir=$(dirname "$(dirname "$lobster_bin")")
+
+    current_directory=$(pwd)
+
+    echo "Running Lobster (C++ Backend)" &&
+        cp lobster "$lobster_git_dir/lobster" -r --force &&
+        cd "$lobster_git_dir" &&
+        lobster --cpp lobster/related.lobster &&
+        cd dev &&
+        cmake -DCMAKE_BUILD_TYPE=Release -DLOBSTER_ENGINE=OFF -DLOBSTER_TOCPP=ON && make -j8 &&
+        cd "$current_directory" &&
+        cd ./lobster &&
+        if [ $HYPER == 1 ]; then
+            capture "Lobster (C++)" hyperfine -r $slow_lang_runs -w $warmup --show-output "compiled_lobster"
+        else
+            command ${time} -f '%es %Mk' compiled_lobster
+        fi
+
+    check_output "related_posts_lobster.json"
+}
+
 check_output() {
     cd ..
 
@@ -1007,6 +1048,14 @@ elif [ "$first_arg" = "dascript" ]; then
 elif [ "$first_arg" = "racket" ]; then
 
     run_racket
+
+elif [ "$first_arg" = "lobster" ]; then
+
+    run_lobster_jit
+
+elif [ "$first_arg" = "lobster_cpp" ]; then
+
+    run_lobster_cpp
 
 elif [ "$first_arg" = "all" ]; then
 
