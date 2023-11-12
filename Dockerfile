@@ -91,7 +91,7 @@ RUN raco pkg install --auto compiler-lib
 # install lobster
 RUN pacman -S --noconfirm --needed cmake
 RUN git clone https://github.com/aardappel/lobster.git /home/builduser/lobster
-RUN su -c "cd /home/builduser/lobster/dev && cmake -DCMAKE_BUILD_TYPE=Release && make -j8" builduser
+RUN cd /home/builduser/lobster/dev && cmake -DCMAKE_BUILD_TYPE=Release -DLOBSTER_ENGINE=OFF && make -j8
 ENV PATH="$PATH:/home/builduser/lobster/bin"
 
 # use global versions
