@@ -6,7 +6,7 @@ FROM archlinux:base
 # Update package repository
 RUN pacman -Syu --noconfirm
 
-RUN pacman -S --noconfirm --needed wget unzip sudo base-devel git go clang llvm ldc dub python python-pip ncurses gcc llvm hyperfine rustup crystal zig dart nodejs deno maven nim opam dune lua51 luajit luarocks libedit github-cli less
+RUN pacman -S --noconfirm --needed wget unzip sudo base-devel git clang llvm ldc dub python python-pip ncurses gcc llvm hyperfine rustup crystal zig dart nodejs deno maven nim opam dune lua51 luajit luarocks libedit github-cli less
 
 # user needed to install aur packages
 RUN useradd -ms /bin/bash builduser
@@ -97,6 +97,11 @@ ENV PATH="$PATH:/home/builduser/lobster/bin"
 # use global versions
 RUN rm /home/builduser/swift-5.9-RELEASE-ubuntu22.04/usr/bin/clang
 RUN rm /home/builduser/swift-5.9-RELEASE-ubuntu22.04/usr/bin/llvm*
+
+# install go 1.21.3 // regression in 1.21.4
+RUN wget https://go.dev/dl/go1.21.3.linux-amd64.tar.gz
+RUN rm -rf /usr/local/go && tar -C /usr/local -xzf go1.21.3.linux-amd64.tar.gz
+ENV PATH="$PATH:/usr/local/go/bin"
 
 # you token that will be used to authenticate your fork
 ENV GIT_PAT=""
