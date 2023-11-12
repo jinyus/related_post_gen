@@ -5,7 +5,7 @@ import json
 
 let TOPN = 5
 
-class Post:
+struct Post:
     _id: string
     title: string
     tags: [string]
