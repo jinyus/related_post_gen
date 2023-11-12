@@ -801,21 +801,20 @@ run_lobster_jit() {
 }
 
 run_lobster_cpp() {
-    if [ -z "$LOBSTER_GIT_LOCATION" ]; then
-        echo "Error: LOBSTER_GIT_LOCATION environment variable is not set."
+    lobster_bin=$(which lobster)
+
+    if [ -z "$lobster_bin" ]; then
+        echo "Error: Lobster binary not found in PATH."
         exit 1
     fi
 
-    if [ ! -d "$LOBSTER_GIT_LOCATION" ]; then
-        echo "Error: $LOBSTER_GIT_LOCATION is not a valid directory or does not exist."
-        exit 1
-    fi
+    lobster_git_dir=$(dirname "$(dirname "$lobster_bin")")
 
     current_directory=$(pwd)
 
     echo "Running Lobster (C++ Backend)" &&
-        cp lobster "$LOBSTER_GIT_LOCATION/lobster" -r --force &&
-        cd "$LOBSTER_GIT_LOCATION" &&
+        cp lobster "$lobster_git_dir/lobster" -r --force &&
+        cd "$lobster_git_dir" &&
         lobster --cpp lobster/related.lobster &&
         cd dev &&
         cmake -DCMAKE_BUILD_TYPE=Release -DLOBSTER_ENGINE=OFF -DLOBSTER_TOCPP=ON && make -j8 &&
