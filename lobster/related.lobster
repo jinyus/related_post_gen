@@ -37,10 +37,12 @@ def main():
 
     let posts_count = posts.length
     let all_related_posts = []::RelatedPost.vector_capacity(posts_count)
+    let tagged_post_count = map(posts_count) : 0
 
     for(posts) post,i:
 
-        let tagged_post_count = map(posts_count) : 0
+        for(posts_count) j:
+            tagged_post_count[j] = 0
 
         for (post.tags) tag:
             for (assert(tag_map.get(tag))) index:
