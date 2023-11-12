@@ -818,14 +818,15 @@ run_lobster_cpp() {
         lobster --cpp lobster/related.lobster &&
         cd dev &&
         cmake -DCMAKE_BUILD_TYPE=Release -DLOBSTER_ENGINE=OFF -DLOBSTER_TOCPP=ON && make -j8 &&
-        cp "$lobster_git_dir/bin/compiled_lobster" "$current_directory/lobster/compiled_lobster" --force &&
         cd "$current_directory" &&
         cd ./lobster &&
+        mkdir -p src && #addresses bug: https://github.com/aardappel/lobster/issues/275
         if [ $HYPER == 1 ]; then
-            capture "Lobster (C++)" hyperfine -r $slow_lang_runs -w $warmup --show-output "./compiled_lobster"
+            capture "Lobster (C++)" hyperfine -r $slow_lang_runs -w $warmup --show-output "compiled_lobster"
         else
-            command ${time} -f '%es %Mk' ./compiled_lobster
-        fi
+            command ${time} -f '%es %Mk' compiled_lobster
+        fi &&
+        mv related_posts_lobster.json ../ # related to the bug above
 
     check_output "related_posts_lobster.json"
 }
