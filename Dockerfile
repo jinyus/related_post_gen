@@ -86,8 +86,8 @@ RUN pacman -S --noconfirm --needed leiningen stack
 RUN pacman -S --noconfirm --needed ruby
 
 # install racket
-RUN pacman -S --noconfirm --needed racket-minimal
-RUN raco pkg install --auto compiler-lib
+RUN pacman -S --noconfirm --needed racket-minimal cairo fontconfig pango
+RUN raco pkg install --auto --no-docs compiler-lib typed-racket-more
 
 # install lobster
 RUN pacman -S --noconfirm --needed cmake

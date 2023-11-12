@@ -788,6 +788,22 @@ run_racket() {
     check_output "related_posts_racket.json"
 }
 
+run_typed_racket() {
+    echo "Running Typed Racket" &&
+        cd ./racket &&
+        if [ -z "$appendToFile" ]; then # only build on 5k run
+            raco pkg install --auto --name related --no-docs --skip-installed &&
+                raco make typed/related.rkt
+        fi &&
+        if [ $HYPER == 1 ]; then
+            capture "Racket" hyperfine -r $runs -w $warmup --show-output "racket typed/related.rkt"
+        else
+            command ${time} -f '%es %Mk' racket typed/related.rkt
+        fi
+
+    check_output "related_posts_typed_racket.json"
+}
+
 run_lobster_jit() {
     echo "Running Lobster (JIT)" &&
         cd ./lobster &&
@@ -1066,6 +1082,10 @@ elif [ "$first_arg" = "dascript" ]; then
 elif [ "$first_arg" = "racket" ]; then
 
     run_racket
+
+elif [ "$first_arg" = "typed/racket" ]; then
+
+    run_typed_racket
 
 elif [ "$first_arg" = "lobster" ]; then
 
