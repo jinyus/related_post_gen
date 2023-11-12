@@ -1106,7 +1106,7 @@ elif [ "$first_arg" = "all" ]; then
         run_ocaml || echo -e "\n" &&
         run_erlang || echo -e "\n" &&
         run_ruby || echo -e "\n" &&
-        run_dascript || echo -e "\n" &&
+        # run_dascript || echo -e "\n" && #not installed in docker
         run_lobster || echo -e "\n" &&
         echo -e "Finished running all\n"
 
