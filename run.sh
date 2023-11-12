@@ -1106,6 +1106,7 @@ elif [ "$first_arg" = "all" ]; then
         run_erlang || echo -e "\n" &&
         run_ruby || echo -e "\n" &&
         run_dascript || echo -e "\n" &&
+        run_lobster || echo -e "\n" &&
         echo -e "Finished running all\n"
 
 elif [ "$first_arg" = "clean" ]; then
