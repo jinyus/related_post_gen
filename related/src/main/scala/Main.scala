@@ -26,15 +26,19 @@ object Main {
 
     val postsCount = posts.length
 
-    val tagMap = Map[String, Array[Int]]()
+    val tagMapTemp = Map[String, Buffer[Int]]()
 
     postsWithIndex.foreach { case (post, i) =>
       post.tags.foreach { tag =>
-        tagMap.get(tag) match {
-          case Some(indexes) => tagMap(tag) = indexes :+ i
-          case None          => tagMap(tag) = Array(i)
+        tagMapTemp.get(tag) match {
+          case Some(indexes) => indexes += i
+          case None          => tagMapTemp(tag) = Buffer(i)
         }
       }
+    }
+
+    val tagMap = tagMapTemp.map { case (tag, indexes) =>
+      tag -> indexes.toArray
     }
 
     val allRelatedPosts = postsWithIndex.map { case (post, i) =>
@@ -63,5 +67,5 @@ object Main {
     println(s"Processing time (w/o IO): ${end - start}ms")
 
     val relatedJson = upickle.default.write(allRelatedPosts)
-    os.write(os.pwd / os.up / "related_posts_scala.json", relatedJson)
+    os.write.over(os.pwd / os.up / "related_posts_scala.json", relatedJson)
 }
