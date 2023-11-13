@@ -44,3 +44,6 @@ clojure/.nrepl-port
 
 .fake
 cpp/main
+
+.metals/
+.bsp/
