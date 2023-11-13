@@ -42,8 +42,8 @@ object Main {
     val allRelatedPosts = postsWithIndex.map { case (post, i) =>
       val taggedPostCount = Array.fill(postsCount)(0)
 
-      post.tags.foreach { tag =>
-        tagMap(tag).foreach { index =>
+      for (tag <- post.tags) {
+        for (index <- tagMap(tag)) {
           taggedPostCount(index) += 1
         }
       }
