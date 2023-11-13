@@ -49,10 +49,8 @@ object Main {
       // faster than allocating new array and mapInplace
       val taggedPostCount = taggedPostCountTemp.clone()
 
-      for (tag <- post.tags) {
-        for (index <- tagMap(tag)) {
-          taggedPostCount(index) += 1
-        }
+      post.tags.flatMap(tagMap).foreach { index =>
+        taggedPostCount(index) += 1
       }
 
       taggedPostCount(i) = 0
