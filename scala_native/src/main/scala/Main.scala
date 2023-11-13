@@ -53,7 +53,7 @@ object Main {
       val top5 = Array.fill(TopN * 2)(0)
       var minTags = 0
 
-      for (j <- taggedPostCount.indices) {
+      for (j <- 0 until postsCount) {
         val count = taggedPostCount(j)
         if (count > minTags) {
           var upperBound = (TopN - 2) * 2
