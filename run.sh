@@ -838,7 +838,7 @@ run_scala_native() {
             sbt nativeLink
         fi &&
         scala_version=$(ls -d target/*/ | grep -o 'scala-[^/]*' | head -1) &&
-        if [ $HYPER == 11 ]; then
+        if [ $HYPER == 1 ]; then
             capture "Scala Native" hyperfine -r $slow_lang_runs -w $warmup --show-output "./target/$scala_version/scala_native-out"
         else
             command ${time} -f '%es %Mk' ./target/$scala_version/scala_native-out
