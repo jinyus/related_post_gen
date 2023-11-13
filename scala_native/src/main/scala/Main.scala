@@ -28,8 +28,8 @@ object Main {
 
     val tagMapTemp = Map[String, Buffer[Int]]()
 
-    postsWithIndex.foreach { case (post, i) =>
-      post.tags.foreach { tag =>
+    for ((post, i) <- postsWithIndex) {
+      for (tag <- post.tags) {
         tagMapTemp.getOrElseUpdate(tag, Buffer()) += i
       }
     }
