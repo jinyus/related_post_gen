@@ -22,13 +22,14 @@ object Main {
 
     val start = System.currentTimeMillis()
 
-    val postsWithIndex = posts.zipWithIndex
-
     val postsCount = posts.length
+
+    var range = 0 until postsCount
 
     val tagMapTemp = Map[String, Buffer[Int]]()
 
-    for ((post, i) <- postsWithIndex) {
+    for (i <- range) {
+      val post = posts(i)
       for (tag <- post.tags) {
         tagMapTemp.getOrElseUpdate(tag, Buffer()) += i
       }
@@ -39,8 +40,14 @@ object Main {
       tag -> indexes.toArray
     }
 
-    val allRelatedPosts = postsWithIndex.map { case (post, i) =>
-      val taggedPostCount = Array.fill(postsCount)(0)
+    val taggedPostCountTemp = Array.fill(postsCount)(0)
+    val topNTemp = Array.fill(TopN * 2)(0)
+
+    val allRelatedPosts = Array.tabulate(postsCount) { i =>
+      val post = posts(i)
+
+      // faster than allocating new array and mapInplace
+      val taggedPostCount = taggedPostCountTemp.clone()
 
       for (tag <- post.tags) {
         for (index <- tagMap(tag)) {
@@ -50,10 +57,10 @@ object Main {
 
       taggedPostCount(i) = 0
 
-      val top5 = Array.fill(TopN * 2)(0)
+      val top5 = topNTemp.clone()
       var minTags = 0
 
-      for (j <- 0 until postsCount) {
+      for (j <- range) {
         val count = taggedPostCount(j)
         if (count > minTags) {
           var upperBound = (TopN - 2) * 2
