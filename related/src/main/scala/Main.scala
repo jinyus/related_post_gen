@@ -30,10 +30,7 @@ object Main {
 
     postsWithIndex.foreach { case (post, i) =>
       post.tags.foreach { tag =>
-        tagMapTemp.get(tag) match {
-          case Some(indexes) => indexes += i
-          case None          => tagMapTemp(tag) = Buffer(i)
-        }
+        tagMapTemp.getOrElseUpdate(tag, Buffer(i)) += i
       }
     }
 
