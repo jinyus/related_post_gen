@@ -52,15 +52,31 @@ object Main {
 
       taggedPostCount(i) = 0
 
-      val topIndexes = taggedPostCount.zipWithIndex
-        .filter(_._1 > 0)
-        .sortInPlaceBy(-_._1)
-        .take(TopN)
-        .map(_._2)
+      val top5 = Array.fill(TopN * 2)(0)
+      var minTags = 0
 
-      val topPosts = topIndexes.map(posts)
+      for (j <- taggedPostCount.indices) {
+        val count = taggedPostCount(j)
+        if (count > minTags) {
+          var upperBound = (TopN - 2) * 2
 
-      RelatedPost(post._id, post.tags, topPosts.toArray)
+          while (upperBound >= 0 && count > top5(upperBound)) {
+            top5(upperBound + 2) = top5(upperBound)
+            top5(upperBound + 3) = top5(upperBound + 1)
+            upperBound -= 2
+          }
+
+          val insertPos = upperBound + 2
+          top5(insertPos) = count
+          top5(insertPos + 1) = j
+
+          minTags = top5(TopN * 2 - 2)
+        }
+      }
+
+      val topPosts = Array.tabulate(TopN)(i => posts(top5(i * 2 + 1)))
+
+      RelatedPost(post._id, post.tags, topPosts)
     }
 
     val end = System.currentTimeMillis()
