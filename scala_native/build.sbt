@@ -17,5 +17,5 @@ import scala.scalanative.build._
 nativeConfig ~= { c =>
   c.withLTO(LTO.thin)
     .withMode(Mode.releaseFast)
-    .withGC(GC.immix) // commix
+    .withGC(GC.commix) // commix
 }
