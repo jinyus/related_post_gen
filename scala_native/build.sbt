@@ -3,8 +3,8 @@ scalaVersion := "3.3.1"
 enablePlugins(ScalaNativePlugin)
 
 libraryDependencies ++= Seq(
-  "com.lihaoyi" %%% "upickle" % "3.1.0", 
-  "com.lihaoyi" %%% "os-lib" % "0.9.2"  
+  "com.lihaoyi" %%% "upickle" % "3.1.0",
+  "com.lihaoyi" %%% "os-lib" % "0.9.2"
 )
 
 // set to Debug for compilation details (Info is default)
@@ -15,7 +15,7 @@ import scala.scalanative.build._
 
 // defaults set with common options shown
 nativeConfig ~= { c =>
-  c.withLTO(LTO.none) // thin
-    .withMode(Mode.debug) // releaseFast
+  c.withLTO(LTO.thin)
+    .withMode(Mode.releaseFast)
     .withGC(GC.immix) // commix
 }
