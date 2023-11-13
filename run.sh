@@ -831,6 +831,22 @@ run_lobster_cpp() {
     check_output "related_posts_lobster.json"
 }
 
+run_scala_native() {
+    echo "Running Scala Native" &&
+        cd ./scala_native &&
+        if [ -z "$appendToFile" ]; then # only build on 5k run
+            sbt nativeLink
+        fi &&
+        scala_version=$(ls -d target/*/ | grep -o 'scala-[^/]*' | head -1) &&
+        if [ $HYPER == 1 ]; then
+            capture "Scala Native" hyperfine -r $slow_lang_runs -w $warmup --show-output "./target/$scala_version/scala_native-out"
+        else
+            command ${time} -f '%es %Mk' ./target/$scala_version/scala_native-out
+        fi
+
+    check_output "related_posts_scala.json"
+}
+
 check_output() {
     cd ..
 
@@ -1059,6 +1075,10 @@ elif [ "$first_arg" = "lobster_cpp" ]; then
 
     run_lobster_cpp
 
+elif [ "$first_arg" = "scala_native" ]; then
+
+    run_scala_native
+
 elif [ "$first_arg" = "all" ]; then
 
     echo -e "Running all\n" &&
@@ -1110,6 +1130,7 @@ elif [ "$first_arg" = "all" ]; then
         # run_dascript || echo -e "\n" && #not installed in docker
         run_lobster_jit || echo -e "\n" &&
         run_lobster_cpp || echo -e "\n" &&
+        run_scala_native || echo -e "\n" &&
         echo -e "Finished running all\n"
 
 elif [ "$first_arg" = "clean" ]; then
