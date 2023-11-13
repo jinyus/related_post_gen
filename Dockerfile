@@ -22,6 +22,7 @@ RUN bash -c "source /root/.sdkman/bin/sdkman-init.sh && sdk install java 21-graa
 ENV GRAALVM_HOME=/root/.sdkman/candidates/java/21-graal
 ENV JAVA_HOME=/root/.sdkman/candidates/java/21-graal
 ENV PATH=$PATH:$GRAALVM_HOME/bin:$JAVA_HOME/bin
+ENV PATH=$PATH:/root/.sdkman/candidates/sbt/current/bin
 
 # install dotnet
 RUN su -c "git clone https://aur.archlinux.org/dotnet-preview-bin.git /home/builduser/dotnet" builduser
