@@ -34,6 +34,7 @@ object Main {
       }
     }
 
+    // for faster access
     val tagMap = tagMapTemp.map { case (tag, indexes) =>
       tag -> indexes.toArray
     }
