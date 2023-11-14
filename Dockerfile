@@ -87,7 +87,10 @@ RUN pacman -S --noconfirm --needed ruby
 
 # install racket
 RUN pacman -S --noconfirm --needed racket-minimal
-RUN raco pkg install --auto compiler-lib
+RUN raco pkg install --auto --no-docs compiler-lib
+# additional deps needed for Typed Racket, disabled for now
+# RUN pacman -S --noconfirm --needed racket-minimal cairo fontconfig pango
+# RUN raco pkg install --auto --no-docs compiler-lib typed-racket-more
 
 # install lobster
 RUN pacman -S --noconfirm --needed cmake
