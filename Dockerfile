@@ -106,7 +106,7 @@ ENV PATH="$PATH:/usr/local/go/bin"
 
 # install ldc 1.34 // regression in 1.35
 RUN wget https://github.com/ldc-developers/ldc/releases/download/v1.34.0/ldc2-1.34.0-linux-x86_64.tar.xz
-RUN rm -rf /usr/local/ldc && tar -C /usr/local -xzf ldc2-1.34.0-linux-x86_64.tar.xz
+RUN rm -rf /usr/local/ldc && tar -C /usr/local -xvf ldc2-1.34.0-linux-x86_64.tar.xz
 ENV PATH="$PATH:/usr/local/ldc2-1.34.0-linux-x86_64/bin"
 
 # you token that will be used to authenticate your fork
