@@ -7,7 +7,11 @@ case class Post(_id: String, title: String, tags: Array[String])
 object Post {
   implicit val rw: ReadWriter[Post] = upickle.default.macroRW
 }
-case class RelatedPost(_id: String, tags: Array[String], related: Array[Post])
+case class RelatedPost(
+    _id: String,
+    tags: Array[String],
+    related: ArrayBuffer[Post]
+)
 object RelatedPost {
   implicit val rw: ReadWriter[RelatedPost] = upickle.default.macroRW
 }
@@ -41,7 +45,7 @@ object Main {
     }
 
     val taggedPostCountTemp = Array.fill(postsCount)(0)
-    val topNTemp = Array.fill(TopN * 2)(0)
+    val topNTemp = ArrayBuffer.fill(TopN)((0, 0))
 
     val allRelatedPosts = Array.tabulate(postsCount) { i =>
       val post = posts(i)
@@ -49,8 +53,10 @@ object Main {
       // faster than allocating new array and mapInplace
       val taggedPostCount = taggedPostCountTemp.clone()
 
-      post.tags.flatMap(tagMap).foreach { index =>
-        taggedPostCount(index) += 1
+      for (tag <- post.tags) {
+        for (index <- tagMap(tag)) {
+          taggedPostCount(index) += 1
+        }
       }
 
       taggedPostCount(i) = 0
@@ -58,26 +64,29 @@ object Main {
       val top5 = topNTemp.clone()
       var minTags = 0
 
-      for (j <- range) {
-        val count = taggedPostCount(j)
+      // Custom priority queue logic
+      for (idx <- range) {
+        val count = taggedPostCount(idx)
         if (count > minTags) {
-          var upperBound = (TopN - 2) * 2
+          var pos = 3
 
-          while (upperBound >= 0 && count > top5(upperBound)) {
-            top5(upperBound + 2) = top5(upperBound)
-            top5(upperBound + 3) = top5(upperBound + 1)
-            upperBound -= 2
+          while (pos >= 0 && top5(pos)._2 < count) {
+            pos -= 1
           }
+          pos += 1
 
-          val insertPos = upperBound + 2
-          top5(insertPos) = count
-          top5(insertPos + 1) = j
-
-          minTags = top5(TopN * 2 - 2)
+          if (pos <= 4) {
+            top5.insert(
+              pos,
+              (idx, count)
+            )
+            top5.remove(TopN)
+            minTags = top5.last._2
+          }
         }
       }
 
-      val topPosts = Array.tabulate(TopN)(i => posts(top5(i * 2 + 1)))
+      val topPosts = top5.map { case (idx, _) => posts(idx) }
 
       RelatedPost(post._id, post.tags, topPosts)
     }
