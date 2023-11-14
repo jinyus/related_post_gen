@@ -1,107 +1,64 @@
+import gleam/dynamic
 import gleam/io
 import gleam/int
 import gleam/list
-import gleam/map
-import gleam/option.{None, Some}
-import gleam/result
-import types
+import gleam/bool
+import gleam/set
+import gleam/pair
+import gleam/float
 import simplifile.{read, write}
-import json
 import birl/time
+import gleam/json
+import post.{type Post, type RelatedPost, RelatedPost}
 
-// very slow; needs work; takes 7s for 1 post
-// no mutability, too much copying in hot loop
-// sort on linked list too slow
+fn to_related_post(post: Post, posts: List(Post)) -> RelatedPost {
+  RelatedPost(
+    post.id,
+    set.to_list(post.tags),
+    similar_posts(to: post, among: posts),
+  )
+}
+
+fn similar_posts(to post: Post, among posts: List(Post)) -> List(Post) {
+  let other_posts_with_similarity = {
+    use other_post <- list.filter_map(posts)
+    use <- bool.guard(when: other_post.id == post.id, return: Error(Nil))
+    let similarity = count_shared_tags(post, other_post)
+    Ok(#(similarity, other_post))
+  }
+  take_top_n(other_posts_with_similarity)
+}
+
+fn count_shared_tags(one: Post, other: Post) -> Int {
+  set.size(set.intersection(one.tags, other.tags))
+}
 
 const top_n = 5
 
+fn take_top_n(list: List(#(Int, a))) -> List(a) {
+  list.sort(list, fn(one, other) { int.compare(other.0, one.0) })
+  |> list.take(top_n)
+  |> list.map(pair.second)
+}
+
 pub fn main() {
-  let assert Ok(posts_raw) = read(from: "../posts.json")
-  let assert Ok(posts) = json.posts_from_json(posts_raw)
+  let assert Ok(raw_posts) = read("../posts.json")
+  let assert Ok(posts) =
+    json.decode(raw_posts, using: dynamic.list(post.decode))
 
   let start = time.monotonic_now()
-
-  let tag_map: map.Map(String, List(Int)) =
-    posts
-    |> list.index_fold(
-      map.new(),
-      fn(acc, post, i) {
-        list.fold(
-          post.tags,
-          acc,
-          fn(acc, tag) {
-            map.update(
-              acc,
-              tag,
-              fn(val) {
-                case val {
-                  None -> [i]
-                  Some(post_ids) -> list.append(post_ids, [i])
-                }
-              },
-            )
-          },
-        )
-      },
-    )
-
-  let all_related =
+  let related_posts =
     posts
     |> list.take(1)
-    |> list.index_map(fn(i, post) {
-      // no arrays, must use maps
-      let tagged_post_count_temp =
-        posts
-        |> list.index_map(fn(i, _) { #(i, 0) })
-        |> map.from_list
-
-      let tagged_post_count =
-        posts
-        |> list.fold(
-          tagged_post_count_temp,
-          fn(acc, _) {
-            post.tags
-            |> list.fold(
-              acc,
-              fn(acc, tag) {
-                tag_map
-                |> map.get(tag)
-                |> result.unwrap(or: [])
-                |> list.fold(
-                  acc,
-                  fn(acc, o_idx) {
-                    let assert Ok(current_count) = map.get(acc, o_idx)
-                    map.insert(acc, o_idx, current_count + 1)
-                  },
-                )
-              },
-            )
-          },
-        )
-
-      let related_posts =
-        tagged_post_count
-        |> map.to_list
-        |> list.filter(fn(a) { a.1 > 0 && a.0 != i })
-        |> list.sort(fn(a, b) { int.compare(b.1, a.1) })
-        |> list.take(top_n)
-        |> list.map(fn(a) {
-          let assert Ok(post) = list.at(posts, a.0)
-          post
-        })
-
-      types.RelatedPost(id: post.id, tags: post.tags, related: related_posts)
-    })
-
+    |> list.map(to_related_post(_, posts))
   let end = time.monotonic_now()
 
-  let took =
-    { end - start } / 1000
-    |> int.to_string
-
+  let took = float.to_string(int.to_float(end - start) /. 1000.0)
   io.println("Processing time (w/o IO): " <> { took } <> "ms")
 
-  let all_related_json = json.related_posts_to_json(all_related)
+  let all_related_json =
+    json.array(related_posts, of: post.related_to_json)
+    |> json.to_string
 
   let assert Ok(_) = write(all_related_json, "../related_posts_gleam.json")
 }
