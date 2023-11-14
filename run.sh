@@ -709,6 +709,19 @@ run_d() {
     check_output "related_posts_d.json"
 }
 
+run_d_v2() {
+    echo "Running D v2" &&
+        cd ./d_v2 &&
+        dub build --build=release &&
+        if [ $HYPER == 1 ]; then
+            capture "D_v2" hyperfine -r $runs -w $warmup --show-output "./related"
+        else
+            command time -f '%es %Mk' ./related
+        fi
+
+    check_output "related_posts_d2.json"
+}
+
 run_d_con() {
     echo "Running D Concurrent" &&
         cd ./d_con &&
