@@ -6,7 +6,7 @@ FROM archlinux:base
 # Update package repository
 RUN pacman -Syu --noconfirm
 
-RUN pacman -S --noconfirm --needed wget unzip sudo base-devel git go clang llvm ldc dub python python-pip ncurses gcc llvm hyperfine rustup crystal zig dart nodejs deno maven nim opam dune lua51 luajit luarocks libedit github-cli less
+RUN pacman -S --noconfirm --needed wget unzip sudo base-devel git clang llvm python python-pip ncurses gcc hyperfine rustup crystal zig dart nodejs deno maven nim opam dune lua51 luajit luarocks libedit github-cli less
 
 # user needed to install aur packages
 RUN useradd -ms /bin/bash builduser
@@ -17,11 +17,12 @@ WORKDIR /app
 
 RUN curl -s "https://get.sdkman.io" | bash
 
-RUN bash -c "source /root/.sdkman/bin/sdkman-init.sh && sdk install java 21-graal"
+RUN bash -c "source /root/.sdkman/bin/sdkman-init.sh && sdk install java 21-graal && sdk install sbt"
 
 ENV GRAALVM_HOME=/root/.sdkman/candidates/java/21-graal
 ENV JAVA_HOME=/root/.sdkman/candidates/java/21-graal
 ENV PATH=$PATH:$GRAALVM_HOME/bin:$JAVA_HOME/bin
+ENV PATH=$PATH:/root/.sdkman/candidates/sbt/current/bin
 
 # install dotnet
 RUN su -c "git clone https://aur.archlinux.org/dotnet-preview-bin.git /home/builduser/dotnet" builduser
@@ -81,11 +82,32 @@ ENV PATH="$PATH:/home/builduser/julia-1.9.3/bin"
 # install lein for clojure and stack for haskell
 RUN pacman -S --noconfirm --needed leiningen stack
 
+# install ruby
 RUN pacman -S --noconfirm --needed ruby
+
+# install racket
+RUN pacman -S --noconfirm --needed racket-minimal
+RUN raco pkg install --auto compiler-lib
+
+# install lobster
+RUN pacman -S --noconfirm --needed cmake
+RUN git clone https://github.com/aardappel/lobster.git /home/builduser/lobster
+RUN cd /home/builduser/lobster/dev && cmake -DCMAKE_BUILD_TYPE=Release -DLOBSTER_ENGINE=OFF && make -j8
+ENV PATH="$PATH:/home/builduser/lobster/bin"
 
 # use global versions
 RUN rm /home/builduser/swift-5.9-RELEASE-ubuntu22.04/usr/bin/clang
 RUN rm /home/builduser/swift-5.9-RELEASE-ubuntu22.04/usr/bin/llvm*
+
+# install go 1.21.3 // regression in 1.21.4
+RUN wget https://go.dev/dl/go1.21.3.linux-amd64.tar.gz
+RUN rm -rf /usr/local/go && tar -C /usr/local -xzf go1.21.3.linux-amd64.tar.gz
+ENV PATH="$PATH:/usr/local/go/bin"
+
+# install ldc 1.34 // regression in 1.35
+RUN wget https://github.com/ldc-developers/ldc/releases/download/v1.34.0/ldc2-1.34.0-linux-x86_64.tar.xz
+RUN rm -rf /usr/local/ldc && tar -C /usr/local -xzf ldc2-1.34.0-linux-x86_64.tar.xz
+ENV PATH="$PATH:/usr/local/ldc2-1.34.0-linux-x86_64/bin"
 
 # you token that will be used to authenticate your fork
 ENV GIT_PAT=""

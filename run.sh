@@ -100,7 +100,7 @@ run_cpp() {
     echo "Running C++" &&
         cd ./cpp &&
         if [ -z "$appendToFile" ]; then # only build on 5k run
-            g++ -O3 -std=c++20  -I./include main.cpp -o main
+            g++ -O3 -std=c++20 -I./include main.cpp -o main
         fi &&
         if [ $HYPER == 1 ]; then
             capture "C++" hyperfine -r $runs -w $warmup --show-output "./main"
@@ -640,6 +640,20 @@ run_luajit() {
 
 }
 
+run_luajit_jit_off() {
+    echo "Running LuaJIT (JIT OFF)" &&
+        cd ./lua &&
+        sudo luarocks --lua-version 5.1 install luasocket &&
+        if [ $HYPER == 1 ]; then
+            capture "LuaJIT (JIT OFF)" hyperfine -r $runs -w $warmup --show-output "luajit -joff only_lua.lua"
+        else
+            command ${time} -f '%es %Mk' luajit -joff only_lua.lua
+        fi
+
+    check_output "related_posts_lua.json"
+
+}
+
 run_lua() {
     echo "Running Lua" &&
         sudo luarocks install luasocket &&
@@ -693,6 +707,19 @@ run_d() {
         fi
 
     check_output "related_posts_d.json"
+}
+
+run_d_v2() {
+    echo "Running D v2" &&
+        cd ./d_v2 &&
+        dub build --build=release &&
+        if [ $HYPER == 1 ]; then
+            capture "D_v2" hyperfine -r $runs -w $warmup --show-output "./related"
+        else
+            command time -f '%es %Mk' ./related
+        fi
+
+    check_output "related_posts_d2.json"
 }
 
 run_d_con() {
@@ -756,6 +783,81 @@ run_dascript() {
         fi
 
     check_output "related_posts_dascript.json"
+}
+
+run_racket() {
+    echo "Running Racket" &&
+        cd ./racket &&
+        if [ -z "$appendToFile" ]; then # only build on 5k run
+            raco pkg install --auto --name related --no-docs --skip-installed &&
+                raco make related.rkt
+        fi &&
+        if [ $HYPER == 1 ]; then
+            capture "Racket" hyperfine -r $runs -w $warmup --show-output "racket related.rkt"
+        else
+            command ${time} -f '%es %Mk' racket related.rkt
+        fi
+
+    check_output "related_posts_racket.json"
+}
+
+run_lobster_jit() {
+    echo "Running Lobster (JIT)" &&
+        cd ./lobster &&
+        if [ $HYPER == 1 ]; then
+            capture "Lobster (JIT)" hyperfine -r $slow_lang_runs -w $warmup --show-output "lobster related.lobster"
+        else
+            command ${time} -f '%es %Mk' lobster related.lobster
+        fi
+
+    check_output "related_posts_lobster.json"
+}
+
+run_lobster_cpp() {
+    lobster_bin=$(which lobster)
+
+    if [ -z "$lobster_bin" ]; then
+        echo "Error: Lobster binary not found in PATH."
+        exit 1
+    fi
+
+    lobster_git_dir=$(dirname "$(dirname "$lobster_bin")")
+
+    current_directory=$(pwd)
+
+    echo "Running Lobster (C++ Backend)" &&
+        cp lobster "$lobster_git_dir/lobster" -r --force &&
+        cd "$lobster_git_dir" &&
+        lobster --cpp lobster/related.lobster &&
+        cd dev &&
+        cmake -DCMAKE_BUILD_TYPE=Release -DLOBSTER_ENGINE=OFF -DLOBSTER_TOCPP=ON && make -j8 &&
+        cd "$current_directory" &&
+        cd ./lobster &&
+        mkdir -p src && #addresses bug: https://github.com/aardappel/lobster/issues/275
+        if [ $HYPER == 1 ]; then
+            capture "Lobster (C++)" hyperfine -r $slow_lang_runs -w $warmup --show-output "compiled_lobster"
+        else
+            command ${time} -f '%es %Mk' compiled_lobster
+        fi &&
+        mv related_posts_lobster.json ../ # related to the bug above
+
+    check_output "related_posts_lobster.json"
+}
+
+run_scala_native() {
+    echo "Running Scala Native" &&
+        cd ./scala_native &&
+        if [ -z "$appendToFile" ]; then # only build on 5k run
+            sbt nativeLink
+        fi &&
+        scala_version=$(ls -d target/*/ | grep -o 'scala-[^/]*' | head -1) &&
+        if [ $HYPER == 1 ]; then
+            capture "Scala Native" hyperfine -r $slow_lang_runs -w $warmup --show-output "./target/$scala_version/scala_native-out"
+        else
+            command ${time} -f '%es %Mk' ./target/$scala_version/scala_native-out
+        fi
+
+    check_output "related_posts_scala.json"
 }
 
 check_output() {
@@ -934,6 +1036,10 @@ elif [ "$first_arg" = "luajit" ]; then
 
     run_luajit
 
+elif [ "$first_arg" = "luajit_off" ]; then
+
+    run_luajit_jit_off
+
 elif [ "$first_arg" = "lua" ]; then
 
     run_lua
@@ -969,6 +1075,22 @@ elif [ "$first_arg" = "ruby" ]; then
 elif [ "$first_arg" = "dascript" ]; then
 
     run_dascript
+
+elif [ "$first_arg" = "racket" ]; then
+
+    run_racket
+
+elif [ "$first_arg" = "lobster" ]; then
+
+    run_lobster_jit
+
+elif [ "$first_arg" = "lobster_cpp" ]; then
+
+    run_lobster_cpp
+
+elif [ "$first_arg" = "scala_native" ]; then
+
+    run_scala_native
 
 elif [ "$first_arg" = "all" ]; then
 
@@ -1013,11 +1135,15 @@ elif [ "$first_arg" = "all" ]; then
         run_csharp_con || echo -e "\n" &&
         run_csharp_con_aot || echo -e "\n" &&
         run_luajit || echo -e "\n" &&
+        run_luajit_jit_off || echo -e "\n" &&
         run_lua || echo -e "\n" &&
         run_ocaml || echo -e "\n" &&
         run_erlang || echo -e "\n" &&
-        run_ruby || echo -e "\n" &&
-        run_dascript || echo -e "\n" &&
+        # run_ruby || echo -e "\n" && # too slow
+        # run_dascript || echo -e "\n" && #not installed in docker
+        run_lobster_jit || echo -e "\n" &&
+        run_lobster_cpp || echo -e "\n" &&
+        run_scala_native || echo -e "\n" &&
         echo -e "Finished running all\n"
 
 elif [ "$first_arg" = "clean" ]; then

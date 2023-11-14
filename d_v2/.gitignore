@@ -1,0 +1,16 @@
+.dub
+related
+docs.json
+__dummy.html
+docs/
+/d_v2
+d_v2.so
+d_v2.dylib
+d_v2.dll
+d_v2.a
+d_v2.lib
+d_v2-test-*
+*.exe
+*.o
+*.obj
+*.lst

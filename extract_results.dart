@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'dart:math';
 
 // script to extract benchmark results and update readme.md
 
