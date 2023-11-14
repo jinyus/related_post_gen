@@ -1,7 +1,5 @@
-use std::{collections::BinaryHeap, hint, time::Instant};
+use std::{collections::BinaryHeap, time::Instant};
 
-use bumpalo::collections::Vec as BVec;
-use bumpalo::Bump;
 use rustc_data_structures::fx::FxHashMap;
 use serde::{Deserialize, Serialize};
 use serde_json::from_str;
@@ -77,9 +75,6 @@ fn main() {
 
     let start = Instant::now();
 
-    let cap = (posts.len() * std::mem::size_of::<u8>()).next_power_of_two();
-    let arena = Bump::with_capacity(cap);
-
     let mut post_tags_map: FxHashMap<&str, Vec<u32>> = FxHashMap::default();
 
     for (post_idx, post) in posts.iter().enumerate() {
@@ -88,12 +83,12 @@ fn main() {
         }
     }
 
+    let mut tagged_post_count = vec![0u8; posts.len()];
     let related_posts: Vec<RelatedPosts<'_>> = posts
         .iter()
         .enumerate()
         .map(|(post_idx, post)| {
-            let mut tagged_post_count: BVec<u8> = BVec::with_capacity_in(posts.len(), &arena);
-            tagged_post_count.resize(posts.len(), 0);
+            tagged_post_count.fill(0);
 
             for tag in &post.tags {
                 if let Some(tag_posts) = post_tags_map.get(tag) {
@@ -125,10 +120,9 @@ fn main() {
         })
         .collect();
 
-    // Tell compiler to not delay now() until print is eval'ed.
-    let end = hint::black_box(Instant::now());
+    let dur = start.elapsed();
 
-    println!("Processing time (w/o IO): {:?}", end.duration_since(start));
+    println!("Processing time (w/o IO): {dur:?}");
 
     // I have no explanation for why, but doing this before the print improves performance pretty
     // significantly (15%) when using slices in the hashmap key and RelatedPosts
