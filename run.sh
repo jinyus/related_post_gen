@@ -1056,6 +1056,10 @@ elif [ "$first_arg" = "d" ]; then
 
     run_d
 
+elif [ "$first_arg" = "d2" ]; then
+
+    run_d_v2
+
 elif [ "$first_arg" = "d_con" ]; then
 
     run_d_con
@@ -1100,6 +1104,7 @@ elif [ "$first_arg" = "all" ]; then
         run_rust || echo -e "\n" &&
         run_rust_con || echo -e "\n" &&
         run_d || echo -e "\n" &&
+        run_d_v2 || echo -e "\n" &&
         run_d_con || echo -e "\n" &&
         run_cpp || echo -e "\n" &&
         run_cpp_con || echo -e "\n" &&
