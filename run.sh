@@ -796,7 +796,7 @@ run_typed_racket() {
                 raco make typed/related.rkt
         fi &&
         if [ $HYPER == 1 ]; then
-            capture "Racket" hyperfine -r $runs -w $warmup --show-output "racket typed/related.rkt"
+            capture "Typed Racket" hyperfine -r $runs -w $warmup --show-output "racket typed/related.rkt"
         else
             command ${time} -f '%es %Mk' racket typed/related.rkt
         fi
