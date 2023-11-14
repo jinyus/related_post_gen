@@ -1128,6 +1128,7 @@ elif [ "$first_arg" = "all" ]; then
         run_erlang || echo -e "\n" &&
         # run_ruby || echo -e "\n" && # too slow
         # run_dascript || echo -e "\n" && #not installed in docker
+        run_racket || echo -e "\n" &&
         run_lobster_jit || echo -e "\n" &&
         run_lobster_cpp || echo -e "\n" &&
         run_scala_native || echo -e "\n" &&
