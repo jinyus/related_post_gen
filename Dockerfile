@@ -110,12 +110,12 @@ RUN wget https://github.com/ldc-developers/ldc/releases/download/v1.34.0-beta1/l
 RUN rm -rf /usr/local/ldc2* && tar -C /usr/local -xvf ldc2-1.34.0-beta1-linux-x86_64.tar.xz
 ENV PATH="$PATH:/usr/local/ldc2-1.34.0-beta1-linux-x86_64/bin"
 
-#install r deps
-RUN su -c "git clone https://aur.archlinux.org/r-fastmap.git  /home/builduser/rfastmap" builduser
-RUN su -c "git clone https://aur.archlinux.org/r-jsonlite.git  /home/builduser/rjsonlite" builduser
+#install r deps // doesn't work, need to manually install deps
+#RUN su -c "git clone https://aur.archlinux.org/r-fastmap.git  /home/builduser/rfastmap" builduser
+#RUN su -c "git clone https://aur.archlinux.org/r-jsonlite.git  /home/builduser/rjsonlite" builduser
 
-RUN su -c "cd /home/builduser/rfastmap && makepkg -si --noconfirm --needed --noprogressbar" builduser
-RUN su -c "cd /home/builduser/rjsonlite && makepkg -si --noconfirm --needed --noprogressbar" builduser
+#RUN su -c "cd /home/builduser/rfastmap && makepkg -si --noconfirm --needed --noprogressbar" builduser
+#RUN su -c "cd /home/builduser/rjsonlite && makepkg -si --noconfirm --needed --noprogressbar" builduser
 
 RUN mkdir -p /results
 
