@@ -529,7 +529,7 @@ run_fsharp() {
         else
             command ${time} -f '%es %Mk' ./bin/release/net8.0/fsharp_jit
         fi
-
+    cd ..
     check_output "related_posts_fsharp_jit.json"
 }
 
@@ -545,7 +545,7 @@ run_fsharp_aot() {
         else
             command ${time} -f '%es %Mk' ./bin/release/net8.0/aot/fsharp_aot
         fi
-
+    cd ..
     check_output "related_posts_fsharp_aot.json"
 }
 
