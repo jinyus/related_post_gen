@@ -25,7 +25,7 @@ ENV PATH=$PATH:$GRAALVM_HOME/bin:$JAVA_HOME/bin
 ENV PATH=$PATH:/root/.sdkman/candidates/sbt/current/bin
 
 # install dotnet
-RUN su -c "git clone https://aur.archlinux.org/dotnet-preview-bin.git /home/builduser/dotnet" builduser
+RUN su -c "git clone https://aur.archlinux.org/dotnet-sdk-bin.git /home/builduser/dotnet" builduser
 
 RUN su -c "cd /home/builduser/dotnet && makepkg -si --noconfirm --needed --noprogressbar" builduser
 
