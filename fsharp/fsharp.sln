@@ -1,0 +1,21 @@
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "fsharp_aot", "aot\fsharp_aot.fsproj", "{A391D15A-B5A3-4D33-B39E-37C9720C5D28}"
+EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "fsharp_jit", "jit\fsharp_jit.fsproj", "{FD1BA1FC-7AC7-4959-8738-A7B3627236DC}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A391D15A-B5A3-4D33-B39E-37C9720C5D28}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A391D15A-B5A3-4D33-B39E-37C9720C5D28}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A391D15A-B5A3-4D33-B39E-37C9720C5D28}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A391D15A-B5A3-4D33-B39E-37C9720C5D28}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FD1BA1FC-7AC7-4959-8738-A7B3627236DC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FD1BA1FC-7AC7-4959-8738-A7B3627236DC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FD1BA1FC-7AC7-4959-8738-A7B3627236DC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FD1BA1FC-7AC7-4959-8738-A7B3627236DC}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
