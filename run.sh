@@ -449,7 +449,7 @@ run_java_con() {
             command ${time} -f '%es %Mk' java $VM_OPTIONS -jar ./target/main.jar
         fi
 
-    check_output "related_posts_java.json"
+    check_output "related_posts_java_con.json"
 
 }
 
