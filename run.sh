@@ -424,10 +424,8 @@ run_java() {
     VM_OPTIONS="-XX:+UseSerialGC"
     echo "Running Java (JIT)" &&
         cd ./java &&
-        if [ -z "$appendToFile" ]; then # only build on 5k run
-            java -version &&
-                mvn -q -B -Pjvm clean package
-        fi &&
+        java -version &&
+        mvn -q -B -Pjvm clean package &&
         if [ $HYPER == 1 ]; then
             capture "Java (JIT)" hyperfine -r $runs -w $warmup --show-output "java $VM_OPTIONS -jar ./target/main.jar"
         else
