@@ -1,6 +1,4 @@
 load.lib <- c("jsonlite", "fastmap")
-install.lib <- load.lib[!load.lib %in% installed.packages()]
-for(lib in install.lib) install.packages(lib, repos="https://cloud.r-project.org", quiet = TRUE, dependencies=TRUE)
 
 library(jsonlite)
 library(fastmap)
@@ -55,7 +53,7 @@ getRelatedPosts <- function(idx) {
   return(list("_id" = jsonText$`_id`[[idx]], "tags" = jsonText$tags[[idx]], "related" = top_related))
 }
 
-jsonText <- fromJSON("posts.json")
+jsonText <- fromJSON("../posts.json")
 
 start_time <- as.numeric(Sys.time())
 
