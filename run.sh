@@ -153,18 +153,6 @@ run_rust_con() {
 
 }
 
-run_r() {
-    echo "Running R" &&
-        cd ./r &&
-        if [ $HYPER == 1 ]; then
-            capture "R" hyperfine -r $slow_lang_runs -w $warmup --show-output "Rscript ./related.R"
-        else
-            command ${time} -f '%es %Mk' Rscript ./related.R
-        fi
-    check_output "related_posts_r.json"
-
-}
-
 run_python() {
     echo "Running Python" &&
         cd ./python &&
@@ -903,6 +891,18 @@ run_scala_native() {
     check_output "related_posts_scala.json"
 }
 
+run_r() {
+    echo "Running R" &&
+        cd ./r &&
+        if [ $HYPER == 1 ]; then
+            capture "R" hyperfine -r $slow_lang_runs -w $warmup --show-output "Rscript ./related.R"
+        else
+            command ${time} -f '%es %Mk' Rscript ./related.R
+        fi
+    check_output "related_posts_r.json"
+
+}
+
 check_output() {
     cd ..
 
@@ -1127,10 +1127,6 @@ elif [ "$first_arg" = "dascript" ]; then
 
     run_dascript
 
-elif [ "$first_arg" = "r" ]; then
-
-    run_r
-
 elif [ "$first_arg" = "racket" ]; then
 
     run_racket
@@ -1150,6 +1146,10 @@ elif [ "$first_arg" = "lobster_cpp" ]; then
 elif [ "$first_arg" = "scala_native" ]; then
 
     run_scala_native
+
+elif [ "$first_arg" = "r" ]; then
+
+    run_r
 
 elif [ "$first_arg" = "all" ]; then
 
@@ -1202,10 +1202,10 @@ elif [ "$first_arg" = "all" ]; then
         # run_ruby || echo -e "\n" && # too slow
         # run_dascript || echo -e "\n" && #not installed in docker
         run_racket || echo -e "\n" &&
-        run_r || echo -e "\n" &&
         run_lobster_jit || echo -e "\n" &&
         run_lobster_cpp || echo -e "\n" &&
         run_scala_native || echo -e "\n" &&
+        run_r || echo -e "\n" &&
         echo -e "Finished running all\n"
 
 elif [ "$first_arg" = "clean" ]; then
