@@ -436,7 +436,7 @@ run_java() {
 
 }
 
-# wierdly slower, need to investigate
+# weirdly slower, need to investigate
 run_java_con() {
     VM_OPTIONS="-XX:+UseSerialGC"
     echo "Running Java (JIT)" &&
