@@ -6,9 +6,9 @@
 (require/typed racket/base
                [current-inexact-monotonic-milliseconds (-> Real)])
 
-(define N : Positive-Integer 5)
-(define N-1 (- N 1))
-(define N-2 (- N 2))
+(define N : Exact-Positive-Integer 5)
+(define N-1 : Exact-Nonnegative-Integer (- N 1))
+(define N-2 : Integer (- N 2))
 
 (define-json-types
   [jspost ([_id : String] [title : String] [tags : (Listof String)])]
@@ -17,14 +17,14 @@
 (define-type JSPost jspost)
 (define-type Post post)
 (define-type Posts (Listof Post))
-(define-type PostIndex Integer)
+(define-type PostIndex Exact-Nonnegative-Integer)
 (define-type PostIndices (Listof PostIndex))
-(define-type RelatedCounts (Vectorof Integer))
+(define-type RelatedCounts (Vectorof Exact-Nonnegative-Integer))
 (define-type RelatedPosts related-posts)
 (define-type Tag Symbol)
 (define-type Tags (Listof Tag))
 (define-type TagMap (HashTable Tag PostIndices))
-(define-type VecLen Integer)
+(define-type VecLen Exact-Nonnegative-Integer)
 (define-type VecPosts (Vectorof Post))
 (define-type VecRelatedPosts (Vectorof RelatedPosts))
 
@@ -55,7 +55,7 @@
 (: make-tag-map (-> VecPosts TagMap))
 (define (make-tag-map posts)
   (let ([tag-map : TagMap (make-hasheq)])
-    (for* ([index (in-range (vector-length posts))]
+    (for* ([index : PostIndex (in-range (vector-length posts))]
            [tag (in-list (post-tags (vector-ref posts index)))])
       (hash-update! tag-map
                     tag
@@ -81,7 +81,7 @@
 
 (: tally (-> TagMap Post PostIndex VecLen RelatedCounts))
 (define (tally tag-map post index posts-len)
-  (let ([counts (make-vector posts-len 0)])
+  (let ([counts : RelatedCounts (make-vector posts-len 0)])
     (for* ([tag (in-list (post-tags post))]
            [related-index (in-list (hash-ref tag-map tag))])
       (vector-set! counts
@@ -125,7 +125,7 @@
         [tag-map (make-tag-map posts)])
     (for/vector : VecRelatedPosts
                 #:length posts-len
-                ([index (in-range posts-len)])
+                ([index : PostIndex (in-range posts-len)])
       (let* ([post (vector-ref posts index)]
              [counts (tally tag-map post index posts-len)])
         (related-posts (post-_id post)
