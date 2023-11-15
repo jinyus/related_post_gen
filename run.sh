@@ -789,12 +789,12 @@ run_racket() {
         if [ -z "$appendToFile" ]; then # only build on 5k run
             raco pkg install --auto --name related --no-docs --skip-installed &&
                 raco make related.rkt
+        fi &&
+        if [ $HYPER == 1 ]; then
+            capture "Racket" hyperfine -r $runs -w $warmup --show-output "racket related.rkt"
+        else
+            command ${time} -f '%es %Mk' racket related.rkt
         fi
-    if [ $HYPER == 1 ]; then
-        capture "Racket" hyperfine -r $runs -w $warmup --show-output "racket related.rkt"
-    else
-        command ${time} -f '%es %Mk' racket related.rkt
-    fi
 
     check_output "related_posts_racket.json"
 }
