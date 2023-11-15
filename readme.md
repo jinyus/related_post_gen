@@ -75,8 +75,8 @@ docker run -e TEST_NAME=all -it --rm databench
 | F# (AOT)         | 27.16 ms                              | 372.71 ms                              | 3.23 s                              | 3.63 s    |
 | C# (AOT)         | 26.59 ms                              | 371.25 ms                              | 3.26 s                              | 3.65 s    |
 | C# (JIT)         | 27.33 ms                              | 375.13 ms                              | 3.26 s                              | 3.66 s    |
+| F# (JIT)         | 44.15 ms                              | 647.20 ms                              | 5.69 s                              | 6.38 s    |
 | Odin             | 47.67 ms                              | 574.53 ms                              | 5.97 s                              | 6.59 s    |
-| F# (JIT)         | 85.52 ms                              | 638.39 ms                              | 5.92 s                              | 6.64 s    |
 | Swift            | 51.39 ms                              | 716.78 ms                              | 6.21 s                              | 6.98 s    |
 | Java (JIT)       | 53.62 ms                              | 762.00 ms                              | 6.50 s                              | 7.31 s    |
 | Vlang            | 48.82 ms                              | 743.93 ms                              | 6.60 s                              | 7.39 s    |
