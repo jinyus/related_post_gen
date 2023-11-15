@@ -6,7 +6,7 @@ FROM archlinux:base
 # Update package repository
 RUN pacman -Syu --noconfirm
 
-RUN pacman -S --noconfirm --needed wget unzip sudo base-devel git clang llvm python python-pip ncurses gcc hyperfine rustup crystal zig dart nodejs deno maven nim opam dune lua51 luajit luarocks libedit github-cli less
+RUN pacman -S --noconfirm --needed wget unzip sudo base-devel git clang llvm python python-pip ncurses gcc hyperfine rustup crystal zig dart nodejs deno maven nim opam dune lua51 luajit luarocks libedit github-cli less r
 
 # user needed to install aur packages
 RUN useradd -ms /bin/bash builduser
@@ -74,7 +74,7 @@ RUN chmod +x /home/builduser/odin/odin && odin version && v version && swift --v
 # for nim
 RUN cp /usr/lib/LLVMgold.so /home/builduser/swift-5.9-RELEASE-ubuntu22.04/usr/lib/LLVMgold.so
 
-#install julia
+# install julia
 RUN wget https://julialang-s3.julialang.org/bin/linux/x64/1.9/julia-1.9.3-linux-x86_64.tar.gz -O /home/builduser/julia.tar.gz
 RUN tar zxvf /home/builduser/julia.tar.gz -C /home/builduser/
 ENV PATH="$PATH:/home/builduser/julia-1.9.3/bin"
