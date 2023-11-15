@@ -114,6 +114,11 @@ RUN wget https://github.com/ldc-developers/ldc/releases/download/v1.34.0-beta1/l
 RUN rm -rf /usr/local/ldc2* && tar -C /usr/local -xvf ldc2-1.34.0-beta1-linux-x86_64.tar.xz
 ENV PATH="$PATH:/usr/local/ldc2-1.34.0-beta1-linux-x86_64/bin"
 
+RUN mkdir -p /results
+
+# location to write the raw results
+VOLUME /results
+
 # you token that will be used to authenticate your fork
 ENV GIT_PAT=""
 
