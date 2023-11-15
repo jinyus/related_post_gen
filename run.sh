@@ -519,34 +519,34 @@ run_nim_con() {
 
 run_fsharp() {
     echo "Running FSharp (JIT)" &&
-        cd ./fsharp &&
+        cd ./fsharp/jit &&
         if [ -z "$appendToFile" ]; then # only build on 5k run
             dotnet restore &&
                 dotnet publish -c release
         fi &&
         if [ $HYPER == 1 ]; then
-            capture "F# (JIT)" hyperfine -r $runs -w $warmup --show-output "./bin/release/net8.0/fsharp"
+            capture "F# (JIT)" hyperfine -r $runs -w $warmup --show-output "./bin/release/net8.0/fsharp_jit"
         else
-            command ${time} -f '%es %Mk' ./bin/release/net8.0/fsharp
+            command ${time} -f '%es %Mk' ./bin/release/net8.0/fsharp_jit
         fi
 
-    check_output "related_posts_fsharp.json"
+    check_output "related_posts_fsharp_jit.json"
 }
 
 run_fsharp_aot() {
     echo "Running FSharp (AOT)" &&
-        cd ./fsharp &&
+        cd ./fsharp/aot &&
         if [ -z "$appendToFile" ]; then # only build on 5k run
             dotnet restore &&
                 dotnet publish -c release --self-contained -p PublishAot=true -o "bin/release/net8.0/aot"
         fi &&
         if [ $HYPER == 1 ]; then
-            capture "F# (AOT)" hyperfine -r $runs -w $warmup --show-output "./bin/release/net8.0/aot/fsharp"
+            capture "F# (AOT)" hyperfine -r $runs -w $warmup --show-output "./bin/release/net8.0/aot/fsharp_aot"
         else
-            command ${time} -f '%es %Mk' ./bin/release/net8.0/aot/fsharp
+            command ${time} -f '%es %Mk' ./bin/release/net8.0/aot/fsharp_aot
         fi
 
-    check_output "related_posts_fsharp.json"
+    check_output "related_posts_fsharp_aot.json"
 }
 
 run_fsharp_con() {

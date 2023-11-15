@@ -103,7 +103,7 @@ let getAllRelated (posts: Span<Post>) =
         
 [<EntryPoint>]
 let main args =
-    let posts =  Span.op_Implicit(Json.deserialize<Post[]> (File.ReadAllText $"{srcDir}/../posts.json"))
+    let posts =  Span.op_Implicit(Json.deserialize<Post[]> (File.ReadAllText $"{srcDir}/../../posts.json"))
     
     // Warmup
     getAllRelated posts |> ignore
@@ -119,5 +119,5 @@ let main args =
 
     let json = Json.serialize allRelatedPosts
 
-    File.WriteAllText($"{srcDir}/../related_posts_fsharp.json", json)
+    File.WriteAllText($"{srcDir}/../../related_posts_fsharp_jit.json", json)
     0
