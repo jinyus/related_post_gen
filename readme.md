@@ -64,56 +64,58 @@ docker run -e TEST_NAME=all -it --rm databench
 
 | Language       | Time (5k posts)                       | 20k posts                              | 60k posts                           | Total     |
 | -------------- | ------------------------------------- | -------------------------------------- | ----------------------------------- | --------- |
-| _Julia HO_[^1] | 9.38 ms | 65.33 ms | 179.33 ms | 254.05 ms |
-| C++ | 22.92 ms | 326.00 ms | $\textsf{\color{lightgreen}2.80 s}$ | 3.15 s |
-| Nim | $\textsf{\color{lightgreen}22.20 ms}$ | $\textsf{\color{lightgreen}319.43 ms}$ | 2.85 s | 3.20 s |
-| Go | 22.91 ms | 324.49 ms | 2.87 s | 3.21 s |
-| Zig | 23.00 ms | 340.33 ms | 3.00 s | 3.37 s |
-| Rust | 23.56 ms | 342.54 ms | 3.05 s | 3.41 s |
-| F# (AOT) | 27.10 ms | 375.89 ms | 3.25 s | 3.66 s |
-| C# (AOT) | 26.88 ms | 377.29 ms | 3.28 s | 3.68 s |
-| C# (JIT) | 28.23 ms | 380.03 ms | 3.28 s | 3.69 s |
-| D | 33.78 ms | 446.47 ms | 3.87 s | 4.35 s |
-| Julia | 31.46 ms | 505.64 ms | 4.24 s | 4.78 s |
-| F# (JIT) | 86.17 ms | 699.14 ms | 5.05 s | 5.84 s |
-| Java (GraalVM) | 50.46 ms | 856.33 ms | 5.57 s | 6.48 s |
-| Odin | 48.05 ms | 690.94 ms | 6.05 s | 6.79 s |
-| Swift | 51.87 ms | 726.56 ms | 6.23 s | 7.01 s |
-| Vlang | 49.73 ms | 746.05 ms | 6.62 s | 7.42 s |
-| Crystal | 54.50 ms | 822.99 ms | 7.17 s | 8.05 s |
-| LuaJIT | 114.97 ms | 1.30 s | 11.56 s | 12.98 s |
-| JS (Bun) | 128.15 ms | 1.51 s | 13.47 s | 15.10 s |
-| Dart AOT | 130.77 ms | 2.01 s | 17.88 s | 20.03 s |
-| JS (Node) | 186.23 ms | 1.98 s | 19.24 s | 21.41 s |
-| Dart VM | 167.85 ms | 2.26 s | 19.10 s | 21.53 s |
-| JS (Deno) | 180.15 ms | 2.31 s | 21.33 s | 23.82 s |
-| Lobster (C++) | 187.38 ms | 2.89 s | 25.83 s | 28.91 s |
-| Scala Native | 305.46 ms | 3.85 s | 31.87 s | 36.03 s |
-| ocaml | 148.69 ms | 2.98 s | 38.40 s | 41.53 s |
-| LuaJIT (JIT OFF) | 678.79 ms | 10.32 s | 91.42 s | 102.42 s |
-| Erlang | 889.76 ms | 14.55 s | 136.09 s | 151.53 s |
-| Lua | 1.10 s | 16.82 s | 150.32 s | 168.24 s |
-| Lobster (JIT) | 1.37 s | 21.36 s | 190.64 s | 213.37 s |
-| Python | 1.48 s | 23.47 s | 214.20 s | 239.16 s |
-| Numpy | 390.86 ms | 6.50 s | OOM | N/A |
-| Java (JIT) | 55.31 ms | OOM | OOM | N/A |
+| _Julia HO_[^1] | 7.92 ms | 56.00 ms | 141.33 ms | 205.26 ms |
+| D (v2) | $\textsf{\color{lightgreen}21.48 ms}$ | $\textsf{\color{lightgreen}259.44 ms}$ | $\textsf{\color{lightgreen}2.13 s}$ | 2.41 s |
+| C++ | 22.92 ms | 319.00 ms | 2.78 s | 3.12 s |
+| D | 25.45 ms | 325.21 ms | 2.79 s | 3.14 s |
+| Nim | 22.06 ms | 318.34 ms | 2.84 s | 3.18 s |
+| Go | 22.65 ms | 322.43 ms | 2.86 s | 3.21 s |
+| Zig | 23.00 ms | 339.33 ms | 2.99 s | 3.35 s |
+| Rust | 23.60 ms | 341.14 ms | 3.05 s | 3.41 s |
+| Julia | 24.17 ms | 365.98 ms | 3.17 s | 3.56 s |
+| F# (AOT) | 27.16 ms | 372.71 ms | 3.23 s | 3.63 s |
+| C# (AOT) | 26.59 ms | 371.25 ms | 3.26 s | 3.65 s |
+| C# (JIT) | 27.33 ms | 375.13 ms | 3.26 s | 3.66 s |
+| Odin | 47.67 ms | 574.53 ms | 5.97 s | 6.59 s |
+| F# (JIT) | 85.52 ms | 638.39 ms | 5.92 s | 6.64 s |
+| Swift | 51.39 ms | 716.78 ms | 6.21 s | 6.98 s |
+| Java (JIT) | 53.62 ms | 762.00 ms | 6.50 s | 7.31 s |
+| Vlang | 48.82 ms | 743.93 ms | 6.60 s | 7.39 s |
+| Crystal | 53.79 ms | 814.34 ms | 7.16 s | 8.03 s |
+| Java (GraalVM) | 56.69 ms | 635.00 ms | 7.52 s | 8.21 s |
+| LuaJIT | 102.86 ms | 1.50 s | 12.43 s | 14.03 s |
+| JS (Bun) | 122.46 ms | 1.57 s | 13.79 s | 15.49 s |
+| Dart AOT | 129.92 ms | 2.01 s | 17.86 s | 20.00 s |
+| Dart VM | 165.77 ms | 2.23 s | 19.17 s | 21.57 s |
+| JS (Node) | 165.54 ms | 1.97 s | 19.80 s | 21.94 s |
+| JS (Deno) | 177.54 ms | 2.35 s | 21.43 s | 23.96 s |
+| Lobster (C++) | 187.83 ms | 2.88 s | 25.94 s | 29.00 s |
+| Scala Native | 252.08 ms | 3.51 s | 30.28 s | 34.04 s |
+| ocaml | 138.54 ms | 2.97 s | 34.43 s | 37.54 s |
+| Racket | 233.25 ms | 3.87 s | 33.99 s | 38.09 s |
+| LuaJIT (JIT OFF) | 673.35 ms | 10.27 s | 91.14 s | 102.08 s |
+| Erlang | 886.18 ms | 15.07 s | 130.96 s | 146.92 s |
+| Lua | 1.09 s | 16.76 s | 152.72 s | 170.57 s |
+| Lobster (JIT) | 1.36 s | 21.24 s | 188.87 s | 211.48 s |
+| Python | 1.47 s | 23.70 s | 215.09 s | 240.25 s |
+| Numpy | 350.22 ms | 6.46 s | OOM | N/A |
 
 ### Multicore Results
 
 | Language       | Time (5k posts) | 20k posts        | 60k posts        | Total     |
 | -------------- | --------------- | ---------------- | ---------------- | --------- |
-| D Concurrent | 13.65 ms | 130.93 ms | $\textsf{\color{lightgreen}1.01 s}$ | 1.16 s |
-| C# Concurrent (JIT) | 14.29 ms | $\textsf{\color{lightgreen}128.94 ms}$ | 1.03 s | 1.17 s |
-| C# Concurrent (AOT) | $\textsf{\color{lightgreen}11.18 ms}$ | 140.79 ms | 1.15 s | 1.30 s |
-| C++ Concurrent | 13.00 ms | 166.67 ms | 1.41 s | 1.59 s |
-| Go Concurrent | 12.33 ms | 166.35 ms | 1.43 s | 1.61 s |
-| Nim Concurrent | 13.11 ms | 173.10 ms | 1.48 s | 1.67 s |
-| Julia Concurrent | 13.56 ms | 178.56 ms | 1.48 s | 1.67 s |
-| Rust Concurrent | 12.51 ms | 178.02 ms | 1.53 s | 1.72 s |
-| F# Concurrent (AOT) | 15.92 ms | 232.33 ms | 2.03 s | 2.28 s |
-| F# Concurrent (JIT) | 20.38 ms | 280.67 ms | 2.50 s | 2.81 s |
-| Swift Concurrent | 32.54 ms | 398.59 ms | 3.43 s | 3.86 s |
-| Java (GraalVM) Concurrent | 51.31 ms | 608.33 ms | 4.14 s | 4.80 s |
+| D Concurrent | 11.87 ms | $\textsf{\color{lightgreen}114.27 ms}$ | $\textsf{\color{lightgreen}885.56 ms}$ | 1.01 s |
+| C# Concurrent (JIT) | 13.88 ms | 124.29 ms | 1.02 s | 1.15 s |
+| C# Concurrent (AOT) | $\textsf{\color{lightgreen}10.83 ms}$ | 136.39 ms | 1.14 s | 1.29 s |
+| C++ Concurrent | 13.46 ms | 166.00 ms | 1.41 s | 1.59 s |
+| Go Concurrent | 12.04 ms | 165.52 ms | 1.43 s | 1.61 s |
+| Julia Concurrent | 13.81 ms | 174.84 ms | 1.48 s | 1.67 s |
+| Nim Concurrent | 12.64 ms | 179.67 ms | 1.48 s | 1.68 s |
+| Rust Concurrent | 12.47 ms | 174.48 ms | 1.52 s | 1.71 s |
+| F# Concurrent (JIT) | 20.00 ms | 288.33 ms | 2.40 s | 2.71 s |
+| F# Concurrent (AOT) | 18.23 ms | 283.67 ms | 2.47 s | 2.77 s |
+| Swift Concurrent | 31.65 ms | 395.49 ms | 3.45 s | 3.88 s |
+| Java (GraalVM) Concurrent | 39.85 ms | 617.67 ms | 5.50 s | 6.15 s |
 
 <details>
 <summary> Old Results with details (on my machine) </summary>
