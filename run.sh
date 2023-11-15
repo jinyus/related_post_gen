@@ -436,6 +436,23 @@ run_java() {
 
 }
 
+# wierdly slower, need to investigate
+run_java_con() {
+    VM_OPTIONS="-XX:+UseSerialGC"
+    echo "Running Java (JIT)" &&
+        cd ./java &&
+        java -version &&
+        mvn -q -B -Pjvm_con clean package &&
+        if [ $HYPER == 1 ]; then
+            capture "Java Concurrent (JIT)" hyperfine -r $runs -w $warmup --show-output "java $VM_OPTIONS -jar ./target/main.jar"
+        else
+            command ${time} -f '%es %Mk' java $VM_OPTIONS -jar ./target/main.jar
+        fi
+
+    check_output "related_posts_java.json"
+
+}
+
 run_java_graal() {
     export JAVA_HOME="$GRAALVM_HOME"
     echo "Running Java (GraalVM)" &&
@@ -997,6 +1014,10 @@ elif [ "$first_arg" = "deno" ]; then
 elif [ "$first_arg" = "java" ]; then
 
     run_java
+
+elif [ "$first_arg" = "java_con" ]; then
+
+    run_java_con
 
 elif [ "$first_arg" = "java_graal" ]; then
 
