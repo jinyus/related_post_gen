@@ -29,6 +29,7 @@ echo "Run Benchmark (5k posts)" &&
     #
     echo "Run Benchmark ($RUN3 posts)" &&
     ./run.sh "$TEST_NAME" raw_results.md append &&
+    cp raw_results.md /results/raw_results.md &&
     #
     dart extract_results.dart raw_results.md verbose &&
     if [ -n "$GIT_PAT" ]; then
