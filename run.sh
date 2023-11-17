@@ -892,12 +892,12 @@ run_inko() {
     echo "Running Inko" &&
         cd ./inko &&
         if [ -z "$appendToFile" ]; then # only build on 5k run
-            inko build --opt aggressive -i ./utils related.inko
+            inko build --opt aggressive
         fi &&
-        if [ $HYPER == 1 ]; then
-            capture "Inko" hyperfine -r $slow_lang_runs -w $warmup --show-output "./build/aggressive/related"
+        if [ $HYPER == 11 ]; then
+            capture "Inko" hyperfine -r $slow_lang_runs -w $warmup --show-output "./build/aggressive/main"
         else
-            command ${time} -f '%es %Mk' ./build//aggressive/related
+            command ${time} -f '%es %Mk' ./build/aggressive/main
         fi
 
     check_output "related_posts_inko.json"

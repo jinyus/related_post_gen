@@ -1,0 +1,180 @@
+import std.fs.file.(ReadOnlyFile, WriteOnlyFile)
+import std.json.Json
+import std.stdio.STDOUT
+import std.time.Instant
+
+let TOP_N = 5
+
+class Post {
+  let @id: String
+  let @title: String
+  let @tags: Array[String]
+}
+
+class RelatedPost {
+  let @id: String
+  let @tags: ref Array[String]
+  let @related: Array[ref Post]
+}
+
+fn read_posts(path: String) -> Array[Post] {
+  let bytes = ByteArray.new
+
+  ReadOnlyFile
+    .new(path)
+    .then fn (f) { f.read_all(bytes) }
+    .expect('the JSON file must exist')
+
+  let root = match Json.parse(bytes) {
+    case Ok(Array(v)) -> v
+    case _ -> panic('the JSON file must contain a valid array')
+  }
+
+  root
+    .into_iter
+    .map fn (val) {
+      let obj = match val {
+        case Object(v) -> v
+        case _ -> panic('each entry in the JSON array must be an object')
+      }
+
+      let id = match obj.remove('_id') {
+        case Some(String(v)) -> v
+        case _ -> panic('the "_id" key must be a string')
+      }
+
+      let title = match obj.remove('title') {
+        case Some(String(v)) -> v
+        case _ -> panic('the "title" key must be a string')
+      }
+
+      let tags = match obj.remove('tags') {
+        case Some(Array(array)) -> {
+          array
+            .into_iter
+            .map fn (val) {
+              match val {
+                case String(v) -> v
+                case _ -> panic('each tag must be a string')
+              }
+            }
+            .to_array
+        }
+        case _ -> panic('the "tags" key must be an array of strings')
+      }
+
+      Post { @id = id, @title = title, @tags = tags }
+    }
+    .to_array
+}
+
+fn write_posts(path: String, posts: Array[RelatedPost]) {
+  let values = posts
+    .into_iter
+    .map fn (post) {
+      let related = post
+        .related
+        .iter
+        .map fn (related) {
+          let map = Map.new
+          let tags = related.tags.iter.map fn (t) { Json.String(t) }.to_array
+
+          map.set('_id', Json.String(related.id))
+          map.set('title', Json.String(related.title))
+          map.set('tags', Json.Array(tags))
+          Json.Object(map)
+        }
+        .to_array
+
+      let map = Map.new
+      let tags = post.tags.iter.map fn (t) { Json.String(t) }.to_array
+
+      map.set('_id', Json.String(post.id))
+      map.set('tags', Json.Array(tags))
+      map.set('related', Json.Array(related))
+      Json.Object(map)
+    }
+    .to_array
+
+  let out = Json.Array(values).to_string
+
+  WriteOnlyFile
+    .new(path)
+    .then fn (f) { f.write_string(out) }
+    .expect('failed to write to the output JSON file')
+}
+
+class async Main {
+  fn async main {
+    let posts = read_posts('../posts.json')
+    let start = Instant.new
+    let posts_len = posts.size
+    let tag_map: Map[String, Array[Int]] = Map.with_capacity(100)
+
+    posts.iter.each_with_index fn (idx, post) {
+      post.tags.iter.each fn (tag) {
+        match tag_map.opt_mut(tag) {
+          case Some(v) -> v.push(idx)
+          case _ -> tag_map.set(tag, [idx])
+        }
+      }
+    }
+
+    let all_related_posts = Array.with_capacity(posts_len)
+    let tagged_post_count = Array.filled(with: 0, times: posts_len)
+
+    posts.iter.each_with_index fn (i, post) {
+      posts_len.times fn (i) { tagged_post_count.set(i, 0) }
+      post.tags.iter.each fn (tag) {
+        tag_map.get(tag).iter.each fn (i) {
+          tagged_post_count.set(i, tagged_post_count.get(i) + 1)
+        }
+      }
+
+      tagged_post_count.set(i, 0)
+
+      let top_idx = Array.filled(0, TOP_N * 2)
+      let mut min_tags = 0
+      let mut idx = 0
+
+      while idx < posts_len {
+        let count = tagged_post_count.get(idx)
+
+        if count > min_tags {
+          let mut upper_bound = (TOP_N - 2) * 2
+
+          while upper_bound >= 0 and count > top_idx.get(upper_bound) {
+            top_idx.set(upper_bound + 2, top_idx.get(upper_bound))
+            top_idx.set(upper_bound + 3, top_idx.get(upper_bound + 1))
+            upper_bound -= 2
+          }
+
+          let insert_pos = upper_bound + 2
+
+          top_idx.set(insert_pos, count)
+          top_idx.set(insert_pos + 1, idx)
+          min_tags = top_idx.get(TOP_N * 2 - 2 )
+        }
+
+        idx += 1
+      }
+
+      let top_posts = Array.with_capacity(TOP_N)
+
+      TOP_N.times fn (j) {
+        top_posts.push(posts.get(top_idx.get(j * 2 + 1)))
+      }
+
+      all_related_posts.push(RelatedPost {
+        @id = post.id,
+        @tags = post.tags,
+        @related = top_posts,
+      })
+    }
+
+    let took = start.elapsed
+
+    STDOUT.new.print("Processing time (w/o IO): {took.to_millis} ms")
+    write_posts('../related_posts_inko.json', all_related_posts)
+  }
+}
