@@ -897,6 +897,7 @@ run_r() {
             command ${time} -f '%es %Mk' Rscript ./related.R
         fi
     check_output "related_posts_r.json"
+}
 
 run_inko() {
     echo "Running Inko" &&
