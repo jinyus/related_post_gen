@@ -905,7 +905,7 @@ run_inko() {
         if [ -z "$appendToFile" ]; then # only build on 5k run
             inko build --opt aggressive
         fi &&
-        if [ $HYPER == 11 ]; then
+        if [ $HYPER == 1 ]; then
             capture "Inko" hyperfine -r $slow_lang_runs -w $warmup --show-output "./build/aggressive/main"
         else
             command ${time} -f '%es %Mk' ./build/aggressive/main
