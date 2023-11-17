@@ -1,21 +1,21 @@
 Go:
 
     Benchmark 1: ./related
-    Processing time (w/o IO): 22.539017ms
-    Processing time (w/o IO): 22.502117ms
-    Processing time (w/o IO): 22.75102ms
-    Processing time (w/o IO): 22.824321ms
-    Processing time (w/o IO): 22.69412ms
-    Processing time (w/o IO): 22.71122ms
-    Processing time (w/o IO): 22.561118ms
-    Processing time (w/o IO): 22.551418ms
-    Processing time (w/o IO): 22.611019ms
-    Processing time (w/o IO): 22.577118ms
-    Processing time (w/o IO): 22.631919ms
-    Processing time (w/o IO): 22.66982ms
-    Processing time (w/o IO): 22.799721ms
-      Time (mean ± σ):      63.3 ms ±   0.8 ms    [User: 61.9 ms, System: 9.1 ms]
-      Range (min … max):    62.3 ms …  64.5 ms    10 runs
+    Processing time (w/o IO): 21.69926ms
+    Processing time (w/o IO): 21.683359ms
+    Processing time (w/o IO): 21.522457ms
+    Processing time (w/o IO): 21.613658ms
+    Processing time (w/o IO): 22.231371ms
+    Processing time (w/o IO): 21.630259ms
+    Processing time (w/o IO): 21.587957ms
+    Processing time (w/o IO): 22.033167ms
+    Processing time (w/o IO): 21.656059ms
+    Processing time (w/o IO): 23.635201ms
+    Processing time (w/o IO): 22.215771ms
+    Processing time (w/o IO): 21.878764ms
+    Processing time (w/o IO): 21.605458ms
+      Time (mean ± σ):      61.0 ms ±   1.4 ms    [User: 59.4 ms, System: 8.6 ms]
+      Range (min … max):    58.0 ms …  62.7 ms    10 runs
 
 Go Concurrent:
 
@@ -913,11 +913,11 @@ Inko:
 Go:
 
     Benchmark 1: ./related
-    Processing time (w/o IO): 322.164296ms
-    Processing time (w/o IO): 322.951102ms
-    Processing time (w/o IO): 322.165896ms
-      Time (mean ± σ):     465.4 ms ±   3.0 ms    [User: 452.4 ms, System: 33.9 ms]
-      Range (min … max):   463.3 ms … 467.5 ms    2 runs
+    Processing time (w/o IO): 307.217011ms
+    Processing time (w/o IO): 310.122574ms
+    Processing time (w/o IO): 310.89489ms
+      Time (mean ± σ):     451.9 ms ±   3.0 ms    [User: 432.4 ms, System: 41.9 ms]
+      Range (min … max):   449.8 ms … 453.9 ms    2 runs
 
 Go Concurrent:
 
@@ -1333,11 +1333,11 @@ Inko:
 Go:
 
     Benchmark 1: ./related
-    Processing time (w/o IO): 2.8600946s
-    Processing time (w/o IO): 2.863831273s
-    Processing time (w/o IO): 2.865284265s
-      Time (mean ± σ):      3.357 s ±  0.014 s    [User: 3.367 s, System: 0.113 s]
-      Range (min … max):    3.348 s …  3.367 s    2 runs
+    Processing time (w/o IO): 2.718751456s
+    Processing time (w/o IO): 2.707466583s
+    Processing time (w/o IO): 2.721011872s
+      Time (mean ± σ):      3.194 s ±  0.019 s    [User: 3.215 s, System: 0.104 s]
+      Range (min … max):    3.180 s …  3.207 s    2 runs
 
 Go Concurrent:
 
