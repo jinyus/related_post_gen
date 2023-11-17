@@ -519,34 +519,34 @@ run_nim_con() {
 
 run_fsharp() {
     echo "Running FSharp (JIT)" &&
-        cd ./fsharp &&
+        cd ./fsharp/jit &&
         if [ -z "$appendToFile" ]; then # only build on 5k run
             dotnet restore &&
                 dotnet publish -c release
         fi &&
         if [ $HYPER == 1 ]; then
-            capture "F# (JIT)" hyperfine -r $runs -w $warmup --show-output "./bin/release/net8.0/fsharp"
+            capture "F# (JIT)" hyperfine -r $runs -w $warmup --show-output "./bin/release/net8.0/fsharp_jit"
         else
-            command ${time} -f '%es %Mk' ./bin/release/net8.0/fsharp
+            command ${time} -f '%es %Mk' ./bin/release/net8.0/fsharp_jit
         fi
-
-    check_output "related_posts_fsharp.json"
+    cd ..
+    check_output "related_posts_fsharp_jit.json"
 }
 
 run_fsharp_aot() {
     echo "Running FSharp (AOT)" &&
-        cd ./fsharp &&
+        cd ./fsharp/aot &&
         if [ -z "$appendToFile" ]; then # only build on 5k run
             dotnet restore &&
                 dotnet publish -c release --self-contained -p PublishAot=true -o "bin/release/net8.0/aot"
         fi &&
         if [ $HYPER == 1 ]; then
-            capture "F# (AOT)" hyperfine -r $runs -w $warmup --show-output "./bin/release/net8.0/aot/fsharp"
+            capture "F# (AOT)" hyperfine -r $runs -w $warmup --show-output "./bin/release/net8.0/aot/fsharp_aot"
         else
-            command ${time} -f '%es %Mk' ./bin/release/net8.0/aot/fsharp
+            command ${time} -f '%es %Mk' ./bin/release/net8.0/aot/fsharp_aot
         fi
-
-    check_output "related_posts_fsharp.json"
+    cd ..
+    check_output "related_posts_fsharp_aot.json"
 }
 
 run_fsharp_con() {
@@ -864,15 +864,12 @@ run_lobster_cpp() {
         cmake -DCMAKE_BUILD_TYPE=Release -DLOBSTER_ENGINE=OFF -DLOBSTER_TOCPP=ON && make -j8 &&
         cd "$current_directory" &&
         cd ./lobster &&
-        mkdir -p src && #addresses bug: https://github.com/aardappel/lobster/issues/275
         if [ $HYPER == 1 ]; then
             capture "Lobster (C++)" hyperfine -r $slow_lang_runs -w $warmup --show-output "compiled_lobster"
         else
             command ${time} -f '%es %Mk' compiled_lobster
         fi &&
-        mv related_posts_lobster.json ../ # related to the bug above
-
-    check_output "related_posts_lobster.json"
+        check_output "related_posts_lobster.json"
 }
 
 run_scala_native() {
@@ -901,6 +898,19 @@ run_r() {
         fi
     check_output "related_posts_r.json"
 
+run_inko() {
+    echo "Running Inko" &&
+        cd ./inko &&
+        if [ -z "$appendToFile" ]; then # only build on 5k run
+            inko build --opt aggressive
+        fi &&
+        if [ $HYPER == 11 ]; then
+            capture "Inko" hyperfine -r $slow_lang_runs -w $warmup --show-output "./build/aggressive/main"
+        else
+            command ${time} -f '%es %Mk' ./build/aggressive/main
+        fi
+
+    check_output "related_posts_inko.json"
 }
 
 check_output() {
@@ -1131,7 +1141,7 @@ elif [ "$first_arg" = "racket" ]; then
 
     run_racket
 
-elif [ "$first_arg" = "typed/racket" ]; then
+elif [ "$first_arg" = "typed_racket" ]; then
 
     run_typed_racket
 
@@ -1150,6 +1160,10 @@ elif [ "$first_arg" = "scala_native" ]; then
 elif [ "$first_arg" = "r" ]; then
 
     run_r
+
+elif [ "$first_arg" = "inko" ]; then
+
+    run_inko
 
 elif [ "$first_arg" = "all" ]; then
 
@@ -1202,6 +1216,7 @@ elif [ "$first_arg" = "all" ]; then
         # run_ruby || echo -e "\n" && # too slow
         # run_dascript || echo -e "\n" && #not installed in docker
         run_racket || echo -e "\n" &&
+        run_typed_racket || echo -e "\n" &&
         run_lobster_jit || echo -e "\n" &&
         run_lobster_cpp || echo -e "\n" &&
         run_scala_native || echo -e "\n" &&

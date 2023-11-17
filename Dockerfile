@@ -25,7 +25,7 @@ ENV PATH=$PATH:$GRAALVM_HOME/bin:$JAVA_HOME/bin
 ENV PATH=$PATH:/root/.sdkman/candidates/sbt/current/bin
 
 # install dotnet
-RUN su -c "git clone https://aur.archlinux.org/dotnet-preview-bin.git /home/builduser/dotnet" builduser
+RUN su -c "git clone https://aur.archlinux.org/dotnet-core-bin.git /home/builduser/dotnet" builduser
 
 RUN su -c "cd /home/builduser/dotnet && makepkg -si --noconfirm --needed --noprogressbar" builduser
 
@@ -116,6 +116,11 @@ ENV PATH="$PATH:/usr/local/ldc2-1.34.0-beta1-linux-x86_64/bin"
 
 #RUN su -c "cd /home/builduser/rfastmap && makepkg -si --noconfirm --needed --noprogressbar" builduser
 #RUN su -c "cd /home/builduser/rjsonlite && makepkg -si --noconfirm --needed --noprogressbar" builduser
+
+# install inko
+RUN su -c "git clone https://aur.archlinux.org/inko.git /home/builduser/inko" builduser
+
+RUN su -c "cd /home/builduser/inko && makepkg -si --noconfirm --needed --noprogressbar" builduser
 
 RUN mkdir -p /results
 
