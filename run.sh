@@ -1116,7 +1116,7 @@ elif [ "$first_arg" = "racket" ]; then
 
     run_racket
 
-elif [ "$first_arg" = "typed/racket" ]; then
+elif [ "$first_arg" = "typed_racket" ]; then
 
     run_typed_racket
 
