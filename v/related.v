@@ -58,32 +58,35 @@ fn main() {
 
 		tagged_post_count[i] = 0
 
-		mut top5 := [top_posts_count]PostWithSharedTags{}
+		mut top5 := [top_posts_count * 2]int{}
 		mut min_tags := 0
 
-		// custom priority queue
-		for idx, count in tagged_post_count {
+		for j, count in tagged_post_count {
 			if count > min_tags {
-				mut pos := top_posts_count - 2
+				mut upper_bound := (top_posts_count - 2) * 2
 
-				for pos >= 0 && top5[pos].shared_tags < count {
-					top5[pos + 1] = top5[pos]
-					pos -= 1
+				mut count_int := int(count)
+				for upper_bound >= 0 && count_int > top5[upper_bound] {
+					top5[upper_bound+2] = top5[upper_bound]
+					top5[upper_bound+3] = top5[upper_bound+1]
+					upper_bound -= 2
 				}
 
-				top5[pos + 1] = PostWithSharedTags{
-					post: idx
-					shared_tags: count
-				}
-				min_tags = top5[top_posts_count - 1].shared_tags
+				insert_pos := upper_bound + 2
+				top5[insert_pos] = count_int
+				top5[insert_pos+1] = j
+
+				min_tags = top5[top_posts_count*2-2]
 			}
 		}
 
 		mut top_posts := [top_posts_count]Post{}
 
-		for top_post_index, p in top5 {
-			top_posts[top_post_index] = posts[p.post]
+		for j := 0; j < top_posts_count; j += 1 {
+			index := top5[j*2+1]
+			top_posts[j] = posts[index]
 		}
+
 
 		all_related_posts << RelatedPosts{
 			id: post.id
