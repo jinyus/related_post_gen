@@ -97,6 +97,7 @@ docker run -e TEST_NAME=all -it --rm databench
 | Lua              | 1.09 s                                | 16.76 s                                | 152.72 s                            | 170.57 s  |
 | Lobster (JIT)    | 1.36 s                                | 21.24 s                                | 188.87 s                            | 211.48 s  |
 | Python           | 1.47 s                                | 23.70 s                                | 215.09 s                            | 240.25 s  |
+| Inko[^2]         | 9.92 s                                | 154.79 s                               | 1389.37 s                           | 1554.08 s |
 | Numpy            | 350.22 ms                             | 6.46 s                                 | OOM                                 | N/A       |
 
 ### Multicore Results
@@ -159,3 +160,4 @@ docker run -e TEST_NAME=all -it --rm databench
 </details>
 
 [^1]: Uses specialized datastructures meant for demonstration purposes: [more](https://github.com/LilithHafner/Jokes/tree/main/SuperDataStructures.jl)
+[^2]: Inko is currently in beta and optimizations haven't been applied. [more](https://github.com/jinyus/related_post_gen/pull/440#issuecomment-1816583612)

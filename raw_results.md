@@ -891,6 +891,25 @@ Scala Native:
       Time (mean ± σ):     329.5 ms ±  12.6 ms    [User: 307.1 ms, System: 77.3 ms]
       Range (min … max):   317.6 ms … 348.9 ms    10 runs
 
+Inko:
+
+    Benchmark 1: ./build/aggressive/main
+    Processing time (w/o IO): 9885 ms
+    Processing time (w/o IO): 9916 ms
+    Processing time (w/o IO): 9921 ms
+    Processing time (w/o IO): 9926 ms
+    Processing time (w/o IO): 9911 ms
+    Processing time (w/o IO): 9934 ms
+    Processing time (w/o IO): 9897 ms
+    Processing time (w/o IO): 9936 ms
+    Processing time (w/o IO): 9958 ms
+    Processing time (w/o IO): 9938 ms
+    Processing time (w/o IO): 9908 ms
+    Processing time (w/o IO): 9900 ms
+    Processing time (w/o IO): 9927 ms
+      Time (mean ± σ):     11.610 s ±  0.017 s    [User: 11.612 s, System: 0.096 s]
+      Range (min … max):   11.583 s … 11.635 s    10 runs
+
 Go:
 
     Benchmark 1: ./related
@@ -1304,6 +1323,13 @@ Scala Native:
     Processing time (w/o IO): 3482ms
       Time (abs ≡):         3.844 s               [User: 4.117 s, System: 0.424 s]
 
+Inko:
+
+    Benchmark 1: ./build/aggressive/main
+    Processing time (w/o IO): 154493 ms
+    Processing time (w/o IO): 155092 ms
+      Time (abs ≡):        161.676 s               [User: 161.436 s, System: 0.227 s]
+
 Go:
 
     Benchmark 1: ./related
@@ -1711,3 +1737,10 @@ Scala Native:
     Processing time (w/o IO): 30273ms
     Processing time (w/o IO): 30286ms
       Time (abs ≡):        31.485 s               [User: 35.966 s, System: 1.428 s]
+
+Inko:
+
+    Benchmark 1: ./build/aggressive/main
+    Processing time (w/o IO): 1388709 ms
+    Processing time (w/o IO): 1390024 ms
+      Time (abs ≡):        1409.362 s               [User: 1408.538 s, System: 0.711 s]
