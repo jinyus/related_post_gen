@@ -3,8 +3,7 @@ use std::collections::HashMap;
 use std::hash::BuildHasherDefault;
 
 use crate::{
-    least::IteratorExt,
-    types::{Post, PostCount},
+    types::{Post},
 };
 
 type FxHashBuilder = BuildHasherDefault<FxHasher>;
@@ -41,17 +40,4 @@ pub fn fill_post_count(
             }
         }
     }
-}
-
-pub fn get_related<'a>(n: usize, post_count: &[u8], posts: &'a [Post]) -> Vec<&'a Post<'a>> {
-    post_count
-        .iter()
-        .enumerate()
-        .map(|(idx, &count)| PostCount {
-            post: idx as u32,
-            count,
-        })
-        .least_n(n)
-        .map(|it| &posts[it.post as usize])
-        .collect()
 }

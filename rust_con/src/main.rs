@@ -4,7 +4,6 @@ use std::time::Instant;
 
 use rayon::prelude::*;
 
-mod least;
 mod types;
 mod utils;
 
@@ -100,7 +99,7 @@ fn get_related<'a>(posts: &'a [Post]) -> Vec<RelatedPosts<'a>> {
                     tags: &post.tags,
                     related: top_posts,
                 };
-                
+
                 tagged_post_count.fill(0);
                 rp
             })
