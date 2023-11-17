@@ -52,10 +52,6 @@ func main() {
 	taggedPostCount := make([]byte, postsLen)
 
 	for i := range posts {
-		for j := range taggedPostCount {
-			taggedPostCount[j] = 0
-		}
-
 		// Count the number of tags shared between posts
 		for _, tag := range posts[i].Tags {
 			for _, otherPostIdx := range tagMap[tag] {
@@ -97,6 +93,10 @@ func main() {
 			ID:      posts[i].ID,
 			Tags:    &posts[i].Tags,
 			Related: topPosts,
+		}
+
+		for j := range taggedPostCount {
+			taggedPostCount[j] = 0
 		}
 	}
 
