@@ -60,6 +60,7 @@ func main() {
 		for j := range taggedPostCount {
 			taggedPostCount[j] = 0
 		}
+
 		// Count the number of tags shared between posts
 		for _, tag := range posts[i].Tags {
 			for _, otherPostIdx := range tagMap[tag] {
@@ -68,13 +69,10 @@ func main() {
 		}
 		taggedPostCount[i] = 0 // Don't count self
 		top5 := [topN]PostWithSharedTags{}
-		minTags := byte(0) // Updated initialization
-
+		minTags := byte(0)
 
 		for j, count := range taggedPostCount {
 			if count > minTags {
-				// Find the position to insert
-
 				pos := 3
 				for pos >= 0 && top5[pos].SharedTags < count {
 					pos--
@@ -90,6 +88,7 @@ func main() {
 				minTags = top5[4].SharedTags
 			}
 		}
+
 		// Convert indexes back to Post pointers
 		topPosts := [topN]*Post{}
 		for idx, t := range top5 {
