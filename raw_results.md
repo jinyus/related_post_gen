@@ -324,21 +324,21 @@ Odin:
 Vlang:
 
     Benchmark 1: ./related
-    Processing time (w/o IO): 49.259ms
-    Processing time (w/o IO): 48.768ms
-    Processing time (w/o IO): 48.391ms
-    Processing time (w/o IO): 48.709ms
-    Processing time (w/o IO): 49.092ms
-    Processing time (w/o IO): 48.424ms
-    Processing time (w/o IO): 49.185ms
-    Processing time (w/o IO): 48.784ms
-    Processing time (w/o IO): 48.970ms
-    Processing time (w/o IO): 48.331ms
-    Processing time (w/o IO): 48.824ms
-    Processing time (w/o IO): 48.678ms
-    Processing time (w/o IO): 49.231ms
-      Time (mean ± σ):     376.5 ms ±   2.1 ms    [User: 350.6 ms, System: 25.9 ms]
-      Range (min … max):   372.1 ms … 378.7 ms    10 runs
+    Processing time (w/o IO): 23.351ms
+    Processing time (w/o IO): 26.541ms
+    Processing time (w/o IO): 24.216ms
+    Processing time (w/o IO): 23.916ms
+    Processing time (w/o IO): 23.535ms
+    Processing time (w/o IO): 24.046ms
+    Processing time (w/o IO): 23.858ms
+    Processing time (w/o IO): 24.002ms
+    Processing time (w/o IO): 23.984ms
+    Processing time (w/o IO): 24.424ms
+    Processing time (w/o IO): 23.227ms
+    Processing time (w/o IO): 24.020ms
+    Processing time (w/o IO): 23.963ms
+      Time (mean ± σ):     328.5 ms ±   3.5 ms    [User: 305.5 ms, System: 22.7 ms]
+      Range (min … max):   323.2 ms … 333.3 ms    10 runs
 
 Dart VM:
 
@@ -1064,11 +1064,11 @@ Odin:
 Vlang:
 
     Benchmark 1: ./related
-    Processing time (w/o IO): 740.569ms
-    Processing time (w/o IO): 750.616ms
-    Processing time (w/o IO): 740.595ms
-      Time (mean ± σ):     10.287 s ±  0.012 s    [User: 10.145 s, System: 0.141 s]
-      Range (min … max):   10.279 s … 10.296 s    2 runs
+    Processing time (w/o IO): 357.253ms
+    Processing time (w/o IO): 355.159ms
+    Processing time (w/o IO): 355.669ms
+      Time (mean ± σ):      7.326 s ±  0.198 s    [User: 7.212 s, System: 0.112 s]
+      Range (min … max):    7.186 s …  7.466 s    2 runs
 
 Dart VM:
 
@@ -1479,11 +1479,11 @@ Odin:
 Vlang:
 
     Benchmark 1: ./related
-    Processing time (w/o IO): 6.596s
-    Processing time (w/o IO): 6.598s
-    Processing time (w/o IO): 6.597s
-      Time (mean ± σ):     76.314 s ±  0.075 s    [User: 75.918 s, System: 0.381 s]
-      Range (min … max):   76.261 s … 76.367 s    2 runs
+    Processing time (w/o IO): 3.136s
+    Processing time (w/o IO): 3.133s
+    Processing time (w/o IO): 3.151s
+      Time (mean ± σ):     70.916 s ±  0.283 s    [User: 70.547 s, System: 0.361 s]
+      Range (min … max):   70.716 s … 71.116 s    2 runs
 
 Dart VM:
 

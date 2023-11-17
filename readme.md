@@ -71,6 +71,7 @@ docker run -e TEST_NAME=all -it --rm databench
 | Nim              | 22.06 ms                              | 318.34 ms                              | 2.84 s                              | 3.18 s    |
 | Zig              | 23.00 ms                              | 339.33 ms                              | 2.99 s                              | 3.35 s    |
 | Rust             | 23.60 ms                              | 341.14 ms                              | 3.05 s                              | 3.41 s    |
+| Vlang            | 24.08 ms                              | 356.03 ms                              | 3.14 s                              | 3.52 s    |
 | Julia            | 24.17 ms                              | 365.98 ms                              | 3.17 s                              | 3.56 s    |
 | F# (AOT)         | 27.16 ms                              | 372.71 ms                              | 3.23 s                              | 3.63 s    |
 | C# (AOT)         | 26.59 ms                              | 371.25 ms                              | 3.26 s                              | 3.65 s    |
@@ -79,7 +80,6 @@ docker run -e TEST_NAME=all -it --rm databench
 | Odin             | 47.67 ms                              | 574.53 ms                              | 5.97 s                              | 6.59 s    |
 | Swift            | 51.39 ms                              | 716.78 ms                              | 6.21 s                              | 6.98 s    |
 | Java (JIT)       | 53.62 ms                              | 762.00 ms                              | 6.50 s                              | 7.31 s    |
-| Vlang            | 48.82 ms                              | 743.93 ms                              | 6.60 s                              | 7.39 s    |
 | Crystal          | 53.79 ms                              | 814.34 ms                              | 7.16 s                              | 8.03 s    |
 | Java (GraalVM)   | 56.69 ms                              | 635.00 ms                              | 7.52 s                              | 8.21 s    |
 | LuaJIT           | 102.86 ms                             | 1.50 s                                 | 12.43 s                             | 14.03 s   |
