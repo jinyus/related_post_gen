@@ -888,6 +888,16 @@ run_scala_native() {
     check_output "related_posts_scala.json"
 }
 
+run_r() {
+    echo "Running R" &&
+        cd ./r &&
+        if [ $HYPER == 1 ]; then
+            capture "R" hyperfine -r $slow_lang_runs -w $warmup --show-output "Rscript ./related.R"
+        else
+            command ${time} -f '%es %Mk' Rscript ./related.R
+        fi
+    check_output "related_posts_r.json"
+
 run_inko() {
     echo "Running Inko" &&
         cd ./inko &&
@@ -1147,6 +1157,10 @@ elif [ "$first_arg" = "scala_native" ]; then
 
     run_scala_native
 
+elif [ "$first_arg" = "r" ]; then
+
+    run_r
+
 elif [ "$first_arg" = "inko" ]; then
 
     run_inko
@@ -1206,6 +1220,7 @@ elif [ "$first_arg" = "all" ]; then
         run_lobster_jit || echo -e "\n" &&
         run_lobster_cpp || echo -e "\n" &&
         run_scala_native || echo -e "\n" &&
+        # run_r || echo -e "\n" && # remove for now until docker is setup
         echo -e "Finished running all\n"
 
 elif [ "$first_arg" = "clean" ]; then
@@ -1239,6 +1254,6 @@ elif [ "$first_arg" = "clean" ]; then
 
 else
 
-    echo "Valid args: go | go_con | rust | rust_con | d | d_con | py | numpy | numba | numba_con | cr | zig | odin | jq | julia | julia_highly_optimized | julia_con | v | dart | swift | swift_con | node | bun | deno | java | java_graal | java_graal_con | nim | luajit | lua | fsharp | fsharp_aot | fsharp_con | csharp | csharp_aot | dascript | all | clean. Unknown argument: $first_arg"
+    echo "Valid args: go | go_con | rust | rust_con | d | d_con | r | py | numpy | numba | numba_con | cr | zig | odin | jq | julia | julia_highly_optimized | julia_con | v | dart | swift | swift_con | node | bun | deno | java | java_graal | java_graal_con | nim | luajit | lua | fsharp | fsharp_aot | fsharp_con | csharp | csharp_aot | dascript | all | clean. Unknown argument: $first_arg"
 
 fi
