@@ -1205,7 +1205,7 @@ elif [ "$first_arg" = "all" ]; then
         run_lobster_jit || echo -e "\n" &&
         run_lobster_cpp || echo -e "\n" &&
         run_scala_native || echo -e "\n" &&
-        run_r || echo -e "\n" &&
+        # run_r || echo -e "\n" && # remove for now until docker is setup
         echo -e "Finished running all\n"
 
 elif [ "$first_arg" = "clean" ]; then
