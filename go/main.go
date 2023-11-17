@@ -93,9 +93,9 @@ func main() {
 		// Convert indexes back to Post pointers
 		topPosts := [topN]*Post{}
 
-		for j := 0; j < topN*2; j += 2 {
-			index := top5[j+1]
-			topPosts[j/2] = &posts[index]
+		for j := 0; j < topN; j += 1 {
+			index := top5[j*2+1]
+			topPosts[j] = &posts[index]
 		}
 
 		allRelatedPosts[i] = RelatedPosts{
