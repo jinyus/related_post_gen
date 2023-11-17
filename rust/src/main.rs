@@ -1,4 +1,4 @@
-use std::{collections::BinaryHeap, hint, time::Instant};
+use std::{hint, time::Instant};
 
 use bumpalo::collections::Vec as BVec;
 use bumpalo::Bump;
@@ -26,49 +26,6 @@ struct RelatedPosts<'a> {
     id: &'a str,
     tags: &'a [&'a str],
     related: Vec<&'a Post<'a>>,
-}
-
-#[derive(Eq)]
-struct PostCount {
-    post: u32,
-    count: u8,
-}
-
-impl std::cmp::PartialEq for PostCount {
-    #[inline]
-    fn eq(&self, other: &Self) -> bool {
-        self.count == other.count
-    }
-}
-
-impl std::cmp::PartialOrd for PostCount {
-    #[inline]
-    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
-        Some(self.cmp(other))
-    }
-}
-
-impl std::cmp::Ord for PostCount {
-    #[inline]
-    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
-        // reverse order
-        other.count.cmp(&self.count)
-    }
-}
-
-fn least_n<T: Ord>(n: usize, mut from: impl Iterator<Item = T>) -> impl Iterator<Item = T> {
-    let mut h = BinaryHeap::from_iter(from.by_ref().take(n));
-
-    for it in from {
-        // heap thinks the smallest is the greatest because of reverse order
-        let mut greatest = h.peek_mut().unwrap();
-
-        if it < *greatest {
-            // heap rebalances after the smart pointer is dropped
-            *greatest = it;
-        }
-    }
-    h.into_iter()
 }
 
 fn main() {
@@ -105,22 +62,44 @@ fn main() {
 
             tagged_post_count[post_idx] = 0; // don't recommend the same post
 
-            let top = least_n(
-                NUM_TOP_ITEMS,
-                tagged_post_count
-                    .iter()
-                    .enumerate()
-                    .map(|(post, &count)| PostCount {
-                        post: post as u32,
-                        count,
-                    }),
-            );
-            let related = top.map(|it| &posts[it.post as usize]).collect();
+            let mut top5: Vec<usize> = vec![0; NUM_TOP_ITEMS * 2];
+            let mut min_tags: u8 = 0;
+
+            for (j, &count) in tagged_post_count.iter().enumerate() {
+                if count > min_tags {
+                    let mut upper_bound = (NUM_TOP_ITEMS - 2) * 2;
+                    let count_int = count as usize;
+
+                    // upper_bound < NUM_TOP_ITEMS * 2 is needed because of unsigned underflow
+
+                    let topn_x2 = NUM_TOP_ITEMS * 2;
+
+                    while upper_bound < topn_x2 && count_int > top5[upper_bound as usize] {
+                        top5[upper_bound as usize + 2] = top5[upper_bound as usize];
+                        top5[upper_bound as usize + 3] = top5[upper_bound as usize + 1];
+                        upper_bound -= 2;
+                    }
+
+                    let insert_pos = upper_bound + 2;
+                    top5[insert_pos as usize] = count_int;
+                    top5[(insert_pos + 1) as usize] = j as usize;
+
+                    min_tags = top5[NUM_TOP_ITEMS * 2 - 2] as u8;
+                }
+            }
+
+            // Convert indexes back to Post pointers
+            let mut top_posts: Vec<&Post> = vec![&posts[0]; NUM_TOP_ITEMS];
+
+            for j in 0..NUM_TOP_ITEMS {
+                let index = top5[j * 2 + 1] as usize;
+                top_posts[j] = &posts[index];
+            }
 
             RelatedPosts {
                 id: post.id,
                 tags: &post.tags,
-                related,
+                related: top_posts,
             }
         })
         .collect();
