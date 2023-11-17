@@ -26,11 +26,6 @@ type RelatedPosts struct {
 	Related [topN]*Post `json:"related"`
 }
 
-type PostWithSharedTags struct {
-	Post       isize
-	SharedTags byte
-}
-
 func main() {
 	file, _ := os.Open("../posts.json")
 	var posts = make([]Post, 0, InitialPostsSliceCap)
