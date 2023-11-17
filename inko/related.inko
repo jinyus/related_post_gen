@@ -18,11 +18,11 @@ class async Main {
     let mut tag_map: Map[String, Array[Int]] = Map.with_capacity(128)
 
     let mut idx = 0
-    while idx < post_count{
+    while idx < post_count {
 
       let tags = posts.get(idx).tags
       
-      tags.size.times fn (i){
+      tags.size.times fn (i) {
 
         let t = tags.get(i)
 
@@ -40,21 +40,17 @@ class async Main {
 
     let all_related : Array[RelatedPost] = Array.with_capacity(post_count)
 
-    
-    # print("tagmap: {start.elapsed.to_millis} ms")
 
     let mut i = 0
     while i < post_count{
 
 
     let tagged_post_count = Array.filled(with: 0, times: post_count)
-      # post_count.times fn(i) { tagged_post_count.set(i,0) }
 
       let post = posts.get(i)
 
-
       let mut pt = 0
-      while pt < post.tags.size{
+      while pt < post.tags.size {
         
         let indexes = tag_map.get(post.tags.get(pt))
 
@@ -63,7 +59,7 @@ class async Main {
 
             tagged_post_count.set(i, tagged_post_count.get(i) + 1)
 
-          it += 1
+            it += 1
         }
 
         pt += 1
@@ -104,7 +100,7 @@ class async Main {
 
       let top_posts = Array.with_capacity(TOPN)
 
-      TOPN.times fn (j){
+      TOPN.times fn (j) {
         let index = top_idx.get(j*2+1)
         top_posts.push(posts.get(index))
       }
