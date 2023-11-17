@@ -61,12 +61,46 @@ fn get_related<'a>(posts: &'a [Post]) -> Vec<RelatedPosts<'a>> {
                     }
                 }
                 tagged_post_count[idx] = 0;
+                let mut top5: Vec<usize> = vec![0; NUM_TOP_ITEMS * 2];
+                let mut min_tags: u8 = 0;
+
+                for (j, &count) in tagged_post_count.iter().enumerate() {
+                    if count > min_tags {
+                        let mut upper_bound = (NUM_TOP_ITEMS - 2) * 2;
+                        let count_int = count as usize;
+
+                        // upper_bound < NUM_TOP_ITEMS * 2 is needed because of unsigned underflow
+
+                        let topn_x2 = NUM_TOP_ITEMS * 2;
+
+                        while upper_bound < topn_x2 && count_int > top5[upper_bound as usize] {
+                            top5[upper_bound as usize + 2] = top5[upper_bound as usize];
+                            top5[upper_bound as usize + 3] = top5[upper_bound as usize + 1];
+                            upper_bound -= 2;
+                        }
+
+                        let insert_pos = upper_bound + 2;
+                        top5[insert_pos as usize] = count_int;
+                        top5[(insert_pos + 1) as usize] = j as usize;
+
+                        min_tags = top5[NUM_TOP_ITEMS * 2 - 2] as u8;
+                    }
+                }
+
+                // Convert indexes back to Post pointers
+                let mut top_posts: Vec<&Post> = vec![&posts[0]; NUM_TOP_ITEMS];
+
+                for j in 0..NUM_TOP_ITEMS {
+                    let index = top5[j * 2 + 1] as usize;
+                    top_posts[j] = &posts[index];
+                }
 
                 let rp = RelatedPosts {
                     id: post.id,
                     tags: &post.tags,
-                    related: utils::get_related(NUM_TOP_ITEMS, tagged_post_count, posts),
+                    related: top_posts,
                 };
+                
                 tagged_post_count.fill(0);
                 rp
             })
