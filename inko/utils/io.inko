@@ -1,0 +1,26 @@
+import std.io.Error
+import std.fs.file.(ReadOnlyFile,WriteOnlyFile)
+import std.stdio.STDOUT
+
+
+fn pub print(msg:String) {
+  STDOUT.new.print(msg)
+}
+
+fn pub read_file(name:String) -> Result[String,Error] {
+  let file = try ReadOnlyFile.new(name)
+
+  let bytes = ByteArray.new
+
+  try file.read_all(bytes)
+
+  Result.Ok(bytes.to_string)
+}
+
+fn pub write_file(name:String, content:String) -> Result[Nil,Error] {
+  let file = try WriteOnlyFile.new(name)
+
+  try file.write_string(content)
+
+  Result.Ok(nil)
+}

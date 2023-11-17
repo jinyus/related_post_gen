@@ -1,0 +1,78 @@
+import std.json.Json
+
+class pub Post {
+  let pub @id: String
+  let pub @title: String
+  let pub @tags: Array[String]
+}
+
+class pub RelatedPost {
+  let pub @id: String
+  let pub @tags: ref Array[String]
+  let pub @related: Array[ ref Post]
+}
+
+fn pub json_to_posts(json_string: String) -> Array[Post] {
+  let parsed = Json.parse(json_string).unwrap
+
+  let array =  match parsed {
+    case Array(a) -> a
+    case _ -> panic("json is not an array")
+
+  }
+
+  array.iter.map fn (n) {
+    let obj = match n {
+      case Object(m) -> m
+      case _ -> panic("json is not an object")
+    }
+
+    let id = match obj.get("_id") {
+      case String(s) -> s
+      case _ -> panic("no _id")
+    }
+
+    let title = match obj.get("title") {
+      case String(s) -> s
+      case _ -> panic("no title")
+    }
+
+    let json_tags = match obj.get("tags") {
+      case Array(a) -> a
+      case _ -> panic("no tags")
+    }
+
+    let tags = json_tags.iter.map fn (n) {
+      match n {
+        case String(s) -> s
+        case _ -> panic("tag is not a string")
+      }
+    }
+
+    Post {
+      @id = id,
+      @title = title,
+      @tags = tags.to_array,
+    }
+  }.to_array
+}
+
+fn pub related_to_json(related: Array[RelatedPost]) -> String {
+  let array = related.iter.map fn (n) {
+    let related = n.related.iter.map fn (n) {
+      let mut map = Map.new
+      map.set("_id", Json.String(n.id))
+      map.set("title", Json.String(n.title))
+      map.set("tags", Json.Array(n.tags.iter.map fn (n) { Json.String(n) }.to_array))
+      Json.Object(map)
+    }.to_array
+
+    let mut map = Map.new
+    map.set("_id", Json.String(n.id))
+    map.set("tags", Json.Array(n.tags.iter.map fn (n) { Json.String(n) }.to_array))
+    map.set("related", Json.Array(related))
+    Json.Object(map)
+  }.to_array
+
+  Json.Array(array).to_string
+}
