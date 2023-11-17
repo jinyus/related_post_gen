@@ -26,11 +26,6 @@ type Post struct {
 	Tags  []string `json:"tags"`
 }
 
-type PostWithSharedTags struct {
-	Post       isize
-	SharedTags isize
-}
-
 type RelatedPosts struct {
 	ID      string      `json:"_id"`
 	Tags    *[]string   `json:"tags"`
@@ -78,7 +73,7 @@ func main() {
 	var w isize
 	for ; w < isize(concurrency); w++ {
 		// allocate taggedPostCount for each worker once, zero out for each task
-		taggedPostCount := make([]isize, postsLengthISize)
+		taggedPostCount := make([]byte, postsLengthISize)
 		go func(workerID isize) {
 			for i := workerID; i < postsLengthISize; i += concurrency {
 				// provide taggedPostCount and binary heap for each task
@@ -113,7 +108,7 @@ func main() {
 	}
 }
 
-func computeRelatedPost(i isize, posts []Post, tagMap map[string][]isize, taggedPostCount []isize) RelatedPosts {
+func computeRelatedPost(i isize, posts []Post, tagMap map[string][]isize, taggedPostCount []byte) RelatedPosts {
 	// Zero out tagged post count
 	for j := range taggedPostCount {
 		taggedPostCount[j] = 0
@@ -128,32 +123,34 @@ func computeRelatedPost(i isize, posts []Post, tagMap map[string][]isize, tagged
 
 	taggedPostCount[i] = 0 // Don't count self
 
-	top5 := [topN]PostWithSharedTags{}
-	minTags := isize(0) // Updated initialization
+	top5 := [topN * 2]int{}
+	minTags := byte(0)
 
 	for j, count := range taggedPostCount {
 		if count > minTags {
-			// Find the position to insert
-			pos := 3
-			for pos >= 0 && top5[pos].SharedTags < count {
-				pos--
-			}
-			pos++
+			upperBound := (topN - 2) * 2
 
-			// Shift and insert
-			if pos < 4 {
-				copy(top5[pos+1:], top5[pos:4])
+			countInt := int(count)
+			for upperBound >= 0 && countInt > top5[upperBound] {
+				top5[upperBound+2] = top5[upperBound]
+				top5[upperBound+3] = top5[upperBound+1]
+				upperBound -= 2
 			}
 
-			top5[pos] = PostWithSharedTags{Post: isize(j), SharedTags: count}
-			minTags = top5[4].SharedTags
+			insertPos := upperBound + 2
+			top5[insertPos] = countInt
+			top5[insertPos+1] = j
+
+			minTags = byte(top5[topN*2-2])
 		}
 	}
 
 	// Convert indexes back to Post pointers
 	topPosts := [topN]*Post{}
-	for idx, t := range top5 {
-		topPosts[idx] = &posts[t.Post]
+
+	for j := 0; j < topN; j += 1 {
+		index := top5[j*2+1]
+		topPosts[j] = &posts[index]
 	}
 
 	return RelatedPosts{
