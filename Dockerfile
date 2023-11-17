@@ -110,6 +110,11 @@ RUN wget https://github.com/ldc-developers/ldc/releases/download/v1.34.0-beta1/l
 RUN rm -rf /usr/local/ldc2* && tar -C /usr/local -xvf ldc2-1.34.0-beta1-linux-x86_64.tar.xz
 ENV PATH="$PATH:/usr/local/ldc2-1.34.0-beta1-linux-x86_64/bin"
 
+# install inko
+RUN su -c "git clone https://aur.archlinux.org/inko.git /home/builduser/inko" builduser
+
+RUN su -c "cd /home/builduser/inko && makepkg -si --noconfirm --needed --noprogressbar" builduser
+
 RUN mkdir -p /results
 
 # location to write the raw results

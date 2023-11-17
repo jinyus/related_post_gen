@@ -888,6 +888,21 @@ run_scala_native() {
     check_output "related_posts_scala.json"
 }
 
+run_inko() {
+    echo "Running Inko" &&
+        cd ./inko &&
+        if [ -z "$appendToFile" ]; then # only build on 5k run
+            inko build --opt aggressive
+        fi &&
+        if [ $HYPER == 11 ]; then
+            capture "Inko" hyperfine -r $slow_lang_runs -w $warmup --show-output "./build/aggressive/main"
+        else
+            command ${time} -f '%es %Mk' ./build/aggressive/main
+        fi
+
+    check_output "related_posts_inko.json"
+}
+
 check_output() {
     cd ..
 
@@ -1131,6 +1146,10 @@ elif [ "$first_arg" = "lobster_cpp" ]; then
 elif [ "$first_arg" = "scala_native" ]; then
 
     run_scala_native
+
+elif [ "$first_arg" = "inko" ]; then
+
+    run_inko
 
 elif [ "$first_arg" = "all" ]; then
 
