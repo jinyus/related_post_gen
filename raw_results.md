@@ -20,21 +20,21 @@ Go:
 Go Concurrent:
 
     Benchmark 1: ./related_concurrent
-    Processing time (w/o IO): 11.826067ms
-    Processing time (w/o IO): 13.380288ms
-    Processing time (w/o IO): 11.789066ms
-    Processing time (w/o IO): 13.332088ms
-    Processing time (w/o IO): 11.833666ms
-    Processing time (w/o IO): 11.793866ms
-    Processing time (w/o IO): 11.886468ms
-    Processing time (w/o IO): 11.847667ms
-    Processing time (w/o IO): 11.761566ms
-    Processing time (w/o IO): 11.605763ms
-    Processing time (w/o IO): 11.853167ms
-    Processing time (w/o IO): 11.666964ms
-    Processing time (w/o IO): 11.905668ms
-      Time (mean ± σ):      51.2 ms ±   1.8 ms    [User: 80.5 ms, System: 9.7 ms]
-      Range (min … max):    49.8 ms …  56.0 ms    10 runs
+    Processing time (w/o IO): 11.08487ms
+    Processing time (w/o IO): 12.385202ms
+    Processing time (w/o IO): 10.692161ms
+    Processing time (w/o IO): 10.65006ms
+    Processing time (w/o IO): 11.005468ms
+    Processing time (w/o IO): 10.733262ms
+    Processing time (w/o IO): 10.573858ms
+    Processing time (w/o IO): 10.744562ms
+    Processing time (w/o IO): 10.887066ms
+    Processing time (w/o IO): 10.704161ms
+    Processing time (w/o IO): 10.750162ms
+    Processing time (w/o IO): 10.731061ms
+    Processing time (w/o IO): 10.704761ms
+      Time (mean ± σ):      48.6 ms ±   0.8 ms    [User: 73.9 ms, System: 10.3 ms]
+      Range (min … max):    47.2 ms …  50.0 ms    10 runs
 
 Rust:
 
@@ -922,11 +922,11 @@ Go:
 Go Concurrent:
 
     Benchmark 1: ./related_concurrent
-    Processing time (w/o IO): 164.238575ms
-    Processing time (w/o IO): 164.638678ms
-    Processing time (w/o IO): 167.692903ms
-      Time (mean ± σ):     307.2 ms ±   0.1 ms    [User: 791.6 ms, System: 21.4 ms]
-      Range (min … max):   307.1 ms … 307.3 ms    2 runs
+    Processing time (w/o IO): 147.373591ms
+    Processing time (w/o IO): 146.311765ms
+    Processing time (w/o IO): 146.052959ms
+      Time (mean ± σ):     287.4 ms ±   0.2 ms    [User: 708.3 ms, System: 31.6 ms]
+      Range (min … max):   287.2 ms … 287.6 ms    2 runs
 
 Rust:
 
@@ -1342,11 +1342,11 @@ Go:
 Go Concurrent:
 
     Benchmark 1: ./related_concurrent
-    Processing time (w/o IO): 1.430470006s
-    Processing time (w/o IO): 1.431937598s
-    Processing time (w/o IO): 1.43088596s
-      Time (mean ± σ):      1.933 s ±  0.002 s    [User: 6.185 s, System: 0.113 s]
-      Range (min … max):    1.931 s …  1.934 s    2 runs
+    Processing time (w/o IO): 1.275699608s
+    Processing time (w/o IO): 1.285831829s
+    Processing time (w/o IO): 1.268917915s
+      Time (mean ± σ):      1.744 s ±  0.012 s    [User: 5.525 s, System: 0.093 s]
+      Range (min … max):    1.735 s …  1.752 s    2 runs
 
 Rust:
 

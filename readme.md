@@ -107,8 +107,8 @@ docker run -e TEST_NAME=all -it --rm databench
 | D Concurrent              | 11.87 ms                              | $\textsf{\color{lightgreen}114.27 ms}$ | $\textsf{\color{lightgreen}885.56 ms}$ | 1.01 s |
 | C# Concurrent (JIT)       | 13.88 ms                              | 124.29 ms                              | 1.02 s                                 | 1.15 s |
 | C# Concurrent (AOT)       | $\textsf{\color{lightgreen}10.83 ms}$ | 136.39 ms                              | 1.14 s                                 | 1.29 s |
+| Go Concurrent             | 10.90 ms                              | 146.58 ms                              | 1.28 s                                 | 1.43 s |
 | C++ Concurrent            | 13.46 ms                              | 166.00 ms                              | 1.41 s                                 | 1.59 s |
-| Go Concurrent             | 12.04 ms                              | 165.52 ms                              | 1.43 s                                 | 1.61 s |
 | Julia Concurrent          | 13.81 ms                              | 174.84 ms                              | 1.48 s                                 | 1.67 s |
 | Nim Concurrent            | 12.64 ms                              | 179.67 ms                              | 1.48 s                                 | 1.68 s |
 | Rust Concurrent           | 12.47 ms                              | 174.48 ms                              | 1.52 s                                 | 1.71 s |

@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:math';
 
 // script to extract benchmark results and update readme.md
 
@@ -171,7 +172,14 @@ class Score {
 
 extension on List<Score> {
   String toRowString() {
-    final name = first.name == "Julia HO" ? "_Julia HO_[^1]" : first.name;
+    var name = first.name == "Julia HO" ? "_Julia HO_[^1]" : first.name;
+
+    if (name == 'Julia HO') {
+      name = '_Julia HO_[^1]';
+    } else if (name == 'Inko') {
+      name = 'Inko[^2]';
+    }
+
     return '| ${name} | ${first.avgTimeString()} | ${this[1].avgTimeString()} | ${this[2].avgTimeString()} | ${this.totalString} |';
   }
 
