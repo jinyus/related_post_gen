@@ -120,7 +120,7 @@ ENV PATH="$PATH:/usr/local/ldc2-1.34.0-beta1-linux-x86_64/bin"
 # install inko
 RUN su -c "git clone https://aur.archlinux.org/inko.git /home/builduser/inko" builduser
 
-RUN su -c "cd /home/builduser/inko && makepkg -si --noconfirm --needed --noprogressbar" builduser
+RUN su -c "rustup default stable && cd /home/builduser/inko && makepkg -si --noconfirm --needed --noprogressbar" builduser
 
 RUN mkdir -p /results
 
