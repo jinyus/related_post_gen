@@ -68,9 +68,9 @@ docker run -e TEST_NAME=all -it --rm databench
 | Go               | 21.92 ms                              | 309.41 ms                              | 2.72 s                              | 3.05 s    |
 | C++              | 22.92 ms                              | 319.00 ms                              | 2.78 s                              | 3.12 s    |
 | D                | 25.45 ms                              | 325.21 ms                              | 2.79 s                              | 3.14 s    |
+| Rust             | 22.16 ms                              | 320.57 ms                              | 2.82 s                              | 3.17 s    |
 | Nim              | 22.06 ms                              | 318.34 ms                              | 2.84 s                              | 3.18 s    |
 | Zig              | 23.00 ms                              | 339.33 ms                              | 2.99 s                              | 3.35 s    |
-| Rust             | 23.60 ms                              | 341.14 ms                              | 3.05 s                              | 3.41 s    |
 | Vlang            | 24.08 ms                              | 356.03 ms                              | 3.14 s                              | 3.52 s    |
 | Julia            | 24.17 ms                              | 365.98 ms                              | 3.17 s                              | 3.56 s    |
 | F# (AOT)         | 27.16 ms                              | 372.71 ms                              | 3.23 s                              | 3.63 s    |
