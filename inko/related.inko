@@ -57,7 +57,8 @@ class async Main {
         let mut it = 0
         while it < indexes.size{
 
-            tagged_post_count.set(i, tagged_post_count.get(i) + 1)
+            let other_idx = indexes.get(it)
+            tagged_post_count.set(other_idx, tagged_post_count.get(other_idx) + 1)
 
             it += 1
         }
