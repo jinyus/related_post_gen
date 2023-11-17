@@ -53,13 +53,20 @@ class async Main {
       let post = posts.get(i)
 
 
-      post.tags.iter.each fn (t){
+      let mut pt = 0
+      while pt < post.tags.size{
+        
+        let indexes = tag_map.get(post.tags.get(pt))
 
-        tag_map.get(t).iter.each fn (i){
+        let mut it = 0
+        while it < indexes.size{
 
             tagged_post_count.set(i, tagged_post_count.get(i) + 1)
 
+          it += 1
         }
+
+        pt += 1
 
       }
 
