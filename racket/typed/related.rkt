@@ -1,14 +1,44 @@
 #lang typed/racket/base
 
-(require json-comb
-         typed/json)
+(require json-comb)
 
-(require/typed racket/base
-               [current-inexact-monotonic-milliseconds (-> Real)])
+(provide JSPost
+         Post
+         Posts
+         PostIndex
+         PostIndices
+         RelatedCounts
+         RelatedPosts
+         Tag
+         Tags
+         TagMap
+         VecLen
+         VecPosts
+         VecRelatedPosts
+         jspost
+         jspost-_id
+         jspost-tags
+         jspost-title
+         jsposts
+         jspost->post
+         lopi
+         make-tag-map
+         post
+         post-_id
+         post-tags
+         post-title
+         process
+         read-posts
+         related-posts
+         related-posts-_id
+         related-posts-tags
+         related-posts-related
+         tally
+         top-n)
 
-(define N : Positive-Integer 5)
-(define N-1 (- N 1))
-(define N-2 (- N 2))
+(define N : Exact-Positive-Integer 5)
+(define N-1 : Exact-Nonnegative-Integer (- N 1))
+(define N-2 : Integer (- N 2))
 
 (define-json-types
   [jspost ([_id : String] [title : String] [tags : (Listof String)])]
@@ -17,14 +47,14 @@
 (define-type JSPost jspost)
 (define-type Post post)
 (define-type Posts (Listof Post))
-(define-type PostIndex Integer)
+(define-type PostIndex Exact-Nonnegative-Integer)
 (define-type PostIndices (Listof PostIndex))
-(define-type RelatedCounts (Vectorof Integer))
+(define-type RelatedCounts (Vectorof Exact-Nonnegative-Integer))
 (define-type RelatedPosts related-posts)
 (define-type Tag Symbol)
 (define-type Tags (Listof Tag))
 (define-type TagMap (HashTable Tag PostIndices))
-(define-type VecLen Integer)
+(define-type VecLen Exact-Nonnegative-Integer)
 (define-type VecPosts (Vectorof Post))
 (define-type VecRelatedPosts (Vectorof RelatedPosts))
 
@@ -37,25 +67,13 @@
         (jspost-title p)
         (map string->symbol (jspost-tags p))))
 
-(: post->hash (-> Post JSExpr))
-(define (post->hash p)
-  (hasheq '_id (post-_id p)
-          'title (post-title p)
-          'tags (map symbol->string (post-tags p))))
-
-(: related-posts->hash (-> RelatedPosts JSExpr))
-(define (related-posts->hash r)
-  (hasheq '_id (related-posts-_id r)
-          'tags (map symbol->string (related-posts-tags r))
-          'related (map post->hash (related-posts-related r))))
-
 (: lopi (-> PostIndices))
 (define (lopi) (list))
 
 (: make-tag-map (-> VecPosts TagMap))
 (define (make-tag-map posts)
   (let ([tag-map : TagMap (make-hasheq)])
-    (for* ([index (in-range (vector-length posts))]
+    (for* ([index : PostIndex (in-range (vector-length posts))]
            [tag (in-list (post-tags (vector-ref posts index)))])
       (hash-update! tag-map
                     tag
@@ -71,17 +89,9 @@
                 ([p (in-list jsposts)])
       (jspost->post p))))
 
-(: write-posts (-> VecRelatedPosts Path-String Void))
-(define (write-posts posts path)
-  (let ([jsposts (for/list : (Listof JSExpr)
-                           ([p (in-vector posts)])
-                   (related-posts->hash p))])
-    (write-json jsposts (open-output-file path #:exists 'replace)))
-  (void))
-
 (: tally (-> TagMap Post PostIndex VecLen RelatedCounts))
 (define (tally tag-map post index posts-len)
-  (let ([counts (make-vector posts-len 0)])
+  (let ([counts : RelatedCounts (make-vector posts-len 0)])
     (for* ([tag (in-list (post-tags post))]
            [related-index (in-list (hash-ref tag-map tag))])
       (vector-set! counts
@@ -125,15 +135,44 @@
         [tag-map (make-tag-map posts)])
     (for/vector : VecRelatedPosts
                 #:length posts-len
-                ([index (in-range posts-len)])
+                ([index : PostIndex (in-range posts-len)])
       (let* ([post (vector-ref posts index)]
              [counts (tally tag-map post index posts-len)])
         (related-posts (post-_id post)
                        (post-tags post)
                        (top-n counts posts posts-len))))))
 
+(module* writer typed/racket/base/optional
+  (require (only-in typed/json JSExpr)
+           (submod ".."))
+  (require/typed json [write-json (-> JSExpr Output-Port Void)])
+
+  (provide write-posts)
+
+  (: post->hash (-> Post JSExpr))
+  (define (post->hash p)
+    (hasheq '_id (post-_id p)
+            'title (post-title p)
+            'tags (map symbol->string (post-tags p))))
+
+  (: related-posts->hash (-> RelatedPosts JSExpr))
+  (define (related-posts->hash r)
+    (hasheq '_id (related-posts-_id r)
+            'tags (map symbol->string (related-posts-tags r))
+            'related (map post->hash (related-posts-related r))))
+
+  (: write-posts (-> VecRelatedPosts Path-String Void))
+  (define (write-posts posts path)
+    (let ([jsposts (for/list : (Listof JSExpr)
+                             ([p (in-vector posts)])
+                     (related-posts->hash p))])
+      (write-json jsposts (open-output-file path #:exists 'replace)))))
+
 (module+ main
-  ;; `input` and `output` paths are relative to parent directory of this script
+  (require/typed racket/base
+                 [current-inexact-monotonic-milliseconds (-> Real)])
+  (require (submod ".." writer))
+  ;; `input` and `output` paths are relative to parent directory of this module
   ;; cli exec: $ racket typed/related.rkt
   (define input "../posts.json")
   (define output "../related_posts_typed_racket.json")
