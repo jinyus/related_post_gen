@@ -72,7 +72,9 @@ fn main() {
 
                     // upper_bound < NUM_TOP_ITEMS * 2 is needed because of unsigned underflow
 
-                    while upper_bound < NUM_TOP_ITEMS * 2 && count_int > top5[upper_bound as usize] {
+                    let topn_x2 = NUM_TOP_ITEMS * 2;
+
+                    while upper_bound < topn_x2 && count_int > top5[upper_bound as usize] {
                         top5[upper_bound as usize + 2] = top5[upper_bound as usize];
                         top5[upper_bound as usize + 3] = top5[upper_bound as usize + 1];
                         upper_bound -= 2;
