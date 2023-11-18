@@ -74,16 +74,15 @@ proc findTopN(
   for i in 0..<N:
     let j = i*2
     related[i] = posts[topN[j+1]]
-    topN[j] = 0
-    topN[j+1] = 0
 
 proc process(
     posts: seq[Post],
     tagMap: Table[string, seq[int]],
     relatedPosts: var seq[RelatedPosts]) =
-  var topN: array[N*2, int]
   for i in 0..<posts.len:
-    var taggedPostCount = newSeq[uint8](posts.len)
+    var
+      taggedPostCount = newSeq[uint8](posts.len)
+      topN: array[N*2, int]
     taggedPostCount.countTaggedPost(posts, tagMap, i)
     relatedPosts[i].`"_id"` = posts[i].`"_id"`
     relatedPosts[i].tags = posts[i].tags
