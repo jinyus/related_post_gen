@@ -54,32 +54,34 @@ proc countTaggedPost(
 proc findTopN(
     taggedPostCount: var seq[uint8],
     posts: seq[Post],
-    topN: var array[N, tuple[idx: int, count: uint8]],
+    topN: var array[N*2, int],
     related: var array[N, Post]) =
-  var minCount = 0'u8
+  var minCount = 0
   for i, count in taggedPostCount:
+    let count = count.int
     if count > minCount:
-      var pos = N-2
-      while (pos >= 0) and (count > topN[pos].count):
-        dec pos
-      inc pos
-      if pos < N-1:
-        for j in countdown(N-2, pos):
-          topN[j+1].count = topN[j].count
-          topN[j+1].idx = topN[j].idx
-      topN[pos].count = count
-      topN[pos].idx = i
-      minCount = topN[N-1].count
+      var pos = (N-2)*2
+      while (pos >= 0) and (count > topN[pos]):
+        dec(pos, 2)
+      inc(pos, 2)
+      if pos < (N-1)*2:
+        for j in countdown((N-2)*2, pos, 2):
+          topN[j+2] = topN[j]
+          topN[j+3] = topN[j+1]
+      topN[pos] = count
+      topN[pos+1] = i
+      minCount = topN[(N-1)*2]
   for i in 0..<N:
-    related[i] = posts[topN[i].idx]
-    topN[i].idx = 0
-    topN[i].count = 0
+    let j = i*2
+    related[i] = posts[topN[j+1]]
+    topN[j] = 0
+    topN[j+1] = 0
 
 proc process(
     posts: seq[Post],
     tagMap: Table[string, seq[int]],
     relatedPosts: var seq[RelatedPosts]) =
-  var topN: array[N, tuple[idx: int, count: uint8]]
+  var topN: array[N*2, int]
   for i in 0..<posts.len:
     var taggedPostCount = newSeq[uint8](posts.len)
     taggedPostCount.countTaggedPost(posts, tagMap, i)
