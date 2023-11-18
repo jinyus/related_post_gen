@@ -42,15 +42,14 @@ proc countTaggedPost(
     posts: seq[Post],
     tagMap: Table[string, seq[int]],
     i: int): seq[uint8] =
-  var taggedPostCount = newSeq[uint8](posts.len)
+  result = newSeq[uint8](posts.len)
   for tag in posts[i].tags[]:
     try:
       for relatedIDX in tagMap[tag]:
-        inc taggedPostCount[relatedIDX]
+        inc result[relatedIDX]
     except KeyError as e:
       raise (ref Defect)(msg: e.msg)
-  taggedPostCount[i] = 0 # remove self
-  taggedPostCount
+  result[i] = 0 # remove self
 
 proc findTopN(
     taggedPostCount: var seq[uint8],
