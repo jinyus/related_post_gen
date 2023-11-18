@@ -12,7 +12,7 @@ type
   RelatedPosts = object
     `"_id"`: string
     tags : ptr seq[string]
-    related: array[N, ptr Post]
+    related: array[N, Post]
 
 const
   input = "../posts.json"
@@ -64,7 +64,7 @@ proc findTopN(
     taggedPostCount: var seq[uint8],
     posts: seq[Post],
     topN: var array[N, tuple[idx: int, count: uint8]],
-    related: var array[N, ptr Post]) =
+    related: var array[N, Post]) =
   var minCount = 0'u8
   for i, count in taggedPostCount:
     if count > minCount:
@@ -80,7 +80,7 @@ proc findTopN(
       topN[pos].idx = i
       minCount = topN[N-1].count
   for i in 0..<N:
-    related[i] = addr posts[topN[i].idx]
+    related[i] = posts[topN[i].idx]
     topN[i].idx = 0
     topN[i].count = 0
 
