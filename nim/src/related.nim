@@ -21,9 +21,6 @@ const
 func hash(x: string): Hash {.inline, used.} =
   cast[Hash](XXH3_64bits(x))
 
-func `[]`(t: Table[string, seq[int]], key: string): lent seq[int] =
-  tables.`[]`(t.addr[], key)
-
 func genTagMap(posts: seq[Post]): Table[string, seq[int]] =
   result = initTable[string, seq[int]](100)
   for i, post in posts:
