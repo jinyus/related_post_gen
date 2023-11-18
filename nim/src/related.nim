@@ -78,8 +78,8 @@ proc findTopN(
 
 proc process(
     posts: seq[Post],
-    tagMap: Table[string, seq[int]],
     relatedPosts: var seq[RelatedPosts]) =
+  let tagMap = genTagMap(posts)
   for i in 0..<posts.len:
     relatedPosts[i].`"_id"` = posts[i].`"_id"`
     relatedPosts[i].tags = posts[i].tags
@@ -91,9 +91,8 @@ proc main() =
   let
     posts = input.readPosts
     t0 = getMonotime()
-    tagMap = genTagMap(posts)
   var relatedPosts = newSeq[RelatedPosts](posts.len)
-  posts.process(tagMap, relatedPosts)
+  posts.process(relatedPosts)
   let time = (getMonotime() - t0).inMicroseconds / 1000
   output.writePosts(relatedPosts)
   echo "Processing time (w/o IO): ", time, "ms"
