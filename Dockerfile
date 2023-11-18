@@ -6,7 +6,7 @@ FROM archlinux:base
 # Update package repository
 RUN pacman -Syu --noconfirm
 
-RUN pacman -S --noconfirm --needed wget unzip sudo base-devel git clang llvm python python-pip ncurses gcc hyperfine rustup crystal zig dart nodejs deno maven nim opam dune lua51 luajit luarocks libedit github-cli less r
+RUN pacman -S --noconfirm --needed wget unzip sudo base-devel git clang llvm python python-pip ncurses gcc hyperfine rustup crystal zig dart nodejs deno maven opam dune lua51 luajit luarocks libedit github-cli less r
 
 # user needed to install aur packages
 RUN useradd -ms /bin/bash builduser
@@ -71,7 +71,10 @@ RUN ln -s /usr/lib/libncursesw.so.6 /usr/lib/libncurses.so.6
 
 RUN chmod +x /home/builduser/odin/odin && odin version && v version && swift --version && java --version
 
-# for nim
+# nim : commit 39fbd30.. on devel, 17 Nov 2023
+# https://github.com/nim-lang/Nim/tree/39fbd30
+RUN export CHOOSENIM_CHOOSE_VERSION=\#39fbd30; export CHOOSENIM_NO_ANALYTICS=1; curl https://nim-lang.org/choosenim/init.sh -sSf | bash -s -- -y
+ENV PATH="$PATH:/root/.nimble/bin"
 RUN cp /usr/lib/LLVMgold.so /home/builduser/swift-5.9-RELEASE-ubuntu22.04/usr/lib/LLVMgold.so
 
 # install julia
