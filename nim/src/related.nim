@@ -1,6 +1,8 @@
 import std/[hashes, monotimes, tables, times]
 import pkg/[jsony, xxhash]
 
+const N: Positive = 5
+
 type
   Post = ref object
     `"_id"`: string
@@ -10,7 +12,7 @@ type
   RelatedPosts = object
     `"_id"`: string
     tags : ptr seq[string]
-    related: array[5, ptr Post]
+    related: array[N, ptr Post]
 
 const
   input = "../posts.json"
@@ -58,41 +60,41 @@ proc countTaggedPost(
       raise (ref Defect)(msg: e.msg)
   taggedPostCount[i] = 0 # remove self
 
-proc findTop5(
+proc findTopN(
     taggedPostCount: var seq[uint8],
     posts: seq[Post],
-    top5: var array[5, tuple[idx: int, count: uint8]],
-    related: var array[5, ptr Post]) =
+    topN: var array[N, tuple[idx: int, count: uint8]],
+    related: var array[N, ptr Post]) =
   var minCount = 0'u8
   for i, count in taggedPostCount:
     if count > minCount:
-      var pos = 3
-      while (pos >= 0) and (count > top5[pos].count):
+      var pos = N-2
+      while (pos >= 0) and (count > topN[pos].count):
         dec pos
       inc pos
-      if pos < 4:
-        for j in countdown(3, pos):
-          top5[j+1].count = top5[j].count
-          top5[j+1].idx = top5[j].idx
-      top5[pos].count = count
-      top5[pos].idx = i
-      minCount = top5[4].count
-  for i in 0..<5:
-    related[i] = addr posts[top5[i].idx]
-    top5[i].idx = 0
-    top5[i].count = 0
+      if pos < N-1:
+        for j in countdown(N-2, pos):
+          topN[j+1].count = topN[j].count
+          topN[j+1].idx = topN[j].idx
+      topN[pos].count = count
+      topN[pos].idx = i
+      minCount = topN[N-1].count
+  for i in 0..<N:
+    related[i] = addr posts[topN[i].idx]
+    topN[i].idx = 0
+    topN[i].count = 0
 
 proc process(
     posts: seq[Post],
     tagMap: Table[string, seq[int]],
     relatedPosts: var seq[RelatedPosts]) =
-  var top5: array[5, tuple[idx: int, count: uint8]]
+  var topN: array[N, tuple[idx: int, count: uint8]]
   for i in 0..<posts.len:
     var taggedPostCount = newSeq[uint8](posts.len)
     taggedPostCount.countTaggedPost(posts, tagMap, i)
     relatedPosts[i].`"_id"` = posts[i].`"_id"`
     relatedPosts[i].tags = addr posts[i].tags
-    taggedPostCount.findTop5(posts, top5, relatedPosts[i].related)
+    taggedPostCount.findTopN(posts, topN, relatedPosts[i].related)
 
 {.pop.}
 
