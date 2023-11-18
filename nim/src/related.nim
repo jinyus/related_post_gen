@@ -39,10 +39,10 @@ proc writePosts(path: string, posts: seq[RelatedPosts]) =
 {.push inline.}
 
 proc countTaggedPost(
-    taggedPostCount: var seq[uint8],
     posts: seq[Post],
     tagMap: Table[string, seq[int]],
-    i: int) =
+    i: int): seq[uint8] =
+  var taggedPostCount = newSeq[uint8](posts.len)
   for tag in posts[i].tags[]:
     try:
       for relatedIDX in tagMap[tag]:
@@ -50,11 +50,11 @@ proc countTaggedPost(
     except KeyError as e:
       raise (ref Defect)(msg: e.msg)
   taggedPostCount[i] = 0 # remove self
+  taggedPostCount
 
 proc findTopN(
     taggedPostCount: var seq[uint8],
     posts: seq[Post],
-    # topN: var array[N*2, int],
     related: var array[N, Post]) =
   var topN: array[N*2, int]
   var minCount = 0
@@ -81,13 +81,9 @@ proc process(
     tagMap: Table[string, seq[int]],
     relatedPosts: var seq[RelatedPosts]) =
   for i in 0..<posts.len:
-    var
-      taggedPostCount = newSeq[uint8](posts.len)
-      # topN: array[N*2, int]
-    taggedPostCount.countTaggedPost(posts, tagMap, i)
+    var taggedPostCount = countTaggedPost(posts, tagMap, i)
     relatedPosts[i].`"_id"` = posts[i].`"_id"`
     relatedPosts[i].tags = posts[i].tags
-    # taggedPostCount.findTopN(posts, topN, relatedPosts[i].related)
     taggedPostCount.findTopN(posts, relatedPosts[i].related)
 
 {.pop.}
