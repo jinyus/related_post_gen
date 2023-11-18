@@ -19,12 +19,6 @@ struct RelatedPosts
 	Post[TopN] related;
 }
 
-struct PostsWithSharedTags
-{
-	ulong post;
-	ubyte sharedTags;
-}
-
 void main()
 {
 	auto jsonText = readText("../posts.json");
@@ -34,17 +28,15 @@ void main()
 
 	int postsCount = cast(int) posts.length;
 	auto relatedPosts = new RelatedPosts[postsCount];
-	auto taggedPostsCount = new ubyte[postsCount];
-	Post[TopN] topPosts;
+	auto taggedPostsCount = new byte[postsCount];
 	size_t[][string] tagMap;
 
 	foreach (i, post; posts)
 		foreach (tag; post.tags)
 			tagMap[tag] ~= i;
 
-	foreach (k, post; posts)
+	foreach (k, ref post; posts)
 	{
-		PostsWithSharedTags[TopN] top5;
 
 		taggedPostsCount[] = 0;
 
@@ -54,33 +46,33 @@ void main()
 
 		taggedPostsCount[k] = 0;
 
-		auto minTags = 0;
+		size_t minTags = 0;
+		size_t[TopN * 2] top5;
 		foreach (j, count; taggedPostsCount)
 		{
 			if (count > minTags)
 			{
-				int upperBound = TopN - 2;
+				auto upperBound = (TopN - 2) * 2;
 
-				while (upperBound >= 0 && count > top5[upperBound].sharedTags)
+				while (upperBound >= 0 && count > top5[upperBound])
 				{
-					top5[upperBound + 1] = top5[upperBound];
-					upperBound--;
+					auto idx = upperBound + 2;
+					top5[idx .. idx + 2] = top5[upperBound .. upperBound + 2];
+					upperBound -= 2;
 				}
 
-				top5[upperBound + 1] = PostsWithSharedTags(j, count);
+				top5[upperBound + 2] = count;
+				top5[upperBound + 3] = j;
 
-				minTags = top5[TopN - 1].sharedTags;
+				minTags = top5[2 * (TopN - 1)];
 			}
 		}
 
-		foreach (i, t; top5)
-			topPosts[i] = posts[t.post];
-
-		relatedPosts[k] = RelatedPosts(
-			post._id,
-			post.tags,
-			topPosts
-		);
+		auto rp = &relatedPosts[k];
+		rp._id = post._id;
+		rp.tags = post.tags;
+		foreach (i; 0 .. TopN)
+			rp.related[i] = posts[top5[2 * i + 1]];
 	}
 	sw.stop();
 	writeln("Processing time (w/o IO): ", sw.peek.total!"usecs" * 1.0 / 1000, "ms");
