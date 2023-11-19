@@ -31,6 +31,14 @@ proc dumpHook(s: var string, v: ptr) {.inline, used.} =
   else:
     s.dumpHook(v[])
 
+proc readPosts(path: string): seq[Post] =
+  path.readFile.fromJson(seq[Post])
+
+proc writePosts(path: string, posts: seq[RelatedPosts]) =
+  path.writeFile(posts.toJson)
+
+{.push inline.}
+
 func genTagMap(posts: seq[Post]): Table[string, seq[int]] =
   result = initTable[string, seq[int]](100)
   for i, post in posts:
@@ -39,14 +47,6 @@ func genTagMap(posts: seq[Post]): Table[string, seq[int]] =
         val[].add i
       do:
         result[tag] = @[i]
-
-proc readPosts(path: string): seq[Post] =
-  path.readFile.fromJson(seq[Post])
-
-proc writePosts(path: string, posts: seq[RelatedPosts]) =
-  path.writeFile(posts.toJson)
-
-{.push inline.}
 
 func countTaggedPost(
     posts: seq[Post],
