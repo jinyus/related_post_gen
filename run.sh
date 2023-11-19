@@ -362,7 +362,7 @@ run_nim_con() {
             nimble -y install -d &&
                 ./build.sh clang
         fi &&
-        run_command "Nim Concurrent" $runs ./related_con &&
+        run_command "Nim Concurrent" $runs ./build/related_con &&
         check_output "related_posts_nim_con.json"
 }
 

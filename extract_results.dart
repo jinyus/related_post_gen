@@ -22,6 +22,13 @@ const memUsageHeading = '''
 | -------- | -------- | --------- | --------- | ----- |
 ''';
 
+var min5k = double.maxFinite;
+var min20k = double.maxFinite;
+var min60k = double.maxFinite;
+var con_min5k = double.maxFinite;
+var con_min20k = double.maxFinite;
+var con_min60k = double.maxFinite;
+
 void main(List<String> args) {
   final filename = args.firstOrNull;
 
@@ -112,6 +119,15 @@ void main(List<String> args) {
     print('${file.readAsStringSync()}\n\nEnough scores not found. Need 3 scores for each language to update readme.md');
     return;
   }
+
+  final scoresWithoutJulia = sortedScores.where((s) => s.first.name != 'Julia HO').toList();
+  // caclulate min times
+  min5k = scoresWithoutJulia.fold(min5k, (min, sc) => sc[0].avgTimeMS() < min ? sc[0].avgTimeMS() : min);
+  min20k = scoresWithoutJulia.fold(min20k, (min, sc) => sc[1].avgTimeMS() < min ? sc[1].avgTimeMS() : min);
+  min60k = scoresWithoutJulia.fold(min60k, (min, sc) => sc[2].avgTimeMS() < min ? sc[2].avgTimeMS() : min);
+  con_min5k = multiCoreScores.fold(con_min5k, (min, sc) => sc[0].avgTimeMS() < min ? sc[0].avgTimeMS() : min);
+  con_min20k = multiCoreScores.fold(con_min20k, (min, sc) => sc[1].avgTimeMS() < min ? sc[1].avgTimeMS() : min);
+  con_min60k = multiCoreScores.fold(con_min60k, (min, sc) => sc[2].avgTimeMS() < min ? sc[2].avgTimeMS() : min);
 
   final readmePathList = file.absolute.path.split(Platform.pathSeparator)
     ..removeLast()
@@ -212,10 +228,6 @@ class Score {
   }
 }
 
-// var min5k = double.maxFinite;
-// var min20k = double.maxFinite;
-// var min60k = double.maxFinite;
-
 extension on List<Score> {
   String toRowString([bool isMemUsage = false]) {
     var name = first.name == "Julia HO" ? "_Julia HO_[^1]" : first.name;
@@ -226,9 +238,28 @@ extension on List<Score> {
       name = 'Inko[^2]';
     }
 
-    return isMemUsage
-        ? '| ${name} | ${first.avgMemUsageString()} | ${this[1].avgMemUsageString()} | ${this[2].avgMemUsageString()} | ${this.totalMemString} |'
-        : '| ${name} | ${first.avgTimeString()} | ${this[1].avgTimeString()} | ${this[2].avgTimeString()} | ${this.totalString} |';
+    if (isMemUsage) {
+      return '| ${name} | ${first.avgMemUsageString()} | ${this[1].avgMemUsageString()} | ${this[2].avgMemUsageString()} | ${this.totalMemString} |';
+    }
+
+    final isConcurrent = name.contains('Concurrent');
+    final min5KToUse = isConcurrent ? con_min5k : min5k;
+    final min20KToUse = isConcurrent ? con_min20k : min20k;
+    final min60KToUse = isConcurrent ? con_min60k : min60k;
+
+    final fiveKTime = first.avgTimeMS() == min5KToUse
+        ? '\$\\textsf{\\color{lightgreen}${first.avgTimeString()}}\$'
+        : first.avgTimeString();
+
+    final twentyKTime = this[1].avgTimeMS() == min20KToUse
+        ? '\$\\textsf{\\color{lightgreen}${this[1].avgTimeString()}}\$'
+        : this[1].avgTimeString();
+
+    final sixtyKTime = this[2].avgTimeMS() == min60KToUse
+        ? '\$\\textsf{\\color{lightgreen}${this[2].avgTimeString()}}\$'
+        : this[2].avgTimeString();
+
+    return '| ${name} | ${fiveKTime} | ${twentyKTime} | ${sixtyKTime} | ${this.totalString} |';
   }
 
   String get totalString {
