@@ -75,7 +75,9 @@ docker run -e TEST_NAME=all -it --rm databench
 | Julia | 24.31 ms | 391.39 ms | 3.21 s | 3.62 s |
 | C# (AOT) | 27.19 ms | 378.48 ms | 3.28 s | 3.69 s |
 | C# (JIT) | 27.73 ms | 379.95 ms | 3.30 s | 3.70 s |
+| F# (AOT) | 32.60 ms | 463.43 ms | 4.05 s | 4.55 s |
 | Odin | 44.93 ms | 533.66 ms | 5.79 s | 6.37 s |
+| F# (JIT) | 44.59 ms | 652.38 ms | 5.71 s | 6.41 s |
 | Swift | 52.34 ms | 725.63 ms | 6.23 s | 7.01 s |
 | Java (GraalVM) | 56.00 ms | 631.67 ms | 6.56 s | 7.25 s |
 | Java (JIT) | 55.90 ms | 764.33 ms | 6.66 s | 7.48 s |
@@ -163,8 +165,10 @@ docker run -e TEST_NAME=all -it --rm databench
 | Julia Concurrent | 340.34 MB | 393.34 MB | 446.80 MB | 1180.49 MB |
 | _Julia HO_[^1] | 341.59 MB | 395.27 MB | 443.79 MB | 1180.65 MB |
 | Inko[^2] | 76.42 MB | 288.38 MB | 850.69 MB | 1215.49 MB |
+| F# (AOT) | 145.65 MB | 509.38 MB | 995.73 MB | 1650.76 MB |
 | F# Concurrent (AOT) | 149.19 MB | 511.41 MB | 1018.35 MB | 1678.95 MB |
 | F# Concurrent | 173.44 MB | 490.84 MB | 1034.36 MB | 1698.64 MB |
+| F# (JIT) | 173.19 MB | 496.67 MB | 1035.35 MB | 1705.21 MB |
 | Numpy | 194.21 MB | 2118.52 MB | OOM | N/A |
 | Scala Native | 299.26 MB | 1276.21 MB | 4050.95 MB | 5626.42 MB |
 
