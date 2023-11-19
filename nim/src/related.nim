@@ -22,10 +22,10 @@ const
   input = "../posts.json"
   output = "../related_posts_nim.json"
 
-func hash(x: string): Hash {.inline, used.} =
+func hash(x: string): Hash {.inline.} =
   cast[Hash](XXH3_64bits(x))
 
-func dumpHook(s: var string, v: ptr) {.inline, used.} =
+func dumpHook(s: var string, v: ptr) {.inline.} =
   if v == nil:
     s.add("null")
   else:
