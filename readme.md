@@ -111,10 +111,10 @@ docker run -e TEST_NAME=all -it --rm databench
 | Go Concurrent             | $\textsf{\color{lightgreen}11.26 ms}$ | 150.40 ms                              | 1.28 s                                 | 1.44 s |
 | C++ Concurrent            | 13.30 ms                              | 167.67 ms                              | 1.41 s                                 | 1.59 s |
 | Nim Concurrent            | 12.32 ms                              | 172.13 ms                              | 1.48 s                                 | 1.66 s |
+| Julia Concurrent          | 13.86 ms                              | 189.12 ms                              | 1.47 s                                 | 1.67 s |
 | Rust Concurrent           | 18.34 ms                              | 194.04 ms                              | 1.53 s                                 | 1.75 s |
 | F# Concurrent (AOT)       | 16.10 ms                              | 233.67 ms                              | 2.04 s                                 | 2.29 s |
 | F# Concurrent             | 20.50 ms                              | 287.33 ms                              | 2.44 s                                 | 2.75 s |
-| Julia Concurrent          | 23.71 ms                              | 386.26 ms                              | 3.17 s                                 | 3.58 s |
 | Swift Concurrent          | 33.06 ms                              | 397.78 ms                              | 3.44 s                                 | 3.87 s |
 | Java (GraalVM) Concurrent | 50.70 ms                              | 608.33 ms                              | 4.03 s                                 | 4.68 s |
 

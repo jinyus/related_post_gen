@@ -345,26 +345,26 @@ Julia HO:
 
 Julia Concurrent:
 
-    Processing time (w/o IO): 23.663361000000002ms
-    total: 1.15s memory: 338856k
-    Processing time (w/o IO): 23.639761ms
-    total: 1.12s memory: 341532k
-    Processing time (w/o IO): 23.695161ms
-    total: 1.14s memory: 341608k
-    Processing time (w/o IO): 23.835062ms
-    total: 1.15s memory: 343252k
-    Processing time (w/o IO): 23.66076ms
-    total: 1.12s memory: 338880k
-    Processing time (w/o IO): 23.718062000000003ms
-    total: 1.14s memory: 339932k
-    Processing time (w/o IO): 23.748462ms
-    total: 1.13s memory: 341620k
-    Processing time (w/o IO): 23.74752ms
-    total: 1.14s memory: 338828k
-    Processing time (w/o IO): 23.628718ms
-    total: 1.14s memory: 339004k
-    Processing time (w/o IO): 23.768019000000002ms
-    total: 1.12s memory: 339884k
+    Processing time (w/o IO): 14.428991ms
+    total: 0.96s memory: 344100k
+    Processing time (w/o IO): 14.35529ms
+    total: 0.95s memory: 344520k
+    Processing time (w/o IO): 14.614994ms
+    total: 0.93s memory: 344104k
+    Processing time (w/o IO): 14.219589ms
+    total: 0.94s memory: 344244k
+    Processing time (w/o IO): 13.024272999999999ms
+    total: 0.97s memory: 343812k
+    Processing time (w/o IO): 14.418291ms
+    total: 0.95s memory: 344160k
+    Processing time (w/o IO): 13.316358000000001ms
+    total: 0.94s memory: 344124k
+    Processing time (w/o IO): 12.848452ms
+    total: 0.94s memory: 345436k
+    Processing time (w/o IO): 13.836262999999999ms
+    total: 0.95s memory: 346332k
+    Processing time (w/o IO): 13.555060000000001ms
+    total: 0.96s memory: 347660k
 
 Odin:
 
@@ -1240,12 +1240,12 @@ Julia HO:
 
 Julia Concurrent:
 
-    Processing time (w/o IO): 387.658368ms
-    total: 1.65s memory: 393736k
-    Processing time (w/o IO): 384.445466ms
-    total: 1.63s memory: 393124k
-    Processing time (w/o IO): 386.68459ms
-    total: 1.62s memory: 393168k
+    Processing time (w/o IO): 189.45304099999998ms
+    total: 1.25s memory: 397236k
+    Processing time (w/o IO): 191.223262ms
+    total: 1.23s memory: 403432k
+    Processing time (w/o IO): 186.680469ms
+    total: 1.21s memory: 396600k
 
 Odin:
 
@@ -1695,12 +1695,12 @@ Julia HO:
 
 Julia Concurrent:
 
-    Processing time (w/o IO): 3165.2993829999996ms
-    total: 4.84s memory: 445488k
-    Processing time (w/o IO): 3167.629087ms
-    total: 4.84s memory: 447356k
-    Processing time (w/o IO): 3168.624516ms
-    total: 4.85s memory: 447568k
+    Processing time (w/o IO): 1465.156262ms
+    total: 2.87s memory: 457264k
+    Processing time (w/o IO): 1466.1848790000001ms
+    total: 2.84s memory: 455180k
+    Processing time (w/o IO): 1483.679786ms
+    total: 2.89s memory: 451068k
 
 Odin:
 
