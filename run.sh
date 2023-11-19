@@ -120,7 +120,7 @@ run_rust_con() {
     echo "Running Rust Rayon" &&
         cd ./rust_con &&
         cargo build --release &&
-        run_command "Rust Rayon" $runs ./target/release/rust_rayon &&
+        run_command "Rust Concurrent" $runs ./target/release/rust_rayon &&
         check_output "related_posts_rust_con.json"
 
 }
