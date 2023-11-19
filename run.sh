@@ -469,7 +469,7 @@ run_luajit_jit_off() {
         if [ -z "$appendToFile" ]; then # subsequent runs
             sudo luarocks --lua-version 5.1 install luasocket
         fi &&
-        run_command "LuaJIT (JIT OFF)" $runs luajit -joff only_lua.lua &&
+        run_command "LuaJIT (JIT OFF)" $slow_lang_runs luajit -joff only_lua.lua &&
         check_output "related_posts_lua.json"
 }
 
@@ -477,7 +477,7 @@ run_lua() {
     echo "Running Lua" &&
         sudo luarocks install luasocket &&
         cd ./lua &&
-        run_command "Lua" $runs lua only_lua.lua &&
+        run_command "Lua" $slow_lang_runs lua only_lua.lua &&
         check_output "related_posts_lua.json"
 }
 
@@ -528,7 +528,7 @@ run_erlang() {
     echo "Running Erlang" &&
         cd ./erlang &&
         rebar3 escriptize &&
-        run_command "Erlang" $runs ./_build/default/bin/related_erl &&
+        run_command "Erlang" $slow_lang_runs ./_build/default/bin/related_erl &&
         check_output "related_posts_erlang.json"
 }
 
@@ -543,7 +543,7 @@ run_clojure() {
 run_ruby() {
     echo "Running ruby" &&
         cd ./ruby &&
-        run_command "Ruby" $runs ruby related.rb &&
+        run_command "Ruby" $slow_lang_runs ruby related.rb &&
         check_output "related_posts_ruby.json"
 }
 
