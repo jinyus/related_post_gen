@@ -5,11 +5,7 @@ import pkg/[decimal, jsony, xxhash]
 # --------------------------------------------
 # ? is returning seq from findTopN faster than returning array
 # ? is `collect(newSeqOfCap(posts.len)):` faster than `collect:`
-# ? is it faster with or without inlining hints
 # ? how to correctly round DecimalType to 2 places
-
-# ^ unfortunately, the answers to some questions (and what combination of
-# changes is overall fastest) can depend on choice of clang vs. gcc
 
 const N: Positive = 5
 
