@@ -1,5 +1,5 @@
-import std/[hashes, monotimes, tables, times]
-import pkg/[jsony, xxhash]
+import std/[hashes, monotimes, sugar, tables, times]
+import pkg/[decimal, jsony, xxhash]
 
 const N: Positive = 5
 
@@ -76,14 +76,15 @@ proc findTopN(
   for i in 0..<N:
     result[i] = posts[topN[i*2+1]]
 
-proc process(
-    posts: seq[Post],
-    relatedPosts: var seq[RelatedPosts]) =
-  let tagMap = genTagMap(posts)
-  for i in 0..<posts.len:
-    relatedPosts[i].`"_id"` = posts[i].`"_id"`
-    relatedPosts[i].tags = posts[i].tags
-    relatedPosts[i].related = posts.findTopN(tagMap, i)
+proc process(posts: seq[Post]): seq[RelatedPosts] =
+  let tagMap = posts.genTagMap
+  # collect(newSeqOfCap(posts.len)):
+  collect:
+    for i, post in posts:
+      RelatedPosts(
+        `"_id"`: post.`"_id"`,
+        tags: post.tags,
+        related: posts.findTopN(tagMap, i))
 
 {.pop.}
 
@@ -91,11 +92,12 @@ proc main() =
   let
     posts = input.readPosts
     t0 = getMonotime()
-  var relatedPosts = newSeq[RelatedPosts](posts.len)
-  posts.process(relatedPosts)
-  let time = (getMonotime() - t0).inMicroseconds / 1000
+    relatedPosts = posts.process
+    t1 = getMonotime()
+    timeNs: int64 = (t1 - t0).inNanoseconds
+    timeMs: DecimalType = newDecimal(timeNs) / newDecimal(1_000_000)
   output.writePosts(relatedPosts)
-  echo "Processing time (w/o IO): ", time, "ms"
+  echo "Processing time (w/o IO): ", timeMs, "ms"
 
 when isMainModule:
   main()
