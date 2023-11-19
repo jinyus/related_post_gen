@@ -159,10 +159,11 @@ void main(List<String> args) {
 
         final sCoreLines = sortedScores.map((e) => e.toRowString()).join('\n') + '\n\n';
         final mCoreLines = multiCoreScores.map((e) => e.toRowString()).join('\n') + '\n\n';
-        final memUsageLines = sortedMemScores.map((e) => e.toRowString(true)).join('\n') + '\n\n';
+        // final memUsageLines = sortedMemScores.map((e) => e.toRowString(true)).join('\n') + '\n\n';
 
         // add back the line with detail opening tag
-        return sCoreLines + multiCoreHeading + mCoreLines + memUsageHeading + memUsageLines + line;
+        return sCoreLines + multiCoreHeading + mCoreLines + line;
+        // return sCoreLines + multiCoreHeading + mCoreLines + memUsageHeading + memUsageLines + line;
       })
       .whereType<String>()
       .join('\n');
