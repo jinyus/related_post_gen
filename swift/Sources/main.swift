@@ -3,11 +3,11 @@ import Foundation
 
 
 
+let TOPN = 5
 let url = URL(fileURLWithPath: "../posts.json")
 let data = try! Data(contentsOf: url)
 let decoder = JSONDecoder()
 let posts = try! decoder.decode([Post].self, from: data)
-
 
 let t1 = Date()
 
@@ -32,28 +32,36 @@ for (idx, post) in posts.enumerated() {
 
     tagged_post_count[idx] = 0 // don't count self
 
-    var top5Queue = Array(repeating: (0, 0), count: 5)
-    var min_tags = 0
+    var top5 = [Int](repeating: 0, count: TOPN * 2)
+    var minTags: UInt8 = 0
 
-    // custom priority queue
-    for (idx, count) in tagged_post_count.enumerated() {
-        if count > min_tags {
-            var pos = 4
+    for (j, count) in tagged_post_count.enumerated() {
+        if count > minTags {
+            var upperBound = (TOPN - 2) * 2
+            let countInt = Int(count)
 
-            while pos >= 0 && top5Queue[pos].1 < count {
-                pos -= 1
+            while upperBound >= 0 && countInt > top5[upperBound] {
+                top5[upperBound + 2] = top5[upperBound]
+                top5[upperBound + 3] = top5[upperBound + 1]
+                upperBound -= 2
             }
-            pos += 1
 
-            if pos <= 4 {
-                top5Queue.insert((idx, count), at: pos)
-                top5Queue.removeLast()
-                min_tags = top5Queue[4].1
-            }
+            let insertPos = upperBound + 2
+            top5[insertPos] = countInt
+            top5[insertPos + 1] = j
+
+            minTags = UInt8(top5[TOPN * 2 - 2])
         }
     }
 
-    let topPosts = top5Queue.map { posts[$0.0] }
+    // Convert indexes back to Post pointers
+    var topPosts = [Post]()
+
+    for j in 0..<TOPN {
+        let index = top5[j * 2 + 1]
+        topPosts.append(posts[index])
+    }
+
 
     allRelatedPosts.append(RelatedPosts(_id: post._id, tags: post.tags, related: topPosts))
 }
