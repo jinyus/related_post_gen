@@ -3,7 +3,6 @@ import pkg/[decimal, jsony, xxhash]
 
 # questions re: performance in Azure VM/Docker
 # --------------------------------------------
-# ? is returning seq from findTopN faster than returning array
 # ? how to correctly round DecimalType to 2 places
 
 const N: Positive = 5
