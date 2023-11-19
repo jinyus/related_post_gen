@@ -219,7 +219,7 @@ run_julia_con() {
     echo "Running Julia Concurrent" &&
         cd ./julia_con &&
         julia -e 'using Pkg; Pkg.activate("RelatedCon"); Pkg.instantiate()' &&
-        run_command "Julia Concurrent" $runs julia --startup-file=no --project=RelatedCon -e "using RelatedCon; main()" &&
+        run_command "Julia Concurrent" $runs julia --threads=auto --startup-file=no --project=RelatedCon -e "using RelatedCon; main()" &&
         check_output "related_posts_julia_con.json"
 }
 
