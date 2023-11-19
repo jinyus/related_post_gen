@@ -1,6 +1,17 @@
 import std/[hashes, monotimes, sugar, tables, times]
 import pkg/[decimal, jsony, xxhash]
 
+# questions re: performance in Azure VM/Docker
+# --------------------------------------------
+# ? is returning seq from findTopN faster than returning array
+# ? is `collect(newSeqOfCap(posts.len)):` faster than `collect:`
+# ? is `object` or `ref object` faster re: `type RelatedPosts`
+# ? is it faster with or without inlining hints
+# ? how to correctly round DecimalType to 2 places
+
+# ^ unfortunately, the answers to some questions (and what combination of
+# changes is overall fastest) can depend on choice of clang vs. gcc
+
 const N: Positive = 5
 
 type
