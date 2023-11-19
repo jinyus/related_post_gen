@@ -17,7 +17,7 @@ type
   RelatedPosts = ref object
     `"_id"`: string
     tags : ref seq[string]
-    related: array[N, Post]
+    related: array[N, ptr Post]
 
 const
   input = "../posts.json"
@@ -25,6 +25,12 @@ const
 
 func hash(x: string): Hash {.inline, used.} =
   cast[Hash](XXH3_64bits(x))
+
+proc dumpHook(s: var string, v: ptr) {.inline, used.} =
+  if v == nil:
+    s.add("null")
+  else:
+    s.dumpHook(v[])
 
 func genTagMap(posts: seq[Post]): Table[string, seq[int]] =
   result = initTable[string, seq[int]](100)
@@ -59,7 +65,7 @@ func countTaggedPost(
 func findTopN(
     posts: seq[Post],
     tagMap: Table[string, seq[int]],
-    i: int): array[N, Post] =
+    i: int): array[N, ptr Post] =
   let taggedPostCount = countTaggedPost(posts, tagMap, i)
   var
     minCount = 0
@@ -81,7 +87,7 @@ func findTopN(
       topN[pos+1] = i
       minCount = topN[(N-1)*2]
   for i in 0..<N:
-    result[i] = posts[topN[i*2+1]]
+    result[i] = addr posts[topN[i*2+1]]
 
 func process(posts: seq[Post]): seq[RelatedPosts] =
   let tagMap = posts.genTagMap
