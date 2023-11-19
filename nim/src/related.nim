@@ -25,7 +25,7 @@ const
 func hash(x: string): Hash {.inline, used.} =
   cast[Hash](XXH3_64bits(x))
 
-proc dumpHook(s: var string, v: ptr) {.inline, used.} =
+func dumpHook(s: var string, v: ptr) {.inline, used.} =
   if v == nil:
     s.add("null")
   else:
