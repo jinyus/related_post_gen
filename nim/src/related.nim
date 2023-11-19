@@ -5,7 +5,6 @@ import pkg/[decimal, jsony, xxhash]
 # --------------------------------------------
 # ? is returning seq from findTopN faster than returning array
 # ? is `collect(newSeqOfCap(posts.len)):` faster than `collect:`
-# ? is `object` or `ref object` faster re: `type RelatedPosts`
 # ? is it faster with or without inlining hints
 # ? how to correctly round DecimalType to 2 places
 
@@ -20,7 +19,7 @@ type
     title: string
     tags : ref seq[string]
 
-  RelatedPosts = object
+  RelatedPosts = ref object
     `"_id"`: string
     tags : ref seq[string]
     related: array[N, Post]
