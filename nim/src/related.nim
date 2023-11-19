@@ -59,6 +59,8 @@ proc findTopN(
   var
     minCount = 0
     topN: array[N*2, int]
+  # counts for related posts in even indices of topN
+  # indices of related posts in odd indices of topN
   for i, count in taggedPostCount:
     let count = count.int
     if count > minCount:
