@@ -64,9 +64,8 @@ docker run -e TEST_NAME=all -it --rm databench
 | Language         | Time (5k posts)                       | 20k posts                              | 60k posts                           | Total     |
 | ---------------- | ------------------------------------- | -------------------------------------- | ----------------------------------- | --------- |
 | _Julia HO_[^1] | 9.30 ms | 65.00 ms | 169.33 ms | 243.63 ms |
-| Rust Rayon | 18.34 ms | 194.04 ms | 1.53 s | 1.75 s |
-| D (v2) | 21.96 ms | 259.01 ms | 2.14 s | 2.42 s |
-| Go | 21.83 ms | 315.59 ms | 2.74 s | 3.08 s |
+| D (v2) | 21.96 ms | $\textsf{\color{lightgreen}259.01 ms}$ | $\textsf{\color{lightgreen}2.14 s}$ | 2.42 s |
+| Go | $\textsf{\color{lightgreen}21.83 ms}$ | 315.59 ms | 2.74 s | 3.08 s |
 | C++ | 23.00 ms | 327.33 ms | 2.80 s | 3.15 s |
 | D | 25.69 ms | 327.47 ms | 2.81 s | 3.16 s |
 | Rust | 22.07 ms | 316.11 ms | 2.84 s | 3.17 s |
@@ -103,23 +102,23 @@ docker run -e TEST_NAME=all -it --rm databench
 
 | Language       | Time (5k posts) | 20k posts        | 60k posts        | Total     |
 | -------------- | --------------- | ---------------- | ---------------- | --------- |
-| D Concurrent | 12.65 ms | 119.09 ms | 890.29 ms | 1.02 s |
+| D Concurrent | 12.65 ms | $\textsf{\color{lightgreen}119.09 ms}$ | $\textsf{\color{lightgreen}890.29 ms}$ | 1.02 s |
 | C# Concurrent (JIT) | 13.25 ms | 130.13 ms | 1.03 s | 1.18 s |
 | C# Concurrent (AOT) | 11.71 ms | 145.17 ms | 1.22 s | 1.37 s |
-| Go Concurrent | 11.26 ms | 150.40 ms | 1.28 s | 1.44 s |
+| Go Concurrent | $\textsf{\color{lightgreen}11.26 ms}$ | 150.40 ms | 1.28 s | 1.44 s |
 | C++ Concurrent | 13.30 ms | 167.67 ms | 1.41 s | 1.59 s |
+| Nim Concurrent | 12.32 ms | 172.13 ms | 1.48 s | 1.66 s |
+| Rust Concurrent | 18.34 ms | 194.04 ms | 1.53 s | 1.75 s |
 | F# Concurrent (AOT) | 16.10 ms | 233.67 ms | 2.04 s | 2.29 s |
 | F# Concurrent | 20.50 ms | 287.33 ms | 2.44 s | 2.75 s |
 | Julia Concurrent | 23.71 ms | 386.26 ms | 3.17 s | 3.58 s |
 | Swift Concurrent | 33.06 ms | 397.78 ms | 3.44 s | 3.87 s |
 | Java (GraalVM) Concurrent | 50.70 ms | 608.33 ms | 4.03 s | 4.68 s |
-| Nim Concurrent | OOM | OOM | OOM | N/A |
 
 ### Memory Usage Results
 
 | Language | 5k posts | 20k posts | 60k posts | Total |
 | -------- | -------- | --------- | --------- | ----- |
-| Nim Concurrent | OOM | OOM | OOM | N/A |
 | Zig | 4.03 MB | 10.88 MB | 30.27 MB | 45.18 MB |
 | Java (GraalVM) Concurrent | 21.50 MB | 34.51 MB | 69.25 MB | 125.26 MB |
 | Java (GraalVM) | 20.44 MB | 38.16 MB | 84.38 MB | 142.97 MB |
@@ -133,6 +132,7 @@ docker run -e TEST_NAME=all -it --rm databench
 | Go | 15.36 MB | 45.83 MB | 162.86 MB | 224.05 MB |
 | Go Concurrent | 15.95 MB | 46.39 MB | 163.55 MB | 225.89 MB |
 | Python | 23.82 MB | 57.05 MB | 146.66 MB | 227.53 MB |
+| Nim Concurrent | 13.02 MB | 54.07 MB | 178.25 MB | 245.34 MB |
 | Crystal | 17.03 MB | 53.15 MB | 184.83 MB | 255.00 MB |
 | Java (JIT) | 74.47 MB | 107.80 MB | 132.05 MB | 314.31 MB |
 | Lua | 21.44 MB | 75.19 MB | 235.53 MB | 332.16 MB |
@@ -163,8 +163,8 @@ docker run -e TEST_NAME=all -it --rm databench
 | _Julia HO_[^1] | 341.59 MB | 395.27 MB | 443.79 MB | 1180.65 MB |
 | F# Concurrent (AOT) | 149.19 MB | 511.41 MB | 1018.35 MB | 1678.95 MB |
 | F# Concurrent | 173.44 MB | 490.84 MB | 1034.36 MB | 1698.64 MB |
-| Numpy | 194.21 MB | 2118.52 MB | OOM | N/A |
 | Scala Native | 299.26 MB | 1276.21 MB | 4050.95 MB | 5626.42 MB |
+| Numpy | 194.21 MB | 2118.52 MB | OOM | N/A |
 
 <details>
 <summary> Old Results with details (on my machine) </summary>
