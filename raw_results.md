@@ -668,36 +668,26 @@ Nim:
 
 Nim Concurrent:
 
-	/usr/sbin/time: cannot run ./related_con: No such file or directory
-	Command exited with non-zero status 127
-	total: 0.00s memory: 1024k
-	/usr/sbin/time: cannot run ./related_con: No such file or directory
-	Command exited with non-zero status 127
-	total: 0.00s memory: 1024k
-	/usr/sbin/time: cannot run ./related_con: No such file or directory
-	Command exited with non-zero status 127
-	total: 0.00s memory: 1024k
-	/usr/sbin/time: cannot run ./related_con: No such file or directory
-	Command exited with non-zero status 127
-	total: 0.00s memory: 768k
-	/usr/sbin/time: cannot run ./related_con: No such file or directory
-	Command exited with non-zero status 127
-	total: 0.00s memory: 768k
-	/usr/sbin/time: cannot run ./related_con: No such file or directory
-	Command exited with non-zero status 127
-	total: 0.00s memory: 768k
-	/usr/sbin/time: cannot run ./related_con: No such file or directory
-	Command exited with non-zero status 127
-	total: 0.00s memory: 768k
-	/usr/sbin/time: cannot run ./related_con: No such file or directory
-	Command exited with non-zero status 127
-	total: 0.00s memory: 1024k
-	/usr/sbin/time: cannot run ./related_con: No such file or directory
-	Command exited with non-zero status 127
-	total: 0.00s memory: 896k
-	/usr/sbin/time: cannot run ./related_con: No such file or directory
-	Command exited with non-zero status 127
-	total: 0.00s memory: 896k
+        Processing time (w/o IO): 12.423ms
+        total: 0.04s memory: 13056k
+        Processing time (w/o IO): 12.284ms
+        total: 0.04s memory: 12928k
+        Processing time (w/o IO): 12.311ms
+        total: 0.04s memory: 12928k
+        Processing time (w/o IO): 12.288ms
+        total: 0.04s memory: 13056k
+        Processing time (w/o IO): 12.383ms
+        total: 0.04s memory: 13072k
+        Processing time (w/o IO): 12.448ms
+        total: 0.04s memory: 12928k
+        Processing time (w/o IO): 12.277ms
+        total: 0.04s memory: 13056k
+        Processing time (w/o IO): 12.228ms
+        total: 0.04s memory: 13056k
+        Processing time (w/o IO): 12.252ms
+        total: 0.04s memory: 12928k
+        Processing time (w/o IO): 12.332ms
+        total: 0.04s memory: 13152k
 
 F# Concurrent:
 
@@ -1308,15 +1298,12 @@ Nim:
 
 Nim Concurrent:
 
-	/usr/sbin/time: cannot run ./related_con: No such file or directory
-	Command exited with non-zero status 127
-	total: 0.00s memory: 896k
-	/usr/sbin/time: cannot run ./related_con: No such file or directory
-	Command exited with non-zero status 127
-	total: 0.00s memory: 1024k
-	/usr/sbin/time: cannot run ./related_con: No such file or directory
-	Command exited with non-zero status 127
-	total: 0.00s memory: 768k
+        Processing time (w/o IO): 172.044ms
+        total: 0.30s memory: 54204k
+        Processing time (w/o IO): 172.974ms
+        total: 0.30s memory: 53992k
+        Processing time (w/o IO): 171.367ms
+        total: 0.30s memory: 54012k
 
 F# Concurrent:
 
@@ -1741,15 +1728,13 @@ Nim:
 
 Nim Concurrent:
 
-	/usr/sbin/time: cannot run ./related_con: No such file or directory
-	Command exited with non-zero status 127
-	total: 0.00s memory: 768k
-	/usr/sbin/time: cannot run ./related_con: No such file or directory
-	Command exited with non-zero status 127
-	total: 0.00s memory: 1024k
-	/usr/sbin/time: cannot run ./related_con: No such file or directory
-	Command exited with non-zero status 127
-	total: 0.00s memory: 768k
+        Processing time (w/o IO): 1481.797ms
+        total: 1.95s memory: 177368k
+        Processing time (w/o IO): 1479.723ms
+        total: 1.95s memory: 180496k
+        Processing time (w/o IO): 1479.832ms
+        total: 1.94s memory: 176888k
+
 
 F# Concurrent:
 
