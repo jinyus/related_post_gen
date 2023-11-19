@@ -49,7 +49,7 @@ proc writePosts(path: string, posts: seq[RelatedPosts]) =
 
 {.push inline.}
 
-proc countTaggedPost(
+func countTaggedPost(
     posts: seq[Post],
     tagMap: Table[string, seq[int]],
     i: int): seq[uint8] =
@@ -62,7 +62,7 @@ proc countTaggedPost(
       raise (ref Defect)(msg: e.msg)
   result[i] = 0 # remove self
 
-proc findTopN(
+func findTopN(
     posts: seq[Post],
     tagMap: Table[string, seq[int]],
     i: int): array[N, Post] =
@@ -89,7 +89,7 @@ proc findTopN(
   for i in 0..<N:
     result[i] = posts[topN[i*2+1]]
 
-proc process(posts: seq[Post]): seq[RelatedPosts] =
+func process(posts: seq[Post]): seq[RelatedPosts] =
   let tagMap = posts.genTagMap
   # collect(newSeqOfCap(posts.len)):
   collect:
