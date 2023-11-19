@@ -1,10 +1,6 @@
 import std/[hashes, monotimes, sugar, tables, times]
 import pkg/[decimal, jsony, xxhash]
 
-# questions re: performance in Azure VM/Docker
-# --------------------------------------------
-# ? how to correctly round DecimalType to 2 places
-
 const N: Positive = 5
 
 type
@@ -107,8 +103,11 @@ proc main() =
     t1 = getMonotime()
     timeNs: int64 = (t1 - t0).inNanoseconds
     timeMs: DecimalType = newDecimal(timeNs) / newDecimal(1_000_000)
+    timeMsS = $timeMs
+  setPrec(4)
+  let time = newDecimal(timeMsS)
   output.writePosts(relatedPosts)
-  echo "Processing time (w/o IO): ", timeMs, "ms"
+  echo "Processing time (w/o IO): ", time, "ms"
 
 when isMainModule:
   main()
