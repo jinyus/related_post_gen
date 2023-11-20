@@ -644,26 +644,26 @@ Java (GraalVM) Concurrent:
 
 Nim:
 
-    Processing time (w/o IO): 22.302ms
-    total: 0.05s memory: 17084k
-    Processing time (w/o IO): 22.111ms
-    total: 0.05s memory: 17028k
-    Processing time (w/o IO): 22.275ms
-    total: 0.05s memory: 17040k
-    Processing time (w/o IO): 22.245ms
-    total: 0.05s memory: 16864k
-    Processing time (w/o IO): 22.24ms
-    total: 0.05s memory: 16936k
-    Processing time (w/o IO): 22.396ms
-    total: 0.05s memory: 16876k
-    Processing time (w/o IO): 22.35ms
-    total: 0.05s memory: 16860k
-    Processing time (w/o IO): 22.186ms
-    total: 0.05s memory: 16812k
-    Processing time (w/o IO): 22.333ms
-    total: 0.05s memory: 16872k
-    Processing time (w/o IO): 22.298ms
-    total: 0.05s memory: 16864k
+    Processing time (w/o IO): 21.78ms
+    total: 0.04s memory: 12712k
+    Processing time (w/o IO): 21.83ms
+    total: 0.04s memory: 12928k
+    Processing time (w/o IO): 21.79ms
+    total: 0.04s memory: 12804k
+    Processing time (w/o IO): 21.76ms
+    total: 0.04s memory: 12544k
+    Processing time (w/o IO): 21.77ms
+    total: 0.04s memory: 12724k
+    Processing time (w/o IO): 21.79ms
+    total: 0.04s memory: 12928k
+    Processing time (w/o IO): 21.81ms
+    total: 0.04s memory: 12544k
+    Processing time (w/o IO): 21.75ms
+    total: 0.04s memory: 12672k
+    Processing time (w/o IO): 21.73ms
+    total: 0.04s memory: 12652k
+    Processing time (w/o IO): 21.79ms
+    total: 0.05s memory: 12928k
 
 Nim Concurrent:
 
@@ -1357,12 +1357,12 @@ Java (GraalVM) Concurrent:
 
 Nim:
 
-    Processing time (w/o IO): 318.547ms
-    total: 0.46s memory: 53988k
-    Processing time (w/o IO): 317.815ms
-    total: 0.45s memory: 53788k
-    Processing time (w/o IO): 317.18ms
-    total: 0.45s memory: 54984k
+    Processing time (w/o IO): 314.9ms
+    total: 0.42s memory: 54016k
+    Processing time (w/o IO): 314.8ms
+    total: 0.42s memory: 53696k
+    Processing time (w/o IO): 314.3ms
+    total: 0.42s memory: 53856k
 
 Nim Concurrent:
 
@@ -1812,12 +1812,12 @@ Java (GraalVM) Concurrent:
 
 Nim:
 
-    Processing time (w/o IO): 2858.712ms
-    total: 3.36s memory: 147272k
-    Processing time (w/o IO): 2854.38ms
-    total: 3.33s memory: 146500k
-    Processing time (w/o IO): 2853.868ms
-    total: 3.33s memory: 147436k
+    Processing time (w/o IO): 2783ms
+    total: 3.15s memory: 146776k
+    Processing time (w/o IO): 2789ms
+    total: 3.17s memory: 147860k
+    Processing time (w/o IO): 2788ms
+    total: 3.17s memory: 146860k
 
 Nim Concurrent:
 
