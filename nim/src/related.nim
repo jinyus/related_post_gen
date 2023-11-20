@@ -1,41 +1,31 @@
-import std/[hashes, monotimes, tables, times]
-import pkg/[jsony, xxhash]
+import std/[hashes, monotimes, sugar, tables, times]
+import pkg/[decimal, jsony, xxhash]
+
+const N: Positive = 5
 
 type
   Post = ref object
     `"_id"`: string
     title: string
-    tags : seq[string]
+    tags : ref seq[string]
 
-  RelatedPosts = object
+  RelatedPosts = ref object
     `"_id"`: string
-    tags : ptr seq[string]
-    related: array[5, ptr Post]
+    tags : ref seq[string]
+    related: array[N, ptr Post]
 
 const
   input = "../posts.json"
   output = "../related_posts_nim.json"
 
-func hash(x: string): Hash {.inline, used.} =
+func hash(x: string): Hash {.inline.} =
   cast[Hash](XXH3_64bits(x))
 
-func `[]`(t: Table[string, seq[int]], key: string): lent seq[int] =
-  tables.`[]`(t.addr[], key)
-
-proc dumpHook(s: var string, v: ptr) {.inline, used.} =
+func dumpHook(s: var string, v: ptr) {.inline.} =
   if v == nil:
     s.add("null")
   else:
     s.dumpHook(v[])
-
-func genTagMap(posts: seq[Post]): Table[string, seq[int]] =
-  result = initTable[string, seq[int]](100)
-  for i, post in posts:
-    for tag in post.tags:
-      result.withValue(tag, val):
-        val[].add i
-      do:
-        result[tag] = @[i]
 
 proc readPosts(path: string): seq[Post] =
   path.readFile.fromJson(seq[Post])
@@ -45,47 +35,63 @@ proc writePosts(path: string, posts: seq[RelatedPosts]) =
 
 {.push inline.}
 
-proc countTaggedPost(
-    taggedPostCount: var seq[uint8],
+func genTagMap(posts: seq[Post]): Table[string, seq[int]] =
+  result = initTable[string, seq[int]](100)
+  for i, post in posts:
+    for tag in post.tags[]:
+      result.withValue(tag, val):
+        val[].add i
+      do:
+        result[tag] = @[i]
+
+func countTaggedPost(
     posts: seq[Post],
     tagMap: Table[string, seq[int]],
-    i: int) =
-  for tag in posts[i].tags:
+    i: int): seq[uint8] =
+  result = newSeq[uint8](posts.len)
+  for tag in posts[i].tags[]:
     try:
       for relatedIDX in tagMap[tag]:
-        inc(taggedPostCount[relatedIDX])
+        inc result[relatedIDX]
     except KeyError as e:
       raise (ref Defect)(msg: e.msg)
-  taggedPostCount[i] = 0 # remove self
+  result[i] = 0 # remove self
 
-proc findTop5(
-    taggedPostCount: var seq[uint8],
-    posts: seq[Post],
-    top5: var array[5, tuple[idx: int, count: uint8]],
-    related: var array[5, ptr Post]) =
-  for i, count in taggedPostCount:
-    if count > top5[4].count:
-      top5[4].idx = i
-      top5[4].count = count
-      for pos in countdown(3, 0):
-        if count > top5[pos].count:
-          swap(top5[pos+1], top5[pos])
-  for i in 0..<top5.len:
-    related[i] = addr posts[top5[i].idx]
-    top5[i].idx = 0
-    top5[i].count = 0
-
-proc process(
+func findTopN(
     posts: seq[Post],
     tagMap: Table[string, seq[int]],
-    relatedPosts: var seq[RelatedPosts]) =
-  var top5: array[5, tuple[idx: int, count: uint8]]
-  for i in 0..<posts.len:
-    var taggedPostCount = newSeq[uint8](posts.len)
-    taggedPostCount.countTaggedPost(posts, tagMap, i)
-    relatedPosts[i].`"_id"` = posts[i].`"_id"`
-    relatedPosts[i].tags = addr posts[i].tags
-    taggedPostCount.findTop5(posts, top5, relatedPosts[i].related)
+    i: int): array[N, ptr Post] =
+  let taggedPostCount = countTaggedPost(posts, tagMap, i)
+  var
+    minCount = 0
+    topN: array[N*2, int]
+  # counts for related posts in even indices of topN
+  # indices of related posts in odd indices of topN
+  for i, count in taggedPostCount:
+    let count = count.int
+    if count > minCount:
+      var pos = (N-2)*2
+      while (pos >= 0) and (count > topN[pos]):
+        dec(pos, 2)
+      inc(pos, 2)
+      if pos < (N-1)*2:
+        for j in countdown((N-2)*2, pos, 2):
+          topN[j+2] = topN[j]
+          topN[j+3] = topN[j+1]
+      topN[pos] = count
+      topN[pos+1] = i
+      minCount = topN[(N-1)*2]
+  for i in 0..<N:
+    result[i] = addr posts[topN[i*2+1]]
+
+func process(posts: seq[Post]): seq[RelatedPosts] =
+  let tagMap = posts.genTagMap
+  collect:
+    for i, post in posts:
+      RelatedPosts(
+        `"_id"`: post.`"_id"`,
+        tags: post.tags,
+        related: posts.findTopN(tagMap, i))
 
 {.pop.}
 
@@ -93,10 +99,13 @@ proc main() =
   let
     posts = input.readPosts
     t0 = getMonotime()
-    tagMap = genTagMap(posts)
-  var relatedPosts = newSeq[RelatedPosts](posts.len)
-  posts.process(tagMap, relatedPosts)
-  let time = (getMonotime() - t0).inMicroseconds / 1000
+    relatedPosts = posts.process
+    t1 = getMonotime()
+    timeNs: int64 = (t1 - t0).inNanoseconds
+    timeMs: DecimalType = newDecimal(timeNs) / newDecimal(1_000_000)
+    timeMsS = $timeMs
+  setPrec(4)
+  let time = newDecimal(timeMsS)
   output.writePosts(relatedPosts)
   echo "Processing time (w/o IO): ", time, "ms"
 
