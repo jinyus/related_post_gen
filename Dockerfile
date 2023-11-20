@@ -6,7 +6,7 @@ FROM archlinux:base
 # Update package repository
 RUN pacman -Syu --noconfirm
 
-RUN pacman -S --noconfirm --needed wget unzip sudo base-devel git clang llvm python python-pip ncurses gcc hyperfine rustup crystal zig dart nodejs deno maven opam dune lua51 luajit luarocks libedit github-cli less r
+RUN pacman -S --noconfirm --needed wget unzip sudo base-devel git clang llvm python python-pip ncurses gcc hyperfine rustup crystal zig dart nodejs deno maven opam dune lua51 luajit luarocks libedit github-cli less r time racket ruby
 
 # user needed to install aur packages
 RUN useradd -ms /bin/bash builduser
@@ -73,7 +73,9 @@ RUN chmod +x /home/builduser/odin/odin && odin version && v version && swift --v
 
 # nim : commit 39fbd30.. on devel, 17 Nov 2023
 # https://github.com/nim-lang/Nim/tree/39fbd30
-RUN export CHOOSENIM_CHOOSE_VERSION=\#39fbd30; export CHOOSENIM_NO_ANALYTICS=1; curl https://nim-lang.org/choosenim/init.sh -sSf | bash -s -- -y
+RUN export CHOOSENIM_CHOOSE_VERSION=\#39fbd30
+export CHOOSENIM_NO_ANALYTICS=1
+curl https://nim-lang.org/choosenim/init.sh -sSf | bash -s -- -y
 ENV PATH="$PATH:/root/.nimble/bin"
 RUN cp /usr/lib/LLVMgold.so /home/builduser/swift-5.9-RELEASE-ubuntu22.04/usr/lib/LLVMgold.so
 
@@ -84,12 +86,6 @@ ENV PATH="$PATH:/home/builduser/julia-1.9.3/bin"
 
 # install lein for clojure and stack for haskell
 RUN pacman -S --noconfirm --needed leiningen stack
-
-# install ruby
-RUN pacman -S --noconfirm --needed ruby
-
-# install racket
-RUN pacman -S --noconfirm --needed racket
 
 # install lobster
 RUN pacman -S --noconfirm --needed cmake
@@ -124,8 +120,6 @@ ENV PATH="$PATH:/usr/local/ldc2-1.34.0-beta1-linux-x86_64/bin"
 RUN su -c "git clone https://aur.archlinux.org/inko.git /home/builduser/inko" builduser
 
 RUN su -c "rustup default stable && cd /home/builduser/inko && makepkg -si --noconfirm --needed --noprogressbar" builduser
-
-RUN pacman -S --noconfirm --needed time
 
 RUN mkdir -p /results
 
