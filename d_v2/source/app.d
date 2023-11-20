@@ -19,13 +19,6 @@ struct RelatedPosts
 	Post[TopN] related;
 }
 
-union Chunk
-{
-	ulong[8] ula; // some CPUs do better with more than 8, others with less
-	ubyte[ula.sizeof] counts;
-	static size_t countsToChunks(size_t n) => (n + (counts.length - 1U)) / counts.length;
-}
-
 void main()
 {
 	auto jsonText = readText("../posts.json");
@@ -33,67 +26,58 @@ void main()
 
 	auto startTime = MonoTime.currTime;
 
-	size_t[][string] tag2PostIdxs;
-	foreach (postIdx, ref const post; posts)
-		foreach (ref const tag; post.tags)
-			tag2PostIdxs[tag] ~= postIdx;
-
+	alias Chunk = ubyte[64];
+	auto chunks = new Chunk[(posts.length + Chunk.length - 1) / Chunk.length];
+	auto relatedCounts = (cast(ubyte[]) chunks)[0 .. posts.length];
 	auto relatedPosts = new RelatedPosts[posts.length];
-	auto chunks = new Chunk[Chunk.countsToChunks(posts.length)];
-	auto relatedCounts = (cast(ubyte[])(chunks))[0 .. posts.length];
+
+	size_t[][string] tagToPostIdxs;
+	foreach (postIdx, ref post; posts)
+		foreach (ref tag; post.tags)
+			tagToPostIdxs[tag] ~= postIdx;
 
 	foreach (myPostIdx, ref post; posts)
 	{
 		relatedCounts[] = 0;
 		foreach (ref const tag; post.tags)
-			foreach (postIdx; tag2PostIdxs[tag])
+			foreach (postIdx; tagToPostIdxs[tag])
 				relatedCounts[postIdx]++;
 		relatedCounts[myPostIdx] = 0; // exclude ourselves
 
 		ulong[TopN] topn;
-
-		// D's __vector is clearer and faster here but that's not allowed so SWAR it is
-		enum ulong evens = 0x00FF_00FF_00FF_00FFUL;
-		ulong primedForOverflow = evens; // primed to overflow for anything gt 0
-		ubyte least;
+		ubyte smallestInTopN;
 		foreach (chunkIdx, ref const chunk; chunks)
 		{
-			ulong overflow;
-			static foreach (i; 0 .. chunk.ula.length)
+			ubyte atLeastOneIsBigEnough;
+			foreach (count; chunk)
+				atLeastOneIsBigEnough |= (count > smallestInTopN);
+			if (atLeastOneIsBigEnough)
 			{
-				overflow |= primedForOverflow + (evens & chunk.ula[i]);
-				overflow |= primedForOverflow + (evens & (chunk.ula[i] >>> 8));
-			}
-			if (const nothingInThisChunkIsLargerthanLeast = !(overflow & ~evens))
-				continue;
-
-			foreach (idx, count; chunk.counts)
-			{
-				if (count > least)
+				foreach (idx, count; chunk)
 				{
-					const x = (((chunkIdx * Chunk.counts.length) + idx) * 256UL) | count;
-					topn[$ - 1] = x; // enter as the lowest then shuffle up as needed
+					if (const notBigEnough = count <= smallestInTopN)
+						continue;
+					const newest = (((chunkIdx * Chunk.length) + idx) * 256UL) | count;
+					topn[$ - 1] = newest; // enter as the lowest then shuffle up as needed
 					foreach_reverse (i, ref higher; topn[0 .. $ - 1])
 					{
 						if (const doneShuffling = count <= cast(ubyte) higher)
 							break;
 						topn[i + 1] = higher;
-						higher = x;
+						higher = newest;
 					}
-					least = cast(ubyte) topn[$ - 1];
+					smallestInTopN = cast(ubyte) topn[$ - 1];
 				}
 			}
-			primedForOverflow = ubyte.max - least;
-			primedForOverflow |= (primedForOverflow << 16);
-			primedForOverflow |= (primedForOverflow << 32);
 		}
 
 		auto rp = &relatedPosts[myPostIdx];
 		rp._id = post._id;
 		rp.tags = post.tags;
-		foreach (i; 0 .. rp.related.length)
-			rp.related[i] = posts[topn[i] >>> 8]; // shift recovers the index
+		foreach (rank, ref related; rp.related) // rank 0 is best, rank 1 is next best, ...
+			related = posts[topn[rank] >>> 8]; // shift to recover the index
 	}
+
 	const duration = MonoTime.currTime - startTime;
 
 	writeln("Processing time (w/o IO): ", duration.total!"usecs" * 1.0 / 1000, "ms");
