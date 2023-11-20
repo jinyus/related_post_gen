@@ -1,8 +1,8 @@
-use std::{hint, time::Instant};
+use std::{collections::HashMap, hint, time::Instant};
 
 use bumpalo::collections::Vec as BVec;
 use bumpalo::Bump;
-use rustc_data_structures::fx::FxHashMap;
+use fxhash::FxBuildHasher;
 use serde::{Deserialize, Serialize};
 use serde_json::from_str;
 
@@ -25,7 +25,7 @@ struct RelatedPosts<'a> {
     #[serde(rename = "_id")]
     id: &'a str,
     tags: &'a [&'a str],
-    related: Vec<&'a Post<'a>>,
+    related: [&'a Post<'a>; NUM_TOP_ITEMS],
 }
 
 fn main() {
@@ -37,11 +37,15 @@ fn main() {
     let cap = (posts.len() * std::mem::size_of::<u8>()).next_power_of_two();
     let arena = Bump::with_capacity(cap);
 
-    let mut post_tags_map: FxHashMap<&str, Vec<u32>> = FxHashMap::default();
+    let mut post_tags_map: HashMap<&str, Vec<u32>, FxBuildHasher> =
+        HashMap::with_capacity_and_hasher(100, FxBuildHasher::default());
 
     for (post_idx, post) in posts.iter().enumerate() {
         for tag in &post.tags {
-            post_tags_map.entry(tag).or_default().push(post_idx as u32);
+            post_tags_map
+                .entry(tag)
+                .or_insert_with(|| Vec::with_capacity(posts.len() >> 2))
+                .push(post_idx as u32);
         }
     }
 
@@ -82,7 +86,7 @@ fn main() {
             }
 
             // Convert indexes back to Post pointers
-            let related = top5.into_iter().map(|(_, index)| &posts[index]).collect();
+            let related = top5.map(|(_, index)| &posts[index]);
 
             RelatedPosts {
                 id: post.id,
