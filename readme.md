@@ -76,8 +76,10 @@ docker run -e TEST_NAME=all -it --rm databench
 | Julia | 21.00 ms | 314.99 ms | 2.64 s | 2.98 s |
 | Zig | 20.00 ms | 306.00 ms | 2.72 s | 3.04 s |
 | Vlang | 22.30 ms | 319.36 ms | 2.73 s | 3.07 s |
+| F# (AOT) | 24.66 ms | 367.33 ms | 3.23 s | 3.62 s |
 | Odin | 34.58 ms | 394.38 ms | 3.46 s | 3.89 s |
 | Java (GraalVM) | 27.40 ms | 512.33 ms | 3.61 s | 4.15 s |
+| F# (JIT) | 25.28 ms | 416.23 ms | 3.90 s | 4.34 s |
 | Swift | 35.87 ms | 489.83 ms | 4.24 s | 4.76 s |
 | Crystal | 32.69 ms | 501.30 ms | 4.31 s | 4.84 s |
 | JS (Bun) | 67.20 ms | 773.00 ms | 6.58 s | 7.42 s |
