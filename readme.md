@@ -28,6 +28,9 @@ pwsh ./run.ps1 go | rust | python | all
 
 # Docker (check the dockerfile for available variables)
 docker build -t databench .
+# OR
+docker pull ghcr.io/jinyus/databench:latest
+# THEN
 docker run -e TEST_NAME=all -it --rm databench
 ```
 
