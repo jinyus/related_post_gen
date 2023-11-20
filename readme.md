@@ -65,10 +65,10 @@ docker run -e TEST_NAME=all -it --rm databench
 | ---------------- | ------------------------------------- | -------------------------------------- | ----------------------------------- | --------- |
 | _Julia HO_[^1] | 9.30 ms | 65.00 ms | 169.33 ms | 243.63 ms |
 | D (v2) | 21.96 ms | $\textsf{\color{lightgreen}259.01 ms}$ | $\textsf{\color{lightgreen}2.14 s}$ | 2.42 s |
-| Go | $\textsf{\color{lightgreen}21.83 ms}$ | 315.59 ms | 2.74 s | 3.08 s |
+| Go | 21.83 ms | 315.59 ms | 2.74 s | 3.08 s |
 | C++ | 23.00 ms | 327.33 ms | 2.80 s | 3.15 s |
 | D | 25.69 ms | 327.47 ms | 2.81 s | 3.16 s |
-| Rust | 22.07 ms | 316.11 ms | 2.84 s | 3.17 s |
+| Rust | $\textsf{\color{lightgreen}21.75 ms}$ | 315.26 ms | 2.83 s | 3.16 s |
 | Nim | 22.27 ms | 317.85 ms | 2.86 s | 3.20 s |
 | Zig | 23.00 ms | 338.67 ms | 3.02 s | 3.39 s |
 | Vlang | 24.74 ms | 362.28 ms | 3.16 s | 3.54 s |
