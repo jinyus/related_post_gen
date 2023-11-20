@@ -62,44 +62,32 @@ fn main() {
 
             tagged_post_count[post_idx] = 0; // don't recommend the same post
 
-            let mut top5: Vec<usize> = vec![0; NUM_TOP_ITEMS * 2];
-            let mut min_tags: u8 = 0;
+            let mut top5 = [(0, 0); NUM_TOP_ITEMS];
+            let mut min_tags = 0;
 
             for (j, &count) in tagged_post_count.iter().enumerate() {
+                let count = count as usize;
                 if count > min_tags {
-                    let mut upper_bound = (NUM_TOP_ITEMS - 2) * 2;
-                    let count_int = count as usize;
+                    let pos = top5
+                        .iter()
+                        .rev()
+                        .position(|t| t.0 > count)
+                        .map_or(0, |p| NUM_TOP_ITEMS - p);
 
-                    // upper_bound < NUM_TOP_ITEMS * 2 is needed because of unsigned underflow
+                    top5.copy_within(pos..NUM_TOP_ITEMS - 1, pos + 1);
+                    top5[pos] = (count, j);
 
-                    let topn_x2 = NUM_TOP_ITEMS * 2;
-
-                    while upper_bound < topn_x2 && count_int > top5[upper_bound as usize] {
-                        top5[upper_bound as usize + 2] = top5[upper_bound as usize];
-                        top5[upper_bound as usize + 3] = top5[upper_bound as usize + 1];
-                        upper_bound -= 2;
-                    }
-
-                    let insert_pos = upper_bound + 2;
-                    top5[insert_pos as usize] = count_int;
-                    top5[(insert_pos + 1) as usize] = j as usize;
-
-                    min_tags = top5[NUM_TOP_ITEMS * 2 - 2] as u8;
+                    min_tags = top5[NUM_TOP_ITEMS - 1].0;
                 }
             }
 
             // Convert indexes back to Post pointers
-            let mut top_posts: Vec<&Post> = vec![&posts[0]; NUM_TOP_ITEMS];
-
-            for j in 0..NUM_TOP_ITEMS {
-                let index = top5[j * 2 + 1] as usize;
-                top_posts[j] = &posts[index];
-            }
+            let related = top5.into_iter().map(|(_, index)| &posts[index]).collect();
 
             RelatedPosts {
                 id: post.id,
                 tags: &post.tags,
-                related: top_posts,
+                related,
             }
         })
         .collect();
