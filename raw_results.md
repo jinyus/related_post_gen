@@ -460,26 +460,26 @@ Dart AOT:
 
 Swift:
 
-    Processing time (w/o IO): 35.97593307495117ms
-    total: 0.26s memory: 75964k
-    Processing time (w/o IO): 36.00907325744629ms
-    total: 0.26s memory: 76224k
-    Processing time (w/o IO): 35.87198257446289ms
-    total: 0.26s memory: 76224k
-    Processing time (w/o IO): 36.167025566101074ms
-    total: 0.26s memory: 76368k
-    Processing time (w/o IO): 35.88402271270752ms
-    total: 0.27s memory: 76352k
-    Processing time (w/o IO): 35.856008529663086ms
-    total: 0.26s memory: 76224k
-    Processing time (w/o IO): 35.63201427459717ms
-    total: 0.26s memory: 76348k
-    Processing time (w/o IO): 35.94803810119629ms
-    total: 0.26s memory: 76224k
-    Processing time (w/o IO): 35.68100929260254ms
-    total: 0.26s memory: 76224k
-    Processing time (w/o IO): 35.704970359802246ms
-    total: 0.26s memory: 76272k
+    Processing time (w/o IO): 34.226059913635254ms
+    total: 0.25s memory: 76664k
+    Processing time (w/o IO): 34.355998039245605ms
+    total: 0.25s memory: 76920k
+    Processing time (w/o IO): 34.60693359375ms
+    total: 0.26s memory: 76788k
+    Processing time (w/o IO): 34.49094295501709ms
+    total: 0.25s memory: 76408k
+    Processing time (w/o IO): 34.27398204803467ms
+    total: 0.26s memory: 76788k
+    Processing time (w/o IO): 34.11900997161865ms
+    total: 0.25s memory: 76404k
+    Processing time (w/o IO): 34.02602672576904ms
+    total: 0.25s memory: 76532k
+    Processing time (w/o IO): 34.35802459716797ms
+    total: 0.25s memory: 76664k
+    Processing time (w/o IO): 34.234046936035156ms
+    total: 0.26s memory: 76788k
+    Processing time (w/o IO): 34.500956535339355ms
+    total: 0.26s memory: 76788k
 
 Swift Concurrent:
 
@@ -1285,12 +1285,12 @@ Dart AOT:
 
 Swift:
 
-    Processing time (w/o IO): 490.9050464630127ms
-    total: 1.40s memory: 245940k
-    Processing time (w/o IO): 488.5590076446533ms
-    total: 1.39s memory: 246200k
-    Processing time (w/o IO): 490.02301692962646ms
-    total: 1.38s memory: 246200k
+    Processing time (w/o IO): 481.5640449523926ms
+    total: 1.40s memory: 248272k
+    Processing time (w/o IO): 481.9890260696411ms
+    total: 1.41s memory: 248528k
+    Processing time (w/o IO): 487.449049949646ms
+    total: 1.39s memory: 248140k
 
 Swift Concurrent:
 
@@ -1740,12 +1740,12 @@ Dart AOT:
 
 Swift:
 
-    Processing time (w/o IO): 4245.721101760864ms
-    total: 7.05s memory: 700292k
-    Processing time (w/o IO): 4218.809008598328ms
-    total: 7.01s memory: 700416k
-    Processing time (w/o IO): 4247.266054153442ms
-    total: 7.02s memory: 700036k
+    Processing time (w/o IO): 4227.436065673828ms
+    total: 7.08s memory: 707168k
+    Processing time (w/o IO): 4244.999051094055ms
+    total: 7.10s memory: 707168k
+    Processing time (w/o IO): 4184.916973114014ms
+    total: 7.02s memory: 707172k
 
 Swift Concurrent:
 
