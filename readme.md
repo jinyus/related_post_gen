@@ -74,7 +74,7 @@ docker run -e TEST_NAME=all -it --rm databench
 | C++ | 18.10 ms | 271.33 ms | 2.26 s | 2.55 s |
 | C# (AOT) | 18.26 ms | 265.69 ms | 2.34 s | 2.62 s |
 | C# (JIT) | 19.06 ms | 268.27 ms | 2.33 s | 2.62 s |
-| Go | 19.10 ms | 282.11 ms | 2.48 s | 2.78 s |
+| Go | 19.11 ms | 281.24 ms | 2.48 s | 2.78 s |
 | Julia | 21.00 ms | 314.99 ms | 2.64 s | 2.98 s |
 | Zig | 20.00 ms | 306.00 ms | 2.72 s | 3.04 s |
 | Vlang | 22.30 ms | 319.36 ms | 2.73 s | 3.07 s |

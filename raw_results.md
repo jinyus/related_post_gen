@@ -1,25 +1,25 @@
 Go:
 
-    Processing time (w/o IO): 19.147103ms
-    total: 0.04s memory: 13044k
-    Processing time (w/o IO): 19.174403ms
-    total: 0.04s memory: 13312k
-    Processing time (w/o IO): 19.019483ms
-    total: 0.04s memory: 13016k
-    Processing time (w/o IO): 19.042873ms
+    Processing time (w/o IO): 19.31218ms
+    total: 0.04s memory: 13128k
+    Processing time (w/o IO): 18.959362ms
+    total: 0.04s memory: 12996k
+    Processing time (w/o IO): 18.944572ms
+    total: 0.04s memory: 13128k
+    Processing time (w/o IO): 19.166462ms
     total: 0.04s memory: 13052k
-    Processing time (w/o IO): 19.197822ms
-    total: 0.04s memory: 13568k
-    Processing time (w/o IO): 19.006533ms
-    total: 0.04s memory: 13056k
-    Processing time (w/o IO): 19.175192ms
-    total: 0.04s memory: 13312k
-    Processing time (w/o IO): 19.093652ms
-    total: 0.04s memory: 13056k
-    Processing time (w/o IO): 19.107292ms
-    total: 0.04s memory: 12928k
-    Processing time (w/o IO): 19.017043ms
-    total: 0.04s memory: 13312k
+    Processing time (w/o IO): 19.235371ms
+    total: 0.04s memory: 13004k
+    Processing time (w/o IO): 18.955822ms
+    total: 0.04s memory: 13512k
+    Processing time (w/o IO): 19.24913ms
+    total: 0.04s memory: 13168k
+    Processing time (w/o IO): 19.026742ms
+    total: 0.04s memory: 13012k
+    Processing time (w/o IO): 19.054162ms
+    total: 0.04s memory: 13008k
+    Processing time (w/o IO): 19.18756ms
+    total: 0.04s memory: 13008k
 
 Go Concurrent:
 
@@ -1109,12 +1109,12 @@ Inko:
 
 Go:
 
-    Processing time (w/o IO): 282.548363ms
-    total: 0.40s memory: 44180k
-    Processing time (w/o IO): 280.349034ms
-    total: 0.39s memory: 43812k
-    Processing time (w/o IO): 283.446689ms
-    total: 0.39s memory: 44052k
+    Processing time (w/o IO): 279.608796ms
+    total: 0.39s memory: 44436k
+    Processing time (w/o IO): 282.393582ms
+    total: 0.40s memory: 44564k
+    Processing time (w/o IO): 281.712966ms
+    total: 0.39s memory: 44080k
 
 Go Concurrent:
 
@@ -1532,12 +1532,12 @@ Inko:
 
 Go:
 
-    Processing time (w/o IO): 2.475045675s
-    total: 2.89s memory: 159344k
-    Processing time (w/o IO): 2.476292089s
-    total: 2.89s memory: 160204k
-    Processing time (w/o IO): 2.47598162s
-    total: 2.93s memory: 159432k
+    Processing time (w/o IO): 2.48916449s
+    total: 2.91s memory: 161356k
+    Processing time (w/o IO): 2.476178139s
+    total: 2.88s memory: 161508k
+    Processing time (w/o IO): 2.464193559s
+    total: 2.87s memory: 160032k
 
 Go Concurrent:
 
