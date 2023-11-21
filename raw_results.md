@@ -644,26 +644,26 @@ Java (GraalVM) Concurrent:
 
 Nim:
 
-    Processing time (w/o IO): 16.99ms
-    total: 0.03s memory: 12544k
-    Processing time (w/o IO): 17.07ms
-    total: 0.03s memory: 12928k
-    Processing time (w/o IO): 17.00ms
+    Processing time (w/o IO): 17.09ms
     total: 0.03s memory: 12800k
+    Processing time (w/o IO): 17.06ms
+    total: 0.03s memory: 12672k
     Processing time (w/o IO): 16.99ms
-    total: 0.03s memory: 12928k
-    Processing time (w/o IO): 17.07ms
-    total: 0.03s memory: 12800k
-    Processing time (w/o IO): 17.00ms
     total: 0.03s memory: 12800k
     Processing time (w/o IO): 18.13ms
     total: 0.03s memory: 12672k
+    Processing time (w/o IO): 17.05ms
+    total: 0.03s memory: 12800k
+    Processing time (w/o IO): 16.98ms
+    total: 0.03s memory: 12672k
+    Processing time (w/o IO): 16.96ms
+    total: 0.03s memory: 12672k
+    Processing time (w/o IO): 17.01ms
+    total: 0.03s memory: 12672k
     Processing time (w/o IO): 16.99ms
     total: 0.03s memory: 12928k
-    Processing time (w/o IO): 17.03ms
-    total: 0.03s memory: 12928k
-    Processing time (w/o IO): 17.13ms
-    total: 0.03s memory: 12800k
+    Processing time (w/o IO): 17.23ms
+    total: 0.03s memory: 12672k
 
 Nim Concurrent:
 
@@ -1357,12 +1357,12 @@ Java (GraalVM) Concurrent:
 
 Nim:
 
-    Processing time (w/o IO): 254.5ms
-    total: 0.35s memory: 53632k
-    Processing time (w/o IO): 255.2ms
-    total: 0.36s memory: 53632k
-    Processing time (w/o IO): 254.6ms
-    total: 0.36s memory: 53376k
+    Processing time (w/o IO): 259.6ms
+    total: 0.34s memory: 53632k
+    Processing time (w/o IO): 255.4ms
+    total: 0.33s memory: 53376k
+    Processing time (w/o IO): 255.1ms
+    total: 0.33s memory: 53504k
 
 Nim Concurrent:
 
@@ -1812,12 +1812,12 @@ Java (GraalVM) Concurrent:
 
 Nim:
 
-    Processing time (w/o IO): 2265ms
-    total: 2.64s memory: 145792k
-    Processing time (w/o IO): 2270ms
-    total: 2.64s memory: 145664k
-    Processing time (w/o IO): 2267ms
-    total: 2.64s memory: 145792k
+    Processing time (w/o IO): 2271ms
+    total: 2.56s memory: 146432k
+    Processing time (w/o IO): 2272ms
+    total: 2.56s memory: 146304k
+    Processing time (w/o IO): 2269ms
+    total: 2.54s memory: 146304k
 
 Nim Concurrent:
 
