@@ -1,4 +1,4 @@
-import std/[hashes, monotimes, sugar, tables, times]
+import std/[hashes, math, monotimes, sugar, tables, times]
 import pkg/[decimal, jsony, xxhash]
 
 const N: Positive = 5
@@ -17,6 +17,19 @@ type
 const
   input = "../posts.json"
   output = "../related_posts_nim.json"
+
+proc fmt(ns: int64): string =
+  const mil = 1_000_000
+  let msi = ns div mil
+  var
+    expo = 0
+    prec = 2
+  while msi >= 10^expo:
+    inc expo
+    inc prec
+  let ms = $(newDecimal(ns) / newDecimal(mil))
+  setPrec(prec)
+  $newDecimal(ms) & "ms"
 
 func hash(x: string): Hash {.inline.} =
   cast[Hash](XXH3_64bits(x))
@@ -95,13 +108,9 @@ proc main() =
     t0 = getMonotime()
     relatedPosts = posts.process
     t1 = getMonotime()
-    timeNs: int64 = (t1 - t0).inNanoseconds
-    timeMs: DecimalType = newDecimal(timeNs) / newDecimal(1_000_000)
-    timeMsS = $timeMs
-  setPrec(4)
-  let time = newDecimal(timeMsS)
+    time: int64 = (t1 - t0).inNanoseconds
   output.writePosts(relatedPosts)
-  echo "Processing time (w/o IO): ", time, "ms"
+  echo "Processing time (w/o IO): ", time.fmt
 
 when isMainModule:
   main()
