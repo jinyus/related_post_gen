@@ -26,6 +26,7 @@ let () =
   in
   let start = Unix.gettimeofday () in
   let postsLength = Array.length posts in
+  let taggedPostCount = Array.create ~len:postsLength 0 in
   let tagPostsTmp = Hashtbl.create (module String) in
   Array.iteri posts ~f:(fun postId post ->
     Array.iter post.tags ~f:(fun tag ->
@@ -39,7 +40,9 @@ let () =
   let topN = 5 in
   let allrelatedPosts =
     Array.mapi posts ~f:(fun postId post ->
-      let taggedPostCount = Array.create ~len:(Array.length posts) 0 in
+      for i = 0 to postsLength - 1 do
+        taggedPostCount.(i) <- 0
+      done;
       let top5 = Array.create ~len:(topN * 2) 0 in
       Array.iter post.tags ~f:(fun tagId ->
         Array.iter (Hashtbl.find_exn tagPosts tagId) ~f:(fun relatedPostId ->
