@@ -25,6 +25,7 @@ let () =
     Yojson.Safe.from_file source |> post_array_of_yojson |> Result.ok_or_failwith
   in
   let start = Unix.gettimeofday () in
+  let postsLength = Array.length posts in
   let tagPostsTmp = Hashtbl.create (module String) in
   Array.iteri posts ~f:(fun postId post ->
     Array.iter post.tags ~f:(fun tag ->
@@ -45,7 +46,7 @@ let () =
           taggedPostCount.(relatedPostId) <- taggedPostCount.(relatedPostId) + 1));
       taggedPostCount.(postId) <- 0;
       let minTags = ref 0 in
-      for i = 0 to Array.length taggedPostCount - 1 do
+      for i = 0 to postsLength - 1 do
         let count = taggedPostCount.(i) in
         if count > !minTags
         then (
