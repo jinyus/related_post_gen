@@ -925,26 +925,26 @@ Lua:
 
 Ocaml:
 
-    Processing time (w/o IO): 101ms
-    total: 0.15s memory: 42008k
-    Processing time (w/o IO): 102ms
-    total: 0.15s memory: 41880k
-    Processing time (w/o IO): 100ms
-    total: 0.15s memory: 41884k
-    Processing time (w/o IO): 99ms
-    total: 0.15s memory: 41880k
-    Processing time (w/o IO): 99ms
-    total: 0.15s memory: 41880k
-    Processing time (w/o IO): 98ms
-    total: 0.15s memory: 42008k
-    Processing time (w/o IO): 99ms
-    total: 0.15s memory: 42012k
-    Processing time (w/o IO): 99ms
-    total: 0.15s memory: 41880k
-    Processing time (w/o IO): 99ms
-    total: 0.15s memory: 42008k
-    Processing time (w/o IO): 104ms
-    total: 0.15s memory: 42004k
+    Processing time (w/o IO): 77ms
+    total: 0.13s memory: 32768k
+    Processing time (w/o IO): 77ms
+    total: 0.13s memory: 32640k
+    Processing time (w/o IO): 77ms
+    total: 0.13s memory: 32640k
+    Processing time (w/o IO): 77ms
+    total: 0.12s memory: 32768k
+    Processing time (w/o IO): 77ms
+    total: 0.13s memory: 32512k
+    Processing time (w/o IO): 77ms
+    total: 0.13s memory: 32640k
+    Processing time (w/o IO): 77ms
+    total: 0.12s memory: 32768k
+    Processing time (w/o IO): 77ms
+    total: 0.13s memory: 32640k
+    Processing time (w/o IO): 78ms
+    total: 0.13s memory: 32512k
+    Processing time (w/o IO): 77ms
+    total: 0.13s memory: 32640k
 
 Erlang:
 
@@ -1466,12 +1466,12 @@ Lua:
 
 Ocaml:
 
-    Processing time (w/o IO): 2140ms
-    total: 2.45s memory: 104000k
-    Processing time (w/o IO): 2134ms
-    total: 2.44s memory: 103872k
-    Processing time (w/o IO): 2110ms
-    total: 2.42s memory: 104000k
+    Processing time (w/o IO): 1263ms
+    total: 1.52s memory: 103644k
+    Processing time (w/o IO): 1216ms
+    total: 1.47s memory: 103776k
+    Processing time (w/o IO): 1283ms
+    total: 1.54s memory: 103644k
 
 Erlang:
 
@@ -1921,12 +1921,12 @@ Lua:
 
 Ocaml:
 
-    Processing time (w/o IO): 22213ms
-    total: 23.29s memory: 314052k
-    Processing time (w/o IO): 22102ms
-    total: 23.18s memory: 313920k
-    Processing time (w/o IO): 22187ms
-    total: 23.27s memory: 313920k
+    Processing time (w/o IO): 10576ms
+    total: 11.57s memory: 309896k
+    Processing time (w/o IO): 10547ms
+    total: 11.53s memory: 309892k
+    Processing time (w/o IO): 10510ms
+    total: 11.50s memory: 309764k
 
 Erlang:
 
