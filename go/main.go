@@ -33,14 +33,6 @@ func main() {
 
 	start := time.Now()
 
-	allRelatedPosts := generateRelatedPosts(posts)
-
-	fmt.Println("Processing time (w/o IO):", time.Since(start))
-
-	writeResults(allRelatedPosts)
-}
-
-func generateRelatedPosts(posts []Post) []RelatedPosts {
 	postsLen := len(posts)
 
 	tagMap := make(map[string][]isize, InitialTagMapSize)
@@ -107,7 +99,10 @@ func generateRelatedPosts(posts []Post) []RelatedPosts {
 
 		resetSlice()
 	}
-	return allRelatedPosts
+
+	fmt.Println("Processing time (w/o IO):", time.Since(start))
+
+	writeResults(allRelatedPosts)
 }
 
 func getPosts() []Post {
