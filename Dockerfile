@@ -97,8 +97,8 @@ RUN rm /home/builduser/swift-5.9-RELEASE-ubuntu22.04/usr/bin/llvm*
 
 # install go 1.21.3 // regression in 1.21.4
 # https://github.com/jinyus/related_post_gen/pull/421
-RUN wget https://go.dev/dl/go1.21.3.linux-amd64.tar.gz
-RUN rm -rf /usr/local/go && tar -C /usr/local -xzf go1.21.3.linux-amd64.tar.gz
+RUN wget https://go.dev/dl/go1.21.4.linux-amd64.tar.gz
+RUN rm -rf /usr/local/go && tar -C /usr/local -xzf go1.21.4.linux-amd64.tar.gz
 ENV PATH="$PATH:/usr/local/go/bin"
 
 # install ldc 1.34 beta1 // regression in 1.35
