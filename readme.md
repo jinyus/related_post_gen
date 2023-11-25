@@ -69,12 +69,12 @@ docker run -e TEST_NAME=all -it --rm databench
 | D (v2) | $\textsf{\color{lightgreen}12.92 ms}$ | $\textsf{\color{lightgreen}145.65 ms}$ | $\textsf{\color{lightgreen}1.18 s}$ | 1.34 s |
 | D | 18.78 ms | 238.77 ms | 2.04 s | 2.29 s |
 | Rust | 16.42 ms | 240.25 ms | 2.05 s | 2.31 s |
+| Go | 16.90 ms | 241.45 ms | 2.12 s | 2.37 s |
 | Java (JIT) | 19.70 ms | 246.67 ms | 2.14 s | 2.40 s |
 | Nim | 17.15 ms | 256.70 ms | 2.27 s | 2.54 s |
 | C++ | 18.10 ms | 271.33 ms | 2.26 s | 2.55 s |
 | C# (AOT) | 18.26 ms | 265.69 ms | 2.34 s | 2.62 s |
 | C# (JIT) | 19.06 ms | 268.27 ms | 2.33 s | 2.62 s |
-| Go | 19.11 ms | 281.24 ms | 2.48 s | 2.78 s |
 | Julia | 21.00 ms | 314.99 ms | 2.64 s | 2.98 s |
 | Zig | 20.00 ms | 306.00 ms | 2.72 s | 3.04 s |
 | Vlang | 22.30 ms | 319.36 ms | 2.73 s | 3.07 s |
