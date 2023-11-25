@@ -27,19 +27,22 @@ type RelatedPosts struct {
 }
 
 func main() {
-	file, _ := os.Open("../posts.json")
-	var posts = make([]Post, 0, InitialPostsSliceCap)
-	err := json.NewDecoder(file).Decode(&posts)
-	if err != nil {
-		fmt.Println(err)
-	}
+	posts := getPosts()
 
 	runtime.GC()
 
 	start := time.Now()
 
+	allRelatedPosts := generateRelatedPosts(posts)
+
+	fmt.Println("Processing time (w/o IO):", time.Since(start))
+
+	writeResults(allRelatedPosts)
+}
+
+func generateRelatedPosts(posts []Post) []RelatedPosts {
 	postsLen := len(posts)
-	// assumes that there are less than 100 tags
+
 	tagMap := make(map[string][]isize, InitialTagMapSize)
 
 	for i, post := range posts {
@@ -51,13 +54,21 @@ func main() {
 	allRelatedPosts := make([]RelatedPosts, postsLen)
 	taggedPostCount := make([]byte, postsLen)
 
+	resetSlice := func() {
+		for i := range taggedPostCount {
+			taggedPostCount[i] = 0
+		}
+	}
+
 	for i := range posts {
-		// Count the number of tags shared between posts
+
 		for _, tag := range posts[i].Tags {
 			for _, otherPostIdx := range tagMap[tag] {
-				taggedPostCount[otherPostIdx]++
+				taggedPostCount[otherPostIdx] += 1
+
 			}
 		}
+
 		taggedPostCount[i] = 0 // Don't count self
 		top5 := [topN * 2]int{}
 		minTags := byte(0)
@@ -81,7 +92,6 @@ func main() {
 			}
 		}
 
-		// Convert indexes back to Post pointers
 		topPosts := [topN]*Post{}
 
 		for j := 0; j < topN; j += 1 {
@@ -95,12 +105,23 @@ func main() {
 			Related: topPosts,
 		}
 
-		for j := range taggedPostCount {
-			taggedPostCount[j] = 0
-		}
+		resetSlice()
+	}
+	return allRelatedPosts
+}
+
+func getPosts() []Post {
+	file, _ := os.Open("../posts.json")
+	var posts = make([]Post, 0, InitialPostsSliceCap)
+	err := json.NewDecoder(file).Decode(&posts)
+	if err != nil {
+		fmt.Println(err)
 	}
 
-	fmt.Println("Processing time (w/o IO):", time.Since(start))
-	file, _ = os.Create("../related_posts_go.json")
+	return posts
+}
+
+func writeResults(allRelatedPosts []RelatedPosts) {
+	file, _ := os.Create("../related_posts_go.json")
 	_ = json.NewEncoder(file).Encode(allRelatedPosts)
 }
