@@ -1,0 +1,86 @@
+import String from "string"
+import Array from "array"
+import Path from "path"
+import File from "sys/file"
+import Result from "result"
+import Number from "number"
+import Int64 from "int64"
+import Map from "map"
+import Time from "sys/time"
+
+record Post {
+  _id: String,
+  title: String,
+  tags: Array<String>,
+}
+
+let readFile = (name: String) => {
+  let file = Result.unwrap(
+    File.pathOpen(
+      File.pwdfd,
+      [],
+      "posts.json",
+      [],
+      [File.FdRead, File.FdFilestats],
+      [File.FdRead, File.FdFilestats],
+      []
+    )
+  )
+  let fileSize = Int64.toNumber(Result.unwrap(File.fdFilestats(file)).size)
+
+  let (content, _) = Result.unwrap(File.fdRead(file, fileSize))
+  File.fdClose(file)
+  content
+}
+
+let parse_post = s => {
+  let parts = String.split(":", s)
+
+  let (id_temp, title_temp, tags_temp) = (parts[1], parts[2], parts[3])
+
+  let id = String.split("\"", id_temp)[1]
+  let title = String.split("\"", title_temp)[1]
+
+  let has_space = s => !String.contains(" ", s)
+  let tags = Array.filter(has_space, String.split("\"", tags_temp))
+
+  { _id: id, title, tags }
+}
+
+let parse_posts = s => {
+  let posts_string_arr = String.split("},", s)
+  Array.map(parse_post, posts_string_arr)
+}
+
+// print(posts)
+
+let posts = parse_posts(readFile("posts.json"))
+
+let start = Result.unwrap(Time.monotonicTime())
+
+let tagMap: Map.Map<String, Array<Number>> = Map.makeSized(100)
+
+Array.forEachi((post, i) => {
+  Array.forEach(tag => {
+    // update : (a, (Option<b> -> Option<b>), Map<a, b>) -> Void
+    Map.update(
+      tag,
+      post_ids => {
+        match (post_ids) {
+          None => Some([> i]),
+          Some(ids) => Some(Array.append(ids, [> i])),
+        }
+      },
+      tagMap
+    )
+  }, post.tags)
+}, posts)
+
+let took = Int64.div(
+  Int64.sub(Result.unwrap(Time.monotonicTime()), start),
+  1000000L
+)
+print(Map.size(tagMap))
+
+let str = toString(took)
+print(String.concat("took ", str))
