@@ -1,9 +1,13 @@
-use aligned_vec::avec;
-use hashbrown::HashMap;
-use serde::{Deserialize, Serialize};
 use std::{hint, time::Instant};
 
-const NUM_TOP_ITEMS: usize = 5;
+use bumpalo::collections::Vec as BVec;
+use bumpalo::Bump;
+use rustc_data_structures::fx::FxHashMap;
+use serde::{Deserialize, Serialize};
+use serde_json::from_str;
+
+#[global_allocator]
+static GLOBAL: mimalloc::MiMalloc = mimalloc::MiMalloc;
 
 #[derive(Serialize, Deserialize)]
 #[repr(align(64))]
@@ -14,34 +18,40 @@ struct Post<'a> {
     tags: Vec<&'a str>,
 }
 
+const NUM_TOP_ITEMS: usize = 5;
+
 #[derive(Serialize)]
-#[repr(align(64))]
 struct RelatedPosts<'a> {
     #[serde(rename = "_id")]
     id: &'a str,
     tags: &'a [&'a str],
-    related: [&'a Post<'a>; NUM_TOP_ITEMS],
+    related: Vec<&'a Post<'a>>,
 }
 
 fn main() {
     let json_str = std::fs::read_to_string("../posts.json").unwrap();
-    let posts: Vec<Post> = serde_json::from_str(&json_str).unwrap();
+    let posts: Vec<Post> = from_str(&json_str).unwrap();
 
     let start = Instant::now();
 
-    let mut post_tags_map = HashMap::<&str, Vec<u32>>::with_capacity(128);
+    let cap = (posts.len() * std::mem::size_of::<u8>()).next_power_of_two();
+    let arena = Bump::with_capacity(cap);
+
+    let mut post_tags_map: FxHashMap<&str, Vec<u32>> = FxHashMap::default();
+
     for (post_idx, post) in posts.iter().enumerate() {
         for tag in &post.tags {
             post_tags_map.entry(tag).or_default().push(post_idx as u32);
         }
     }
 
-    const CHUNK_SIZE: usize = 64;
-    let mut tagged_post_count = avec![0u8; posts.len().next_multiple_of(CHUNK_SIZE)];
-    let related_posts: Vec<_> = posts
+    let related_posts: Vec<RelatedPosts<'_>> = posts
         .iter()
         .enumerate()
         .map(|(post_idx, post)| {
+            let mut tagged_post_count: BVec<u8> = BVec::with_capacity_in(posts.len(), &arena);
+            tagged_post_count.resize(posts.len(), 0);
+
             for tag in &post.tags {
                 if let Some(tag_posts) = post_tags_map.get(tag) {
                     for other_post_idx in tag_posts {
@@ -49,39 +59,35 @@ fn main() {
                     }
                 }
             }
+
             tagged_post_count[post_idx] = 0; // don't recommend the same post
 
-            let mut topk = [(0u8, 0u32); NUM_TOP_ITEMS];
-            let mut min_tags = 0u8;
-            for (c, chunk) in tagged_post_count.chunks(CHUNK_SIZE).enumerate() {
-                let mut process_chunk = false;
-                for &count in chunk {
-                    process_chunk |= count > min_tags;
-                }
-                if process_chunk {
-                    for (j, &count) in chunk.iter().enumerate() {
-                        if count > min_tags {
-                            let pos = topk
-                                .iter()
-                                .rev()
-                                .position(|t| t.0 > count)
-                                .map_or(0, |p| NUM_TOP_ITEMS - p);
+            let mut top5 = [(0, 0); NUM_TOP_ITEMS];
+            let mut min_tags = 0;
 
-                            topk.copy_within(pos..NUM_TOP_ITEMS - 1, pos + 1);
-                            topk[pos] = (count, (c * CHUNK_SIZE + j) as u32);
+            for (j, &count) in tagged_post_count.iter().enumerate() {
+                let count = count as usize;
+                if count > min_tags {
+                    let pos = top5
+                        .iter()
+                        .rev()
+                        .position(|t| t.0 > count)
+                        .map_or(0, |p| NUM_TOP_ITEMS - p);
 
-                            min_tags = topk[NUM_TOP_ITEMS - 1].0;
-                        }
-                    }
+                    top5.copy_within(pos..NUM_TOP_ITEMS - 1, pos + 1);
+                    top5[pos] = (count, j);
+
+                    min_tags = top5[NUM_TOP_ITEMS - 1].0;
                 }
             }
 
-            tagged_post_count.fill(0);
+            // Convert indexes back to Post pointers
+            let related = top5.into_iter().map(|(_, index)| &posts[index]).collect();
 
             RelatedPosts {
                 id: post.id,
                 tags: &post.tags,
-                related: topk.map(|(_, index)| &posts[index as usize]),
+                related,
             }
         })
         .collect();
