@@ -47,10 +47,8 @@ fn main() {
         .enumerate()
         .map(|(post_idx, post)| {
             for tag in &post.tags {
-                if let Some(tag_posts) = post_tags_map.get(tag) {
-                    for other_post_idx in tag_posts {
-                        tagged_post_count[*other_post_idx as usize] += 1;
-                    }
+                for other_post_idx in &post_tags_map[tag] {
+                    tagged_post_count[*other_post_idx as usize] += 1;
                 }
             }
             tagged_post_count[post_idx] = 0; // don't recommend the same post
