@@ -6,7 +6,7 @@ FROM archlinux:base
 # Update package repository
 RUN pacman -Syu --noconfirm
 
-RUN pacman -S --noconfirm --needed wget unzip sudo base-devel git clang llvm python python-pip ncurses gcc hyperfine rustup crystal zig dart nodejs deno maven opam dune lua51 luajit luarocks libedit github-cli less r time racket ruby
+RUN pacman -S --noconfirm --needed wget unzip sudo base-devel git clang llvm python python-pip ncurses gcc hyperfine rustup crystal zig dart nodejs deno maven opam dune lua51 luajit luarocks libedit github-cli less r time racket ruby ldc dub
 
 # user needed to install aur packages
 RUN useradd -ms /bin/bash builduser
@@ -100,12 +100,6 @@ RUN rm /home/builduser/swift-5.9-RELEASE-ubuntu22.04/usr/bin/llvm*
 RUN wget https://go.dev/dl/go1.21.4.linux-amd64.tar.gz
 RUN rm -rf /usr/local/go && tar -C /usr/local -xzf go1.21.4.linux-amd64.tar.gz
 ENV PATH="$PATH:/usr/local/go/bin"
-
-# install ldc 1.34 beta1 // regression in 1.35
-# https://github.com/jinyus/related_post_gen/pull/429
-RUN wget https://github.com/ldc-developers/ldc/releases/download/v1.34.0-beta1/ldc2-1.34.0-beta1-linux-x86_64.tar.xz
-RUN rm -rf /usr/local/ldc2* && tar -C /usr/local -xvf ldc2-1.34.0-beta1-linux-x86_64.tar.xz
-ENV PATH="$PATH:/usr/local/ldc2-1.34.0-beta1-linux-x86_64/bin"
 
 #install r deps // doesn't work, need to manually install deps
 #RUN su -c "git clone https://aur.archlinux.org/r-fastmap.git  /home/builduser/rfastmap" builduser
