@@ -86,6 +86,7 @@ docker run -e TEST_NAME=all -it --rm databench
 | Crystal | 32.69 ms | 501.30 ms | 4.31 s | 4.84 s |
 | JS (Bun) | 67.20 ms | 773.00 ms | 6.58 s | 7.42 s |
 | LuaJIT | 64.71 ms | 805.27 ms | 6.71 s | 7.58 s |
+| Pypy | 72.08 ms | 814.43 ms | 6.90 s | 7.79 s |
 | Ocaml | 77.10 ms | 1.25 s | 10.54 s | 11.88 s |
 | JS (Deno) | 99.40 ms | 1.20 s | 12.90 s | 14.19 s |
 | JS (Node) | 98.80 ms | 976.67 ms | 13.53 s | 14.60 s |

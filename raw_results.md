@@ -228,6 +228,29 @@ Python:
     Processing time (w/o IO): 990.8ms
     total: 1.04s memory: 23800k
 
+Pypy:
+
+    Processing time (w/o IO): 68.2ms
+    total: 0.26s memory: 81460k
+    Processing time (w/o IO): 72.4ms
+    total: 0.20s memory: 76520k
+    Processing time (w/o IO): 72.5ms
+    total: 0.20s memory: 76784k
+    Processing time (w/o IO): 73.6ms
+    total: 0.20s memory: 76532k
+    Processing time (w/o IO): 72.1ms
+    total: 0.20s memory: 76528k
+    Processing time (w/o IO): 72.4ms
+    total: 0.20s memory: 76524k
+    Processing time (w/o IO): 72.6ms
+    total: 0.20s memory: 76660k
+    Processing time (w/o IO): 72.4ms
+    total: 0.20s memory: 76304k
+    Processing time (w/o IO): 72.5ms
+    total: 0.20s memory: 76284k
+    Processing time (w/o IO): 72.1ms
+    total: 0.20s memory: 76520k
+
 Numpy:
 
     Processing time (w/o IO): 261.4ms
@@ -1218,6 +1241,15 @@ Python:
     Processing time (w/o IO): 15.632s
     total: 15.78s memory: 55120k
 
+Pypy:
+
+    Processing time (w/o IO): 814.2ms
+    total: 1.23s memory: 131240k
+    Processing time (w/o IO): 813.7ms
+    total: 1.21s memory: 131392k
+    Processing time (w/o IO): 815.4ms
+    total: 1.20s memory: 131240k
+
 Numpy:
 
     Processing time (w/o IO): 3.373s
@@ -1649,6 +1681,15 @@ Python:
     total: 144.34s memory: 144036k
     Processing time (w/o IO): 145.407s
     total: 145.92s memory: 144012k
+
+Pypy:
+
+    Processing time (w/o IO): 6.882s
+    total: 8.00s memory: 320256k
+    Processing time (w/o IO): 6.917s
+    total: 8.11s memory: 320356k
+    Processing time (w/o IO): 6.911s
+    total: 8.08s memory: 319628k
 
 Numpy:
 
