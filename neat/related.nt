@@ -1,0 +1,114 @@
+module related;
+
+macro import std.macro.assert;
+macro import std.macro.listcomprehension;
+
+import std.error;
+import std.file;
+import std.json.stream;
+import std.stdio;
+import std.stream;
+import std.time;
+
+alias topN = 5;
+
+struct Post
+{
+    string _id;
+    string title;
+    string[] tags;
+    string toString() => "Post($_id, \"$title\", $tags)";
+}
+
+struct RelatedPosts
+{
+    string _id;
+    string[] tags;
+    Post[] related;
+}
+
+struct PostsWithSharedTags
+{
+    long post;
+    ubyte sharedTags;
+}
+
+void main() {
+    errorMain.case {
+        void: {}
+        Error err:
+            print("Error: $(err.message)");
+            exit(1);
+    }
+}
+
+(void | fail Error) errorMain()
+{
+    ubyte[] file = readFile("../posts.json");
+    auto source = new ArraySource!(ubyte[])([file]);
+    auto lexer = new JsonLexer(source);
+    auto posts = lexer.decode!(Post[])?;
+
+    auto sw = new Stopwatch;
+
+    sw.start;
+    int postsCount = cast(int) posts.length;
+    auto relatedPosts = new RelatedPosts mut[](postsCount);
+    auto taggedPostsCount = new ubyte mut[](postsCount);
+    auto topPosts = new Post mut[](topN);
+    mut size_t[][string] tagMap;
+
+    for (i, post in posts)
+        for (tag in post.tags)
+            tagMap[tag] = tagMap.get(tag, null) ~ i;
+
+    auto top5 = new PostsWithSharedTags mut[](topN);
+
+    for (k, post in posts)
+    {
+        for (i in 0 .. topN)
+            top5[i] = PostsWithSharedTags(0, 0);
+        for (i, _ in taggedPostsCount)
+            taggedPostsCount[i] = 0;
+
+        for (tag in post.tags)
+            for (idx in tagMap[tag])
+                taggedPostsCount[idx]++;
+
+        taggedPostsCount[k] = 0;
+
+        mut int minTags = 0;
+        for (j, count in taggedPostsCount)
+        {
+            if (count <= minTags) continue;
+
+            mut int upperBound = topN - 2;
+
+            while (upperBound >= 0 && count > top5[upperBound].sharedTags)
+            {
+                top5[upperBound + 1] = top5[upperBound];
+                upperBound--;
+            }
+
+            top5[upperBound + 1] = PostsWithSharedTags(j, count);
+
+            minTags = top5[topN - 1].sharedTags;
+        }
+
+        for (i, t in top5)
+            topPosts[i] = posts[t.post];
+
+        relatedPosts[k] = RelatedPosts(
+            post._id,
+            post.tags,
+            topPosts.dup.freeze);
+    }
+    sw.stop;
+    print("Processing time (w/o IO): $(cast(int) (sw.seconds * 1_000_000)/1000.0f)ms");
+    auto sink = new ArraySink!(ubyte[]);
+    auto jsonPrinter = new JsonPrinter(sink);
+    relatedPosts.encode(jsonPrinter)?;
+    "../related_posts_neat.json".writeFile([join a for a in sink.array]);
+}
+
+extern(C) void exit(int);
