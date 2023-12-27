@@ -1,8 +1,9 @@
-from timing import lap, finish
+from timing import finish, lap
 
 lap()
+import json
+
 import numpy as np
-import orjson
 from numba import njit, prange, typed
 
 
@@ -24,8 +25,8 @@ def get_all_top5(n_posts, t_to_pp, p_to_tt, p_to_nt):
         for i, r in enumerate(relation_count):
             for j in range(4, -1, -1):
                 if r > max_r[j]:
-                    max_r[:j] = max_r[1:j + 1]
-                    max_i[:j] = max_i[1:j + 1]
+                    max_r[:j] = max_r[1 : j + 1]
+                    max_i[:j] = max_i[1 : j + 1]
                     max_r[j] = r
                     max_i[j] = i
                     break
@@ -50,7 +51,7 @@ def main():
     lap()
     with open("../posts.json", "rb") as f:
         s = f.read()
-        posts = orjson.loads(s)
+        posts = json.loads(s)
     lap()
 
     unique_tags = set(tag for post in posts for tag in post["tags"])
@@ -79,8 +80,8 @@ def main():
 
     lap()
     with open("../related_posts_python_numba.json", "wb") as f:
-        s = orjson.dumps(all_related_posts)
-        f.write(s)
+        s = json.dumps(all_related_posts)
+        f.write(s.encode("utf-8"))
     lap()
     finish()
 

@@ -3,16 +3,15 @@ from timing import finish, lap
 TOPN = 5
 
 lap()
+import json
 from collections import defaultdict
-
-import orjson
 
 
 def main():
     lap()
     with open("../posts.json", "rb") as f:
         s = f.read()
-        posts = orjson.loads(s)
+        posts = json.loads(s)
     lap()
 
     tag_map = defaultdict(list)
@@ -64,8 +63,8 @@ def main():
 
     lap()
     with open("../related_posts_python.json", "wb") as f:
-        s = orjson.dumps(all_related_posts)
-        f.write(s)
+        s = json.dumps(all_related_posts)
+        f.write(s.encode("utf-8"))
     lap()
     finish()
 

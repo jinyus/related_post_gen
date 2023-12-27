@@ -1,7 +1,8 @@
-from timing import lap, finish
+from timing import finish, lap
 
 lap()
-import orjson
+import json
+
 import numpy as np
 from scipy.sparse import coo_array
 
@@ -10,7 +11,7 @@ def main():
     lap()
     with open("../posts.json", "rb") as f:
         s = f.read()
-        posts = orjson.loads(s)
+        posts = json.loads(s)
     lap()
 
     unique_tags = set(tag for post in posts for tag in post["tags"])
@@ -21,9 +22,11 @@ def main():
         for tag in post["tags"]:
             j = tag_dict[tag]
             ij.append((i, j))
-    tag_map = coo_array((np.ones(len(ij), dtype=np.uint8), zip(*ij)),
-                        shape=(len(posts), len(unique_tags)),
-                        dtype=np.uint8)
+    tag_map = coo_array(
+        (np.ones(len(ij), dtype=np.uint8), zip(*ij)),
+        shape=(len(posts), len(unique_tags)),
+        dtype=np.uint8,
+    )
 
     tag_map = tag_map.tocsr()
 
@@ -36,9 +39,11 @@ def main():
 
     all_related = []
     for i, post in enumerate(posts):
-        data = relatedness.data[relatedness.indptr[i]: relatedness.indptr[i + 1]]
+        data = relatedness.data[relatedness.indptr[i] : relatedness.indptr[i + 1]]
         top5_among_nonzeros = np.flip(np.argsort(data, kind="stable")[-5:])
-        top5 = relatedness.indices[relatedness.indptr[i]: relatedness.indptr[i + 1]][top5_among_nonzeros]
+        top5 = relatedness.indices[relatedness.indptr[i] : relatedness.indptr[i + 1]][
+            top5_among_nonzeros
+        ]
 
         all_related.append(
             {
@@ -50,8 +55,8 @@ def main():
 
     lap()
     with open("../related_posts_python_np.json", "wb") as f:
-        s = orjson.dumps(all_related)
-        f.write(s)
+        s = json.dumps(all_related)
+        f.write(s.encode("utf-8"))
     lap()
     finish()
 

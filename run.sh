@@ -132,8 +132,20 @@ run_python() {
             python3 -m venv venv
         fi &&
         source venv/bin/activate &&
-        pip freeze | grep orjson || pip install -r requirements.txt &&
         run_command "Python" $slow_lang_runs python3 ./related.py &&
+        deactivate &&
+        check_output "related_posts_python.json"
+
+}
+
+run_pypy() {
+    echo "Running PyPy" &&
+        cd ./python &&
+        if [ ! -d "venv" ]; then
+            python3 -m venv venv
+        fi &&
+        source venv/bin/activate &&
+        run_command "Pypy" $runs pypy3 ./related.py &&
         deactivate &&
         check_output "related_posts_python.json"
 
@@ -146,7 +158,7 @@ run_python_np() {
             python3 -m venv venv
         fi &&
         source venv/bin/activate &&
-        (pip freeze | grep scipy && pip freeze | grep orjson) || pip install -r requirements.txt &&
+        (pip freeze | grep scipy) || pip install -r requirements.txt &&
         run_command "Numpy" $slow_lang_runs python3 ./related_np.py &&
         deactivate &&
         check_output "related_posts_python_np.json"
@@ -160,7 +172,7 @@ run_python_numba() {
             python3 -m venv venv
         fi &&
         source venv/bin/activate &&
-        (pip freeze | grep numba && pip freeze | grep orjson) || pip install -r requirements.txt &&
+        (pip freeze | grep numba) || pip install -r requirements.txt &&
         run_command "Numba" $slow_lang_runs python3 ./related_numba.py &&
         deactivate &&
         check_output "related_posts_python_numba.json"
@@ -174,7 +186,7 @@ run_python_numba_con() {
             python3 -m venv venv
         fi &&
         source venv/bin/activate &&
-        (pip freeze | grep numba && pip freeze | grep orjson) || pip install -r requirements.txt &&
+        (pip freeze | grep numba) || pip install -r requirements.txt &&
         run_command "Numba Concurrent" $slow_lang_runs python3 ./related_numba_con.py &&
         deactivate &&
         check_output "related_posts_python_numba_con.json"
@@ -681,6 +693,10 @@ elif [ "$first_arg" = "py" ]; then
 
     run_python
 
+elif [ "$first_arg" = "pypy" ]; then
+
+    run_pypy
+
 elif [ "$first_arg" = "numpy" ]; then
 
     run_python_np
@@ -906,6 +922,7 @@ elif [ "$first_arg" = "all" ]; then
         run_cpp || echo -e "\n" &&
         run_cpp_con || echo -e "\n" &&
         run_python || echo -e "\n" &&
+        run_pypy || echo -e "\n" &&
         run_python_np || echo -e "\n" &&
 
         # run_python_numba || echo -e "\n" && break rules but very interesting
