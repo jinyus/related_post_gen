@@ -6,7 +6,7 @@ FROM archlinux:base
 # Update package repository
 RUN pacman -Syu --noconfirm
 
-RUN pacman -S --noconfirm --needed wget unzip sudo base-devel git clang llvm python python-pip ncurses gcc hyperfine rustup crystal zig dart nodejs deno maven opam dune lua51 luajit luarocks libedit github-cli less r time racket ruby
+RUN pacman -S --noconfirm --needed wget unzip sudo base-devel git clang llvm python python-pip pypy3 ncurses gcc hyperfine rustup crystal zig dart nodejs deno maven opam dune lua51 luajit luarocks libedit github-cli less r time racket ruby
 
 # user needed to install aur packages
 RUN useradd -ms /bin/bash builduser
