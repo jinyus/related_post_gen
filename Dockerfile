@@ -41,7 +41,7 @@ RUN wget https://download.swift.org/swift-5.9-release/ubuntu2204/swift-5.9-RELEA
 RUN tar -xvf /home/builduser/swift.tar.gz -C /home/builduser && rm /home/builduser/swift.tar.gz && export PATH=/home/builduser/swift-5.9-RELEASE-ubuntu22.04/usr/bin:$PATH
 
 # install odin
-RUN wget 'https://github.com/odin-lang/Odin/releases/download/dev-2023-11/odin-ubuntu-amd64-dev-2023-11.zip' -O /home/builduser/odin.zip
+RUN wget 'https://github.com/odin-lang/Odin/releases/download/dev-2023-12/odin-ubuntu-amd64-dev-2023-12.zip' -O /home/builduser/odin.zip
 
 RUN unzip /home/builduser/odin.zip -d /home/builduser/odin
 
