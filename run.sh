@@ -635,6 +635,14 @@ run_inko() {
         check_output "related_posts_inko.json"
 }
 
+run_neat() {
+    echo "Running Neat" &&
+        cd ./neat &&
+        neat -optimize related.nt &&
+        run_command "Neat" $runs ./related &&
+        check_output "related_posts_neat.json"
+}
+
 check_output() {
     cd ..
 
@@ -881,6 +889,10 @@ elif [ "$first_arg" = "inko" ]; then
 
     run_inko
 
+elif [ "$first_arg" = "neat" ]; then
+
+    run_neat
+
 elif [ "$first_arg" = "all" ]; then
 
     echo -e "Running all\n" &&
@@ -937,6 +949,7 @@ elif [ "$first_arg" = "all" ]; then
         run_lobster_cpp || echo -e "\n" &&
         run_scala_native || echo -e "\n" &&
         run_inko || echo -e "\n" &&
+        run_neat || echo -e "\n" &&
         # run_r || echo -e "\n" && # remove for now until docker is setup
         echo -e "Finished running all\n"
 
