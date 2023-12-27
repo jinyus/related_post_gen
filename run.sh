@@ -132,7 +132,6 @@ run_python() {
             python3 -m venv venv
         fi &&
         source venv/bin/activate &&
-        pip freeze | grep orjson || pip install -r requirements.txt &&
         run_command "Python" $slow_lang_runs python3 ./related.py &&
         deactivate &&
         check_output "related_posts_python.json"
@@ -146,7 +145,7 @@ run_python_np() {
             python3 -m venv venv
         fi &&
         source venv/bin/activate &&
-        (pip freeze | grep scipy && pip freeze | grep orjson) || pip install -r requirements.txt &&
+        (pip freeze | grep scipy) || pip install -r requirements.txt &&
         run_command "Numpy" $slow_lang_runs python3 ./related_np.py &&
         deactivate &&
         check_output "related_posts_python_np.json"
@@ -160,7 +159,7 @@ run_python_numba() {
             python3 -m venv venv
         fi &&
         source venv/bin/activate &&
-        (pip freeze | grep numba && pip freeze | grep orjson) || pip install -r requirements.txt &&
+        (pip freeze | grep numba) || pip install -r requirements.txt &&
         run_command "Numba" $slow_lang_runs python3 ./related_numba.py &&
         deactivate &&
         check_output "related_posts_python_numba.json"
@@ -174,7 +173,7 @@ run_python_numba_con() {
             python3 -m venv venv
         fi &&
         source venv/bin/activate &&
-        (pip freeze | grep numba && pip freeze | grep orjson) || pip install -r requirements.txt &&
+        (pip freeze | grep numba) || pip install -r requirements.txt &&
         run_command "Numba Concurrent" $slow_lang_runs python3 ./related_numba_con.py &&
         deactivate &&
         check_output "related_posts_python_numba_con.json"
