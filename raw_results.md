@@ -368,25 +368,25 @@ Julia Concurrent:
 
 Odin:
 
-    Processing time (w/o IO):  34.435454ms
-    total: 0.20s memory: 12928k
-    Processing time (w/o IO):  34.171845ms
+    Processing time (w/o IO):  27.817399ms
+    total: 0.20s memory: 13184k
+    Processing time (w/o IO):  28.03395ms
+    total: 0.24s memory: 13184k
+    Processing time (w/o IO):  27.510068ms
+    total: 0.20s memory: 13184k
+    Processing time (w/o IO):  27.741689ms
     total: 0.20s memory: 13056k
-    Processing time (w/o IO):  34.9933ms
-    total: 0.20s memory: 13056k
-    Processing time (w/o IO):  34.340524ms
-    total: 0.20s memory: 13056k
-    Processing time (w/o IO):  34.605253ms
-    total: 0.20s memory: 13056k
-    Processing time (w/o IO):  35.698657ms
-    total: 0.20s memory: 12928k
-    Processing time (w/o IO):  34.286865ms
-    total: 0.20s memory: 13056k
-    Processing time (w/o IO):  34.047246ms
-    total: 0.20s memory: 12928k
-    Processing time (w/o IO):  34.592733ms
-    total: 0.20s memory: 13056k
-    Processing time (w/o IO):  34.666412ms
+    Processing time (w/o IO):  27.790649ms
+    total: 0.20s memory: 13184k
+    Processing time (w/o IO):  28.57278ms
+    total: 0.20s memory: 13184k
+    Processing time (w/o IO):  27.936029ms
+    total: 0.20s memory: 13312k
+    Processing time (w/o IO):  27.862619ms
+    total: 0.20s memory: 13312k
+    Processing time (w/o IO):  28.002819ms
+    total: 0.20s memory: 13184k
+    Processing time (w/o IO):  27.692328ms
     total: 0.20s memory: 13184k
 
 Vlang:
@@ -1272,12 +1272,12 @@ Julia Concurrent:
 
 Odin:
 
-    Processing time (w/o IO):  397.771136ms
-    total: 1.05s memory: 44032k
-    Processing time (w/o IO):  391.596427ms
-    total: 1.04s memory: 44032k
-    Processing time (w/o IO):  393.764786ms
-    total: 1.04s memory: 44160k
+    Processing time (w/o IO):  397.442644ms
+    total: 1.08s memory: 44160k
+    Processing time (w/o IO):  396.922232ms
+    total: 1.11s memory: 44160k
+    Processing time (w/o IO):  395.318597ms
+    total: 1.14s memory: 44160k
 
 Vlang:
 
@@ -1736,12 +1736,12 @@ Julia Concurrent:
 
 Odin:
 
-    Processing time (w/o IO):  3.484554082s
-    total: 5.43s memory: 101632k
-    Processing time (w/o IO):  3.44583249s
-    total: 5.39s memory: 101632k
-    Processing time (w/o IO):  3.457040831s
-    total: 5.40s memory: 101632k
+    Processing time (w/o IO):  3.432765853s
+    total: 5.74s memory: 101760k
+    Processing time (w/o IO):  3.442171715s
+    total: 5.84s memory: 101632k
+    Processing time (w/o IO):  3.449967524s
+    total: 5.69s memory: 101504k
 
 Vlang:
 

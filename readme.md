@@ -79,7 +79,7 @@ docker run -e TEST_NAME=all -it --rm databench
 | Zig | 20.00 ms | 306.00 ms | 2.72 s | 3.04 s |
 | Vlang | 22.30 ms | 319.36 ms | 2.73 s | 3.07 s |
 | F# (AOT) | 24.66 ms | 367.33 ms | 3.23 s | 3.62 s |
-| Odin | 34.58 ms | 394.38 ms | 3.46 s | 3.89 s |
+| Odin | 27.90 ms | 396.56 ms | 3.44 s | 3.87 s |
 | Java (GraalVM) | 27.40 ms | 512.33 ms | 3.61 s | 4.15 s |
 | F# (JIT) | 25.28 ms | 416.23 ms | 3.90 s | 4.34 s |
 | Swift | 34.32 ms | 483.67 ms | 4.22 s | 4.74 s |
