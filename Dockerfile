@@ -110,6 +110,9 @@ RUN wget https://github.com/Neat-Lang/neat/releases/download/v0.5.0/neat-v0.5.0-
 RUN tar -C /home/builduser -xvf neat-v0.5.0-gcc.tar.xz && rm neat-v0.5.0-gcc.tar.xz
 RUN cd /home/builduser/neat-v0.5.0-gcc && ./build.sh
 ENV PATH="$PATH:/home/builduser/neat-v0.5.0-gcc"
+RUN git clone https://github.com/Neat-Lang/neat.git
+# for ArraySource
+RUN cp neat/src/std/stream.nt /home/builduser/neat-v0.5.0-gcc/src/std/stream.nt
 
 #install r deps // doesn't work, need to manually install deps
 #RUN su -c "git clone https://aur.archlinux.org/r-fastmap.git  /home/builduser/rfastmap" builduser
