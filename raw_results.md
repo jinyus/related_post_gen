@@ -1132,26 +1132,26 @@ Inko:
 
 Neat:
 
-    Processing time (w/o IO): 177.988000ms
-    total: 0.77s memory: 108904k
-    Processing time (w/o IO): 197.040000ms
-    total: 0.79s memory: 108904k
-    Processing time (w/o IO): 177.947000ms
-    total: 0.77s memory: 108900k
-    Processing time (w/o IO): 196.555000ms
-    total: 0.79s memory: 108904k
-    Processing time (w/o IO): 180.425000ms
-    total: 0.77s memory: 108900k
-    Processing time (w/o IO): 178.002000ms
-    total: 0.77s memory: 108772k
-    Processing time (w/o IO): 196.600000ms
-    total: 0.79s memory: 108776k
-    Processing time (w/o IO): 178.117000ms
-    total: 0.77s memory: 108900k
-    Processing time (w/o IO): 196.533000ms
-    total: 0.79s memory: 108772k
-    Processing time (w/o IO): 178.200000ms
-    total: 0.77s memory: 108900k
+    Processing time (w/o IO): 84.985234ms
+    total: 0.37s memory: 59620k
+    Processing time (w/o IO): 85.004227ms
+    total: 0.37s memory: 59752k
+    Processing time (w/o IO): 85.150147ms
+    total: 0.39s memory: 59748k
+    Processing time (w/o IO): 85.087656ms
+    total: 0.37s memory: 59752k
+    Processing time (w/o IO): 85.107234ms
+    total: 0.37s memory: 59880k
+    Processing time (w/o IO): 85.150078ms
+    total: 0.37s memory: 59620k
+    Processing time (w/o IO): 85.060516ms
+    total: 0.37s memory: 59880k
+    Processing time (w/o IO): 84.853219ms
+    total: 0.37s memory: 59748k
+    Processing time (w/o IO): 84.757633ms
+    total: 0.37s memory: 59880k
+    Processing time (w/o IO): 84.843406ms
+    total: 0.37s memory: 59748k
 
 Go:
 
@@ -1587,12 +1587,12 @@ Inko:
 
 Neat:
 
-    Processing time (w/o IO): 2656.659000ms
-    total: 5.18s memory: 424464k
-    Processing time (w/o IO): 2657.508000ms
-    total: 5.17s memory: 424464k
-    Processing time (w/o IO): 2953.203000ms
-    total: 5.35s memory: 424336k
+    Processing time (w/o IO): 1154.516875ms
+    total: 2.30s memory: 227980k
+    Processing time (w/o IO): 1156.726875ms
+    total: 2.32s memory: 227988k
+    Processing time (w/o IO): 1154.512250ms
+    total: 2.43s memory: 227988k
 
 Go:
 
@@ -2060,9 +2060,9 @@ Inko:
 
 Neat:
 
-    Processing time (w/o IO): 25958.542000ms
-    total: 33.93s memory: 1660584k
-    Processing time (w/o IO): 25959.446000ms
-    total: 34.16s memory: 1660736k
-    Processing time (w/o IO): 25995.728000ms
-    total: 33.79s memory: 1660860k
+    Processing time (w/o IO): 9915.724000ms
+    total: 13.54s memory: 539836k
+    Processing time (w/o IO): 9916.659000ms
+    total: 13.59s memory: 540088k
+    Processing time (w/o IO): 11525.339000ms
+    total: 15.33s memory: 539964k
