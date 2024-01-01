@@ -87,6 +87,7 @@ docker run -e TEST_NAME=all -it --rm databench
 | JS (Bun) | 67.20 ms | 773.00 ms | 6.58 s | 7.42 s |
 | LuaJIT | 64.71 ms | 805.27 ms | 6.71 s | 7.58 s |
 | Pypy | 72.08 ms | 814.43 ms | 6.90 s | 7.79 s |
+| Neat | 85.00 ms | 1.16 s | 10.45 s | 11.69 s |
 | Ocaml | 77.10 ms | 1.25 s | 10.54 s | 11.88 s |
 | JS (Deno) | 99.40 ms | 1.20 s | 12.90 s | 14.19 s |
 | JS (Node) | 98.80 ms | 976.67 ms | 13.53 s | 14.60 s |
@@ -96,7 +97,6 @@ docker run -e TEST_NAME=all -it --rm databench
 | Typed Racket | 117.80 ms | 1.70 s | 14.59 s | 16.41 s |
 | Scala Native | 174.40 ms | 2.05 s | 16.83 s | 19.05 s |
 | Lobster (C++) | 129.75 ms | 1.94 s | 18.22 s | 20.29 s |
-| Neat | 185.74 ms | 2.76 s | 25.97 s | 28.91 s |
 | LuaJIT (JIT OFF) | 509.62 ms | 7.46 s | 71.52 s | 79.49 s |
 | Erlang | 657.44 ms | 10.38 s | 98.77 s | 109.81 s |
 | Lua | 781.52 ms | 12.02 s | 107.77 s | 120.56 s |
