@@ -106,13 +106,10 @@ RUN rm -rf /usr/local/ldc2* && tar -C /usr/local -xvf ldc2-1.36.0-beta1-linux-x8
 ENV PATH="$PATH:/usr/local/ldc2-1.36.0-beta1-linux-x86_64/bin"
 
 # install neat
-RUN wget https://github.com/Neat-Lang/neat/releases/download/v0.5.0/neat-v0.5.0-gcc.tar.xz
-RUN tar -C /home/builduser -xvf neat-v0.5.0-gcc.tar.xz && rm neat-v0.5.0-gcc.tar.xz
-RUN cd /home/builduser/neat-v0.5.0-gcc && ./build.sh
-ENV PATH="$PATH:/home/builduser/neat-v0.5.0-gcc"
-RUN git clone https://github.com/Neat-Lang/neat.git
-# for ArraySource
-RUN cp neat/src/std/stream.nt /home/builduser/neat-v0.5.0-gcc/src/std/stream.nt
+RUN wget https://github.com/Neat-Lang/neat/releases/download/v0.5.1/neat-v0.5.1-gcc.tar.xz
+RUN tar -C /home/builduser -xvf neat-v0.5.1-gcc.tar.xz && rm neat-v0.5.1-gcc.tar.xz
+RUN cd /home/builduser/neat-v0.5.1-gcc && ./build.sh
+ENV PATH="$PATH:/home/builduser/neat-v0.5.1-gcc"
 
 #install r deps // doesn't work, need to manually install deps
 #RUN su -c "git clone https://aur.archlinux.org/r-fastmap.git  /home/builduser/rfastmap" builduser
