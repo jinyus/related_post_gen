@@ -71,6 +71,7 @@ docker run -e TEST_NAME=all -it --rm databench
 | D | 18.78 ms | 238.77 ms | 2.04 s | 2.29 s |
 | Go | 16.90 ms | 241.45 ms | 2.12 s | 2.37 s |
 | Java (JIT) | 19.70 ms | 246.67 ms | 2.14 s | 2.40 s |
+| Neat | 19.01 ms | 251.50 ms | 2.14 s | 2.41 s |
 | Nim | 17.15 ms | 256.70 ms | 2.27 s | 2.54 s |
 | C++ | 18.10 ms | 271.33 ms | 2.26 s | 2.55 s |
 | C# (AOT) | 18.26 ms | 265.69 ms | 2.34 s | 2.62 s |
@@ -87,7 +88,6 @@ docker run -e TEST_NAME=all -it --rm databench
 | JS (Bun) | 67.20 ms | 773.00 ms | 6.58 s | 7.42 s |
 | LuaJIT | 64.71 ms | 805.27 ms | 6.71 s | 7.58 s |
 | Pypy | 72.08 ms | 814.43 ms | 6.90 s | 7.79 s |
-| Neat | 55.41 ms | 832.99 ms | 6.90 s | 7.79 s |
 | Ocaml | 77.10 ms | 1.25 s | 10.54 s | 11.88 s |
 | JS (Deno) | 99.40 ms | 1.20 s | 12.90 s | 14.19 s |
 | JS (Node) | 98.80 ms | 976.67 ms | 13.53 s | 14.60 s |
