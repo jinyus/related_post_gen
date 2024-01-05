@@ -106,16 +106,16 @@ RUN rm -rf /usr/local/ldc2* && tar -C /usr/local -xvf ldc2-1.36.0-beta1-linux-x8
 ENV PATH="$PATH:/usr/local/ldc2-1.36.0-beta1-linux-x86_64/bin"
 
 # install neat
-RUN wget https://github.com/Neat-Lang/neat/releases/download/v0.5.1/neat-v0.5.1-llvm.tar.xz
-RUN tar -C /home/builduser -xvf neat-v0.5.1-llvm.tar.xz && rm neat-v0.5.1-llvm.tar.xz
+RUN wget https://github.com/Neat-Lang/neat/releases/download/v0.5.2/neat-v0.5.2-llvm.tar.xz
+RUN tar -C /home/builduser -xvf neat-v0.5.2-llvm.tar.xz && rm neat-v0.5.2-llvm.tar.xz
 
 # neat build expects clang-15 to be in /usr/lib/llvm/15/bin/
 RUN mkdir -p /usr/lib/llvm/15/bin/ && cp /usr/sbin/*-15 /usr/lib/llvm/15/bin/
 RUN sh -c 'for file in /usr/lib/llvm/15/bin/*-15; do mv "$file" "${file%-15}"; done'
 RUN cp /usr/sbin/clang-16 /usr/sbin/clang-15
 
-RUN cd /home/builduser/neat-v0.5.1-llvm && ./build.sh
-ENV PATH="$PATH:/home/builduser/neat-v0.5.1-llvm"
+RUN cd /home/builduser/neat-v0.5.2-llvm && ./build.sh
+ENV PATH="$PATH:/home/builduser/neat-v0.5.2-llvm"
 
 #install r deps // doesn't work, need to manually install deps
 #RUN su -c "git clone https://aur.archlinux.org/r-fastmap.git  /home/builduser/rfastmap" builduser
