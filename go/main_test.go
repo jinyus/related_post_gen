@@ -12,6 +12,7 @@ func TestMain(t *testing.T) {
 
 // go test -bench=. -run=x -cpuprofile cpu.prof -benchtime=5s > 0.bench
 // then: go tool pprof cpu.prof
+// then: web for grapgh or list main for lines
 func BenchmarkMain(b *testing.B) {
 
 	for i := 0; i < b.N; i++ {
