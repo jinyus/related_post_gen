@@ -1,9 +1,10 @@
 rust/target
 rust_con/target
 go/related
+common-lisp/related
 go_con/related_concurrent
 odin/main
-related_*.json
+related[-_]*.json
 .DS_Store
 .vscode/
 venv/
