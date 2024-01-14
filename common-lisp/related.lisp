@@ -1,15 +1,11 @@
-;; Install quicklisp (package manager) + json lib
+(declaim (optimize speed))
 
-(load "quicklisp.lisp")
-
-(unless (find-package '#:ql)
-  (quicklisp-quickstart:install))
-
+;; Install/load json lib
 (ql:quickload :com.inuoe.jzon)
 
 ;; Main programm
 (in-package :cl-user)
-(declaim (optimize speed))
+
 
 (defparameter *top-n* 5)
 
