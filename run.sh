@@ -547,7 +547,7 @@ run_erlang() {
 run_common_lisp_sbcl() {
     echo "Running Common Lisp (SBCL)" &&
         cd ./common-lisp &&
-        sbcl --non-interactive --load related.lisp
+        sbcl --control-stack-size 10 --non-interactive --load related.lisp
         run_command "Common Lisp (SBCL)" $slow_lang_runs ./related &&
         check_output "related-cl.json"
 }
