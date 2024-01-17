@@ -102,6 +102,7 @@ fn main() -> io::Result<()> {
     let output_file = OpenOptions::new()
         .write(true)
         .create(true)
+        .truncate(true)
         .open(OUTPUT_FILE)?;
     let writer = BufWriter::new(output_file);
     serde_json::to_writer(writer, &related_posts).unwrap();
