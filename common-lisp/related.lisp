@@ -77,7 +77,6 @@
          (t2 (now))
          (related-posts (add-related raw-posts))
          (t3 (now)))
-    (declare)
     (format t "Processing time (w/o IO): ~2$ s~%" (- t3 t2))
     (com.inuoe.jzon:stringify related-posts :stream #p"../related-cl.json")
     (format t "Processing time total: ~2$ s~%" (- (now) t1))))
