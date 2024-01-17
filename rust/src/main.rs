@@ -1,7 +1,7 @@
-use ahash::AHasher;
 use aligned_vec::avec;
+use hashbrown::HashMap;
 use serde::{Deserialize, Serialize};
-use std::{collections::HashMap, hash::BuildHasherDefault, hint, time::Instant};
+use std::{hint, time::Instant};
 
 const NUM_TOP_ITEMS: usize = 5;
 
@@ -29,11 +29,7 @@ fn main() {
 
     let start = Instant::now();
 
-    let mut post_tags_map =
-        HashMap::<&str, Vec<u32>, BuildHasherDefault<AHasher>>::with_capacity_and_hasher(
-            128,
-            BuildHasherDefault::<AHasher>::default(),
-        );
+    let mut post_tags_map = HashMap::<&str, Vec<u32>>::with_capacity(128);
     for (post_idx, post) in posts.iter().enumerate() {
         for tag in &post.tags {
             post_tags_map.entry(tag).or_default().push(post_idx as u32);
