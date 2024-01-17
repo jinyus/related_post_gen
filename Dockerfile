@@ -6,7 +6,7 @@ FROM archlinux:base
 # Update package repository
 RUN pacman -Syu --noconfirm
 
-RUN pacman -S --noconfirm --needed wget unzip sudo base-devel git clang llvm python python-pip pypy3 ncurses gcc hyperfine rustup crystal zig dart nodejs deno maven opam dune lua51 luajit luarocks libedit github-cli less r time racket ruby
+RUN pacman -S --noconfirm --needed wget unzip sudo base-devel git clang llvm python python-pip pypy3 ncurses gcc hyperfine rustup crystal zig dart nodejs deno maven opam dune lua51 luajit luarocks libedit github-cli less r time racket ruby sbcl
 
 # user needed to install aur packages
 RUN useradd -ms /bin/bash builduser
@@ -130,6 +130,9 @@ RUN su -c "git clone https://aur.archlinux.org/inko.git /home/builduser/inko" bu
 RUN su -c "rustup default stable && cd /home/builduser/inko && makepkg -si --noconfirm --needed --noprogressbar" builduser
 
 RUN rm *.tar.* && rm /home/builduser/*.zip && rm /home/builduser/*.tar.*
+
+# for common lisp
+RUN cd /tmp && wget https://beta.quicklisp.org/quicklisp.lisp && echo "(load \"quicklisp.lisp\") (quicklisp-quickstart:install :path \"/opt/quicklisp\") (ql::without-prompting (ql:add-to-init-file))" | sbcl && cp $HOME/.sbclrc /etc/sbclrc
 
 RUN mkdir -p /results
 
