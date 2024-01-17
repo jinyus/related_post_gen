@@ -32,7 +32,10 @@ fn main() {
     let mut post_tags_map = HashMap::<&str, Vec<u32>>::with_capacity(128);
     for (post_idx, post) in posts.iter().enumerate() {
         for tag in &post.tags {
-            post_tags_map.entry(tag).or_default().push(post_idx as u32);
+            post_tags_map
+                .entry(tag)
+                .or_insert_with(|| Vec::with_capacity(1024))
+                .push(post_idx as u32);
         }
     }
 
