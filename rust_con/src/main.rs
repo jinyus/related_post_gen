@@ -1,6 +1,10 @@
-use std::cell::RefCell;
-use std::hint;
-use std::time::Instant;
+use std::{
+    cell::RefCell,
+    fs::OpenOptions,
+    hint,
+    io::{self, BufWriter},
+    time::Instant,
+};
 
 use rayon::prelude::*;
 
@@ -14,8 +18,10 @@ use types::{Post, RelatedPosts};
 static GLOBAL: mimalloc::MiMalloc = mimalloc::MiMalloc;
 
 const NUM_TOP_ITEMS: usize = 5;
+const INPUT_FILE: &str = "../posts.json";
+const OUTPUT_FILE: &str = "../related_posts_rust_con.json";
 
-fn main() {
+fn main() -> io::Result<()> {
     // setup the runtime
     let num_cpus = num_cpus::get_physical(); // does IO to get num_cpus
     rayon::ThreadPoolBuilder::new()
@@ -24,7 +30,7 @@ fn main() {
         .unwrap();
 
     // setup the input
-    let json_str = std::fs::read_to_string("../posts.json").unwrap();
+    let json_str = std::fs::read_to_string(INPUT_FILE)?;
     let posts: Vec<Post> = serde_json::from_str(&json_str).unwrap();
 
     // time the algorithm
@@ -34,8 +40,15 @@ fn main() {
 
     println!("Processing time (w/o IO): {:?}", end.duration_since(start));
 
-    let json_str = serde_json::to_string(&related_posts).unwrap();
-    std::fs::write("../related_posts_rust_con.json", json_str).unwrap();
+    let output_file = OpenOptions::new()
+        .write(true)
+        .create(true)
+        .truncate(true)
+        .open(OUTPUT_FILE)?;
+    let writer = BufWriter::new(output_file);
+    serde_json::to_writer(writer, &related_posts).unwrap();
+
+    Ok(())
 }
 
 fn get_related<'a>(posts: &'a [Post]) -> Vec<RelatedPosts<'a>> {
