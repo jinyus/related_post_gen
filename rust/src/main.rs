@@ -3,6 +3,7 @@ use hashbrown::HashMap;
 use serde::{Deserialize, Serialize};
 use std::{
     fs::OpenOptions,
+    hint,
     io::{self, BufWriter},
     time::Instant,
 };
@@ -93,8 +94,10 @@ fn main() -> io::Result<()> {
         })
         .collect();
 
-    let elapsed = start.elapsed();
-    println!("Processing time (w/o IO): {elapsed:?}");
+    // Tell compiler to not delay now() until print is eval'ed.
+    let end = hint::black_box(Instant::now());
+
+    println!("Processing time (w/o IO): {:?}", end.duration_since(start));
 
     let output_file = OpenOptions::new()
         .write(true)
