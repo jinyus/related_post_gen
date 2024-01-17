@@ -544,6 +544,14 @@ run_erlang() {
         check_output "related_posts_erlang.json"
 }
 
+run_common_lisp_sbcl() {
+    echo "Running Common Lisp (SBCL)" &&
+        cd ./common-lisp &&
+        sbcl --non-interactive --load related.lisp
+        run_command "Common Lisp (SBCL)" $slow_lang_runs ./related &&
+        check_output "related-cl.json"
+}
+
 run_clojure() {
     echo "Running Clojure" &&
         cd ./clojure &&
@@ -865,6 +873,10 @@ elif [ "$first_arg" = "erlang" ]; then
 
     run_erlang
 
+elif [ "$first_arg" = "cl" ]; then
+
+    run_common_lisp_sbcl
+
 elif [ "$first_arg" = "clj" ]; then
 
     run_clojure
@@ -958,6 +970,7 @@ elif [ "$first_arg" = "all" ]; then
         run_lua || echo -e "\n" &&
         run_ocaml || echo -e "\n" &&
         run_erlang || echo -e "\n" &&
+        run_common_lisp_sbcl || echo -e "\n" &&
         # run_ruby || echo -e "\n" && # too slow
         # run_dascript || echo -e "\n" && #not installed in docker
         run_racket || echo -e "\n" &&
@@ -1001,6 +1014,6 @@ elif [ "$first_arg" = "clean" ]; then
 
 else
 
-    echo "Valid args: go | go_con | rust | rust_con | d | d_con | r | py | numpy | numba | numba_con | cr | zig | odin | jq | julia | julia_highly_optimized | julia_con | v | dart | swift | swift_con | node | bun | deno | java | java_graal | java_graal_con | nim | luajit | lua | fsharp | fsharp_aot | fsharp_con | csharp | csharp_aot | dascript | all | clean. Unknown argument: $first_arg"
+    echo "Valid args: go | go_con | rust | rust_con | d | d_con | r | py | numpy | erlang | cl | numba | numba_con | cr | zig | odin | jq | julia | julia_highly_optimized | julia_con | v | dart | swift | swift_con | node | bun | deno | java | java_graal | java_graal_con | nim | luajit | lua | fsharp | fsharp_aot | fsharp_con | csharp | csharp_aot | dascript | all | clean. Unknown argument: $first_arg"
 
 fi
