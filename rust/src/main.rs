@@ -1,9 +1,16 @@
 use aligned_vec::avec;
 use hashbrown::HashMap;
 use serde::{Deserialize, Serialize};
-use std::{hint, time::Instant};
+use std::{
+    fs::OpenOptions,
+    hint,
+    io::{self, BufWriter},
+    time::Instant,
+};
 
 const NUM_TOP_ITEMS: usize = 5;
+const INPUT_FILE: &str = "../posts.json";
+const OUTPUT_FILE: &str = "../related_posts_rust.json";
 
 #[derive(Serialize, Deserialize)]
 #[repr(align(64))]
@@ -23,8 +30,8 @@ struct RelatedPosts<'a> {
     related: [&'a Post<'a>; NUM_TOP_ITEMS],
 }
 
-fn main() {
-    let json_str = std::fs::read_to_string("../posts.json").unwrap();
+fn main() -> io::Result<()> {
+    let json_str = std::fs::read_to_string(INPUT_FILE)?;
     let posts: Vec<Post> = serde_json::from_str(&json_str).unwrap();
 
     let start = Instant::now();
@@ -92,9 +99,12 @@ fn main() {
 
     println!("Processing time (w/o IO): {:?}", end.duration_since(start));
 
-    // I have no explanation for why, but doing this before the print improves performance pretty
-    // significantly (15%) when using slices in the hashmap key and RelatedPosts
-    let json_str = serde_json::to_string(&related_posts).unwrap();
+    let output_file = OpenOptions::new()
+        .write(true)
+        .create(true)
+        .open(OUTPUT_FILE)?;
+    let writer = BufWriter::new(output_file);
+    serde_json::to_writer(writer, &related_posts).unwrap();
 
-    std::fs::write("../related_posts_rust.json", json_str).unwrap();
+    Ok(())
 }
