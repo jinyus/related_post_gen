@@ -548,7 +548,7 @@ run_common_lisp_sbcl() {
     echo "Running Common Lisp (SBCL)" &&
         cd ./common-lisp &&
         sbcl --control-stack-size 10 --non-interactive --load related.lisp
-        run_command "Common Lisp (SBCL)" $slow_lang_runs ./related &&
+    run_command "Common Lisp (SBCL)" $slow_lang_runs ./related &&
         check_output "related-cl.json"
 }
 
@@ -978,8 +978,9 @@ elif [ "$first_arg" = "all" ]; then
         run_lobster_jit || echo -e "\n" &&
         run_lobster_cpp || echo -e "\n" &&
         run_scala_native || echo -e "\n" &&
-        run_inko || echo -e "\n" &&
+        # run_inko || echo -e "\n" &&
         run_neat || echo -e "\n" &&
+        run_common_lisp_sbcl || echo -e "\n" &&
         # run_r || echo -e "\n" && # remove for now until docker is setup
         echo -e "Finished running all\n"
 
