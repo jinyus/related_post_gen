@@ -6,7 +6,7 @@ FROM archlinux:base
 # Update package repository
 RUN pacman -Syu --noconfirm
 
-RUN pacman -S --noconfirm --needed wget unzip sudo base-devel git clang llvm python python-pip pypy3 ncurses gcc hyperfine rustup crystal zig dart nodejs deno maven opam dune lua51 luajit luarocks libedit github-cli less r time racket ruby
+RUN pacman -S --noconfirm --needed wget unzip sudo base-devel git clang llvm python python-pip pypy3 ncurses gcc hyperfine rustup crystal zig dart nodejs deno maven opam dune lua51 luajit luarocks libedit github-cli less r time racket ruby sbcl
 
 # user needed to install aur packages
 RUN useradd -ms /bin/bash builduser
@@ -109,9 +109,8 @@ ENV PATH="$PATH:/usr/local/ldc2-1.36.0-beta1-linux-x86_64/bin"
 RUN wget https://github.com/Neat-Lang/neat/releases/download/v0.5.2/neat-v0.5.2-llvm.tar.xz
 RUN tar -C /home/builduser -xvf neat-v0.5.2-llvm.tar.xz && rm neat-v0.5.2-llvm.tar.xz
 
-# neat build expects clang-15 to be in /usr/lib/llvm/15/bin/
-RUN mkdir -p /usr/lib/llvm/15/bin/ && cp /usr/sbin/*-15 /usr/lib/llvm/15/bin/
-RUN sh -c 'for file in /usr/lib/llvm/15/bin/*-15; do mv "$file" "${file%-15}"; done'
+# neat build expects clang-15 and llvm bins to be in /usr/lib/llvm/15/bin/
+RUN mkdir -p /usr/lib/llvm/15/bin/ && cp /usr/sbin/llvm* /usr/lib/llvm/15/bin/
 RUN cp /usr/sbin/clang-16 /usr/sbin/clang-15
 
 RUN cd /home/builduser/neat-v0.5.2-llvm && ./build.sh
@@ -130,6 +129,9 @@ RUN su -c "git clone https://aur.archlinux.org/inko.git /home/builduser/inko" bu
 RUN su -c "rustup default stable && cd /home/builduser/inko && makepkg -si --noconfirm --needed --noprogressbar" builduser
 
 RUN rm *.tar.* && rm /home/builduser/*.zip && rm /home/builduser/*.tar.*
+
+# for common lisp
+RUN cd /tmp && wget https://beta.quicklisp.org/quicklisp.lisp && echo "(load \"quicklisp.lisp\") (quicklisp-quickstart:install :path \"/opt/quicklisp\") (ql::without-prompting (ql:add-to-init-file))" | sbcl && cp $HOME/.sbclrc /etc/sbclrc
 
 RUN mkdir -p /results
 

@@ -1,20 +1,22 @@
-(declaim (optimize speed))
+(declaim (optimize (speed 3) (safety 1)))
 
 ;; Install/load json lib
 (ql:quickload :com.inuoe.jzon)
 
-;; Main programm
+;; Main program
 (in-package :cl-user)
-
 
 (defparameter *top-n* 5)
 
 (defmacro dotags ((tag post) &body body)
-  (sb-int:once-only ((post-n post))
-    `(sb-int:dovector (,tag (gethash "tags" ,post-n))
-       ,@body)))
+  (let ((post-n post)
+        (tags-n (gensym)))
+    `(let ((,tags-n (gethash "tags" ,post-n)))
+       (declare (type simple-vector ,tags-n))
+       (loop for ,tag across ,tags-n do (progn ,@body)))))
 
 (defun build-tag-map (posts)
+  (declare (type simple-vector posts))
   (let ((tag-map (make-hash-table :size 100 :test 'equal)))
     (dotimes (i (length posts))
       (dotags (tag (aref posts i))
@@ -23,7 +25,10 @@
 
 
 (defun all-related (i posts tag-map)
-  (let ((tagged-post-count (make-array (length posts) :initial-element 0 :element-type 'integer))
+  (declare (type simple-vector posts))
+  (let ((tagged-post-count (make-array (length posts)
+                                       :initial-element 0
+                                       :element-type 'fixnum))
         (post (aref posts i)))
     (dotags (tag post)
       (dolist (other-post-index (gethash tag tag-map))
@@ -32,8 +37,10 @@
     tagged-post-count))
 
 (defun top-related (tagged-post-count)
+  (declare (type (simple-array fixnum *) tagged-post-count))
   (let ((local-min 0)
         (top-posts (make-list *top-n* :initial-element '(0 . 0))))
+    (declare (type fixnum local-min))
     (dotimes (index (length tagged-post-count))
       (let ((count (aref tagged-post-count index)))
         (when (> count local-min)
@@ -61,7 +68,8 @@
     all-related-posts))
 
 (defun now ()
-  (/ (get-internal-real-time) internal-time-units-per-second))
+  (float (/ (get-internal-real-time)
+            internal-time-units-per-second)))
 
 (defun main ()
   (let* ((t1 (now))
@@ -73,5 +81,5 @@
     (com.inuoe.jzon:stringify related-posts :stream #p"../related-cl.json")
     (format t "Processing time total: ~2$ s~%" (- (now) t1))))
 
-;; Compile and save executible
+;; Compile and save executable
 (save-lisp-and-die "related" :toplevel #'main :executable t :save-runtime-options t)
