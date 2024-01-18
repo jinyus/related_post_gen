@@ -63,8 +63,8 @@ docker run -e TEST_NAME=all -it --rm databench
 
 ##### VM Specs ( AWS c7a.xlarge-4vCPU-8GB-RAM-Ubuntu 22.04 )
 
-| Language         | Time (5k posts)                       | 20k posts                              | 60k posts                           | Total     |
-| ---------------- | ------------------------------------- | -------------------------------------- | ----------------------------------- | --------- |
+| Language           | Time (5k posts)                      | 20k posts                              | 60k posts                              | Total     |
+| ------------------ | ------------------------------------ | -------------------------------------- | -------------------------------------- | --------- |
 | _Julia HO_[^1] | 5.80 ms | 31.67 ms | 86.33 ms | 123.80 ms |
 | D (v2) | 11.58 ms | $\textsf{\color{lightgreen}120.52 ms}$ | $\textsf{\color{lightgreen}948.58 ms}$ | 1.08 s |
 | Rust | $\textsf{\color{lightgreen}9.62 ms}$ | 122.62 ms | 1.04 s | 1.18 s |
@@ -86,6 +86,7 @@ docker run -e TEST_NAME=all -it --rm databench
 | JS (Bun) | 66.70 ms | 768.67 ms | 6.61 s | 7.45 s |
 | LuaJIT | 61.65 ms | 795.21 ms | 6.65 s | 7.50 s |
 | Pypy | 72.80 ms | 817.83 ms | 6.95 s | 7.84 s |
+| Common Lisp (SBCL) | 214.00 ms | 1.18 s | 8.99 s | 10.39 s |
 | JS (Node) | 85.00 ms | 1.07 s | 9.33 s | 10.48 s |
 | JS (Deno) | 96.20 ms | 1.20 s | 13.04 s | 14.33 s |
 | Dart AOT | 94.20 ms | 1.46 s | 13.10 s | 14.66 s |
@@ -94,13 +95,13 @@ docker run -e TEST_NAME=all -it --rm databench
 | Racket | 113.07 ms | 1.64 s | 13.64 s | 15.40 s |
 | Typed Racket | 113.61 ms | 1.65 s | 13.84 s | 15.61 s |
 | Lobster (C++) | 131.12 ms | 2.04 s | 18.35 s | 20.52 s |
-| Common Lisp (SBCL) | 211.50 ms | 214.00 ms | 1.19 s | 20.86 s |
 | Scala Native | 245.80 ms | 3.00 s | 24.86 s | 28.11 s |
 | LuaJIT (JIT OFF) | 475.15 ms | 7.51 s | 70.89 s | 78.88 s |
 | Erlang | 648.32 ms | 10.28 s | 93.11 s | 104.04 s |
 | Lua | 822.39 ms | 11.89 s | 106.24 s | 118.96 s |
 | Python | 1.01 s | 15.79 s | 149.27 s | 166.07 s |
 | Lobster (JIT) | 1.30 s | 21.01 s | 189.65 s | 211.96 s |
+| Inko[^2] | 6.29 s | 98.05 s | 875.39 s | 979.73 s |
 | Numpy | 216.51 ms | 3.27 s | OOM | N/A |
 
 ### Multicore Results

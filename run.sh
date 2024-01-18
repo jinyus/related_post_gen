@@ -970,7 +970,6 @@ elif [ "$first_arg" = "all" ]; then
         run_lua || echo -e "\n" &&
         run_ocaml || echo -e "\n" &&
         run_erlang || echo -e "\n" &&
-        run_common_lisp_sbcl || echo -e "\n" &&
         # run_ruby || echo -e "\n" && # too slow
         # run_dascript || echo -e "\n" && #not installed in docker
         run_racket || echo -e "\n" &&
