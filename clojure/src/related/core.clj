@@ -33,6 +33,27 @@
     (aset tagged-post-count idx
           (inc (aget tagged-post-count idx)))))
 
+(defn- get-top-5 [^longs tagged-post-count]
+  (let [top5 (long-array 10)
+        n (alength tagged-post-count)]
+    (loop [i (long 0)
+           min-tags (long 0)]
+      (if (< i n)
+        (let [cnt (aget tagged-post-count i)]
+          (if (> cnt min-tags)
+            (let [up (loop [upper-bound (long 6)]
+                       (if-not (and (>= upper-bound 0)
+                                    (> cnt (aget top5 upper-bound)))
+                         upper-bound
+                         (recur (- upper-bound 2))))]
+              (if (< up 6)
+                (System/arraycopy top5 (+ 2 up) top5 (+ 4 up) (- 6 up)))
+              (aset top5 (+ up 2) cnt)
+              (aset top5 (+ up 3) i)
+              (recur (inc i) (aget top5 8)))
+            (recur (inc i) min-tags)))))
+    top5))
+
 (defn get-all-related-posts [^"[Lrelated.core.Post;" posts]
   (let [n (alength posts)
 
@@ -43,34 +64,18 @@
         results ^"[Lrelated.core.PostRelated;" (make-array PostRelated n)
 
         _ (dotimes [post-idx n]
-            (let [^Post post (aget posts post-idx)
-                  top5 (long-array 10)]
+            (let [^Post post (aget posts post-idx)]
               (java.util.Arrays/fill tagged-post-count 0)
 
               (count-tags post tagged-post-count tag-map)
 
               (aset tagged-post-count post-idx 0)
 
-              (loop [i (long 0)
-                     min-tags (long 0)]
-                (if (< i n)
-                  (let [cnt (aget tagged-post-count i)]
-                    (if (> cnt min-tags)
-                      (let [up (loop [upper-bound (long 6)]
-                                 (if-not (and (>= upper-bound 0)
-                                              (> cnt (aget top5 upper-bound)))
-                                   upper-bound
-                                   (recur (- upper-bound 2))))]
-                        (if (< up 6)
-                          (System/arraycopy top5 (+ 2 up) top5 (+ 4 up) (- 6 up)))
-                        (aset top5 (+ up 2) cnt)
-                        (aset top5 (+ up 3) i)
-                        (recur (inc i) (aget top5 8)))
-                      (recur (inc i) min-tags)))))
-              (aset results post-idx
-                    (PostRelated. (._id post) (.tags post)
-                                  (->> (range 1 10 2)
-                                       (mapv #(aget posts (aget top5 %))))))))]
+              (let [top5 (get-top-5 tagged-post-count)]
+                (aset results post-idx
+                      (PostRelated. (._id post) (.tags post)
+                                    (->> (range 1 10 2)
+                                         (mapv #(aget posts (aget ^longs top5 %)))))))))]
     results))
 
 (defn -main []
