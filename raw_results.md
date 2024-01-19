@@ -1209,6 +1209,29 @@ Numba Concurrent:
     Processing time (w/o IO): 19.6ms
     total: 1.95s memory: 180204k
 
+Java Concurrent (JIT):
+
+    Processing time (w/o IO): 59 ms
+    total: 0.20s memory: 63060k
+    Processing time (w/o IO): 59 ms
+    total: 0.20s memory: 63176k
+    Processing time (w/o IO): 54 ms
+    total: 0.19s memory: 63744k
+    Processing time (w/o IO): 56 ms
+    total: 0.20s memory: 63872k
+    Processing time (w/o IO): 68 ms
+    total: 0.21s memory: 63060k
+    Processing time (w/o IO): 61 ms
+    total: 0.20s memory: 63748k
+    Processing time (w/o IO): 53 ms
+    total: 0.19s memory: 63776k
+    Processing time (w/o IO): 60 ms
+    total: 0.20s memory: 63204k
+    Processing time (w/o IO): 53 ms
+    total: 0.19s memory: 63340k
+    Processing time (w/o IO): 57 ms
+    total: 0.20s memory: 63348k
+
 Go:
 
     Processing time (w/o IO): 241.31599ms
@@ -1663,6 +1686,15 @@ Numba Concurrent:
     total: 2.28s memory: 219384k
     Processing time (w/o IO): 173.2ms
     total: 2.27s memory: 219272k
+
+Java Concurrent (JIT):
+
+    Processing time (w/o IO): 182 ms
+    total: 0.40s memory: 90140k
+    Processing time (w/o IO): 188 ms
+    total: 0.41s memory: 90912k
+    Processing time (w/o IO): 180 ms
+    total: 0.40s memory: 90228k
 
 Go:
 
@@ -2150,3 +2182,12 @@ Numba Concurrent:
     total: 3.91s memory: 333240k
     Processing time (w/o IO): 1.283s
     total: 3.97s memory: 332384k
+
+Java Concurrent (JIT):
+
+    Processing time (w/o IO): 1147 ms
+    total: 1.67s memory: 127116k
+    Processing time (w/o IO): 1146 ms
+    total: 1.70s memory: 126604k
+    Processing time (w/o IO): 1151 ms
+    total: 1.65s memory: 128192k

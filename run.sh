@@ -936,6 +936,7 @@ elif [ "$first_arg" = "all" ]; then
         run_python || echo -e "\n" &&
         run_pypy || echo -e "\n" &&
         run_python_np || echo -e "\n" &&
+        numba_con || echo -e "\n" &&
 
         # run_python_numba || echo -e "\n" && break rules but very interesting
         run_crystal || echo -e "\n" &&
@@ -953,6 +954,7 @@ elif [ "$first_arg" = "all" ]; then
         run_js "bun" || echo -e "\n" &&
         run_js "deno" || echo -e "\n" &&
         run_java || echo -e "\n" &&
+        run_java_con || echo -e "\n" &&
         run_java_graal || echo -e "\n" &&
         run_java_graal_con || echo -e "\n" &&
         run_nim || echo -e "\n" &&
