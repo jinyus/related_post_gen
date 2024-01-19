@@ -960,9 +960,9 @@ elif [ "$first_arg" = "all" ]; then
         run_nim || echo -e "\n" &&
         run_nim_con || echo -e "\n" &&
         run_fsharp || echo -e "\n" &&
+        run_fsharp_aot || echo -e "\n" &&
         run_fsharp_con || echo -e "\n" &&
         run_fsharp_con_aot || echo -e "\n" &&
-        run_fsharp_aot || echo -e "\n" &&
         run_csharp || echo -e "\n" &&
         run_csharp_aot || echo -e "\n" &&
         run_csharp_con || echo -e "\n" &&

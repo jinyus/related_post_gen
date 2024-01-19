@@ -711,6 +711,52 @@ Nim Concurrent:
     Processing time (w/o IO): 5.419ms
     total: 0.02s memory: 12928k
 
+F# (JIT):
+
+    Processing time (w/o IO): 25.4036ms
+    total: 0.57s memory: 165884k
+    Processing time (w/o IO): 25.051ms
+    total: 0.54s memory: 165784k
+    Processing time (w/o IO): 25.4115ms
+    total: 0.56s memory: 165592k
+    Processing time (w/o IO): 25.3601ms
+    total: 0.56s memory: 166016k
+    Processing time (w/o IO): 25.2379ms
+    total: 0.55s memory: 166124k
+    Processing time (w/o IO): 25.3404ms
+    total: 0.55s memory: 165800k
+    Processing time (w/o IO): 25.2968ms
+    total: 0.55s memory: 166104k
+    Processing time (w/o IO): 25.1799ms
+    total: 0.55s memory: 165760k
+    Processing time (w/o IO): 25.3519ms
+    total: 0.54s memory: 165724k
+    Processing time (w/o IO): 26.6829ms
+    total: 0.56s memory: 165900k
+
+F# (AOT):
+
+    Processing time (w/o IO): 24.7234ms
+    total: 0.52s memory: 132460k
+    Processing time (w/o IO): 24.413ms
+    total: 0.52s memory: 133356k
+    Processing time (w/o IO): 24.5977ms
+    total: 0.53s memory: 133024k
+    Processing time (w/o IO): 24.5359ms
+    total: 0.52s memory: 133028k
+    Processing time (w/o IO): 24.546ms
+    total: 0.52s memory: 133024k
+    Processing time (w/o IO): 24.4469ms
+    total: 0.52s memory: 132988k
+    Processing time (w/o IO): 24.4763ms
+    total: 0.52s memory: 133008k
+    Processing time (w/o IO): 24.4589ms
+    total: 0.52s memory: 133028k
+    Processing time (w/o IO): 24.451ms
+    total: 0.52s memory: 133100k
+    Processing time (w/o IO): 24.861ms
+    total: 0.52s memory: 132820k
+
 F# Concurrent:
 
     Processing time (w/o IO): 7ms
@@ -1507,6 +1553,24 @@ Nim Concurrent:
     Processing time (w/o IO): 67.32299999999999ms
     total: 0.17s memory: 53120k
 
+F# (JIT):
+
+        Processing time (w/o IO): 475.1756ms
+        total: 2.45s memory: 491840k
+        Processing time (w/o IO): 370.8634ms
+        total: 2.25s memory: 492468k
+        Processing time (w/o IO): 374.3037ms
+        total: 2.25s memory: 491764k
+
+F# (AOT):
+
+    Processing time (w/o IO): 361.2921ms
+    total: 2.63s memory: 527688k
+    Processing time (w/o IO): 362.9296ms
+    total: 2.63s memory: 527556k
+    Processing time (w/o IO): 363.7582ms
+    total: 2.64s memory: 527604k
+
 F# Concurrent:
 
     Processing time (w/o IO): 106ms
@@ -2002,6 +2066,24 @@ Nim Concurrent:
     total: 0.92s memory: 174720k
     Processing time (w/o IO): 569.973ms
     total: 0.92s memory: 174976k
+
+F# (JIT):
+
+    Processing time (w/o IO): 4196.8648ms
+    total: 12.12s memory: 1044840k
+    Processing time (w/o IO): 3218.6249ms
+    total: 10.19s memory: 1043468k
+    Processing time (w/o IO): 3229.8212ms
+    total: 10.21s memory: 1042120k
+
+F# (AOT):
+
+    Processing time (w/o IO): 3210.9828ms
+    total: 11.90s memory: 960524k
+    Processing time (w/o IO): 3201.5754ms
+    total: 11.93s memory: 958132k
+    Processing time (w/o IO): 3208.1285ms
+    total: 11.89s memory: 958308k
 
 F# Concurrent:
 
