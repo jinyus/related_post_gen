@@ -1186,6 +1186,29 @@ Ruby:
     Processing time (w/o IO): 2755ms
     total: 2.84s memory: 36056k
 
+Numba Concurrent:
+
+    Processing time (w/o IO): 19.5ms
+    total: 1.97s memory: 181232k
+    Processing time (w/o IO): 19.6ms
+    total: 1.95s memory: 181108k
+    Processing time (w/o IO): 19.9ms
+    total: 1.96s memory: 180972k
+    Processing time (w/o IO): 19.6ms
+    total: 1.96s memory: 180920k
+    Processing time (w/o IO): 19.6ms
+    total: 1.97s memory: 181092k
+    Processing time (w/o IO): 19.9ms
+    total: 1.95s memory: 180840k
+    Processing time (w/o IO): 19.6ms
+    total: 1.97s memory: 180708k
+    Processing time (w/o IO): 19.7ms
+    total: 1.97s memory: 180572k
+    Processing time (w/o IO): 19.7ms
+    total: 1.96s memory: 180720k
+    Processing time (w/o IO): 19.6ms
+    total: 1.95s memory: 180204k
+
 Go:
 
     Processing time (w/o IO): 241.31599ms
@@ -1633,6 +1656,13 @@ Ruby:
     total: 35.44s memory: 77696k
     Processing time (w/o IO): 35145ms
     total: 35.38s memory: 77696k
+
+Numba Concurrent:
+
+    Processing time (w/o IO): 173.2ms
+    total: 2.28s memory: 219384k
+    Processing time (w/o IO): 173.2ms
+    total: 2.27s memory: 219272k
 
 Go:
 
@@ -2113,3 +2143,10 @@ Ruby:
     total: 317.42s memory: 189184k
     Processing time (w/o IO): 316269ms
     total: 316.88s memory: 189184k
+
+Numba Concurrent:
+
+    Processing time (w/o IO): 1.281s
+    total: 3.91s memory: 333240k
+    Processing time (w/o IO): 1.283s
+    total: 3.97s memory: 332384k

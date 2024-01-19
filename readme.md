@@ -121,6 +121,7 @@ docker run -e TEST_NAME=all -it --rm databench
 | F# Concurrent | 8.50 ms | 99.67 ms | 875.67 ms | 983.83 ms |
 | Swift Concurrent | 10.69 ms | 119.00 ms | 986.94 ms | 1.12 s |
 | F# Concurrent (AOT) | 8.50 ms | 128.33 ms | 1.13 s | 1.27 s |
+| Numba Concurrent | 19.67 ms | 173.20 ms | 1.28 s | 1.47 s |
 | Java (GraalVM) Concurrent | 12.00 ms | 182.33 ms | 1.50 s | 1.69 s |
 
 <details>
