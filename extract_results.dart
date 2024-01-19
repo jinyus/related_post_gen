@@ -4,7 +4,8 @@ import 'dart:io';
 
 final langRegex = RegExp(r'^[a-zA-Z]');
 final colonOrNewLineRegex = RegExp(r'[:\n]');
-final pTimeRegex = RegExp(r'Processing time[^0-9]*([\d.]+)\s?(ms|s|milliseconds)');
+final pTimeRegex =
+    RegExp(r'Processing time \(w/o IO\)[^0-9]*([\d.]+)\s?(ms|s|milliseconds)');
 final tTimeRegex = RegExp(r'Time[^0-9]*([\d.]+ (ms|s))');
 final memUsageRegex = RegExp(r'memory: (\d+)k');
 
@@ -76,7 +77,8 @@ void main(List<String> args) {
     final processTimeMatch = pTimeRegex.firstMatch(line);
 
     if (processTimeMatch != null) {
-      final unit = processTimeMatch.group(2)!.replaceFirst('milliseconds', 'ms');
+      final unit =
+          processTimeMatch.group(2)!.replaceFirst('milliseconds', 'ms');
       final time = double.parse(processTimeMatch.group(1)!.trim());
       currentScore.addTime(time, unit);
       continue;
@@ -109,25 +111,34 @@ void main(List<String> args) {
     sortedScores.forEach(print);
   }
 
-  final multiCoreScores = sortedScores.where((s) => s.first.name.contains('Concurrent')).toList();
+  final multiCoreScores =
+      sortedScores.where((s) => s.first.name.contains('Concurrent')).toList();
 
   sortedScores..removeWhere((s) => s.first.name.contains('Concurrent'));
 
   if (sortedScores.first.length != 3) {
     sortedScores.forEach(print);
     sortedMemScores.forEach(print);
-    print('${file.readAsStringSync()}\n\nEnough scores not found. Need 3 scores for each language to update readme.md');
+    print(
+        '${file.readAsStringSync()}\n\nEnough scores not found. Need 3 scores for each language to update readme.md');
     return;
   }
 
-  final scoresWithoutJulia = sortedScores.where((s) => s.first.name != 'Julia HO').toList();
+  final scoresWithoutJulia =
+      sortedScores.where((s) => s.first.name != 'Julia HO').toList();
   // caclulate min times
-  min5k = scoresWithoutJulia.fold(min5k, (min, sc) => sc[0].avgTimeMS() < min ? sc[0].avgTimeMS() : min);
-  min20k = scoresWithoutJulia.fold(min20k, (min, sc) => sc[1].avgTimeMS() < min ? sc[1].avgTimeMS() : min);
-  min60k = scoresWithoutJulia.fold(min60k, (min, sc) => sc[2].avgTimeMS() < min ? sc[2].avgTimeMS() : min);
-  con_min5k = multiCoreScores.fold(con_min5k, (min, sc) => sc[0].avgTimeMS() < min ? sc[0].avgTimeMS() : min);
-  con_min20k = multiCoreScores.fold(con_min20k, (min, sc) => sc[1].avgTimeMS() < min ? sc[1].avgTimeMS() : min);
-  con_min60k = multiCoreScores.fold(con_min60k, (min, sc) => sc[2].avgTimeMS() < min ? sc[2].avgTimeMS() : min);
+  min5k = scoresWithoutJulia.fold(
+      min5k, (min, sc) => sc[0].avgTimeMS() < min ? sc[0].avgTimeMS() : min);
+  min20k = scoresWithoutJulia.fold(
+      min20k, (min, sc) => sc[1].avgTimeMS() < min ? sc[1].avgTimeMS() : min);
+  min60k = scoresWithoutJulia.fold(
+      min60k, (min, sc) => sc[2].avgTimeMS() < min ? sc[2].avgTimeMS() : min);
+  con_min5k = multiCoreScores.fold(con_min5k,
+      (min, sc) => sc[0].avgTimeMS() < min ? sc[0].avgTimeMS() : min);
+  con_min20k = multiCoreScores.fold(con_min20k,
+      (min, sc) => sc[1].avgTimeMS() < min ? sc[1].avgTimeMS() : min);
+  con_min60k = multiCoreScores.fold(con_min60k,
+      (min, sc) => sc[2].avgTimeMS() < min ? sc[2].avgTimeMS() : min);
 
   final readmePathList = file.absolute.path.split(Platform.pathSeparator)
     ..removeLast()
@@ -157,8 +168,10 @@ void main(List<String> args) {
         shouldReplace = false;
         replaced = true;
 
-        final sCoreLines = sortedScores.map((e) => e.toRowString()).join('\n') + '\n\n';
-        final mCoreLines = multiCoreScores.map((e) => e.toRowString()).join('\n') + '\n\n';
+        final sCoreLines =
+            sortedScores.map((e) => e.toRowString()).join('\n') + '\n\n';
+        final mCoreLines =
+            multiCoreScores.map((e) => e.toRowString()).join('\n') + '\n\n';
         // final memUsageLines = sortedMemScores.map((e) => e.toRowString(true)).join('\n') + '\n\n';
 
         // add back the line with detail opening tag
@@ -186,13 +199,15 @@ class Score {
     // if (processingTimes.isEmpty) throw Exception('No processing time found for $name');
     if (processingTimes.isEmpty) return double.maxFinite;
 
-    return processingTimes.fold(0.0, (total, el) => el.millis + total) / processingTimes.length;
+    return processingTimes.fold(0.0, (total, el) => el.millis + total) /
+        processingTimes.length;
   }
 
   double avgMemUsage() {
     if (memoryUsages.isEmpty) return double.maxFinite;
 
-    return memoryUsages.fold(0, (total, el) => el + total) / memoryUsages.length;
+    return memoryUsages.fold(0, (total, el) => el + total) /
+        memoryUsages.length;
   }
 
   String avgTimeString() {
