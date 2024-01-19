@@ -95,9 +95,10 @@
 (defun main ()
   (let* ((t1 (now))
          (raw-posts (map 'vector
-                         (lambda (p) (make-post :id (gethash "_id" p)
-                                           :tags (gethash "tags" p)
-                                           :title (gethash "title" p)))
+                         (lambda (p)
+                           (make-post :id (gethash "_id" p)
+                                      :tags (gethash "tags" p)
+                                      :title (gethash "title" p)))
                          (the simple-vector
                               (com.inuoe.jzon:parse #p"../posts.json"))))
          (t2 (now))
