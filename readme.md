@@ -89,7 +89,7 @@ docker run -e TEST_NAME=all -it --rm databench
 | LuaJIT | 61.65 ms | 795.21 ms | 6.65 s | 7.50 s |
 | Pypy | 72.80 ms | 817.83 ms | 6.95 s | 7.84 s |
 | Clojure | 96.90 ms | 1.08 s | 8.89 s | 10.06 s |
-| Common Lisp (SBCL) | 214.00 ms | 1.18 s | 8.99 s | 10.39 s |
+| Common Lisp (SBCL) | 169.50 ms | 1.17 s | 8.75 s | 10.09 s |
 | JS (Node) | 85.00 ms | 1.07 s | 9.33 s | 10.48 s |
 | JS (Deno) | 96.20 ms | 1.20 s | 13.04 s | 14.33 s |
 | Dart AOT | 94.20 ms | 1.46 s | 13.10 s | 14.66 s |

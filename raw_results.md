@@ -1155,36 +1155,36 @@ Neat:
 
 Common Lisp (SBCL):
 
-    Processing time (w/o IO): 0.17 s
-    Processing time total: 0.26 s
-    total: 0.27s memory: 107392k
-    Processing time (w/o IO): 0.16 s
-    Processing time total: 0.26 s
-    total: 0.27s memory: 107392k
-    Processing time (w/o IO): 0.17 s
-    Processing time total: 0.26 s
-    total: 0.27s memory: 107648k
-    Processing time (w/o IO): 0.17 s
-    Processing time total: 0.26 s
-    total: 0.26s memory: 107392k
-    Processing time (w/o IO): 0.17 s
-    Processing time total: 0.26 s
-    total: 0.27s memory: 107392k
-    Processing time (w/o IO): 0.17 s
-    Processing time total: 0.26 s
-    total: 0.27s memory: 107392k
-    Processing time (w/o IO): 0.17 s
-    Processing time total: 0.26 s
-    total: 0.26s memory: 107136k
-    Processing time (w/o IO): 0.17 s
-    Processing time total: 0.26 s
-    total: 0.26s memory: 107136k
-    Processing time (w/o IO): 0.16 s
-    Processing time total: 0.26 s
-    total: 0.26s memory: 107136k
-    Processing time (w/o IO): 0.17 s
-    Processing time total: 0.26 s
-    total: 0.27s memory: 107392k
+    Processing time (w/o IO): 0.12 s
+    Processing time total: 0.22 s
+    total: 0.22s memory: 122240k
+    Processing time (w/o IO): 0.12 s
+    Processing time total: 0.22 s
+    total: 0.22s memory: 122240k
+    Processing time (w/o IO): 0.12 s
+    Processing time total: 0.22 s
+    total: 0.22s memory: 122112k
+    Processing time (w/o IO): 0.12 s
+    Processing time total: 0.22 s
+    total: 0.22s memory: 122368k
+    Processing time (w/o IO): 0.12 s
+    Processing time total: 0.22 s
+    total: 0.22s memory: 122368k
+    Processing time (w/o IO): 0.12 s
+    Processing time total: 0.21 s
+    total: 0.22s memory: 122112k
+    Processing time (w/o IO): 0.12 s
+    Processing time total: 0.22 s
+    total: 0.22s memory: 122368k
+    Processing time (w/o IO): 0.12 s
+    Processing time total: 0.22 s
+    total: 0.22s memory: 122240k
+    Processing time (w/o IO): 0.12 s
+    Processing time total: 0.22 s
+    total: 0.22s memory: 122240k
+    Processing time (w/o IO): 0.12 s
+    Processing time total: 0.22 s
+    total: 0.22s memory: 122240k
 
 Clojure:
 
@@ -1721,12 +1721,12 @@ Neat:
 
 Common Lisp (SBCL):
 
-    Processing time (w/o IO): 1.00 s
-    Processing time total: 1.37 s
-    total: 1.37s memory: 116780k
-    Processing time (w/o IO): 1.00 s
+    Processing time (w/o IO): 0.97 s
     Processing time total: 1.36 s
-    total: 1.37s memory: 116664k
+    total: 1.37s memory: 152856k
+    Processing time (w/o IO): 0.98 s
+    Processing time total: 1.37 s
+    total: 1.38s memory: 152600k
 
 Clojure:
 
@@ -2235,12 +2235,12 @@ Neat:
 
 Common Lisp (SBCL):
 
-    Processing time (w/o IO): 8.37 s
-    Processing time total: 9.63 s
-    total: 9.64s memory: 187492k
-    Processing time (w/o IO): 8.38 s
-    Processing time total: 9.60 s
-    total: 9.61s memory: 187488k
+    Processing time (w/o IO): 8.07 s
+    Processing time total: 9.40 s
+    total: 9.42s memory: 353244k
+    Processing time (w/o IO): 8.09 s
+    Processing time total: 9.44 s
+    total: 9.46s memory: 353240k
 
 Clojure:
 
