@@ -8,10 +8,16 @@
 
 (defparameter *top-n* 5)
 
+(defstruct post
+  (id nil :type simple-string)
+  (tags nil :type simple-vector)
+  (title nil :type simple-string))
+
 (defmacro dotags ((tag post) &body body)
   (let ((post-n post)
         (tags-n (gensym)))
-    `(let ((,tags-n (gethash "tags" ,post-n)))
+    `(let ((,tags-n
+             (slot-value ,post-n 'tags)))
        (declare (type simple-vector ,tags-n))
        (loop for ,tag across ,tags-n do (progn ,@body)))))
 
@@ -22,7 +28,6 @@
       (dotags (tag (aref posts i))
         (setf (gethash tag tag-map) (cons i (gethash tag tag-map)))))
     tag-map))
-
 
 (defun all-related (i posts tag-map)
   (declare (type simple-vector posts))
@@ -50,9 +55,11 @@
 
 (defun make-related-post (post related)
   (let ((related-post (make-hash-table :test 'equal)))
-    (setf (gethash "_id" related-post) (gethash "_id" post))
-    (setf (gethash "tags" related-post) (gethash "tags" post))
-    (setf (gethash "related" related-post) related)
+    (setf (gethash "_id" related-post) (slot-value post 'id)
+
+          (gethash "tags" related-post) (slot-value post 'tags)
+
+          (gethash "related" related-post) related)
     related-post))
 
 (defun add-related (posts)
@@ -71,15 +78,37 @@
   (float (/ (get-internal-real-time)
             internal-time-units-per-second)))
 
+(defun prepare-for-output (data)
+  (declare (type simple-vector data))
+  (map 'vector (lambda (rel)
+                 (setf (gethash "related" rel)
+                       (mapcar (lambda (p)
+                                 (let ((h (make-hash-table :test 'equal :size 3)))
+                                   (setf (gethash "_id" h) (post-id p)
+                                         (gethash "tags" h) (post-tags p)
+                                         (gethash "title" h) (post-title p))
+                                   h))
+                               (gethash "related" rel)))
+                 rel)
+       data))
+
 (defun main ()
   (let* ((t1 (now))
-         (raw-posts (com.inuoe.jzon:parse #p"../posts.json"))
+         (raw-posts (map 'vector
+                         (lambda (p) (make-post :id (gethash "_id" p)
+                                           :tags (gethash "tags" p)
+                                           :title (gethash "title" p)))
+                         (the simple-vector
+                              (com.inuoe.jzon:parse #p"../posts.json"))))
          (t2 (now))
          (related-posts (add-related raw-posts))
          (t3 (now)))
     (format t "Processing time (w/o IO): ~2$ s~%" (- t3 t2))
-    (com.inuoe.jzon:stringify related-posts :stream #p"../related-cl.json")
-    (format t "Processing time total: ~2$ s~%" (- (now) t1))))
+    (com.inuoe.jzon:stringify
+     (prepare-for-output related-posts)
+     :stream #p"../related-cl.json")
+    (format t "Processing time total: ~2$ s~%" (- (now) t1))
+    ))
 
 ;; Compile and save executable
 (save-lisp-and-die "related" :toplevel #'main :executable t :save-runtime-options t)
