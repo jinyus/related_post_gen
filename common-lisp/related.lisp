@@ -93,23 +93,20 @@
        data))
 
 (defun main ()
-  (let* ((t1 (now))
-         (raw-posts (map 'vector
+  (let* ((raw-posts (map 'vector
                          (lambda (p)
                            (make-post :id (gethash "_id" p)
                                       :tags (gethash "tags" p)
                                       :title (gethash "title" p)))
                          (the simple-vector
                               (com.inuoe.jzon:parse #p"../posts.json"))))
-         (t2 (now))
+         (t1 (now))
          (related-posts (add-related raw-posts))
-         (t3 (now)))
-    (format t "Processing time (w/o IO): ~2$ s~%" (- t3 t2))
+         (t2 (now)))
+    (format t "Processing time (w/o IO): ~2$ s~%" (- t2 t1))
     (com.inuoe.jzon:stringify
      (prepare-for-output related-posts)
-     :stream #p"../related-cl.json")
-    (format t "Processing time total: ~2$ s~%" (- (now) t1))
-    ))
+     :stream #p"../related-cl.json")))
 
 ;; Compile and save executable
 (save-lisp-and-die "related" :toplevel #'main :executable t :save-runtime-options t)
