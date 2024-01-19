@@ -1163,6 +1163,29 @@ Clojure:
     Processing time (w/o IO): 99ms
     total: 0.87s memory: 123976k
 
+Ruby:
+
+    Processing time (w/o IO): 2239ms
+    total: 2.40s memory: 35924k
+    Processing time (w/o IO): 2242ms
+    total: 2.33s memory: 35632k
+    Processing time (w/o IO): 2234ms
+    total: 2.32s memory: 35864k
+    Processing time (w/o IO): 2240ms
+    total: 2.32s memory: 35920k
+    Processing time (w/o IO): 2230ms
+    total: 2.32s memory: 35752k
+    Processing time (w/o IO): 2227ms
+    total: 2.31s memory: 35760k
+    Processing time (w/o IO): 2227ms
+    total: 2.31s memory: 35876k
+    Processing time (w/o IO): 2229ms
+    total: 2.31s memory: 36056k
+    Processing time (w/o IO): 2255ms
+    total: 2.34s memory: 35872k
+    Processing time (w/o IO): 2755ms
+    total: 2.84s memory: 36056k
+
 Go:
 
     Processing time (w/o IO): 241.31599ms
@@ -1603,6 +1626,13 @@ Clojure:
     total: 3.02s memory: 211436k
     Processing time (w/o IO): 1092ms
     total: 3.08s memory: 205400k
+
+Ruby:
+
+    Processing time (w/o IO): 35211ms
+    total: 35.44s memory: 77696k
+    Processing time (w/o IO): 35145ms
+    total: 35.38s memory: 77696k
 
 Go:
 
@@ -2076,3 +2106,10 @@ Clojure:
     total: 19.31s memory: 335032k
     Processing time (w/o IO): 8736ms
     total: 18.63s memory: 338596k
+
+Ruby:
+
+    Processing time (w/o IO): 316806ms
+    total: 317.42s memory: 189184k
+    Processing time (w/o IO): 316269ms
+    total: 316.88s memory: 189184k
