@@ -85,7 +85,8 @@
                                                    (class (make-array Post 0)))
 
           ;; warmup
-          _ (do (get-all-related-posts posts)
+          _ (do (get-all-related-posts
+                 (java.util.Arrays/copyOfRange posts 0 (min 5000 (alength posts))))
                 (System/gc))
           ;; ------
 
