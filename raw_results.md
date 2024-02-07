@@ -115,49 +115,49 @@ D:
 
 D (v2):
 
-    Processing time (w/o IO): 11.508ms
-    total: 0.05s memory: 12160k
-    Processing time (w/o IO): 11.654ms
+    Processing time (w/o IO): 11.533ms
+    total: 0.06s memory: 12416k
+    Processing time (w/o IO): 11.405ms
+    total: 0.06s memory: 12032k
+    Processing time (w/o IO): 11.464ms
+    total: 0.06s memory: 12160k
+    Processing time (w/o IO): 11.447ms
     total: 0.06s memory: 12288k
-    Processing time (w/o IO): 11.819ms
-    total: 0.06s memory: 12288k
+    Processing time (w/o IO): 11.487ms
+    total: 0.06s memory: 12160k
+    Processing time (w/o IO): 11.454ms
+    total: 0.06s memory: 12160k
+    Processing time (w/o IO): 11.411ms
+    total: 0.10s memory: 12288k
+    Processing time (w/o IO): 11.471ms
+    total: 0.10s memory: 12160k
     Processing time (w/o IO): 11.51ms
-    total: 0.06s memory: 12160k
-    Processing time (w/o IO): 11.567ms
-    total: 0.06s memory: 12160k
-    Processing time (w/o IO): 11.537ms
-    total: 0.06s memory: 12288k
-    Processing time (w/o IO): 11.465ms
-    total: 0.05s memory: 12160k
-    Processing time (w/o IO): 11.504ms
-    total: 0.06s memory: 11904k
-    Processing time (w/o IO): 11.693ms
-    total: 0.06s memory: 12160k
-    Processing time (w/o IO): 11.504ms
-    total: 0.06s memory: 12288k
+    total: 0.12s memory: 12288k
+    Processing time (w/o IO): 11.444ms
+    total: 0.10s memory: 12160k
 
 D Concurrent:
 
-    Processing time (w/o IO): 7.122ms
-    total: 0.05s memory: 12928k
-    Processing time (w/o IO): 7.117ms
-    total: 0.06s memory: 12800k
-    Processing time (w/o IO): 7.165ms
-    total: 0.06s memory: 12800k
-    Processing time (w/o IO): 7.12ms
+    Processing time (w/o IO): 7.127ms
     total: 0.05s memory: 12800k
-    Processing time (w/o IO): 7.1ms
+    Processing time (w/o IO): 7.123ms
+    total: 0.06s memory: 13056k
+    Processing time (w/o IO): 7.127ms
+    total: 0.06s memory: 12928k
+    Processing time (w/o IO): 7.039ms
     total: 0.05s memory: 12800k
-    Processing time (w/o IO): 7.073ms
+    Processing time (w/o IO): 7.114ms
     total: 0.05s memory: 12800k
-    Processing time (w/o IO): 7.108ms
-    total: 0.05s memory: 12672k
-    Processing time (w/o IO): 7.074ms
+    Processing time (w/o IO): 7.015ms
     total: 0.05s memory: 12800k
-    Processing time (w/o IO): 7.067ms
-    total: 0.05s memory: 13056k
-    Processing time (w/o IO): 7.092ms
-    total: 0.05s memory: 12672k
+    Processing time (w/o IO): 7.04ms
+    total: 0.07s memory: 12928k
+    Processing time (w/o IO): 7.085ms
+    total: 0.15s memory: 12928k
+    Processing time (w/o IO): 7.079ms
+    total: 0.10s memory: 12800k
+    Processing time (w/o IO): 7.106ms
+    total: 0.11s memory: 12800k
 
 C++:
 
@@ -1325,21 +1325,21 @@ D:
 
 D (v2):
 
-    Processing time (w/o IO): 120.448ms
-    total: 0.32s memory: 32000k
-    Processing time (w/o IO): 120.988ms
-    total: 0.33s memory: 31872k
-    Processing time (w/o IO): 120.112ms
-    total: 0.32s memory: 32128k
+    Processing time (w/o IO): 118.772ms
+    total: 0.44s memory: 32128k
+    Processing time (w/o IO): 118.722ms
+    total: 0.43s memory: 32128k
+    Processing time (w/o IO): 118.729ms
+    total: 0.47s memory: 32128k
 
 D Concurrent:
 
-    Processing time (w/o IO): 61.879ms
-    total: 0.27s memory: 44800k
-    Processing time (w/o IO): 61.46ms
-    total: 0.27s memory: 44928k
-    Processing time (w/o IO): 61.862ms
-    total: 0.27s memory: 44672k
+    Processing time (w/o IO): 61.94ms
+    total: 0.41s memory: 44800k
+    Processing time (w/o IO): 61.688ms
+    total: 0.41s memory: 44800k
+    Processing time (w/o IO): 61.756ms
+    total: 0.44s memory: 44928k
 
 C++:
 
@@ -1555,12 +1555,12 @@ Nim Concurrent:
 
 F# (JIT):
 
-        Processing time (w/o IO): 475.1756ms
-        total: 2.45s memory: 491840k
-        Processing time (w/o IO): 370.8634ms
-        total: 2.25s memory: 492468k
-        Processing time (w/o IO): 374.3037ms
-        total: 2.25s memory: 491764k
+    Processing time (w/o IO): 475.1756ms
+    total: 2.45s memory: 491840k
+    Processing time (w/o IO): 370.8634ms
+    total: 2.25s memory: 492468k
+    Processing time (w/o IO): 374.3037ms
+    total: 2.25s memory: 491764k
 
 F# (AOT):
 
@@ -1807,21 +1807,21 @@ D:
 
 D (v2):
 
-    Processing time (w/o IO): 948.477ms
-    total: 1.63s memory: 117936k
-    Processing time (w/o IO): 944.332ms
-    total: 1.64s memory: 117820k
-    Processing time (w/o IO): 952.936ms
-    total: 1.64s memory: 117948k
+    Processing time (w/o IO): 941.919ms
+    total: 1.66s memory: 117532k
+    Processing time (w/o IO): 943.948ms
+    total: 1.75s memory: 117660k
+    Processing time (w/o IO): 944.21ms
+    total: 2.26s memory: 117656k
 
 D Concurrent:
 
-    Processing time (w/o IO): 456.634ms
-    total: 1.15s memory: 117952k
-    Processing time (w/o IO): 451.331ms
-    total: 1.14s memory: 117952k
-    Processing time (w/o IO): 452.751ms
-    total: 1.16s memory: 117956k
+    Processing time (w/o IO): 452.382ms
+    total: 1.16s memory: 117932k
+    Processing time (w/o IO): 452.564ms
+    total: 1.54s memory: 125484k
+    Processing time (w/o IO): 452.709ms
+    total: 1.16s memory: 117804k
 
 C++:
 
@@ -1861,37 +1861,37 @@ Numpy:
 
     Traceback (most recent call last):
       File "/app/related_post_gen/python/./related_np.py", line 65, in <module>
-        main()
+    main()
       File "/app/related_post_gen/python/./related_np.py", line 37, in main
-        relatedness = tag_map @ tag_map.T
-                      ~~~~~~~~^~~~~~~~~~~
+    relatedness = tag_map @ tag_map.T
+    	      ~~~~~~~~^~~~~~~~~~~
       File "/app/related_post_gen/python/venv/lib/python3.11/site-packages/scipy/sparse/_base.py", line 624, in __matmul__
-        return self._mul_dispatch(other)
-               ^^^^^^^^^^^^^^^^^^^^^^^^^
+    return self._mul_dispatch(other)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
       File "/app/related_post_gen/python/venv/lib/python3.11/site-packages/scipy/sparse/_base.py", line 535, in _mul_dispatch
-        return self._mul_sparse_matrix(other)
-               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    return self._mul_sparse_matrix(other)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
       File "/app/related_post_gen/python/venv/lib/python3.11/site-packages/scipy/sparse/_compressed.py", line 528, in _mul_sparse_matrix
-        indices = np.empty(nnz, dtype=idx_dtype)
-                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    indices = np.empty(nnz, dtype=idx_dtype)
+    	  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
     numpy.core._exceptions._ArrayMemoryError: Unable to allocate 15.3 GiB for an array with shape (2048294860,) and data type int64
     Command exited with non-zero status 1
     total: 6.03s memory: 143256k
     Traceback (most recent call last):
       File "/app/related_post_gen/python/./related_np.py", line 65, in <module>
-        main()
+    main()
       File "/app/related_post_gen/python/./related_np.py", line 37, in main
-        relatedness = tag_map @ tag_map.T
-                      ~~~~~~~~^~~~~~~~~~~
+    relatedness = tag_map @ tag_map.T
+    	      ~~~~~~~~^~~~~~~~~~~
       File "/app/related_post_gen/python/venv/lib/python3.11/site-packages/scipy/sparse/_base.py", line 624, in __matmul__
-        return self._mul_dispatch(other)
-               ^^^^^^^^^^^^^^^^^^^^^^^^^
+    return self._mul_dispatch(other)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
       File "/app/related_post_gen/python/venv/lib/python3.11/site-packages/scipy/sparse/_base.py", line 535, in _mul_dispatch
-        return self._mul_sparse_matrix(other)
-               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    return self._mul_sparse_matrix(other)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
       File "/app/related_post_gen/python/venv/lib/python3.11/site-packages/scipy/sparse/_compressed.py", line 528, in _mul_sparse_matrix
-        indices = np.empty(nnz, dtype=idx_dtype)
-                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    indices = np.empty(nnz, dtype=idx_dtype)
+    	  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
     numpy.core._exceptions._ArrayMemoryError: Unable to allocate 15.3 GiB for an array with shape (2048294860,) and data type int64
     Command exited with non-zero status 1
     total: 6.02s memory: 143112k
