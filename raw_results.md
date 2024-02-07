@@ -23,26 +23,26 @@ Go:
 
 Go Concurrent:
 
-    Processing time (w/o IO): 5.45517ms
-    total: 0.03s memory: 13664k
-    Processing time (w/o IO): 5.860442ms
+    Processing time (w/o IO): 5.076796ms
+    total: 0.03s memory: 13944k
+    Processing time (w/o IO): 5.191196ms
+    total: 0.03s memory: 13512k
+    Processing time (w/o IO): 4.969306ms
+    total: 0.03s memory: 13492k
+    Processing time (w/o IO): 4.855626ms
+    total: 0.03s memory: 13556k
+    Processing time (w/o IO): 4.894055ms
     total: 0.03s memory: 13568k
-    Processing time (w/o IO): 5.430689ms
-    total: 0.03s memory: 13824k
-    Processing time (w/o IO): 6.952747ms
-    total: 0.03s memory: 13688k
-    Processing time (w/o IO): 5.474179ms
-    total: 0.03s memory: 13824k
-    Processing time (w/o IO): 5.48447ms
-    total: 0.03s memory: 13568k
-    Processing time (w/o IO): 6.315333ms
-    total: 0.03s memory: 13696k
-    Processing time (w/o IO): 5.506409ms
-    total: 0.03s memory: 13696k
-    Processing time (w/o IO): 5.893912ms
-    total: 0.03s memory: 13652k
-    Processing time (w/o IO): 5.794461ms
-    total: 0.03s memory: 13824k
+    Processing time (w/o IO): 5.280736ms
+    total: 0.03s memory: 13952k
+    Processing time (w/o IO): 5.032246ms
+    total: 0.03s memory: 13936k
+    Processing time (w/o IO): 8.746792ms
+    total: 0.03s memory: 13440k
+    Processing time (w/o IO): 5.133366ms
+    total: 0.03s memory: 13660k
+    Processing time (w/o IO): 5.542306ms
+    total: 0.03s memory: 13312k
 
 Rust:
 
@@ -1289,12 +1289,12 @@ Go:
 
 Go Concurrent:
 
-    Processing time (w/o IO): 77.51255ms
-    total: 0.21s memory: 45840k
-    Processing time (w/o IO): 76.411284ms
-    total: 0.20s memory: 43916k
-    Processing time (w/o IO): 77.412899ms
-    total: 0.20s memory: 43836k
+    Processing time (w/o IO): 64.079358ms
+    total: 0.18s memory: 44756k
+    Processing time (w/o IO): 65.373227ms
+    total: 0.19s memory: 43852k
+    Processing time (w/o IO): 64.345217ms
+    total: 0.22s memory: 43640k
 
 Rust:
 
@@ -1771,12 +1771,12 @@ Go:
 
 Go Concurrent:
 
-    Processing time (w/o IO): 638.57345ms
-    total: 1.06s memory: 162620k
-    Processing time (w/o IO): 633.199069ms
-    total: 1.05s memory: 164284k
-    Processing time (w/o IO): 640.16498ms
-    total: 1.05s memory: 162072k
+    Processing time (w/o IO): 559.109808ms
+    total: 0.98s memory: 159940k
+    Processing time (w/o IO): 541.360453ms
+    total: 1.39s memory: 159820k
+    Processing time (w/o IO): 539.516254ms
+    total: 1.36s memory: 161252k
 
 Rust:
 
