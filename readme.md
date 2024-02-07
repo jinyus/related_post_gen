@@ -68,7 +68,7 @@ docker run -e TEST_NAME=all -it --rm databench
 | _Julia HO_[^1] | 5.80 ms | 31.67 ms | 86.33 ms | 123.80 ms |
 | D (v2) | 11.58 ms | $\textsf{\color{lightgreen}120.52 ms}$ | $\textsf{\color{lightgreen}948.58 ms}$ | 1.08 s |
 | Rust | $\textsf{\color{lightgreen}9.62 ms}$ | 122.62 ms | 1.04 s | 1.18 s |
-| D | 18.38 ms | 242.14 ms | 2.03 s | 2.29 s |
+| D | 18.61 ms | 239.68 ms | 2.04 s | 2.30 s |
 | Go | 16.98 ms | 239.58 ms | 2.11 s | 2.36 s |
 | Java (JIT) | 19.60 ms | 249.33 ms | 2.13 s | 2.40 s |
 | Neat | 19.21 ms | 260.15 ms | 2.14 s | 2.42 s |
