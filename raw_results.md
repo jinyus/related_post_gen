@@ -1,25 +1,25 @@
 Go:
 
-    Processing time (w/o IO): 17.939266ms
-    total: 0.04s memory: 13056k
-    Processing time (w/o IO): 16.267977ms
-    total: 0.04s memory: 12928k
-    Processing time (w/o IO): 16.576209ms
-    total: 0.04s memory: 13052k
-    Processing time (w/o IO): 16.952881ms
-    total: 0.04s memory: 13440k
-    Processing time (w/o IO): 17.408182ms
-    total: 0.04s memory: 13040k
-    Processing time (w/o IO): 17.389033ms
-    total: 0.04s memory: 13184k
-    Processing time (w/o IO): 16.128617ms
-    total: 0.04s memory: 13288k
-    Processing time (w/o IO): 16.299087ms
-    total: 0.04s memory: 13312k
-    Processing time (w/o IO): 16.128567ms
-    total: 0.04s memory: 13056k
-    Processing time (w/o IO): 18.68714ms
-    total: 0.04s memory: 13184k
+    Processing time (w/o IO): 19.165878ms
+    total: 0.04s memory: 13140k
+    Processing time (w/o IO): 21.219787ms
+    total: 0.05s memory: 13056k
+    Processing time (w/o IO): 19.314549ms
+    total: 0.07s memory: 13256k
+    Processing time (w/o IO): 19.227788ms
+    total: 0.08s memory: 13440k
+    Processing time (w/o IO): 19.931748ms
+    total: 0.07s memory: 13548k
+    Processing time (w/o IO): 19.921648ms
+    total: 0.07s memory: 13440k
+    Processing time (w/o IO): 19.186638ms
+    total: 0.10s memory: 13048k
+    Processing time (w/o IO): 19.481769ms
+    total: 0.09s memory: 13256k
+    Processing time (w/o IO): 19.130558ms
+    total: 0.09s memory: 13312k
+    Processing time (w/o IO): 19.895938ms
+    total: 0.10s memory: 13568k
 
 Go Concurrent:
 
@@ -1280,12 +1280,12 @@ Java Concurrent (JIT):
 
 Go:
 
-    Processing time (w/o IO): 241.31599ms
-    total: 0.38s memory: 44084k
-    Processing time (w/o IO): 236.759844ms
-    total: 0.36s memory: 43936k
-    Processing time (w/o IO): 240.662466ms
-    total: 0.37s memory: 44300k
+    Processing time (w/o IO): 287.871668ms
+    total: 0.53s memory: 43972k
+    Processing time (w/o IO): 286.210359ms
+    total: 0.41s memory: 43352k
+    Processing time (w/o IO): 291.000867ms
+    total: 0.41s memory: 43248k
 
 Go Concurrent:
 
@@ -1762,12 +1762,12 @@ Java Concurrent (JIT):
 
 Go:
 
-    Processing time (w/o IO): 2.122291333s
-    total: 2.53s memory: 161472k
-    Processing time (w/o IO): 2.100949036s
-    total: 2.53s memory: 161868k
-    Processing time (w/o IO): 2.096549771s
-    total: 2.50s memory: 162128k
+    Processing time (w/o IO): 2.48071463s
+    total: 3.40s memory: 158820k
+    Processing time (w/o IO): 2.482995028s
+    total: 2.93s memory: 159016k
+    Processing time (w/o IO): 2.4781956s
+    total: 3.19s memory: 157676k
 
 Go Concurrent:
 
@@ -1867,10 +1867,10 @@ Numpy:
     	      ~~~~~~~~^~~~~~~~~~~
       File "/app/related_post_gen/python/venv/lib/python3.11/site-packages/scipy/sparse/_base.py", line 624, in __matmul__
     return self._mul_dispatch(other)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^
+       ^^^^^^^^^^^^^^^^^^^^^^^^^
       File "/app/related_post_gen/python/venv/lib/python3.11/site-packages/scipy/sparse/_base.py", line 535, in _mul_dispatch
     return self._mul_sparse_matrix(other)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
       File "/app/related_post_gen/python/venv/lib/python3.11/site-packages/scipy/sparse/_compressed.py", line 528, in _mul_sparse_matrix
     indices = np.empty(nnz, dtype=idx_dtype)
     	  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -1885,10 +1885,10 @@ Numpy:
     	      ~~~~~~~~^~~~~~~~~~~
       File "/app/related_post_gen/python/venv/lib/python3.11/site-packages/scipy/sparse/_base.py", line 624, in __matmul__
     return self._mul_dispatch(other)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^
+       ^^^^^^^^^^^^^^^^^^^^^^^^^
       File "/app/related_post_gen/python/venv/lib/python3.11/site-packages/scipy/sparse/_base.py", line 535, in _mul_dispatch
     return self._mul_sparse_matrix(other)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
       File "/app/related_post_gen/python/venv/lib/python3.11/site-packages/scipy/sparse/_compressed.py", line 528, in _mul_sparse_matrix
     indices = np.empty(nnz, dtype=idx_dtype)
     	  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
