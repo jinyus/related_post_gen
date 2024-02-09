@@ -32,8 +32,9 @@ type RelatedPosts struct {
 var cpuprofile = flag.String("cpuprofile", "", "write cpu profile to `file`")
 
 func main() {
+	flag.Parse()
 	if *cpuprofile == "" {
-		fmt.Println("Usage: go run main.go -cpuprofile=cpu.prof")
+		fmt.Println("Usage: go run main.go -cpuprofile=cpu.prof: got" + *cpuprofile)
 		return
 
 	}
