@@ -8,11 +8,11 @@ outfile=$2
 appendToFile=$3
 
 if [ -z "$appendToFile" ]; then
-    runs=10
-    slow_lang_runs=10
+    runs=1
+    slow_lang_runs=1
 else
-    runs=3
-    slow_lang_runs=2
+    runs=1
+    slow_lang_runs=1
 fi
 
 if [[ -n $outfile ]]; then

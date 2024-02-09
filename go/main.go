@@ -2,9 +2,12 @@ package main
 
 import (
 	"encoding/json"
+	"flag"
 	"fmt"
+	"log"
 	"os"
 	"runtime"
+	"runtime/pprof"
 	"time"
 )
 
@@ -26,7 +29,24 @@ type RelatedPosts struct {
 	Related [topN]*Post `json:"related"`
 }
 
+var cpuprofile = flag.String("cpuprofile", "", "write cpu profile to `file`")
+
 func main() {
+	if *cpuprofile == "" {
+		fmt.Println("Usage: go run main.go -cpuprofile=cpu.prof")
+		return
+
+	}
+	f, err := os.Create(*cpuprofile)
+	if err != nil {
+		log.Fatal("could not create CPU profile: ", err)
+	}
+	defer f.Close() // error handling omitted for example
+	if err := pprof.StartCPUProfile(f); err != nil {
+		log.Fatal("could not start CPU profile: ", err)
+	}
+	defer pprof.StopCPUProfile()
+
 	posts := getPosts()
 
 	runtime.GC()
