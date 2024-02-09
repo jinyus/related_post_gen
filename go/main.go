@@ -77,7 +77,7 @@ func main() {
 
 		for _, tag := range posts[i].Tags {
 			for _, otherPostIdx := range tagMap[tag] {
-				taggedPostCount[otherPostIdx] += 1
+				taggedPostCount[otherPostIdx] += 1 // 2nd hottest line
 
 			}
 		}
@@ -86,8 +86,9 @@ func main() {
 		top5 := [topN * 2]int{}
 		minTags := byte(0)
 
+		// custom priority queue
 		for j, count := range taggedPostCount {
-			if count > minTags {
+			if count > minTags { // hottest line
 				upperBound := (topN - 2) * 2
 
 				countInt := int(count)
