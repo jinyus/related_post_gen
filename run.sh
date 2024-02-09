@@ -112,7 +112,7 @@ run_rust() {
     echo "Running Rust" &&
         cd ./rust &&
         cargo build --release &&
-        run_command "Rust" $runs ./target/release/rust &&
+        run_command "Rust (v2)" $runs ./target/release/rust &&
         check_output "related_posts_rust.json"
 }
 
@@ -536,6 +536,14 @@ run_d_con() {
         check_output "related_posts_d_con.json"
 }
 
+run_d_con_v2() {
+    echo "Running D Concurrent (v2)" &&
+        cd ./d_con_v2 &&
+        dub build --build=release &&
+        run_command "D Concurrent (v2)" $runs ./related_concurrent &&
+        check_output "related_posts_d_con_v2.json"
+}
+
 run_erlang() {
     echo "Running Erlang" &&
         cd ./erlang &&
@@ -869,6 +877,10 @@ elif [ "$first_arg" = "d_con" ]; then
 
     run_d_con
 
+elif [ "$first_arg" = "d_con_v2" ]; then
+
+    run_d_con_v2
+
 elif [ "$first_arg" = "erlang" ]; then
 
     run_erlang
@@ -998,7 +1010,11 @@ elif [ "$first_arg" = "clean" ]; then
         cd .. &&
         cd d && rm -f related &&
         cd .. &&
-        cd d_con && rm -f related &&
+        cd d_con && rm -f related_concurrent &&
+        cd .. &&
+        cd d_v2 && rm -f related &&
+        cd .. &&
+        cd d_con_v2 && rm -f related_concurrent &&
         cd .. &&
         cd erlang && rm -rf _build/ rebar.lock &&
         cd .. &&

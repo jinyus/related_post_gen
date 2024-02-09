@@ -1,7 +1,8 @@
 {
 	"authors": [
-		"johan.forsberg",
-        "Sergei Giniatulin"
+        "Bruce Carneal",
+        "Sergei Giniatulin",
+		"johan.forsberg"
 	],
 	"copyright": "Copyright © 2023",
 	"description": "A Parallel D application",

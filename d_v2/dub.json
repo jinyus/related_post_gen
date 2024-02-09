@@ -1,7 +1,7 @@
 {
 	"authors": [
-		"Sergei Giniatulin",
-        "Bruce Carneal"
+        "Bruce Carneal",
+		"Sergei Giniatulin"
 	],
 	"copyright": "Copyright © 2023",
 	"dependencies": {
