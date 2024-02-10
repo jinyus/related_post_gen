@@ -96,8 +96,8 @@ RUN rm /home/builduser/swift-5.9-RELEASE-ubuntu22.04/usr/bin/clang
 RUN rm /home/builduser/swift-5.9-RELEASE-ubuntu22.04/usr/bin/llvm*
 
 # install go
-RUN wget https://go.dev/dl/go1.21.4.linux-amd64.tar.gz
-RUN rm -rf /usr/local/go && tar -C /usr/local -xzf go1.21.4.linux-amd64.tar.gz
+RUN wget https://go.dev/dl/go1.22.0.linux-amd64.tar.gz
+RUN rm -rf /usr/local/go && tar -C /usr/local -xzf go1.22.0.linux-amd64.tar.gz
 ENV PATH="$PATH:/usr/local/go/bin"
 
 # install ldc2
