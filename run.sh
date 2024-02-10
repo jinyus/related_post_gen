@@ -112,7 +112,7 @@ run_rust() {
     echo "Running Rust" &&
         cd ./rust &&
         cargo build --release &&
-        run_command "Rust (v2)" $runs ./target/release/rust &&
+        run_command "Rust" $runs ./target/release/rust &&
         check_output "related_posts_rust.json"
 }
 
