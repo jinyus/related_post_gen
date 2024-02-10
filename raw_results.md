@@ -159,6 +159,29 @@ D Concurrent:
     Processing time (w/o IO): 7.106ms
     total: 0.11s memory: 12800k
 
+D Concurrent (v2):
+
+    Processing time (w/o IO): 5.794ms
+    total: 0.05s memory: 12672k
+    Processing time (w/o IO): 5.989ms
+    total: 0.10s memory: 12032k
+    Processing time (w/o IO): 5.724ms
+    total: 0.09s memory: 11904k
+    Processing time (w/o IO): 5.674ms
+    total: 0.12s memory: 11904k
+    Processing time (w/o IO): 6.129ms
+    total: 0.14s memory: 12032k
+    Processing time (w/o IO): 5.715ms
+    total: 0.14s memory: 12032k
+    Processing time (w/o IO): 5.676ms
+    total: 0.16s memory: 11904k
+    Processing time (w/o IO): 5.676ms
+    total: 0.14s memory: 11904k
+    Processing time (w/o IO): 6.007ms
+    total: 0.12s memory: 11904k
+    Processing time (w/o IO): 5.698ms
+    total: 0.15s memory: 11904k
+
 C++:
 
     Processing time (w/o IO): 18 ms
@@ -1341,6 +1364,15 @@ D Concurrent:
     Processing time (w/o IO): 61.756ms
     total: 0.44s memory: 44928k
 
+D Concurrent (v2):
+
+    Processing time (w/o IO): 43.936ms
+    total: 0.44s memory: 44032k
+    Processing time (w/o IO): 45.164ms
+    total: 0.48s memory: 44032k
+    Processing time (w/o IO): 44.953ms
+    total: 0.44s memory: 43904k
+
 C++:
 
     Processing time (w/o IO): 262 ms
@@ -1823,6 +1855,15 @@ D Concurrent:
     Processing time (w/o IO): 452.709ms
     total: 1.16s memory: 117804k
 
+D Concurrent (v2):
+
+    Processing time (w/o IO): 261.755ms
+    total: 1.60s memory: 143492k
+    Processing time (w/o IO): 263.47ms
+    total: 1.07s memory: 143612k
+    Processing time (w/o IO): 262.857ms
+    total: 1.56s memory: 160000k
+
 C++:
 
     Processing time (w/o IO): 2263 ms
@@ -1867,10 +1908,10 @@ Numpy:
     	      ~~~~~~~~^~~~~~~~~~~
       File "/app/related_post_gen/python/venv/lib/python3.11/site-packages/scipy/sparse/_base.py", line 624, in __matmul__
     return self._mul_dispatch(other)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^
+       ^^^^^^^^^^^^^^^^^^^^^^^^^
       File "/app/related_post_gen/python/venv/lib/python3.11/site-packages/scipy/sparse/_base.py", line 535, in _mul_dispatch
     return self._mul_sparse_matrix(other)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
       File "/app/related_post_gen/python/venv/lib/python3.11/site-packages/scipy/sparse/_compressed.py", line 528, in _mul_sparse_matrix
     indices = np.empty(nnz, dtype=idx_dtype)
     	  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -1885,10 +1926,10 @@ Numpy:
     	      ~~~~~~~~^~~~~~~~~~~
       File "/app/related_post_gen/python/venv/lib/python3.11/site-packages/scipy/sparse/_base.py", line 624, in __matmul__
     return self._mul_dispatch(other)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^
+       ^^^^^^^^^^^^^^^^^^^^^^^^^
       File "/app/related_post_gen/python/venv/lib/python3.11/site-packages/scipy/sparse/_base.py", line 535, in _mul_dispatch
     return self._mul_sparse_matrix(other)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
       File "/app/related_post_gen/python/venv/lib/python3.11/site-packages/scipy/sparse/_compressed.py", line 528, in _mul_sparse_matrix
     indices = np.empty(nnz, dtype=idx_dtype)
     	  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

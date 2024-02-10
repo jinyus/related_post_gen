@@ -112,7 +112,8 @@ docker run -e TEST_NAME=all -it --rm databench
 
 | Language       | Time (5k posts) | 20k posts        | 60k posts        | Total     |
 | -------------- | --------------- | ---------------- | ---------------- | --------- |
-| C# Concurrent (JIT) | 7.55 ms | $\textsf{\color{lightgreen}45.08 ms}$ | $\textsf{\color{lightgreen}369.55 ms}$ | 422.17 ms |
+| D Concurrent (v2) | 5.81 ms | $\textsf{\color{lightgreen}44.68 ms}$ | $\textsf{\color{lightgreen}262.69 ms}$ | 313.19 ms |
+| C# Concurrent (JIT) | 7.55 ms | 45.08 ms | 369.55 ms | 422.17 ms |
 | C# Concurrent (AOT) | $\textsf{\color{lightgreen}4.33 ms}$ | 51.95 ms | 389.07 ms | 445.35 ms |
 | D Concurrent | 7.09 ms | 61.79 ms | 452.55 ms | 521.43 ms |
 | C++ Concurrent | 5.10 ms | 68.67 ms | 558.33 ms | 632.10 ms |
