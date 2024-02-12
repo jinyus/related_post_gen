@@ -46,48 +46,48 @@ Go Concurrent:
 
 Rust:
 
-    Processing time (w/o IO): 9.576151ms
-    total: 0.02s memory: 4732k
-    Processing time (w/o IO): 9.528771ms
+    Processing time (w/o IO): 13.991885ms
     total: 0.02s memory: 4736k
-    Processing time (w/o IO): 9.636082ms
-    total: 0.02s memory: 4736k
-    Processing time (w/o IO): 9.671972ms
-    total: 0.02s memory: 4612k
-    Processing time (w/o IO): 9.737252ms
-    total: 0.02s memory: 4868k
-    Processing time (w/o IO): 9.683941ms
-    total: 0.02s memory: 4732k
-    Processing time (w/o IO): 9.608221ms
-    total: 0.02s memory: 4612k
-    Processing time (w/o IO): 9.49453ms
+    Processing time (w/o IO): 13.985695ms
+    total: 0.09s memory: 4736k
+    Processing time (w/o IO): 14.010655ms
+    total: 0.06s memory: 4732k
+    Processing time (w/o IO): 14.016565ms
+    total: 0.02s memory: 4740k
+    Processing time (w/o IO): 14.052895ms
+    total: 0.02s memory: 4740k
+    Processing time (w/o IO): 14.059574ms
+    total: 0.08s memory: 4732k
+    Processing time (w/o IO): 14.028444ms
+    total: 0.12s memory: 4868k
+    Processing time (w/o IO): 13.988876ms
     total: 0.02s memory: 4608k
-    Processing time (w/o IO): 9.659662ms
+    Processing time (w/o IO): 14.005695ms
     total: 0.02s memory: 4736k
-    Processing time (w/o IO): 9.640272ms
-    total: 0.02s memory: 4736k
+    Processing time (w/o IO): 14.020615ms
+    total: 0.02s memory: 4608k
 
 Rust Concurrent:
 
-    Processing time (w/o IO): 4.824016ms
-    total: 0.01s memory: 5632k
-    Processing time (w/o IO): 4.912777ms
-    total: 0.02s memory: 5504k
-    Processing time (w/o IO): 6.352705ms
-    total: 0.02s memory: 5888k
-    Processing time (w/o IO): 5.291838ms
-    total: 0.02s memory: 5888k
-    Processing time (w/o IO): 4.949637ms
-    total: 0.02s memory: 5760k
-    Processing time (w/o IO): 4.928087ms
-    total: 0.02s memory: 5376k
-    Processing time (w/o IO): 6.252394ms
+    Processing time (w/o IO): 5.56738ms
     total: 0.01s memory: 5888k
-    Processing time (w/o IO): 5.361929ms
-    total: 0.01s memory: 5632k
-    Processing time (w/o IO): 4.972027ms
+    Processing time (w/o IO): 4.280228ms
+    total: 0.02s memory: 5632k
+    Processing time (w/o IO): 4.296827ms
+    total: 0.02s memory: 5504k
+    Processing time (w/o IO): 4.470837ms
+    total: 0.02s memory: 5760k
+    Processing time (w/o IO): 4.492998ms
+    total: 0.02s memory: 5632k
+    Processing time (w/o IO): 5.520279ms
     total: 0.01s memory: 5760k
-    Processing time (w/o IO): 4.895866ms
+    Processing time (w/o IO): 4.411977ms
+    total: 0.01s memory: 5760k
+    Processing time (w/o IO): 4.771458ms
+    total: 0.01s memory: 5888k
+    Processing time (w/o IO): 4.432168ms
+    total: 0.01s memory: 5504k
+    Processing time (w/o IO): 4.378687ms
     total: 0.01s memory: 5760k
 
 D:
@@ -1321,21 +1321,21 @@ Go Concurrent:
 
 Rust:
 
-    Processing time (w/o IO): 122.3737ms
-    total: 0.19s memory: 11016k
-    Processing time (w/o IO): 123.426586ms
-    total: 0.18s memory: 10892k
-    Processing time (w/o IO): 122.064288ms
-    total: 0.18s memory: 10704k
+    Processing time (w/o IO): 190.641506ms
+    total: 0.48s memory: 10884k
+    Processing time (w/o IO): 188.737933ms
+    total: 0.47s memory: 10888k
+    Processing time (w/o IO): 187.992471ms
+    total: 0.48s memory: 10880k
 
 Rust Concurrent:
 
-    Processing time (w/o IO): 67.804584ms
-    total: 0.13s memory: 12160k
-    Processing time (w/o IO): 67.378161ms
-    total: 0.13s memory: 11776k
-    Processing time (w/o IO): 67.054669ms
-    total: 0.13s memory: 11904k
+    Processing time (w/o IO): 57.75459ms
+    total: 0.11s memory: 11904k
+    Processing time (w/o IO): 56.586478ms
+    total: 0.12s memory: 11904k
+    Processing time (w/o IO): 56.308968ms
+    total: 0.12s memory: 12032k
 
 D:
 
@@ -1812,21 +1812,21 @@ Go Concurrent:
 
 Rust:
 
-    Processing time (w/o IO): 1.037295847s
-    total: 1.28s memory: 29088k
-    Processing time (w/o IO): 1.048617342s
-    total: 1.27s memory: 28960k
-    Processing time (w/o IO): 1.043504443s
-    total: 1.27s memory: 28828k
+    Processing time (w/o IO): 1.620839553s
+    total: 2.62s memory: 28956k
+    Processing time (w/o IO): 1.621140643s
+    total: 2.42s memory: 28960k
+    Processing time (w/o IO): 1.606873388s
+    total: 2.61s memory: 28956k
 
 Rust Concurrent:
 
-    Processing time (w/o IO): 567.523417ms
-    total: 0.78s memory: 28416k
-    Processing time (w/o IO): 564.915102ms
-    total: 0.78s memory: 28544k
-    Processing time (w/o IO): 566.31762ms
-    total: 0.79s memory: 28160k
+    Processing time (w/o IO): 487.627426ms
+    total: 1.07s memory: 28288k
+    Processing time (w/o IO): 488.482848ms
+    total: 1.51s memory: 28416k
+    Processing time (w/o IO): 500.373658ms
+    total: 0.73s memory: 28544k
 
 D:
 
