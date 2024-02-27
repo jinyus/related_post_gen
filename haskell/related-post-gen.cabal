@@ -1,0 +1,26 @@
+cabal-version: 3.0
+name:          related-post-gen
+version:       0.0.0.0
+author:        thelissimus
+maintainer:    thelissimus@tuta.io
+build-type:    Simple
+
+executable related-post-gen
+  ghc-options:
+    -Wall -Wextra -Weverything -Wcompat -Wno-implicit-prelude
+    -Wno-unsafe -Wno-missing-safe-haskell-mode
+    -Wno-missing-local-signatures -Wno-missing-import-lists -haddock
+
+  main-is:          Main.hs
+  build-depends:
+    , aeson
+    , base               ^>=4.17.2.0
+    , bytestring
+    , deepseq
+    , text
+    , time
+    , vector
+    , vector-hashtables
+
+  hs-source-dirs:   app
+  default-language: GHC2021
