@@ -507,8 +507,8 @@ run_ocaml() {
 run_haskell() {
     echo "Running Haskell" &&
         cd ./haskell &&
-        ./main.hs &&
-        run_command "Haskell" $runs ./main &&
+        cabal build &&
+        run_command "Haskell" $runs "$(cabal list-bin related-post-gen)" &&
         check_output "related_posts_haskell.json"
 }
 
