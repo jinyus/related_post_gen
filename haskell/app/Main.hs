@@ -21,6 +21,8 @@ import Data.Time.Clock.POSIX (getPOSIXTime)
 import Data.Vector qualified as V
 import Data.Vector.Hashtables qualified as H
 import Data.Vector.Mutable qualified as VM
+import Data.Vector.Unboxed qualified as VU
+import Data.Vector.Unboxed.Mutable qualified as VUM
 
 import GHC.Generics (Generic)
 
@@ -73,58 +75,58 @@ computeRelatedPosts posts = do
   populateTagMap tagMap postsIdx
 
   forM postsIdx \(idx, MkPost{_id, tags}) -> do
-    (sharedTagsM :: VM.STVector s Int) <- VM.replicate postsLen 0
+    (sharedTagsM :: VUM.STVector s Int) <- VUM.replicate postsLen 0
     countTags sharedTagsM tags tagMap
-    VM.write sharedTagsM idx 0 -- exclude self from related posts
+    VUM.write sharedTagsM idx 0 -- exclude self from related posts
     topN <- calculateTopN sharedTagsM
-    let related = [1, 3 .. 10] <&> \n -> posts V.! (topN V.! n)
+    let related = [1, 3 .. 10] <&> \n -> posts V.! (topN VU.! n)
     pure $ MkRelatedPosts{_id, tags, related = V.fromList related}
 
-populateTagMap :: HashTable s Text (V.Vector Int) -> V.Vector (Int, Post) -> ST s ()
+populateTagMap :: HashTable s Text (VU.Vector Int) -> V.Vector (Int, Post) -> ST s ()
 populateTagMap tagMap posts = do
   forM_ posts \(i, MkPost{tags}) ->
-    forM_ tags $ H.alterM tagMap (pure . Just . \case Just v -> V.snoc v i; Nothing -> V.singleton i)
+    forM_ tags $ H.alterM tagMap (pure . Just . \case Just v -> VU.snoc v i; Nothing -> VU.singleton i)
 
-countTags :: VM.STVector s Int -> V.Vector Text -> HashTable s Text (V.Vector Int) -> ST s ()
+countTags :: VUM.STVector s Int -> V.Vector Text -> HashTable s Text (VU.Vector Int) -> ST s ()
 countTags sharedTagsM tags tagMap = do
   forM_ tags \tag -> do
     idxs <- H.lookup' tagMap tag
-    forM_ idxs $ VM.modify sharedTagsM (+ 1)
+    VU.forM_ idxs $ VUM.modify sharedTagsM (+ 1)
 
-calculateTopN :: VM.STVector s Int -> ST s (V.Vector Int)
+calculateTopN :: VUM.STVector s Int -> ST s (VU.Vector Int)
 calculateTopN sharedTagsM = do
-  let n = VM.length sharedTagsM
-  topN <- VM.replicate (limitTopN * 2) 0
+  let n = VUM.length sharedTagsM
+  topN <- VUM.replicate (limitTopN * 2) 0
   loop sharedTagsM topN (0, n, 0)
-  V.freeze topN
+  VU.freeze topN
  where
-  loop :: VM.STVector s Int -> VM.STVector s Int -> (Int, Int, Int) -> ST s ()
+  loop :: VUM.STVector s Int -> VUM.STVector s Int -> (Int, Int, Int) -> ST s ()
   loop sharedTags topN (i, len, minTags) = do
     when (i < len) do
-      count <- VM.read sharedTags i
+      count <- VUM.read sharedTags i
       if count > minTags
         then do
           up <- calcUpperBound topN (6, count)
           when (up < 6) do
             vecmove topN (up + 2) topN (up + 4) (6 - up)
-          VM.write topN (up + 2) count
-          VM.write topN (up + 3) i
-          minTags' <- VM.read topN 8
+          VUM.write topN (up + 2) count
+          VUM.write topN (up + 3) i
+          minTags' <- VUM.read topN 8
           loop sharedTags topN (i + 1, len, minTags')
         else loop sharedTags topN (i + 1, len, minTags)
 
-  calcUpperBound :: VM.STVector s Int -> (Int, Int) -> ST s Int
+  calcUpperBound :: VUM.STVector s Int -> (Int, Int) -> ST s Int
   calcUpperBound topN (upperBound, count) = do
     if upperBound >= 0
       then do
-        bound <- VM.read topN upperBound
+        bound <- VUM.read topN upperBound
         if count > bound
           then calcUpperBound topN (upperBound - 2, count)
           else pure upperBound
       else pure upperBound
 
-vecmove :: VM.STVector s Int -> Int -> VM.STVector s Int -> Int -> Int -> ST s ()
+vecmove :: VUM.STVector s Int -> Int -> VUM.STVector s Int -> Int -> Int -> ST s ()
 vecmove src srcIdx dest destIdx len = do
-  temp <- VM.clone (VM.slice srcIdx len src)
-  VM.copy (VM.slice destIdx len dest) temp
+  temp <- VUM.clone (VUM.slice srcIdx len src)
+  VUM.copy (VUM.slice destIdx len dest) temp
 {-# INLINE vecmove #-}
