@@ -10,6 +10,7 @@ executable related-post-gen
     -Wall -Wextra -Weverything -Wcompat -Wno-implicit-prelude
     -Wno-unsafe -Wno-missing-safe-haskell-mode
     -Wno-missing-local-signatures -Wno-missing-import-lists -haddock
+    -O2
 
   main-is:          Main.hs
   build-depends:
