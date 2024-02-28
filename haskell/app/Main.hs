@@ -20,7 +20,6 @@ import Data.Time.Clock.POSIX (getPOSIXTime)
 import Data.Vector qualified as V
 import Data.Vector.Hashtables qualified as H
 import Data.Vector.Mutable qualified as VM
-import Data.Vector.Unboxed qualified as VU
 import Data.Vector.Unboxed.Mutable qualified as VUM
 import Data.Word (Word32, Word8)
 
@@ -67,13 +66,22 @@ main = do
 
 computeRelatedPosts :: V.Vector Post -> ST s (V.Vector RelatedPosts)
 computeRelatedPosts posts = do
-  tagMap :: HashTable s Text (VU.Vector Word32) <- H.initialize 0
+  tagMap :: HashTable s Text (VUM.STVector s Word32) <- H.initialize 128
 
   let postsIdx = V.indexed posts
 
   V.forM_ postsIdx \(i, MkPost{tags}) ->
     V.forM_ tags $
-      H.alterM tagMap (pure . Just . \case Just v -> VU.snoc v (fromIntegral i); Nothing -> VU.singleton (fromIntegral i))
+      H.alterM
+        tagMap
+        ( \case
+            Just v -> do
+              let len = VUM.length v
+              v' <- VUM.grow v 1
+              VUM.write v' len (fromIntegral i)
+              pure $ Just v'
+            Nothing -> Just <$> VUM.replicate 1 (fromIntegral i)
+        )
 
   sharedTags :: VUM.STVector s Word8 <- VUM.replicate (V.length posts) 0
   topN :: VUM.STVector s Word32 <- VUM.replicate (limitTopN * 2) 0
@@ -84,7 +92,7 @@ computeRelatedPosts posts = do
 
     V.forM_ tags \tag -> do
       idxs <- H.lookup' tagMap tag
-      VU.forM_ idxs $ VUM.modify sharedTags (+ 1) . fromIntegral
+      VUM.forM_ idxs $ VUM.modify sharedTags (+ 1) . fromIntegral
 
     VUM.write sharedTags ix 0 -- exclude self from related posts
     VUM.iforM_ sharedTags \jx count -> do
