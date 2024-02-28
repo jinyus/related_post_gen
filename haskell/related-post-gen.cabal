@@ -9,8 +9,8 @@ executable related-post-gen
   ghc-options:
     -Wall -Wextra -Weverything -Wcompat -Wno-implicit-prelude
     -Wno-unsafe -Wno-missing-safe-haskell-mode
-    -Wno-missing-local-signatures -Wno-missing-import-lists -haddock
-    -O2
+    -Wno-missing-local-signatures -Wno-missing-import-lists
+    -Wno-all-missed-specialisations -O2
 
   main-is:          Main.hs
   build-depends:
