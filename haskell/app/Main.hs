@@ -66,8 +66,8 @@ main = do
 
 computeRelatedPosts :: V.Vector Post -> ST s (V.Vector RelatedPosts)
 computeRelatedPosts posts = do
-  tagMap :: HashTable s Text (VUM.STVector s Word32) <- H.initialize 0
-  let postsIdx = V.indexed posts
+  !tagMap :: HashTable s Text (VUM.STVector s Word32) <- H.initialize 0
+  let !postsIdx = V.indexed posts
 
   V.forM_ postsIdx \(i, MkPost{tags}) ->
     V.forM_ tags $
@@ -82,18 +82,18 @@ computeRelatedPosts posts = do
             Nothing -> Just <$> VUM.replicate 1 (fromIntegral i)
         )
 
-  sharedTags :: VUM.STVector s Word8 <- VUM.replicate (V.length posts) 0
-  topN :: VUM.STVector s Word32 <- VUM.replicate (limitTopN * 2) 0
+  !sharedTags :: VUM.STVector s Word8 <- VUM.replicate (V.length posts) 0
+  !topN :: VUM.STVector s Word32 <- VUM.replicate (limitTopN * 2) 0
 
   V.forM postsIdx \(ix, MkPost{_id, tags}) -> do
-    topPosts :: VM.STVector s Post <- VM.new limitTopN
+    !topPosts :: VM.STVector s Post <- VM.new limitTopN
 
     V.forM_ tags \tag -> do
       idxs <- H.lookup' tagMap tag
       VUM.forM_ idxs $ VUM.modify sharedTags (+ 1) . fromIntegral
 
     VUM.write sharedTags ix 0 -- exclude self from related posts
-    minTagsST :: STRefU s Word8 <- newSTRefU 0
+    !minTagsST :: STRefU s Word8 <- newSTRefU 0
     VUM.iforM_ sharedTags \jx count -> do
       minTags <- readSTRefU minTagsST
       when (count > minTags) do
