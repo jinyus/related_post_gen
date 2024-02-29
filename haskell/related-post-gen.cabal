@@ -20,6 +20,7 @@ executable related-post-gen
     , deepseq
     , text
     , time
+    , unboxed-ref
     , vector
     , vector-hashtables
 
