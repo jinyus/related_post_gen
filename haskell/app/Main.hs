@@ -95,7 +95,7 @@ computeRelatedPosts posts = do
         VUM.write topN (upperBound + 1) (word64 (fromIntegral jx, count))
         writeSTRefU minTagsST . unword64Snd =<< VUM.read topN (limitTopN - 1)
 
-    !related <- VUM.foldl' (\acc a -> V.snoc acc (posts V.! fromIntegral (unword64Fst a))) V.empty topN
+    !related <- VUM.foldl (\acc a -> V.snoc acc (posts V.! fromIntegral (unword64Fst a))) V.empty topN
     VUM.set topN 0 -- reset
     VUM.set sharedTags 0 -- reset
     pure MkRelatedPosts{_id, tags, related}
