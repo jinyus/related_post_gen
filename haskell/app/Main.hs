@@ -59,7 +59,7 @@ main = do
   Just (posts :: V.Vector Post) <- (evaluate . force) . decodeStrict =<< BS.readFile inputFile
 
   start <- getPOSIXTime
-  relatedPosts <- evaluate . force $ runST (computeRelatedPosts posts)
+  relatedPosts <- evaluate . force $! runST (computeRelatedPosts posts)
   end <- getPOSIXTime
 
   putStrLn $ "Processing time (w/o IO): " ++ show (round . (* 1000) $ end - start :: Int) ++ "ms"
@@ -128,7 +128,3 @@ unword64Fst w = fromIntegral (w `shiftR` 8)
 unword64Snd :: Word64 -> Word8
 unword64Snd w = fromIntegral (w .&. 255)
 {-# INLINE unword64Snd #-}
-
-unword64 :: Word64 -> (Word32, Word8)
-unword64 w = (unword64Fst w, unword64Snd w)
-{-# INLINE unword64 #-}
