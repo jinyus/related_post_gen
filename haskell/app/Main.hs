@@ -73,9 +73,8 @@ computeRelatedPosts posts = do
   V.forM_ postsIdx \(i, MkPost{tags}) ->
     V.forM_ tags $ H.alterM tagMap $ \case
       Just v -> do
-        let len = VUM.length v
         v' <- VUM.grow v 1
-        VUM.write v' len (fromIntegral i)
+        VUM.write v' (VUM.length v) (fromIntegral i)
         pure $ Just v'
       Nothing -> Just <$> VUM.replicate 1 (fromIntegral i)
 
@@ -96,10 +95,10 @@ computeRelatedPosts posts = do
       when (count > minTags) do
         upperBound <- getUpperBound (limitTopN - 2) count topN
         VUM.write topN (upperBound + 1) (word64 (fromIntegral jx, count))
-        writeSTRefU minTagsST . snd . unword64 =<< VUM.read topN (limitTopN - 1)
+        writeSTRefU minTagsST . unword64Snd =<< VUM.read topN (limitTopN - 1)
 
     VUM.iforM_ topN \kx w ->
-      VM.write topPosts kx (posts V.! fromIntegral (fst . unword64 $ w))
+      VM.write topPosts kx (posts V.! fromIntegral (unword64Fst w))
 
     VUM.set sharedTags 0 -- reset
     VUM.set topN 0 -- reset
@@ -110,10 +109,10 @@ computeRelatedPosts posts = do
   getUpperBound upperBound count topN = do
     if upperBound >= 0
       then do
-        w@(_, count') <- unword64 <$> VUM.read topN upperBound
-        if count > count'
+        w <- VUM.read topN upperBound
+        if count > unword64Snd w
           then do
-            VUM.write topN (upperBound + 1) (word64 w)
+            VUM.write topN (upperBound + 1) w
             getUpperBound (upperBound - 1) count topN
           else pure upperBound
       else pure upperBound
@@ -122,6 +121,14 @@ word64 :: (Word32, Word8) -> Word64
 word64 (w32, w8) = ((fromIntegral w32 :: Word64) `shiftL` 8) .|. (fromIntegral w8 :: Word64)
 {-# INLINE word64 #-}
 
+unword64Fst :: Word64 -> Word32
+unword64Fst w = fromIntegral (w `shiftR` 8)
+{-# INLINE unword64Fst #-}
+
+unword64Snd :: Word64 -> Word8
+unword64Snd w = fromIntegral (w .&. 255)
+{-# INLINE unword64Snd #-}
+
 unword64 :: Word64 -> (Word32, Word8)
-unword64 w = (fromIntegral (w `shiftR` 8) :: Word32, fromIntegral (w .&. 255) :: Word8)
+unword64 w = (unword64Fst w, unword64Snd w)
 {-# INLINE unword64 #-}
