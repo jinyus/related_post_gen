@@ -21,7 +21,7 @@ import Data.Time.Clock.POSIX (getPOSIXTime)
 import Data.Vector qualified as V
 import Data.Vector.Hashtables qualified as H
 import Data.Vector.Mutable qualified as VM
-import Data.Vector.Unboxed.Mutable qualified as VUM
+import Data.Vector.Primitive.Mutable qualified as VPM
 import Data.Word (Word32, Word64, Word8)
 
 import GHC.Generics (Generic)
@@ -67,47 +67,47 @@ main = do
 
 computeRelatedPosts :: V.Vector Post -> ST s (V.Vector RelatedPosts)
 computeRelatedPosts posts = do
-  !tagMap :: HashTable s Text (VUM.STVector s Word32) <- H.initialize 0
+  !tagMap :: HashTable s Text (VPM.STVector s Word32) <- H.initialize 0
   let !postsIdx = V.indexed posts
 
   V.forM_ postsIdx \(i, MkPost{tags}) ->
     V.forM_ tags $ H.alterM tagMap $ \case
       Just v -> do
-        v' <- VUM.grow v 1
-        VUM.write v' (VUM.length v) (fromIntegral i)
+        v' <- VPM.grow v 1
+        VPM.write v' (VPM.length v) (fromIntegral i)
         pure (Just v')
-      Nothing -> Just <$> VUM.replicate 1 (fromIntegral i)
+      Nothing -> Just <$> VPM.replicate 1 (fromIntegral i)
 
-  !sharedTags :: VUM.STVector s Word8 <- VUM.replicate (V.length posts) 0
-  !topN :: VUM.STVector s Word64 <- VUM.replicate limitTopN 0
+  !sharedTags :: VPM.STVector s Word8 <- VPM.replicate (V.length posts) 0
+  !topN :: VPM.STVector s Word64 <- VPM.replicate limitTopN 0
 
   V.forM postsIdx \(ix, MkPost{_id, tags}) -> do
     V.forM_ tags \tag -> do
       idxs <- H.lookup' tagMap tag
-      VUM.forM_ idxs $ VUM.modify sharedTags (+ 1) . fromIntegral
+      VPM.forM_ idxs $ VPM.modify sharedTags (+ 1) . fromIntegral
 
-    VUM.write sharedTags ix 0 -- exclude self from related posts
+    VPM.write sharedTags ix 0 -- exclude self from related posts
     !minTagsST :: STRefU s Word8 <- newSTRefU 0
-    VUM.iforM_ sharedTags \jx count -> do
+    VPM.iforM_ sharedTags \jx count -> do
       minTags <- readSTRefU minTagsST
       when (count > minTags) do
         upperBound <- getUpperBound (limitTopN - 2) count topN
-        VUM.write topN (upperBound + 1) (word64 (fromIntegral jx, count))
-        writeSTRefU minTagsST . unword64Snd =<< VUM.read topN (limitTopN - 1)
+        VPM.write topN (upperBound + 1) (word64 (fromIntegral jx, count))
+        writeSTRefU minTagsST . unword64Snd =<< VPM.read topN (limitTopN - 1)
 
-    !related <- VUM.foldl (\acc a -> V.snoc acc (posts V.! fromIntegral (unword64Fst a))) V.empty topN
-    VUM.set topN 0 -- reset
-    VUM.set sharedTags 0 -- reset
+    !related <- VPM.foldl (\acc a -> V.snoc acc (posts V.! fromIntegral (unword64Fst a))) V.empty topN
+    VPM.set topN 0 -- reset
+    VPM.set sharedTags 0 -- reset
     pure MkRelatedPosts{_id, tags, related}
  where
-  getUpperBound :: Int -> Word8 -> VUM.STVector s Word64 -> ST s Int
+  getUpperBound :: Int -> Word8 -> VPM.STVector s Word64 -> ST s Int
   getUpperBound upperBound count topN = do
     if upperBound >= 0
       then do
-        w <- VUM.read topN upperBound
+        w <- VPM.read topN upperBound
         if count > unword64Snd w
           then do
-            VUM.write topN (upperBound + 1) w
+            VPM.write topN (upperBound + 1) w
             getUpperBound (upperBound - 1) count topN
           else pure upperBound
       else pure upperBound
