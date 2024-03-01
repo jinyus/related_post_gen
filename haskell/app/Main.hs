@@ -75,15 +75,13 @@ computeRelatedPosts posts = do
       Just v -> do
         v' <- VUM.grow v 1
         VUM.write v' (VUM.length v) (fromIntegral i)
-        pure $ Just v'
+        pure (Just v')
       Nothing -> Just <$> VUM.replicate 1 (fromIntegral i)
 
   !sharedTags :: VUM.STVector s Word8 <- VUM.replicate (V.length posts) 0
   !topN :: VUM.STVector s Word64 <- VUM.replicate limitTopN 0
 
   V.forM postsIdx \(ix, MkPost{_id, tags}) -> do
-    !topPosts :: VM.STVector s Post <- VM.new limitTopN
-
     V.forM_ tags \tag -> do
       idxs <- H.lookup' tagMap tag
       VUM.forM_ idxs $ VUM.modify sharedTags (+ 1) . fromIntegral
@@ -97,12 +95,9 @@ computeRelatedPosts posts = do
         VUM.write topN (upperBound + 1) (word64 (fromIntegral jx, count))
         writeSTRefU minTagsST . unword64Snd =<< VUM.read topN (limitTopN - 1)
 
-    VUM.iforM_ topN \kx w ->
-      VM.write topPosts kx (posts V.! fromIntegral (unword64Fst w))
-
-    VUM.set sharedTags 0 -- reset
+    !related <- VUM.foldl' (\acc a -> V.snoc acc (posts V.! fromIntegral (unword64Fst a))) V.empty topN
     VUM.set topN 0 -- reset
-    related <- V.freeze topPosts
+    VUM.set sharedTags 0 -- reset
     pure MkRelatedPosts{_id, tags, related}
  where
   getUpperBound :: Int -> Word8 -> VUM.STVector s Word64 -> ST s Int
