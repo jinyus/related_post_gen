@@ -83,6 +83,7 @@ docker run -e TEST_NAME=all -it --rm databench
 | Odin | 27.98 ms | 391.66 ms | 3.50 s | 3.92 s |
 | F# (JIT) | 25.43 ms | 406.78 ms | 3.55 s | 3.98 s |
 | Java (GraalVM) | 28.00 ms | 405.67 ms | 3.70 s | 4.13 s |
+| Haskell | 35.20 ms | 472.33 ms | 3.96 s | 4.47 s |
 | Swift | 34.19 ms | 481.74 ms | 4.24 s | 4.75 s |
 | Crystal | 38.99 ms | 576.70 ms | 5.08 s | 5.69 s |
 | JS (Bun) | 66.70 ms | 768.67 ms | 6.61 s | 7.45 s |

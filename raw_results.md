@@ -1301,6 +1301,29 @@ Java Concurrent (JIT):
     Processing time (w/o IO): 57 ms
     total: 0.20s memory: 63348k
 
+Haskell:
+
+    Processing time (w/o IO): 36ms
+    total: 0.09s memory: 22400k
+    Processing time (w/o IO): 35ms
+    total: 0.09s memory: 22528k
+    Processing time (w/o IO): 35ms
+    total: 0.09s memory: 22528k
+    Processing time (w/o IO): 35ms
+    total: 0.09s memory: 22656k
+    Processing time (w/o IO): 36ms
+    total: 0.09s memory: 22528k
+    Processing time (w/o IO): 35ms
+    total: 0.10s memory: 22528k
+    Processing time (w/o IO): 35ms
+    total: 0.09s memory: 22400k
+    Processing time (w/o IO): 35ms
+    total: 0.09s memory: 22272k
+    Processing time (w/o IO): 35ms
+    total: 0.09s memory: 22528k
+    Processing time (w/o IO): 35ms
+    total: 0.09s memory: 22528k
+
 Go:
 
     Processing time (w/o IO): 241.31599ms
@@ -1791,6 +1814,15 @@ Java Concurrent (JIT):
     total: 0.41s memory: 90912k
     Processing time (w/o IO): 180 ms
     total: 0.40s memory: 90228k
+
+Haskell:
+
+    Processing time (w/o IO): 465ms
+    total: 0.73s memory: 54272k
+    Processing time (w/o IO): 492ms
+    total: 0.77s memory: 54528k
+    Processing time (w/o IO): 460ms
+    total: 0.71s memory: 54400k
 
 Go:
 
@@ -2314,3 +2346,12 @@ Java Concurrent (JIT):
     total: 1.70s memory: 126604k
     Processing time (w/o IO): 1151 ms
     total: 1.65s memory: 128192k
+
+Haskell:
+
+    Processing time (w/o IO): 3972ms
+    total: 4.77s memory: 143232k
+    Processing time (w/o IO): 3971ms
+    total: 4.76s memory: 142848k
+    Processing time (w/o IO): 3949ms
+    total: 4.79s memory: 143104k
