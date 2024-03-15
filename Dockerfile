@@ -142,6 +142,8 @@ RUN ghcup install ghc 9.8.1
 RUN ghcup set ghc 9.8.1
 RUN ghcup install cabal 3.10.2.1
 RUN ghcup set cabal 3.10.2.1
+ENV PATH=$PATH:/root/.ghcup/bin
+RUN cabal update
 
 # location to write the raw results
 VOLUME /results
