@@ -57,6 +57,5 @@ benchmark related-post-gen-bench
     , deepseq
     , related-post-gen
     , tasty-bench
-    , tasty-papi
 
   default-language: GHC2021
