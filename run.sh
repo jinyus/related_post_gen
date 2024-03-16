@@ -92,7 +92,7 @@ run_cpp() {
     echo "Running C++" &&
         cd ./cpp &&
         if [ -z "$appendToFile" ]; then # only build on 5k run
-            g++ -O3 -std=c++20 -I./include main.cpp -o main
+            clang++ -O3 -std=c++20 -I./include main.cpp -o main
         fi &&
         run_command "C++" $runs ./main &&
         check_output "related_posts_cpp.json"
