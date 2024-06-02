@@ -105,6 +105,10 @@ RUN wget https://github.com/ldc-developers/ldc/releases/download/v1.36.0/ldc2-1.
 RUN rm -rf /usr/local/ldc2* && tar -C /usr/local -xvf ldc2-1.36.0-linux-x86_64.tar.xz
 ENV PATH="$PATH:/usr/local/ldc2-1.36.0-linux-x86_64/bin"
 
+# install mojo
+# probably Modular Auth token should be saved in .env
+python <(curl -sSL https://raw.githubusercontent.com/Sharktheone/arch-mojo/main/src/install.py)
+
 # install neat
 RUN wget https://github.com/Neat-Lang/neat/releases/download/v0.5.2/neat-v0.5.2-llvm.tar.xz
 RUN tar -C /home/builduser -xvf neat-v0.5.2-llvm.tar.xz && rm neat-v0.5.2-llvm.tar.xz
