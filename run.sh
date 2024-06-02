@@ -512,6 +512,13 @@ run_haskell() {
         check_output "related_posts_haskell.json"
 }
 
+run_mojo() {
+    echo "Running Mojo" &&
+        cd ./mojo &&
+        run_command "Mojo" $slow_lang_runs mojo ./related.mojo &&
+        check_output "related_posts_mojo.json"
+}
+
 run_d() {
     echo "Running D" &&
         cd ./d &&
@@ -865,6 +872,10 @@ elif [ "$first_arg" = "haskell" ]; then
 
     run_haskell
 
+elif [ "$first_arg" = "mojo" ]; then
+
+    run_mojo
+
 elif [ "$first_arg" = "d" ]; then
 
     run_d
@@ -949,7 +960,7 @@ elif [ "$first_arg" = "all" ]; then
         run_pypy || echo -e "\n" &&
         run_python_np || echo -e "\n" &&
         numba_con || echo -e "\n" &&
-
+        run_mojo || echo -e "\n" &&
         # run_python_numba || echo -e "\n" && break rules but very interesting
         run_crystal || echo -e "\n" &&
         run_zig || echo -e "\n" &&
@@ -1016,6 +1027,8 @@ elif [ "$first_arg" = "clean" ]; then
         cd .. &&
         cd d_con_v2 && rm -f related_concurrent &&
         cd .. &&
+        cd mojo && rm -f related &&
+        cd .. &&
         cd erlang && rm -rf _build/ rebar.lock &&
         cd .. &&
         cd python && rm -rf venv/ &&
@@ -1032,6 +1045,6 @@ elif [ "$first_arg" = "clean" ]; then
 
 else
 
-    echo "Valid args: go | go_con | rust | rust_con | d | d_con | r | py | numpy | erlang | cl | numba | numba_con | cr | zig | odin | jq | julia | julia_highly_optimized | julia_con | v | dart | swift | swift_con | node | bun | deno | java | java_graal | java_graal_con | nim | luajit | lua | fsharp | fsharp_aot | fsharp_con | csharp | csharp_aot | dascript | all | clean. Unknown argument: $first_arg"
+    echo "Valid args: go | go_con | rust | rust_con | d | d_con | r | py | mojo | numpy | erlang | cl | numba | numba_con | cr | zig | odin | jq | julia | julia_highly_optimized | julia_con | v | dart | swift | swift_con | node | bun | deno | java | java_graal | java_graal_con | nim | luajit | lua | fsharp | fsharp_aot | fsharp_con | csharp | csharp_aot | dascript | all | clean. Unknown argument: $first_arg"
 
 fi
