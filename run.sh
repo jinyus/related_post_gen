@@ -92,7 +92,7 @@ run_cpp() {
     echo "Running C++" &&
         cd ./cpp &&
         if [ -z "$appendToFile" ]; then # only build on 5k run
-            g++ -O3 -std=c++20 -I./include main.cpp -o main
+            clang++ -O3 -std=c++20 -I./include main.cpp -o main
         fi &&
         run_command "C++" $runs ./main &&
         check_output "related_posts_cpp.json"
@@ -102,7 +102,7 @@ run_cpp_con() {
     echo "Running C++ Concurrent" &&
         cd ./cpp &&
         if [ -z "$appendToFile" ]; then # only build on 5k run
-            clang++ -std=c++11 -pthread -I./include -O3 main_con.cpp -o main_con
+            clang++ -std=c++20 -pthread -I./include -O3 main_con.cpp -o main_con
         fi &&
         run_command "C++ Concurrent" $runs ./main_con &&
         check_output "related_posts_cpp_con.json"
