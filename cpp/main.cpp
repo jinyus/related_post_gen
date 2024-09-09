@@ -5,13 +5,12 @@
 #include <fstream>
 #include <chrono>
 #include <stdint.h>
-#include <unordered_map>
+#include <memory>
 #include "include/json.hpp" // Assuming this path is correct
 
 using json = nlohmann::json;
-using map_t = std::unordered_map<std::string, std::vector<int>>;
-constexpr size_t INITIAL_TAGGED_COUNT_SIZE = 100;
 constexpr size_t TOPN=5;
+const size_t CACHE_LINE_SIZE = 64;
 
 struct Post
 {
@@ -20,11 +19,20 @@ struct Post
     std::vector<std::string> tags;
 };
 
+template<typename T>
+struct Deleter
+{
+    void operator()(T* p) const
+    {
+      // DO NOTHING
+    }
+};
+
 struct RelatedPosts
 {
-    std::string const* _id;
-    std::vector<std::string> const* tags;
-    std::array<Post const*, TOPN> related;
+    std::unique_ptr<std::string const, Deleter<std::string const>> _id;
+    std::unique_ptr<std::vector<std::string> const, Deleter<std::vector<std::string> const>> tags;
+    std::array<std::unique_ptr<Post const, Deleter<Post const>>, TOPN> related;
 };
 
 void to_json(json &j, const RelatedPosts &rp)
@@ -42,22 +50,35 @@ void to_json(json &j, const RelatedPosts &rp)
     j["related"] = related;
 }
 
+using TagMap = std::unordered_map<std::string, std::unique_ptr<std::vector<int>>>;
 
+struct TagPost {
+  std::unique_ptr<Post const, Deleter<Post const>> post;
+  std::vector<std::unique_ptr<std::vector<int>, Deleter<std::vector<int>>>> tags;
+};
 
-map_t get_tagMap(std::vector<Post> const& posts){
-    map_t tagMap;
-    tagMap.reserve(INITIAL_TAGGED_COUNT_SIZE);
+void create_tagPost(std::vector<Post> const& posts, std::vector<TagPost>& tps, TagMap& tm) {
+  for (size_t i = 0; i < posts.size(); ++i) {
+      auto& tp = tps.at(i);
+      tp.post = std::move(std::unique_ptr<Post const, Deleter<Post const>>(&(posts.at(i))));
 
-    int total = static_cast<int>(posts.size());
-    for (int i = 0; i < total; ++i)
-    {
-        for (auto const&tag : posts.at(i).tags)
-        {
-            tagMap[tag].emplace_back(i);
-        }
-    }
+      for (auto const&tag : posts.at(i).tags)
+      {
+          std::vector<int>* vp = nullptr;
+          auto it = tm.find(tag);
 
-    return tagMap;
+          if (it == tm.end()) {
+            auto p = tm.insert({tag, std::make_unique<std::vector<int>>()});
+            p.first->second->emplace_back(i);
+            vp = p.first->second.get();
+          }
+          else {
+            it->second->emplace_back(i);
+            vp = it->second.get();
+          }
+          tp.tags.emplace_back(vp);
+      }
+  }
 }
 
 std::vector<Post> read_posts(){
@@ -84,25 +105,21 @@ std::vector<Post> read_posts(){
     return posts;
 }
 
-
-std::vector<RelatedPosts> do_work(std::vector<Post>const& posts, 
-             map_t const& tagMap){
-
-    std::vector<RelatedPosts> allRelatedPosts(posts.size());
+void do_work(size_t b, size_t e, std::vector<TagPost>const& posts,  std::vector<RelatedPosts>& allRelatedPosts)
+{
     std::vector<uint8_t> taggedPostCount(posts.size());
 
-    for (size_t i = 0; i < posts.size(); ++i)
+    for (size_t i = b; i < e; ++i)
     {
         std::memset(taggedPostCount.data(), 0, posts.size());
-        const Post& p = posts.at(i);
+        const TagPost& p = posts.at(i);
         RelatedPosts& relatedPost = allRelatedPosts.at(i);
-        relatedPost._id = &p._id;
-        relatedPost.tags = &p.tags;
+        relatedPost._id = std::move(std::unique_ptr<std::string const, Deleter<std::string const>>(&p.post->_id));
+        relatedPost.tags = std::move(std::unique_ptr<std::vector<std::string> const, Deleter<std::vector<std::string> const>>(&p.post->tags));
 
         for (const auto &tag : p.tags)
         {
-            const auto it = tagMap.find(tag);
-            for (auto otherPostIdx : it->second)
+            for (auto otherPostIdx : *tag)
             {
                 taggedPostCount.at(otherPostIdx) += 1;
             }
@@ -114,29 +131,43 @@ std::vector<RelatedPosts> do_work(std::vector<Post>const& posts,
         uint8_t minTags = 0;
 
         //  custom priority queue to find top N
-        for (size_t j = 0; j < taggedPostCount.size(); j++)
+        for (size_t j = 0; j < taggedPostCount.size(); j += CACHE_LINE_SIZE)
         {
-            uint8_t count = taggedPostCount.at(j);
+            auto b = j;
+            auto e = b + CACHE_LINE_SIZE;
+            if (e > taggedPostCount.size()) {
+              e = taggedPostCount.size();
+            }
 
-            if (count > minTags)
-            {
-                int upperBound = 3;
-                while (upperBound >= 0 && count > top5.at(upperBound).first)
-                {
-                    top5.at(upperBound + 1) = top5.at(upperBound);
-                    upperBound -= 1;
+            auto isTop{false};
+            for (size_t x = b; x < e; x++) {
+                isTop |= taggedPostCount.at(x) > minTags;
+            }
+
+            if (isTop) {
+                for (size_t x = b; x < e; x++) {
+                    uint8_t count = taggedPostCount.at(x);
+
+                    if (count > minTags)
+                    {
+                        int upperBound = 3;
+                        while (upperBound >= 0 && count > top5.at(upperBound).first)
+                        {
+                            top5.at(upperBound + 1) = top5.at(upperBound);
+                            upperBound -= 1;
+                        }
+
+                        top5.at(upperBound + 1) = {count, x};
+                        minTags = top5.at(4).first;
+                    }
                 }
-
-                top5.at(upperBound + 1) = {count, j};
-                minTags = top5.at(4).first;
             }
         }
-        for (size_t i{0}; i<top5.size(); ++i){
-          relatedPost.related.at(i) = &posts.at(top5.at(i).second);
+
+        for (size_t i = 0; i < 5; ++i) {
+            relatedPost.related.at(i) = std::move(std::unique_ptr<Post const, Deleter<Post const>>(posts.at(top5.at(i).second).post.get()));
         }
     }
-
-  return allRelatedPosts;
 }
 
 void write(std::vector<RelatedPosts>const & allRelatedPosts){
@@ -162,9 +193,12 @@ int main()
 
     auto const start = std::chrono::high_resolution_clock::now();
 
-    auto const tagMap = get_tagMap(posts);
+    std::vector<TagPost> tps(posts.size());
+    TagMap tmap;
+    create_tagPost(posts, tps, tmap);
 
-    auto const allRelatedPosts = do_work(posts, tagMap);
+    std::vector<RelatedPosts> allRelatedPosts(posts.size());
+    do_work(0, tps.size(), tps, allRelatedPosts);
 
     auto const end = std::chrono::high_resolution_clock::now();
     auto const elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
