@@ -6,23 +6,40 @@ const TopPosts = struct { _id: *const []const u8, tags: *const [][]const u8, rel
 const stdout = std.io.getStdOut().writer();
 const fxhash = @import("fxhash.zig");
 
+inline fn is_top(m: u8, score: []const u8) u8 {
+    var x: u8 = 0;
+    for (score) |s| {
+        x |= @intFromBool(s > m);
+    }
+    return x;
+}
+
+inline fn get_top(b: usize, related: []*Post, score: []const u8, ps: []Post, min: *u8, t5: []u8) void {
+    for (score, b..) |s, i| {
+        if (s > min.*) {
+            var u: i8 = 3;
+            while (u >= 0 and s > t5[@intCast(u)]) : (u -= 1) {
+                t5[@intCast(u + 1)] = t5[@intCast(u)];
+                related[@intCast(u + 1)] = related[@intCast(u)];
+            }
+            t5[@intCast(u + 1)] = s;
+            related[@intCast(u + 1)] = &ps[i];
+            min.* = t5[4];
+        }
+    }
+}
+
 inline fn top5(related: []*Post, score: []u8, ps: []Post) void {
     var top_5 = [5]u8{ 0, 0, 0, 0, 0 };
     var min_tags: u8 = 0;
 
-    for (score, 0..) |count, j| {
-        if (count > min_tags) {
-
-            // Find the position to insert
-            var pos: i8 = 3;
-            while (pos >= 0 and count > top_5[@intCast(pos)]) : (pos -= 1) {
-                top_5[@intCast(pos + 1)] = top_5[@intCast(pos)];
-                related[@intCast(pos + 1)] = related[@intCast(pos)];
-            }
-
-            top_5[@intCast(pos + 1)] = count;
-            related[@intCast(pos + 1)] = &ps[j];
-            min_tags = top_5[4];
+    var b: usize = 0;
+    const cache_line: usize = 64;
+    while (b < score.len) : (b += cache_line) {
+        const e = @min(b + cache_line, score.len);
+        const chunk = score[b..e];
+        if (is_top(min_tags, chunk) > 0) {
+            get_top(b, related, chunk, ps, &min_tags, top_5[0..]);
         }
     }
 }
@@ -43,7 +60,7 @@ pub fn main() !void {
 
     for (parsed.value, 0..) |post_ele, i| {
         for (post_ele.tags) |tag| {
-            var get_or_put = try map.getOrPut(tag);
+            const get_or_put = try map.getOrPut(tag);
             if (get_or_put.found_existing) {
                 try get_or_put.value_ptr.*.append(@intCast(i));
             } else {
@@ -76,7 +93,7 @@ pub fn main() !void {
 
         tagged_post_count[post_index] = 0; // Don't count self
 
-        var related: []*Post = rl[post_index * 5 .. post_index * 5 + 5];
+        const related: []*Post = rl[post_index * 5 .. post_index * 5 + 5];
         top5(related, tagged_post_count, parsed.value);
         op.items[post_index] = .{ ._id = &parsed.value[post_index]._id, .tags = &parsed.value[post_index].tags, .related = related };
     }
