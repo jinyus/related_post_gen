@@ -6,11 +6,11 @@
 #include <chrono>
 #include <stdint.h>
 #include <memory>
-#include <span>
 #include "include/json.hpp" // Assuming this path is correct
 
 using json = nlohmann::json;
 constexpr size_t TOPN=5;
+const size_t CACHE_LINE_SIZE = 64;
 
 struct Post
 {
@@ -105,7 +105,6 @@ std::vector<Post> read_posts(){
     return posts;
 }
 
-
 void do_work(size_t b, size_t e, std::vector<TagPost>const& posts,  std::vector<RelatedPosts>& allRelatedPosts)
 {
     std::vector<uint8_t> taggedPostCount(posts.size());
@@ -132,24 +131,40 @@ void do_work(size_t b, size_t e, std::vector<TagPost>const& posts,  std::vector<
         uint8_t minTags = 0;
 
         //  custom priority queue to find top N
-        for (size_t j = 0; j < taggedPostCount.size(); j++)
+        for (size_t j = 0; j < taggedPostCount.size(); j += CACHE_LINE_SIZE)
         {
-            uint8_t count = taggedPostCount.at(j);
+            auto b = j;
+            auto e = b + CACHE_LINE_SIZE;
+            if (e > taggedPostCount.size()) {
+              e = taggedPostCount.size();
+            }
 
-            if (count > minTags)
-            {
-                int upperBound = 3;
-                while (upperBound >= 0 && count > top5.at(upperBound).first)
-                {
-                    top5.at(upperBound + 1) = top5.at(upperBound);
-                    upperBound -= 1;
+            auto isTop{false};
+            for (size_t x = b; x < e; x++) {
+                isTop |= taggedPostCount.at(x) > minTags;
+            }
+
+            if (isTop) {
+                for (size_t x = b; x < e; x++) {
+                    uint8_t count = taggedPostCount.at(x);
+
+                    if (count > minTags)
+                    {
+                        int upperBound = 3;
+                        while (upperBound >= 0 && count > top5.at(upperBound).first)
+                        {
+                            top5.at(upperBound + 1) = top5.at(upperBound);
+                            upperBound -= 1;
+                        }
+
+                        top5.at(upperBound + 1) = {count, x};
+                        minTags = top5.at(4).first;
+                    }
                 }
-
-                top5.at(upperBound + 1) = {count, j};
-                minTags = top5.at(4).first;
             }
         }
-        for (size_t i{0}; i<top5.size(); ++i) {
+
+        for (size_t i = 0; i < 5; ++i) {
             relatedPost.related.at(i) = std::move(std::unique_ptr<Post const, Deleter<Post const>>(posts.at(top5.at(i).second).post.get()));
         }
     }
