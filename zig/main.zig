@@ -6,6 +6,11 @@ const TopPosts = struct { _id: *const []const u8, tags: *const [][]const u8, rel
 const stdout = std.io.getStdOut().writer();
 const fxhash = @import("fxhash.zig");
 
+const Score = struct {
+    s: u8,
+    pos: usize,
+};
+
 inline fn is_top(m: u8, score: []const u8) u8 {
     var x: u8 = 0;
     for (score) |s| {
@@ -14,23 +19,22 @@ inline fn is_top(m: u8, score: []const u8) u8 {
     return x;
 }
 
-inline fn get_top(b: usize, related: []*Post, score: []const u8, ps: []Post, min: *u8, t5: []u8) void {
+inline fn get_top(b: usize, score: []const u8, min: *u8, t5: []Score) void {
     for (score, b..) |s, i| {
         if (s > min.*) {
             var u: i8 = 3;
-            while (u >= 0 and s > t5[@intCast(u)]) : (u -= 1) {
+            while (u >= 0 and s > t5[@intCast(u)].s) : (u -= 1) {
                 t5[@intCast(u + 1)] = t5[@intCast(u)];
-                related[@intCast(u + 1)] = related[@intCast(u)];
             }
-            t5[@intCast(u + 1)] = s;
-            related[@intCast(u + 1)] = &ps[i];
-            min.* = t5[4];
+            t5[@intCast(u + 1)] = Score{ .s = s, .pos = i };
+            min.* = t5[4].s;
         }
     }
 }
 
 inline fn top5(related: []*Post, score: []u8, ps: []Post) void {
-    var top_5 = [5]u8{ 0, 0, 0, 0, 0 };
+    const s = Score{ .s = 0, .pos = 0 };
+    var t5 = [5]Score{ s, s, s, s, s };
     var min_tags: u8 = 0;
 
     var b: usize = 0;
@@ -39,8 +43,11 @@ inline fn top5(related: []*Post, score: []u8, ps: []Post) void {
         const e = @min(b + cache_line, score.len);
         const chunk = score[b..e];
         if (is_top(min_tags, chunk) > 0) {
-            get_top(b, related, chunk, ps, &min_tags, top_5[0..]);
+            get_top(b, chunk, &min_tags, t5[0..]);
         }
+    }
+    for (t5, 0..) |t, i| {
+        related[i] = &ps[t.pos];
     }
 }
 
