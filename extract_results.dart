@@ -120,7 +120,7 @@ void main(List<String> args) {
     sortedScores.forEach(print);
     sortedMemScores.forEach(print);
     print(
-        '${file.readAsStringSync()}\n\nEnough scores not found. Need 3 scores for each language to update readme.md');
+        '${file.readAsStringSync()}\n\nEnough scores not found. Need 3 scores for each language to update readme.md - $currentLang');
     return;
   }
 
