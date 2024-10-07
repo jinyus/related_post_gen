@@ -46,7 +46,6 @@ while idx < POST_SIZE
       tagged_post_count[o[tj]] += 1
       tj += 1
     end
-    tag_map[tag]
 
     ti += 1
   end
