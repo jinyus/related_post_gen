@@ -83,6 +83,7 @@ docker run -e TEST_NAME=all -it --rm databench
 | Vlang | 28.81 ms | 429.55 ms | 3.74 s | 4.20 s |
 | F# (JIT) | 26.25 ms | 410.77 ms | 3.92 s | 4.36 s |
 | Swift | 34.58 ms | 496.38 ms | 4.17 s | 4.70 s |
+| Haskell | 36.30 ms | 508.33 ms | 4.42 s | 4.96 s |
 | Odin | 34.53 ms | 510.76 ms | 4.47 s | 5.02 s |
 | Crystal | 39.44 ms | 582.76 ms | 5.13 s | 5.75 s |
 | JS (Bun) | 64.60 ms | 763.33 ms | 6.32 s | 7.15 s |
