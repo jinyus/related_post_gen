@@ -161,26 +161,26 @@ D Concurrent:
 
 Ruby:
 
-    Processing time (w/o IO): 2239ms
-    total: 2.40s memory: 35924k
-    Processing time (w/o IO): 2242ms
-    total: 2.33s memory: 35632k
-    Processing time (w/o IO): 2234ms
-    total: 2.32s memory: 35864k
-    Processing time (w/o IO): 2240ms
-    total: 2.32s memory: 35920k
-    Processing time (w/o IO): 2230ms
-    total: 2.32s memory: 35752k
-    Processing time (w/o IO): 2227ms
-    total: 2.31s memory: 35760k
-    Processing time (w/o IO): 2227ms
-    total: 2.31s memory: 35876k
-    Processing time (w/o IO): 2229ms
-    total: 2.31s memory: 36056k
-    Processing time (w/o IO): 2255ms
-    total: 2.34s memory: 35872k
-    Processing time (w/o IO): 2755ms
-    total: 2.84s memory: 36056k
+    Processing time (w/o IO): 1461ms
+    total: 1.62s memory: 37888k
+    Processing time (w/o IO): 1555ms
+    total: 1.64s memory: 37760k
+    Processing time (w/o IO): 1461ms
+    total: 1.54s memory: 38016k
+    Processing time (w/o IO): 1456ms
+    total: 1.54s memory: 37888k
+    Processing time (w/o IO): 1447ms
+    total: 1.54s memory: 38016k
+    Processing time (w/o IO): 1527ms
+    total: 1.62s memory: 37888k
+    Processing time (w/o IO): 1570ms
+    total: 1.66s memory: 37888k
+    Processing time (w/o IO): 1552ms
+    total: 1.64s memory: 38016k
+    Processing time (w/o IO): 1485ms
+    total: 1.57s memory: 38016k
+    Processing time (w/o IO): 1483ms
+    total: 1.57s memory: 38016k
 
 Inko:
 
@@ -253,26 +253,26 @@ Numpy:
 
 D Concurrent (v2):
 
-        Processing time (w/o IO): 5.756ms
-        total: 0.05s memory: 11904k
-        Processing time (w/o IO): 6.069ms
-        total: 0.06s memory: 12032k
-        Processing time (w/o IO): 5.782ms
-        total: 0.06s memory: 12160k
-        Processing time (w/o IO): 5.765ms
-        total: 0.05s memory: 12160k
-        Processing time (w/o IO): 5.8ms
-        total: 0.05s memory: 12160k
-        Processing time (w/o IO): 5.739ms
-        total: 0.05s memory: 11776k
-        Processing time (w/o IO): 6.159ms
-        total: 0.05s memory: 11904k
-        Processing time (w/o IO): 5.776ms
-        total: 0.05s memory: 12160k
-        Processing time (w/o IO): 5.739ms
-        total: 0.05s memory: 12032k
-        Processing time (w/o IO): 5.749ms
-        total: 0.05s memory: 11904k
+    Processing time (w/o IO): 5.756ms
+    total: 0.05s memory: 11904k
+    Processing time (w/o IO): 6.069ms
+    total: 0.06s memory: 12032k
+    Processing time (w/o IO): 5.782ms
+    total: 0.06s memory: 12160k
+    Processing time (w/o IO): 5.765ms
+    total: 0.05s memory: 12160k
+    Processing time (w/o IO): 5.8ms
+    total: 0.05s memory: 12160k
+    Processing time (w/o IO): 5.739ms
+    total: 0.05s memory: 11776k
+    Processing time (w/o IO): 6.159ms
+    total: 0.05s memory: 11904k
+    Processing time (w/o IO): 5.776ms
+    total: 0.05s memory: 12160k
+    Processing time (w/o IO): 5.739ms
+    total: 0.05s memory: 12032k
+    Processing time (w/o IO): 5.749ms
+    total: 0.05s memory: 11904k
 
 C++:
 
@@ -370,131 +370,131 @@ Numpy:
 
     Traceback (most recent call last):
       File "/app/related_post_gen/python/./related_np.py", line 65, in <module>
-        main()
+    main()
       File "/app/related_post_gen/python/./related_np.py", line 25, in main
-        tag_map = coo_array(
-                  ^^^^^^^^^^
+    tag_map = coo_array(
+    	  ^^^^^^^^^^
       File "/app/related_post_gen/python/venv/lib/python3.12/site-packages/scipy/sparse/_coo.py", line 99, in __init__
-        self._check()
+    self._check()
       File "/app/related_post_gen/python/venv/lib/python3.12/site-packages/scipy/sparse/_coo.py", line 188, in _check
-        raise ValueError('mismatching number of index arrays for shape; '
+    raise ValueError('mismatching number of index arrays for shape; '
     ValueError: mismatching number of index arrays for shape; got 1, expected 2
     Command exited with non-zero status 1
     total: 0.21s memory: 64012k
     Traceback (most recent call last):
       File "/app/related_post_gen/python/./related_np.py", line 65, in <module>
-        main()
+    main()
       File "/app/related_post_gen/python/./related_np.py", line 25, in main
-        tag_map = coo_array(
-                  ^^^^^^^^^^
+    tag_map = coo_array(
+    	  ^^^^^^^^^^
       File "/app/related_post_gen/python/venv/lib/python3.12/site-packages/scipy/sparse/_coo.py", line 99, in __init__
-        self._check()
+    self._check()
       File "/app/related_post_gen/python/venv/lib/python3.12/site-packages/scipy/sparse/_coo.py", line 188, in _check
-        raise ValueError('mismatching number of index arrays for shape; '
+    raise ValueError('mismatching number of index arrays for shape; '
     ValueError: mismatching number of index arrays for shape; got 1, expected 2
     Command exited with non-zero status 1
     total: 0.19s memory: 63728k
     Traceback (most recent call last):
       File "/app/related_post_gen/python/./related_np.py", line 65, in <module>
-        main()
+    main()
       File "/app/related_post_gen/python/./related_np.py", line 25, in main
-        tag_map = coo_array(
-                  ^^^^^^^^^^
+    tag_map = coo_array(
+    	  ^^^^^^^^^^
       File "/app/related_post_gen/python/venv/lib/python3.12/site-packages/scipy/sparse/_coo.py", line 99, in __init__
-        self._check()
+    self._check()
       File "/app/related_post_gen/python/venv/lib/python3.12/site-packages/scipy/sparse/_coo.py", line 188, in _check
-        raise ValueError('mismatching number of index arrays for shape; '
+    raise ValueError('mismatching number of index arrays for shape; '
     ValueError: mismatching number of index arrays for shape; got 1, expected 2
     Command exited with non-zero status 1
     total: 0.19s memory: 63984k
     Traceback (most recent call last):
       File "/app/related_post_gen/python/./related_np.py", line 65, in <module>
-        main()
+    main()
       File "/app/related_post_gen/python/./related_np.py", line 25, in main
-        tag_map = coo_array(
-                  ^^^^^^^^^^
+    tag_map = coo_array(
+    	  ^^^^^^^^^^
       File "/app/related_post_gen/python/venv/lib/python3.12/site-packages/scipy/sparse/_coo.py", line 99, in __init__
-        self._check()
+    self._check()
       File "/app/related_post_gen/python/venv/lib/python3.12/site-packages/scipy/sparse/_coo.py", line 188, in _check
-        raise ValueError('mismatching number of index arrays for shape; '
+    raise ValueError('mismatching number of index arrays for shape; '
     ValueError: mismatching number of index arrays for shape; got 1, expected 2
     Command exited with non-zero status 1
     total: 0.19s memory: 63820k
     Traceback (most recent call last):
       File "/app/related_post_gen/python/./related_np.py", line 65, in <module>
-        main()
+    main()
       File "/app/related_post_gen/python/./related_np.py", line 25, in main
-        tag_map = coo_array(
-                  ^^^^^^^^^^
+    tag_map = coo_array(
+    	  ^^^^^^^^^^
       File "/app/related_post_gen/python/venv/lib/python3.12/site-packages/scipy/sparse/_coo.py", line 99, in __init__
-        self._check()
+    self._check()
       File "/app/related_post_gen/python/venv/lib/python3.12/site-packages/scipy/sparse/_coo.py", line 188, in _check
-        raise ValueError('mismatching number of index arrays for shape; '
+    raise ValueError('mismatching number of index arrays for shape; '
     ValueError: mismatching number of index arrays for shape; got 1, expected 2
     Command exited with non-zero status 1
     total: 0.19s memory: 64132k
     Traceback (most recent call last):
       File "/app/related_post_gen/python/./related_np.py", line 65, in <module>
-        main()
+    main()
       File "/app/related_post_gen/python/./related_np.py", line 25, in main
-        tag_map = coo_array(
-                  ^^^^^^^^^^
+    tag_map = coo_array(
+    	  ^^^^^^^^^^
       File "/app/related_post_gen/python/venv/lib/python3.12/site-packages/scipy/sparse/_coo.py", line 99, in __init__
-        self._check()
+    self._check()
       File "/app/related_post_gen/python/venv/lib/python3.12/site-packages/scipy/sparse/_coo.py", line 188, in _check
-        raise ValueError('mismatching number of index arrays for shape; '
+    raise ValueError('mismatching number of index arrays for shape; '
     ValueError: mismatching number of index arrays for shape; got 1, expected 2
     Command exited with non-zero status 1
     total: 0.19s memory: 63792k
     Traceback (most recent call last):
       File "/app/related_post_gen/python/./related_np.py", line 65, in <module>
-        main()
+    main()
       File "/app/related_post_gen/python/./related_np.py", line 25, in main
-        tag_map = coo_array(
-                  ^^^^^^^^^^
+    tag_map = coo_array(
+    	  ^^^^^^^^^^
       File "/app/related_post_gen/python/venv/lib/python3.12/site-packages/scipy/sparse/_coo.py", line 99, in __init__
-        self._check()
+    self._check()
       File "/app/related_post_gen/python/venv/lib/python3.12/site-packages/scipy/sparse/_coo.py", line 188, in _check
-        raise ValueError('mismatching number of index arrays for shape; '
+    raise ValueError('mismatching number of index arrays for shape; '
     ValueError: mismatching number of index arrays for shape; got 1, expected 2
     Command exited with non-zero status 1
     total: 0.20s memory: 63856k
     Traceback (most recent call last):
       File "/app/related_post_gen/python/./related_np.py", line 65, in <module>
-        main()
+    main()
       File "/app/related_post_gen/python/./related_np.py", line 25, in main
-        tag_map = coo_array(
-                  ^^^^^^^^^^
+    tag_map = coo_array(
+    	  ^^^^^^^^^^
       File "/app/related_post_gen/python/venv/lib/python3.12/site-packages/scipy/sparse/_coo.py", line 99, in __init__
-        self._check()
+    self._check()
       File "/app/related_post_gen/python/venv/lib/python3.12/site-packages/scipy/sparse/_coo.py", line 188, in _check
-        raise ValueError('mismatching number of index arrays for shape; '
+    raise ValueError('mismatching number of index arrays for shape; '
     ValueError: mismatching number of index arrays for shape; got 1, expected 2
     Command exited with non-zero status 1
     total: 0.19s memory: 64116k
     Traceback (most recent call last):
       File "/app/related_post_gen/python/./related_np.py", line 65, in <module>
-        main()
+    main()
       File "/app/related_post_gen/python/./related_np.py", line 25, in main
-        tag_map = coo_array(
-                  ^^^^^^^^^^
+    tag_map = coo_array(
+    	  ^^^^^^^^^^
       File "/app/related_post_gen/python/venv/lib/python3.12/site-packages/scipy/sparse/_coo.py", line 99, in __init__
-        self._check()
+    self._check()
       File "/app/related_post_gen/python/venv/lib/python3.12/site-packages/scipy/sparse/_coo.py", line 188, in _check
-        raise ValueError('mismatching number of index arrays for shape; '
+    raise ValueError('mismatching number of index arrays for shape; '
     ValueError: mismatching number of index arrays for shape; got 1, expected 2
     Command exited with non-zero status 1
     total: 0.19s memory: 64076k
     Traceback (most recent call last):
       File "/app/related_post_gen/python/./related_np.py", line 65, in <module>
-        main()
+    main()
       File "/app/related_post_gen/python/./related_np.py", line 25, in main
-        tag_map = coo_array(
-                  ^^^^^^^^^^
+    tag_map = coo_array(
+    	  ^^^^^^^^^^
       File "/app/related_post_gen/python/venv/lib/python3.12/site-packages/scipy/sparse/_coo.py", line 99, in __init__
-        self._check()
+    self._check()
       File "/app/related_post_gen/python/venv/lib/python3.12/site-packages/scipy/sparse/_coo.py", line 188, in _check
-        raise ValueError('mismatching number of index arrays for shape; '
+    raise ValueError('mismatching number of index arrays for shape; '
     ValueError: mismatching number of index arrays for shape; got 1, expected 2
     Command exited with non-zero status 1
     total: 0.19s memory: 64244k
@@ -984,49 +984,49 @@ Nim Concurrent:
 
 F# (JIT):
 
-        Processing time (w/o IO): 26.1701ms
-        total: 0.56s memory: 165700k
-        Processing time (w/o IO): 26.3533ms
-        total: 0.55s memory: 165700k
-        Processing time (w/o IO): 26.2277ms
-        total: 0.56s memory: 165664k
-        Processing time (w/o IO): 26.6979ms
-        total: 0.56s memory: 166084k
-        Processing time (w/o IO): 27.3787ms
-        total: 0.56s memory: 166356k
-        Processing time (w/o IO): 25.8271ms
-        total: 0.55s memory: 165820k
-        Processing time (w/o IO): 25.8405ms
-        total: 0.56s memory: 165972k
-        Processing time (w/o IO): 25.8508ms
-        total: 0.55s memory: 165948k
-        Processing time (w/o IO): 25.8259ms
-        total: 0.56s memory: 165792k
-        Processing time (w/o IO): 26.3125ms
-        total: 0.56s memory: 165828k
+    Processing time (w/o IO): 26.1701ms
+    total: 0.56s memory: 165700k
+    Processing time (w/o IO): 26.3533ms
+    total: 0.55s memory: 165700k
+    Processing time (w/o IO): 26.2277ms
+    total: 0.56s memory: 165664k
+    Processing time (w/o IO): 26.6979ms
+    total: 0.56s memory: 166084k
+    Processing time (w/o IO): 27.3787ms
+    total: 0.56s memory: 166356k
+    Processing time (w/o IO): 25.8271ms
+    total: 0.55s memory: 165820k
+    Processing time (w/o IO): 25.8405ms
+    total: 0.56s memory: 165972k
+    Processing time (w/o IO): 25.8508ms
+    total: 0.55s memory: 165948k
+    Processing time (w/o IO): 25.8259ms
+    total: 0.56s memory: 165792k
+    Processing time (w/o IO): 26.3125ms
+    total: 0.56s memory: 165828k
 
 F# (AOT):
 
-        Processing time (w/o IO): 24.7784ms
-        total: 0.53s memory: 132836k
-        Processing time (w/o IO): 24.7284ms
-        total: 0.53s memory: 132752k
-        Processing time (w/o IO): 25.02ms
-        total: 0.53s memory: 132944k
-        Processing time (w/o IO): 24.6434ms
-        total: 0.53s memory: 133072k
-        Processing time (w/o IO): 24.7428ms
-        total: 0.53s memory: 132828k
-        Processing time (w/o IO): 24.5972ms
-        total: 0.54s memory: 133656k
-        Processing time (w/o IO): 25.009ms
-        total: 0.54s memory: 133216k
-        Processing time (w/o IO): 24.6257ms
-        total: 0.53s memory: 132816k
-        Processing time (w/o IO): 24.9423ms
-        total: 0.53s memory: 132944k
-        Processing time (w/o IO): 24.6817ms
-        total: 0.53s memory: 133072k
+    Processing time (w/o IO): 24.7784ms
+    total: 0.53s memory: 132836k
+    Processing time (w/o IO): 24.7284ms
+    total: 0.53s memory: 132752k
+    Processing time (w/o IO): 25.02ms
+    total: 0.53s memory: 132944k
+    Processing time (w/o IO): 24.6434ms
+    total: 0.53s memory: 133072k
+    Processing time (w/o IO): 24.7428ms
+    total: 0.53s memory: 132828k
+    Processing time (w/o IO): 24.5972ms
+    total: 0.54s memory: 133656k
+    Processing time (w/o IO): 25.009ms
+    total: 0.54s memory: 133216k
+    Processing time (w/o IO): 24.6257ms
+    total: 0.53s memory: 132816k
+    Processing time (w/o IO): 24.9423ms
+    total: 0.53s memory: 132944k
+    Processing time (w/o IO): 24.6817ms
+    total: 0.53s memory: 133072k
 
 F# Concurrent:
 
@@ -1380,49 +1380,49 @@ Scala Native:
 
 Common Lisp (SBCL):
 
-        Processing time (w/o IO): 0.13 s
-        total: 0.22s memory: 120832k
-        Processing time (w/o IO): 0.13 s
-        total: 0.23s memory: 120960k
-        Processing time (w/o IO): 0.13 s
-        total: 0.22s memory: 120960k
-        Processing time (w/o IO): 0.13 s
-        total: 0.22s memory: 120832k
-        Processing time (w/o IO): 0.13 s
-        total: 0.23s memory: 120960k
-        Processing time (w/o IO): 0.13 s
-        total: 0.23s memory: 121344k
-        Processing time (w/o IO): 0.13 s
-        total: 0.22s memory: 120960k
-        Processing time (w/o IO): 0.13 s
-        total: 0.23s memory: 121088k
-        Processing time (w/o IO): 0.13 s
-        total: 0.23s memory: 121088k
-        Processing time (w/o IO): 0.13 s
-        total: 0.23s memory: 120832k
+    Processing time (w/o IO): 0.13 s
+    total: 0.22s memory: 120832k
+    Processing time (w/o IO): 0.13 s
+    total: 0.23s memory: 120960k
+    Processing time (w/o IO): 0.13 s
+    total: 0.22s memory: 120960k
+    Processing time (w/o IO): 0.13 s
+    total: 0.22s memory: 120832k
+    Processing time (w/o IO): 0.13 s
+    total: 0.23s memory: 120960k
+    Processing time (w/o IO): 0.13 s
+    total: 0.23s memory: 121344k
+    Processing time (w/o IO): 0.13 s
+    total: 0.22s memory: 120960k
+    Processing time (w/o IO): 0.13 s
+    total: 0.23s memory: 121088k
+    Processing time (w/o IO): 0.13 s
+    total: 0.23s memory: 121088k
+    Processing time (w/o IO): 0.13 s
+    total: 0.23s memory: 120832k
 
 Haskell:
 
-        Processing time (w/o IO): 36ms
-        total: 0.09s memory: 22272k
-        Processing time (w/o IO): 36ms
-        total: 0.08s memory: 22400k
-        Processing time (w/o IO): 36ms
-        total: 0.08s memory: 22400k
-        Processing time (w/o IO): 36ms
-        total: 0.08s memory: 22400k
-        Processing time (w/o IO): 36ms
-        total: 0.08s memory: 22400k
-        Processing time (w/o IO): 39ms
-        total: 0.09s memory: 22400k
-        Processing time (w/o IO): 36ms
-        total: 0.08s memory: 22272k
-        Processing time (w/o IO): 36ms
-        total: 0.08s memory: 22272k
-        Processing time (w/o IO): 36ms
-        total: 0.08s memory: 22528k
-        Processing time (w/o IO): 36ms
-        total: 0.08s memory: 22400k
+    Processing time (w/o IO): 36ms
+    total: 0.09s memory: 22272k
+    Processing time (w/o IO): 36ms
+    total: 0.08s memory: 22400k
+    Processing time (w/o IO): 36ms
+    total: 0.08s memory: 22400k
+    Processing time (w/o IO): 36ms
+    total: 0.08s memory: 22400k
+    Processing time (w/o IO): 36ms
+    total: 0.08s memory: 22400k
+    Processing time (w/o IO): 39ms
+    total: 0.09s memory: 22400k
+    Processing time (w/o IO): 36ms
+    total: 0.08s memory: 22272k
+    Processing time (w/o IO): 36ms
+    total: 0.08s memory: 22272k
+    Processing time (w/o IO): 36ms
+    total: 0.08s memory: 22528k
+    Processing time (w/o IO): 36ms
+    total: 0.08s memory: 22400k
 
 Go:
 
@@ -1489,10 +1489,10 @@ D Concurrent:
 
 Ruby:
 
-    Processing time (w/o IO): 35211ms
-    total: 35.44s memory: 77696k
-    Processing time (w/o IO): 35145ms
-    total: 35.38s memory: 77696k
+    Processing time (w/o IO): 22562ms
+    total: 22.78s memory: 79104k
+    Processing time (w/o IO): 23253ms
+    total: 23.47s memory: 79104k
 
 Inko:
 
@@ -1519,12 +1519,12 @@ Numpy:
 
 D Concurrent (v2):
 
-        Processing time (w/o IO): 44.742ms
-        total: 0.25s memory: 43776k
-        Processing time (w/o IO): 44.066ms
-        total: 0.26s memory: 44160k
-        Processing time (w/o IO): 44.24ms
-        total: 0.25s memory: 43904k
+    Processing time (w/o IO): 44.742ms
+    total: 0.25s memory: 43776k
+    Processing time (w/o IO): 44.066ms
+    total: 0.26s memory: 44160k
+    Processing time (w/o IO): 44.24ms
+    total: 0.25s memory: 43904k
 
 C++:
 
@@ -1564,27 +1564,27 @@ Numpy:
 
     Traceback (most recent call last):
       File "/app/related_post_gen/python/./related_np.py", line 65, in <module>
-        main()
+    main()
       File "/app/related_post_gen/python/./related_np.py", line 25, in main
-        tag_map = coo_array(
-                  ^^^^^^^^^^
+    tag_map = coo_array(
+    	  ^^^^^^^^^^
       File "/app/related_post_gen/python/venv/lib/python3.12/site-packages/scipy/sparse/_coo.py", line 99, in __init__
-        self._check()
+    self._check()
       File "/app/related_post_gen/python/venv/lib/python3.12/site-packages/scipy/sparse/_coo.py", line 188, in _check
-        raise ValueError('mismatching number of index arrays for shape; '
+    raise ValueError('mismatching number of index arrays for shape; '
     ValueError: mismatching number of index arrays for shape; got 1, expected 2
     Command exited with non-zero status 1
     total: 0.64s memory: 85572k
     Traceback (most recent call last):
       File "/app/related_post_gen/python/./related_np.py", line 65, in <module>
-        main()
+    main()
       File "/app/related_post_gen/python/./related_np.py", line 25, in main
-        tag_map = coo_array(
-                  ^^^^^^^^^^
+    tag_map = coo_array(
+    	  ^^^^^^^^^^
       File "/app/related_post_gen/python/venv/lib/python3.12/site-packages/scipy/sparse/_coo.py", line 99, in __init__
-        self._check()
+    self._check()
       File "/app/related_post_gen/python/venv/lib/python3.12/site-packages/scipy/sparse/_coo.py", line 188, in _check
-        raise ValueError('mismatching number of index arrays for shape; '
+    raise ValueError('mismatching number of index arrays for shape; '
     ValueError: mismatching number of index arrays for shape; got 1, expected 2
     Command exited with non-zero status 1
     total: 0.25s memory: 85580k
@@ -1780,21 +1780,21 @@ Nim Concurrent:
 
 F# (JIT):
 
-        Processing time (w/o IO): 373.6142ms
-        total: 2.29s memory: 492308k
-        Processing time (w/o IO): 480.556ms
-        total: 2.51s memory: 491956k
-        Processing time (w/o IO): 378.1468ms
-        total: 2.31s memory: 492304k
+    Processing time (w/o IO): 373.6142ms
+    total: 2.29s memory: 492308k
+    Processing time (w/o IO): 480.556ms
+    total: 2.51s memory: 491956k
+    Processing time (w/o IO): 378.1468ms
+    total: 2.31s memory: 492304k
 
 F# (AOT):
 
-        Processing time (w/o IO): 365.4723ms
-        total: 2.69s memory: 527588k
-        Processing time (w/o IO): 366.5599ms
-        total: 2.68s memory: 528152k
-        Processing time (w/o IO): 366.0836ms
-        total: 2.68s memory: 527676k
+    Processing time (w/o IO): 365.4723ms
+    total: 2.69s memory: 527588k
+    Processing time (w/o IO): 366.5599ms
+    total: 2.68s memory: 528152k
+    Processing time (w/o IO): 366.0836ms
+    total: 2.68s memory: 527676k
 
 F# Concurrent:
 
@@ -1930,19 +1930,19 @@ Scala Native:
 
 Common Lisp (SBCL):
 
-        Processing time (w/o IO): 0.99 s
-        total: 1.37s memory: 149368k
-        Processing time (w/o IO): 1.00 s
-        total: 1.40s memory: 149236k
+    Processing time (w/o IO): 0.99 s
+    total: 1.37s memory: 149368k
+    Processing time (w/o IO): 1.00 s
+    total: 1.40s memory: 149236k
 
 Haskell:
 
-        Processing time (w/o IO): 505ms
-        total: 0.75s memory: 54400k
-        Processing time (w/o IO): 514ms
-        total: 0.76s memory: 54400k
-        Processing time (w/o IO): 506ms
-        total: 0.76s memory: 54528k
+    Processing time (w/o IO): 505ms
+    total: 0.75s memory: 54400k
+    Processing time (w/o IO): 514ms
+    total: 0.76s memory: 54400k
+    Processing time (w/o IO): 506ms
+    total: 0.76s memory: 54528k
 
 Go:
 
@@ -2009,10 +2009,10 @@ D Concurrent:
 
 Ruby:
 
-    Processing time (w/o IO): 316806ms
-    total: 317.42s memory: 189184k
-    Processing time (w/o IO): 316269ms
-    total: 316.88s memory: 189184k
+    Processing time (w/o IO): 218813ms
+    total: 219.37s memory: 184860k
+    Processing time (w/o IO): 208466ms
+    total: 209.08s memory: 184068k
 
 Inko:
 
@@ -2037,7 +2037,7 @@ Numpy:
     main()
     File "/app/related_post_gen/python/./related_np.py", line 37, in main
     relatedness = tag_map @ tag_map.T
-            ~~~~~~~~^~~~~~~~~~~
+        ~~~~~~~~^~~~~~~~~~~
     File "/app/related_post_gen/python/venv/lib/python3.11/site-packages/scipy/sparse/_base.py", line 624, in __matmul__
     return self._mul_dispatch(other)
     ^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -2046,7 +2046,7 @@ Numpy:
     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
     File "/app/related_post_gen/python/venv/lib/python3.11/site-packages/scipy/sparse/_compressed.py", line 528, in _mul_sparse_matrix
     indices = np.empty(nnz, dtype=idx_dtype)
-        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
     numpy.core._exceptions._ArrayMemoryError: Unable to allocate 15.3 GiB for an array with shape (2048294860,) and data type int64
     Command exited with non-zero status 1
     total: 6.03s memory: 143256k
@@ -2055,7 +2055,7 @@ Numpy:
     main()
     File "/app/related_post_gen/python/./related_np.py", line 37, in main
     relatedness = tag_map @ tag_map.T
-            ~~~~~~~~^~~~~~~~~~~
+        ~~~~~~~~^~~~~~~~~~~
     File "/app/related_post_gen/python/venv/lib/python3.11/site-packages/scipy/sparse/_base.py", line 624, in __matmul__
     return self._mul_dispatch(other)
     ^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -2064,19 +2064,19 @@ Numpy:
     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
     File "/app/related_post_gen/python/venv/lib/python3.11/site-packages/scipy/sparse/_compressed.py", line 528, in _mul_sparse_matrix
     indices = np.empty(nnz, dtype=idx_dtype)
-        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
     numpy.core._exceptions._ArrayMemoryError: Unable to allocate 15.3 GiB for an array with shape (2048294860,) and data type int64
     Command exited with non-zero status 1
     total: 6.02s memory: 143112k
 
 D Concurrent (v2):
 
-        Processing time (w/o IO): 267.508ms
-        total: 0.97s memory: 143264k
-        Processing time (w/o IO): 264.891ms
-        total: 0.95s memory: 143516k
-        Processing time (w/o IO): 265ms
-        total: 0.97s memory: 143520k
+    Processing time (w/o IO): 267.508ms
+    total: 0.97s memory: 143264k
+    Processing time (w/o IO): 264.891ms
+    total: 0.95s memory: 143516k
+    Processing time (w/o IO): 265ms
+    total: 0.97s memory: 143520k
 
 C++:
 
@@ -2116,27 +2116,27 @@ Numpy:
 
     Traceback (most recent call last):
       File "/app/related_post_gen/python/./related_np.py", line 65, in <module>
-        main()
+    main()
       File "/app/related_post_gen/python/./related_np.py", line 25, in main
-        tag_map = coo_array(
-                  ^^^^^^^^^^
+    tag_map = coo_array(
+    	  ^^^^^^^^^^
       File "/app/related_post_gen/python/venv/lib/python3.12/site-packages/scipy/sparse/_coo.py", line 99, in __init__
-        self._check()
+    self._check()
       File "/app/related_post_gen/python/venv/lib/python3.12/site-packages/scipy/sparse/_coo.py", line 188, in _check
-        raise ValueError('mismatching number of index arrays for shape; '
+    raise ValueError('mismatching number of index arrays for shape; '
     ValueError: mismatching number of index arrays for shape; got 1, expected 2
     Command exited with non-zero status 1
     total: 0.45s memory: 145396k
     Traceback (most recent call last):
       File "/app/related_post_gen/python/./related_np.py", line 65, in <module>
-        main()
+    main()
       File "/app/related_post_gen/python/./related_np.py", line 25, in main
-        tag_map = coo_array(
-                  ^^^^^^^^^^
+    tag_map = coo_array(
+    	  ^^^^^^^^^^
       File "/app/related_post_gen/python/venv/lib/python3.12/site-packages/scipy/sparse/_coo.py", line 99, in __init__
-        self._check()
+    self._check()
       File "/app/related_post_gen/python/venv/lib/python3.12/site-packages/scipy/sparse/_coo.py", line 188, in _check
-        raise ValueError('mismatching number of index arrays for shape; '
+    raise ValueError('mismatching number of index arrays for shape; '
     ValueError: mismatching number of index arrays for shape; got 1, expected 2
     Command exited with non-zero status 1
     total: 0.44s memory: 145144k
@@ -2332,21 +2332,21 @@ Nim Concurrent:
 
 F# (JIT):
 
-        Processing time (w/o IO): 3286.616ms
-        total: 10.45s memory: 1047176k
-        Processing time (w/o IO): 4223.2313ms
-        total: 12.37s memory: 1047664k
-        Processing time (w/o IO): 4244.8891ms
-        total: 12.36s memory: 1045644k
+    Processing time (w/o IO): 3286.616ms
+    total: 10.45s memory: 1047176k
+    Processing time (w/o IO): 4223.2313ms
+    total: 12.37s memory: 1047664k
+    Processing time (w/o IO): 4244.8891ms
+    total: 12.36s memory: 1045644k
 
 F# (AOT):
 
-        Processing time (w/o IO): 3243.0037ms
-        total: 12.17s memory: 957780k
-        Processing time (w/o IO): 3219.8705ms
-        total: 12.14s memory: 972008k
-        Processing time (w/o IO): 3239.2927ms
-        total: 12.17s memory: 959712k
+    Processing time (w/o IO): 3243.0037ms
+    total: 12.17s memory: 957780k
+    Processing time (w/o IO): 3219.8705ms
+    total: 12.14s memory: 972008k
+    Processing time (w/o IO): 3239.2927ms
+    total: 12.17s memory: 959712k
 
 F# Concurrent:
 
@@ -2482,16 +2482,16 @@ Scala Native:
 
 Common Lisp (SBCL):
 
-        Processing time (w/o IO): 8.33 s
-        total: 9.74s memory: 352040k
-        Processing time (w/o IO): 8.41 s
-        total: 9.85s memory: 351908k
+    Processing time (w/o IO): 8.33 s
+    total: 9.74s memory: 352040k
+    Processing time (w/o IO): 8.41 s
+    total: 9.85s memory: 351908k
 
 Haskell:
 
-        Processing time (w/o IO): 4438ms
-        total: 5.22s memory: 143872k
-        Processing time (w/o IO): 4405ms
-        total: 5.21s memory: 143744k
-        Processing time (w/o IO): 4415ms
-        total: 5.21s memory: 143744k
+    Processing time (w/o IO): 4438ms
+    total: 5.22s memory: 143872k
+    Processing time (w/o IO): 4405ms
+    total: 5.21s memory: 143744k
+    Processing time (w/o IO): 4415ms
+    total: 5.21s memory: 143744k

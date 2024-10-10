@@ -104,7 +104,7 @@ docker run -e TEST_NAME=all -it --rm databench
 | Lua | 827.92 ms | 12.78 s | 113.92 s | 127.53 s |
 | Python | 1.20 s | 18.93 s | 169.05 s | 189.18 s |
 | Lobster (JIT) | 1.35 s | 20.78 s | 195.33 s | 217.46 s |
-| Ruby | 2.29 s | 35.18 s | 316.54 s | 354.00 s |
+| Ruby | 1.50 s | 22.91 s | 213.64 s | 238.05 s |
 | Inko[^2] | 6.29 s | 98.05 s | 875.39 s | 979.73 s |
 | Numpy | 216.51 ms | OOM | 3.27 s | Infinity s |
 
