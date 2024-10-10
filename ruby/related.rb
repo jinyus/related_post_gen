@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'json'
 require 'time'
 
@@ -7,24 +9,45 @@ posts = JSON.parse(File.read('../posts.json'), symbolize_names: true)
 
 t1 = Time.now
 
+POST_SIZE = posts.length
 tag_map = Hash.new { |hash, key| hash[key] = [] }
 
-posts.each_with_index do |post, i|
-  post[:tags].each do |tag|
-    tag_map[tag] << i
+i = 0
+while i < POST_SIZE
+  tags = posts[i][:tags]
+  tag_size = tags&.length.to_i
+
+  j = 0
+  while j < tag_size
+    tag_map[tags[j]] << i
+    j += 1
   end
+
+  i += 1
 end
 
-all_related_posts = Array.new(posts.size)
-tagged_post_count = Array.new(posts.size, 0)
+all_related_posts = Array.new(POST_SIZE)
+tagged_post_count = Array.new(POST_SIZE, 0)
 
-posts.each_with_index do |post, idx|
+idx = 0
+while idx < POST_SIZE
+  post = posts[idx]
+  tags = post[:tags]
+
   tagged_post_count.fill(0)
 
-  post[:tags].each do |tag|
-    tag_map[tag].each do |oidx|
-      tagged_post_count[oidx] += 1
+  ti = 0
+  while ti < tags.length
+    tag = tags[ti]
+    o = tag_map[tag]
+
+    tj = 0
+    while tj < o.length
+      tagged_post_count[o[tj]] += 1
+      tj += 1
     end
+
+    ti += 1
   end
 
   tagged_post_count[idx] = 0
@@ -33,7 +56,9 @@ posts.each_with_index do |post, idx|
   top_posts = Array.new(TOPN)
   min_tags = 0
 
-  tagged_post_count.each_with_index do |count, j|
+  j = 0
+  while j < tagged_post_count.length
+    count = tagged_post_count[j]
     if count > min_tags
       upper_bound = (TOPN - 2)
 
@@ -49,9 +74,11 @@ posts.each_with_index do |post, idx|
 
       min_tags = top5[TOPN - 1]
     end
+    j += 1
   end
 
-  all_related_posts[idx] = {_id: post[:_id],tags: post[:tags], related: top_posts}
+  all_related_posts[idx] = {_id: post[:_id], tags: tags, related: top_posts}
+  idx += 1
 end
 
 t2 = Time.now
