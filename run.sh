@@ -1010,6 +1010,7 @@ elif [ "$first_arg" = "all" ]; then
         run_neat || echo -e "\n" &&
         run_common_lisp_sbcl || echo -e "\n" &&
         # run_r || echo -e "\n" && # remove for now until docker is setup
+        run_haskell || echo -e "\n" &&
         echo -e "Finished running all\n"
 
 elif [ "$first_arg" = "clean" ]; then
