@@ -78,9 +78,9 @@ ENV PATH="$PATH:/root/.nimble/bin"
 RUN cp /usr/lib/LLVMgold.so /home/builduser/swift-5.9-RELEASE-ubuntu22.04/usr/lib/LLVMgold.so
 
 # install julia
-RUN wget https://julialang-s3.julialang.org/bin/linux/x64/1.9/julia-1.9.3-linux-x86_64.tar.gz -O /home/builduser/julia.tar.gz
+RUN wget https://julialang-s3.julialang.org/bin/linux/x64/1.11/julia-1.11.0-linux-x86_64.tar.gz -O /home/builduser/julia.tar.gz
 RUN tar zxvf /home/builduser/julia.tar.gz -C /home/builduser/
-ENV PATH="$PATH:/home/builduser/julia-1.9.3/bin"
+ENV PATH="$PATH:/home/builduser/julia-1.11.0/bin"
 
 # install lein for clojure and stack for haskell
 RUN pacman -S --noconfirm --needed leiningen stack
