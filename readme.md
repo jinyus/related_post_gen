@@ -65,7 +65,7 @@ docker run -e TEST_NAME=all -it --rm databench
 
 | Language           | Time (5k posts)                       | 20k posts                              | 60k posts                              | Total     |
 | ------------------ | ------------------------------------- | -------------------------------------- | -------------------------------------- | --------- |
-| _Julia HO_[^1] | 6.20 ms | 35.67 ms | 99.00 ms | 140.87 ms |
+| _Julia HO_[^1] | 5.80 ms | 20.00 ms | 89.33 ms | 115.13 ms |
 | D (v2) | $\textsf{\color{lightgreen}11.73 ms}$ | $\textsf{\color{lightgreen}123.60 ms}$ | $\textsf{\color{lightgreen}972.19 ms}$ | 1.11 s |
 | C++ | 13.80 ms | 170.67 ms | 1.45 s | 1.63 s |
 | Rust | 14.18 ms | 193.88 ms | 1.68 s | 1.89 s |
@@ -78,7 +78,7 @@ docker run -e TEST_NAME=all -it --rm databench
 | C# (JIT) | 19.10 ms | 270.89 ms | 2.34 s | 2.63 s |
 | Nim | 19.39 ms | 291.69 ms | 2.52 s | 2.84 s |
 | F# (AOT) | 24.78 ms | 366.04 ms | 3.23 s | 3.62 s |
-| Julia | 27.31 ms | 420.89 ms | 3.59 s | 4.04 s |
+| Julia | 27.37 ms | 407.72 ms | 3.62 s | 4.05 s |
 | Java (GraalVM) | 28.10 ms | 416.00 ms | 3.63 s | 4.07 s |
 | Vlang | 28.81 ms | 429.55 ms | 3.74 s | 4.20 s |
 | F# (JIT) | 26.25 ms | 410.77 ms | 3.92 s | 4.36 s |
@@ -120,7 +120,7 @@ docker run -e TEST_NAME=all -it --rm databench
 | Nim Concurrent | $\textsf{\color{lightgreen}4.64 ms}$ | 59.38 ms | 497.93 ms | 561.95 ms |
 | Rust Concurrent | 5.05 ms | 67.47 ms | 541.40 ms | 613.93 ms |
 | Go Concurrent | 5.84 ms | 77.61 ms | 642.69 ms | 726.14 ms |
-| Julia Concurrent | 6.45 ms | 93.73 ms | 674.30 ms | 774.48 ms |
+| Julia Concurrent | 5.89 ms | 77.39 ms | 660.25 ms | 743.54 ms |
 | F# Concurrent | 7.50 ms | 104.33 ms | 904.33 ms | 1.02 s |
 | Swift Concurrent | 10.86 ms | 125.49 ms | 1.01 s | 1.15 s |
 | F# Concurrent (AOT) | 8.50 ms | 128.33 ms | 1.14 s | 1.28 s |

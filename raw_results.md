@@ -570,72 +570,72 @@ Zig Concurrent:
 
 Julia:
 
-    Processing time (w/o IO): 27.099709999999998ms
-    total: 0.74s memory: 335204k
-    Processing time (w/o IO): 27.12676ms
-    total: 0.75s memory: 335348k
-    Processing time (w/o IO): 27.470924ms
-    total: 0.76s memory: 335372k
-    Processing time (w/o IO): 27.397962ms
-    total: 0.76s memory: 335520k
-    Processing time (w/o IO): 27.303692ms
-    total: 0.76s memory: 335604k
-    Processing time (w/o IO): 27.470094ms
-    total: 0.75s memory: 335452k
-    Processing time (w/o IO): 27.310462ms
-    total: 0.76s memory: 335336k
-    Processing time (w/o IO): 27.481023ms
-    total: 0.76s memory: 335328k
-    Processing time (w/o IO): 27.269501ms
-    total: 0.75s memory: 335388k
-    Processing time (w/o IO): 27.190071ms
-    total: 0.75s memory: 335352k
+        Processing time (w/o IO): 27.305009000000002ms
+        total: 0.41s memory: 321024k
+        Processing time (w/o IO): 27.257969ms
+        total: 0.41s memory: 320896k
+        Processing time (w/o IO): 27.491069ms
+        total: 0.41s memory: 321024k
+        Processing time (w/o IO): 27.623ms
+        total: 0.41s memory: 321024k
+        Processing time (w/o IO): 27.382158999999998ms
+        total: 0.41s memory: 320896k
+        Processing time (w/o IO): 27.270018999999998ms
+        total: 0.41s memory: 321152k
+        Processing time (w/o IO): 27.31709ms
+        total: 0.41s memory: 320896k
+        Processing time (w/o IO): 27.39772ms
+        total: 0.41s memory: 320768k
+        Processing time (w/o IO): 27.368069ms
+        total: 0.41s memory: 321372k
+        Processing time (w/o IO): 27.278859ms
+        total: 0.41s memory: 321024k
 
 Julia HO:
 
-    Processing time (w/o IO): 6 milliseconds
-    total: 0.74s memory: 334856k
-    Processing time (w/o IO): 7 milliseconds
-    total: 0.74s memory: 335060k
-    Processing time (w/o IO): 7 milliseconds
-    total: 0.72s memory: 334944k
-    Processing time (w/o IO): 6 milliseconds
-    total: 0.71s memory: 334984k
-    Processing time (w/o IO): 6 milliseconds
-    total: 0.72s memory: 334820k
-    Processing time (w/o IO): 6 milliseconds
-    total: 0.70s memory: 334768k
-    Processing time (w/o IO): 6 milliseconds
-    total: 0.71s memory: 334988k
-    Processing time (w/o IO): 6 milliseconds
-    total: 0.71s memory: 334960k
-    Processing time (w/o IO): 6 milliseconds
-    total: 0.72s memory: 334832k
-    Processing time (w/o IO): 6 milliseconds
-    total: 0.72s memory: 335092k
+        Processing time (w/o IO): 6 milliseconds
+        total: 0.43s memory: 319616k
+        Processing time (w/o IO): 5 milliseconds
+        total: 0.43s memory: 319744k
+        Processing time (w/o IO): 6 milliseconds
+        total: 0.42s memory: 319488k
+        Processing time (w/o IO): 6 milliseconds
+        total: 0.43s memory: 319616k
+        Processing time (w/o IO): 6 milliseconds
+        total: 0.43s memory: 319744k
+        Processing time (w/o IO): 5 milliseconds
+        total: 0.43s memory: 319616k
+        Processing time (w/o IO): 6 milliseconds
+        total: 0.43s memory: 319708k
+        Processing time (w/o IO): 6 milliseconds
+        total: 0.42s memory: 319488k
+        Processing time (w/o IO): 6 milliseconds
+        total: 0.43s memory: 319616k
+        Processing time (w/o IO): 6 milliseconds
+        total: 0.42s memory: 319616k
 
 Julia Concurrent:
 
-    Processing time (w/o IO): 6.183245ms
-    total: 0.75s memory: 335512k
-    Processing time (w/o IO): 6.165355ms
-    total: 0.75s memory: 335404k
-    Processing time (w/o IO): 6.175425ms
-    total: 0.75s memory: 335368k
-    Processing time (w/o IO): 6.287406ms
-    total: 0.75s memory: 335488k
-    Processing time (w/o IO): 6.125494000000001ms
-    total: 0.75s memory: 335392k
-    Processing time (w/o IO): 8.908139ms
-    total: 0.76s memory: 335372k
-    Processing time (w/o IO): 6.158905ms
-    total: 0.74s memory: 335484k
-    Processing time (w/o IO): 6.094404ms
-    total: 0.72s memory: 335332k
-    Processing time (w/o IO): 6.094094ms
-    total: 0.72s memory: 335496k
-    Processing time (w/o IO): 6.293115ms
-    total: 0.72s memory: 335512k
+        Processing time (w/o IO): 5.835712ms
+        total: 0.56s memory: 328152k
+        Processing time (w/o IO): 5.8157119999999995ms
+        total: 0.56s memory: 328260k
+        Processing time (w/o IO): 5.790452ms
+        total: 0.56s memory: 328232k
+        Processing time (w/o IO): 5.960282ms
+        total: 0.56s memory: 328156k
+        Processing time (w/o IO): 6.1648629999999995ms
+        total: 0.56s memory: 328432k
+        Processing time (w/o IO): 5.831332ms
+        total: 0.56s memory: 328664k
+        Processing time (w/o IO): 5.873662ms
+        total: 0.56s memory: 328644k
+        Processing time (w/o IO): 5.829042ms
+        total: 0.56s memory: 328148k
+        Processing time (w/o IO): 5.877052ms
+        total: 0.56s memory: 328308k
+        Processing time (w/o IO): 5.934572ms
+        total: 0.56s memory: 328444k
 
 Odin:
 
@@ -1618,30 +1618,30 @@ Zig Concurrent:
 
 Julia:
 
-    Processing time (w/o IO): 421.872894ms
-    total: 1.28s memory: 387800k
-    Processing time (w/o IO): 421.28781599999996ms
-    total: 1.28s memory: 387792k
-    Processing time (w/o IO): 419.50455800000003ms
-    total: 1.28s memory: 387768k
+        Processing time (w/o IO): 408.468718ms
+        total: 0.98s memory: 341000k
+        Processing time (w/o IO): 406.484144ms
+        total: 0.95s memory: 341080k
+        Processing time (w/o IO): 408.205578ms
+        total: 0.99s memory: 341208k
 
 Julia HO:
 
-    Processing time (w/o IO): 35 milliseconds
-    total: 0.89s memory: 388060k
-    Processing time (w/o IO): 36 milliseconds
-    total: 0.89s memory: 388052k
-    Processing time (w/o IO): 36 milliseconds
-    total: 0.88s memory: 388028k
+        Processing time (w/o IO): 20 milliseconds
+        total: 0.55s memory: 347444k
+        Processing time (w/o IO): 19 milliseconds
+        total: 0.56s memory: 347592k
+        Processing time (w/o IO): 21 milliseconds
+        total: 0.56s memory: 347680k
 
 Julia Concurrent:
 
-    Processing time (w/o IO): 92.152867ms
-    total: 0.93s memory: 388656k
-    Processing time (w/o IO): 94.74418ms
-    total: 0.96s memory: 388788k
-    Processing time (w/o IO): 94.306576ms
-    total: 0.97s memory: 388912k
+        Processing time (w/o IO): 77.093148ms
+        total: 0.76s memory: 347492k
+        Processing time (w/o IO): 77.517269ms
+        total: 0.77s memory: 347584k
+        Processing time (w/o IO): 77.564999ms
+        total: 0.79s memory: 347764k
 
 Odin:
 
@@ -2170,30 +2170,30 @@ Zig Concurrent:
 
 Julia:
 
-    Processing time (w/o IO): 3577.937835ms
-    total: 4.81s memory: 448208k
-    Processing time (w/o IO): 3608.869773ms
-    total: 4.81s memory: 448124k
-    Processing time (w/o IO): 3592.115472ms
-    total: 4.81s memory: 448108k
+        Processing time (w/o IO): 3610.911679ms
+        total: 4.62s memory: 403816k
+        Processing time (w/o IO): 3629.006708ms
+        total: 4.63s memory: 403948k
+        Processing time (w/o IO): 3614.423431ms
+        total: 4.61s memory: 403932k
 
 Julia HO:
 
-    Processing time (w/o IO): 96 milliseconds
-    total: 1.39s memory: 435756k
-    Processing time (w/o IO): 101 milliseconds
-    total: 1.31s memory: 435772k
-    Processing time (w/o IO): 100 milliseconds
-    total: 1.36s memory: 435656k
+        Processing time (w/o IO): 91 milliseconds
+        total: 0.94s memory: 405720k
+        Processing time (w/o IO): 88 milliseconds
+        total: 0.93s memory: 405376k
+        Processing time (w/o IO): 89 milliseconds
+        total: 0.97s memory: 405456k
 
 Julia Concurrent:
 
-    Processing time (w/o IO): 674.3916389999999ms
-    total: 1.92s memory: 444996k
-    Processing time (w/o IO): 667.1878340000001ms
-    total: 1.93s memory: 444864k
-    Processing time (w/o IO): 681.3154609999999ms
-    total: 1.97s memory: 444952k
+        Processing time (w/o IO): 658.663197ms
+        total: 1.65s memory: 462748k
+        Processing time (w/o IO): 661.7979330000001ms
+        total: 1.65s memory: 462508k
+        Processing time (w/o IO): 660.2954599999999ms
+        total: 1.65s memory: 462640k
 
 Odin:
 
