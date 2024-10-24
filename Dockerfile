@@ -101,9 +101,9 @@ RUN rm -rf /usr/local/go && tar -C /usr/local -xzf go1.21.4.linux-amd64.tar.gz
 ENV PATH="$PATH:/usr/local/go/bin"
 
 # install ldc2
-RUN wget https://github.com/ldc-developers/ldc/releases/download/v1.36.0/ldc2-1.36.0-linux-x86_64.tar.xz
-RUN rm -rf /usr/local/ldc2* && tar -C /usr/local -xvf ldc2-1.36.0-linux-x86_64.tar.xz
-ENV PATH="$PATH:/usr/local/ldc2-1.36.0-linux-x86_64/bin"
+RUN wget https://github.com/ldc-developers/ldc/releases/download/v1.39.0/ldc2-1.39.0-linux-x86_64.tar.xz
+RUN rm -rf /usr/local/ldc2* && tar -C /usr/local -xvf ldc2-1.39.0-linux-x86_64.tar.xz
+ENV PATH="$PATH:/usr/local/ldc2-1.39.0-linux-x86_64/bin"
 
 # install neat
 RUN wget https://github.com/Neat-Lang/neat/releases/download/v0.5.2/neat-v0.5.2-llvm.tar.xz
