@@ -99,13 +99,13 @@ docker run -e TEST_NAME=all -it --rm databench
 | Typed Racket | 117.18 ms | 1.73 s | 14.18 s | 16.02 s |
 | Lobster (C++) | 123.76 ms | 1.91 s | 16.66 s | 18.69 s |
 | Scala Native | 254.40 ms | 3.14 s | 25.70 s | 29.10 s |
+| Inko[^2] | 435.70 ms | 6.67 s | 58.94 s | 66.05 s |
 | LuaJIT (JIT OFF) | 538.14 ms | 8.47 s | 66.93 s | 75.94 s |
 | Erlang | 643.30 ms | 10.46 s | 94.95 s | 106.06 s |
 | Lua | 827.92 ms | 12.78 s | 113.92 s | 127.53 s |
 | Python | 1.20 s | 18.93 s | 169.05 s | 189.18 s |
 | Lobster (JIT) | 1.35 s | 20.78 s | 195.33 s | 217.46 s |
 | Ruby | 1.50 s | 22.91 s | 213.64 s | 238.05 s |
-| Inko[^2] | 6.29 s | 98.05 s | 875.39 s | 979.73 s |
 | Numpy | 216.51 ms | OOM | 3.27 s | Infinity s |
 
 ### Multicore Results
