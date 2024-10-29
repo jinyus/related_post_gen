@@ -669,7 +669,7 @@ run_inko() {
         if [ -z "$appendToFile" ]; then # only build on 5k run
             inko build --opt aggressive
         fi &&
-        run_command "Inko" 1 ./build/aggressive/main &&
+        run_command "Inko" $slow_lang_runs ./build/aggressive/main &&
         check_output "related_posts_inko.json"
 }
 
