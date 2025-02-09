@@ -1,3 +1,5 @@
+{-# LANGUAGE Strict #-}
+
 module Main (main) where
 
 import Control.DeepSeq (force)
@@ -23,5 +25,5 @@ main = do
   relatedPosts <- evaluate . force $! runST (computeRelatedPosts posts)
   end <- getPOSIXTime
 
-  putStrLn $ "Processing time (w/o IO): " ++ show (round . (* 1000) $ end - start :: Int) ++ "ms"
+  putStrLn $ "Processing time (w/o IO): " ++ show (realToFrac ((end - start) * 1000) :: Double) ++ "ms"
   encodeFile outputFile relatedPosts
