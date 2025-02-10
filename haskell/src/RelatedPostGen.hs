@@ -25,6 +25,8 @@ import Foreign.Storable.Tuple ()
 import GHC.Generics (Generic)
 
 type HashTable s k v = H.Dictionary (H.PrimState (ST s)) VM.MVector k VM.MVector v
+
+-- | A tag map which maps tags (as 'ShortText') to a (storable) mutable vector of post indices ('Word32').
 type TagMap s = HashTable s ShortText (STVector s Word32)
 
 data Post = MkPost
@@ -43,6 +45,7 @@ data RelatedPosts = MkRelatedPosts
   deriving stock (Generic, Show)
   deriving anyclass (FromJSON, ToJSON, NFData)
 
+-- | The maximum number of related posts to include.
 limitTopN :: Int
 limitTopN = 5
 
@@ -59,6 +62,7 @@ populateTagMap tagMap postsIdx = do
   V.forM_ postsIdx \(!ix, MkPost{tags}) ->
     V.forM_ tags $ H.alterM tagMap \case
       Just vec -> do
+        -- could be optimized with exponential growth if Vector exposed capacity
         !vec' <- VSM.grow vec 1
         VSM.write vec' (VSM.length vec) (fromIntegral ix)
         pure (Just vec')
@@ -67,9 +71,9 @@ populateTagMap tagMap postsIdx = do
 
 buildRelatedPosts :: TagMap s -> Vector (Int, Post) -> ST s (Vector RelatedPosts)
 buildRelatedPosts tagMap postsIdx = do
-  !sharedTags :: STVector s Word8 <- VSM.replicate (V.length postsIdx) 0
-  !topN :: STVector s (Word32, Word8) <- VSM.replicate limitTopN (0, 0)
-  !mba <- newByteArray 1
+  !sharedTags :: STVector s Word8 <- VSM.replicate (V.length postsIdx) 0 -- shared tag count for each post
+  !topN :: STVector s (Word32, Word8) <- VSM.replicate limitTopN (0, 0) -- top N post indices and their shared tag counts
+  !mba <- newByteArray 1 -- current minimum shared tag count (Word8); variable as a raw byte array with 1 element
 
   V.forM postsIdx \(!ix, MkPost{_id, tags}) -> do
     collectSharedTags sharedTags tagMap tags
@@ -90,7 +94,7 @@ collectSharedTags sharedTags tagMap tags = do
 
 rankTopN :: MutableByteArray s -> STVector s (Word32, Word8) -> STVector s Word8 -> ST s ()
 rankTopN mba topN sharedTags = do
-  writeByteArray mba 0 (0 :: Word8)
+  writeByteArray mba 0 (0 :: Word8) -- initialize the count
   VSM.iforM_ sharedTags \(!ix) (!count) -> do
     !minTags <- readByteArray mba 0
     when (count > minTags) do
