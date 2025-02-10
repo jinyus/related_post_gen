@@ -12,7 +12,7 @@ import Control.Monad.ST.Strict (ST)
 import Data.Aeson (FromJSON, ToJSON)
 import Data.Primitive.ByteArray (MutableByteArray, newByteArray, readByteArray, writeByteArray)
 import Data.Text.Short (ShortText)
-import Data.Vector (Vector, empty, indexed, snoc, (!))
+import Data.Vector (Vector, indexed, (!))
 import Data.Vector qualified as V
 import Data.Vector.Hashtables qualified as H
 import Data.Vector.Mutable qualified as VM
@@ -100,18 +100,26 @@ rankTopN mba topN sharedTags = do
       writeByteArray mba 0 count'
  where
   getUpperBound :: Int -> Word8 -> STVector s (Word32, Word8) -> ST s Int
-  getUpperBound !upperBound !count !topN_ = do
-    if upperBound >= 0
-      then do
-        !w@(_, count') <- VSM.read topN_ upperBound
-        if count > count'
-          then do
-            VSM.write topN_ (upperBound + 1) w
-            getUpperBound (upperBound - 1) count topN_
-          else pure upperBound
-      else pure upperBound
+  getUpperBound upper count topN_ = go upper
+   where
+    go !curr =
+      if curr >= 0
+        then do
+          !entry@(_, !count') <- VSM.read topN_ curr
+          if count > count'
+            then do VSM.write topN_ (curr + 1) entry; go (curr - 1)
+            else pure curr
+        else pure curr
 {-# INLINE rankTopN #-}
 
 buildRelated :: Vector (Int, Post) -> STVector s (Word32, Word8) -> ST s (Vector Post)
-buildRelated posts = VSM.foldl' (\acc (!ix, _) -> snoc acc (snd (posts ! fromIntegral ix))) empty
+buildRelated posts topN = do
+  !res <- VM.unsafeNew limitTopN
+  let go !ix
+        | ix >= limitTopN = V.unsafeFreeze res
+        | otherwise = do
+            (!jx, _) <- VSM.read topN ix
+            VM.write res ix (snd (posts ! fromIntegral jx))
+            go (ix + 1)
+  go 0
 {-# INLINE buildRelated #-}
