@@ -74,7 +74,6 @@ buildRelatedPosts tagMap postsIdx = do
   !sharedTags :: STVector s Word8 <- VSM.replicate (V.length postsIdx) 0 -- shared tag count for each post
   !topN :: STVector s (Word32, Word8) <- VSM.replicate limitTopN (0, 0) -- top N post indices and their shared tag counts
   !mba <- newByteArray 1 -- current minimum shared tag count (Word8); variable as a raw byte array with 1 element
-
   V.forM postsIdx \(!ix, MkPost{_id, tags}) -> do
     collectSharedTags sharedTags tagMap tags
     VSM.write sharedTags ix 0 -- exclude self from related posts
@@ -106,14 +105,13 @@ rankTopN mba topN sharedTags = do
   getUpperBound :: Int -> Word8 -> STVector s (Word32, Word8) -> ST s Int
   getUpperBound upper count topN_ = go upper
    where
-    go !curr =
-      if curr >= 0
-        then do
+    go !curr
+      | curr >= 0 = do
           !entry@(_, !count') <- VSM.read topN_ curr
           if count > count'
             then do VSM.write topN_ (curr + 1) entry; go (curr - 1)
             else pure curr
-        else pure curr
+      | otherwise = pure curr
 {-# INLINE rankTopN #-}
 
 buildRelated :: Vector (Int, Post) -> STVector s (Word32, Word8) -> ST s (Vector Post)
