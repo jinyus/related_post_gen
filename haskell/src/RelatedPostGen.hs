@@ -60,13 +60,14 @@ computeRelatedPosts posts = do
 populateTagMap :: TagMap s -> Vector (Int, Post) -> ST s ()
 populateTagMap tagMap postsIdx = do
   V.forM_ postsIdx \(!ix, MkPost{tags}) ->
-    V.forM_ tags $ H.alterM tagMap \case
-      Just vec -> do
-        -- could be optimized with exponential growth if Vector exposed capacity
-        !vec' <- VSM.grow vec 1
-        VSM.write vec' (VSM.length vec) (fromIntegral ix)
-        pure (Just vec')
-      Nothing -> Just <$> VSM.replicate 1 (fromIntegral ix)
+    V.forM_ tags \tag ->
+      H.lookup tagMap tag >>= \case
+        Just vec -> do
+          -- could be optimized with exponential growth if Vector exposed capacity
+          !vec' <- VSM.grow vec 1
+          VSM.write vec' (VSM.length vec) (fromIntegral ix)
+          H.insert tagMap tag vec'
+        Nothing -> H.insert tagMap tag =<< VSM.replicate 1 (fromIntegral ix)
 {-# INLINE populateTagMap #-}
 
 buildRelatedPosts :: TagMap s -> Vector (Int, Post) -> ST s (Vector RelatedPosts)
