@@ -33,41 +33,42 @@ if [[ -z "${time}" ]]; then
 fi
 
 run_command() {
-
     local title="$1"
     local num_times="$2"
     local cmd="$3"
 
     if [ -z "$title" ] || [ -z "$cmd" ] || [ -z "$num_times" ]; then
-        echo "Error: Invalid input. Usage: run_command <num_of_times> <command>"
+        echo "Error: Invalid input. Usage: run_command <title> <num_of_times> <command> [args...]"
         return 1
     fi
 
     # remove the first three args
     shift 3
 
-    # use awk to indent the output so it shows up as a codeblock in markdown
+    # Determine which time command to use
+    local TIME_CMD="time"
+    if [ "$(uname)" = "Darwin" ]; then
+        if command -v gtime >/dev/null 2>&1; then
+            TIME_CMD="gtime"
+        else
+            echo "Error: GNU time (gtime) is required on macOS. Please install it using Homebrew:"
+            echo "       brew install gnu-time"
+            return 1
+        fi
+    fi
 
+    # Use awk to indent the output so it shows up as a codeblock in markdown
     if [ -z "$outfile" ]; then
         # outfile is empty, so write to stdout
-
         echo -e "$title:\n"
-
         for ((i = 1; i <= num_times; i++)); do
-
-            ($time -f 'total: %es memory: %Mk' $cmd "$@" 2>&1) | awk '{print "\t" $0}'
-
+            ($TIME_CMD -f 'total: %es memory: %Mk' $cmd "$@" 2>&1) | awk '{print "\t" $0}'
         done
-
     else
-
         # write to a file and stdout
         echo -e "\n$title:\n" | tee -a "$outfile"
-
         for ((i = 1; i <= num_times; i++)); do
-
-            ($time -f 'total: %es memory: %Mk' $cmd "$@" 2>&1) | awk '{print "\t" $0}' | tee -a "$outfile"
-
+            ($TIME_CMD -f 'total: %es memory: %Mk' $cmd "$@" 2>&1) | awk '{print "\t" $0}' | tee -a "$outfile"
         done
     fi
 }
