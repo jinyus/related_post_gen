@@ -45,6 +45,12 @@ RUN wget 'https://github.com/odin-lang/Odin/releases/download/dev-2023-12/odin-u
 
 RUN unzip /home/builduser/odin.zip -d /home/builduser/odin
 
+# install c3
+RUN wget 'https://github.com/c3lang/c3c/releases/download/v0.6.6/c3-linux.tar.gz' -O /home/builduser/c3.tar.gz
+
+RUN tar zxvf /home/builduser/c3.tar.gz -C /home/builduser
+ENV PATH="$PATH:/home/builduser/c3"
+
 # install vlang
 RUN wget 'https://github.com/vlang/v/releases/download/weekly.2023.40.1/v_linux.zip' -O /home/builduser/v.zip
 
