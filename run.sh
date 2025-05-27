@@ -538,6 +538,14 @@ run_d_v2() {
         check_output "related_posts_d2.json"
 }
 
+run_d_optimized() {
+    echo "Running D Highly optimized" &&
+        cd ./d_highly_optimized &&
+        dub build --build=release &&
+        run_command "D HO" $runs ./related &&
+        check_output "related_posts_d_optimized.json"
+}
+
 run_d_con() {
     echo "Running D Concurrent" &&
         cd ./d_con &&
@@ -887,6 +895,10 @@ elif [ "$first_arg" = "d2" ]; then
 
     run_d_v2
 
+elif [ "$first_arg" = "d_optimized" ]; then
+
+    run_d_optimized
+
 elif [ "$first_arg" = "d_con" ]; then
 
     run_d_con
@@ -956,6 +968,7 @@ elif [ "$first_arg" = "all" ]; then
         run_rust_con || echo -e "\n" &&
         run_d || echo -e "\n" &&
         run_d_v2 || echo -e "\n" &&
+        run_d_optimized || echo -e "\n" &&
         run_d_con || echo -e "\n" &&
         run_cpp || echo -e "\n" &&
         run_cpp_con || echo -e "\n" &&
@@ -1029,6 +1042,8 @@ elif [ "$first_arg" = "clean" ]; then
         cd d_con && rm -f related_concurrent &&
         cd .. &&
         cd d_v2 && rm -f related &&
+        cd .. &&
+        cd d_highly_optimized && rm -f related &&
         cd .. &&
         cd d_con_v2 && rm -f related_concurrent &&
         cd .. &&
