@@ -70,6 +70,7 @@ shift
 
 run_test() {
     local test_name="$1"
+    shift
     local image="${NameToImage[$test_name]}"
 
     if [[ -z "$image" ]]; then
@@ -78,7 +79,8 @@ run_test() {
     fi
 
     echo "Running test '$test_name' using Docker image '${image}_databench'"
-    sudo docker run $@ -e TEST_NAME="$test_name" "${image}_databench"
+    cmd="sudo docker run $@ -e TEST_NAME=\"$test_name\" \"${image}_databench\""
+    eval "$cmd"
 }
 
 if [[ "$TEST_NAME" == "all" ]]; then
