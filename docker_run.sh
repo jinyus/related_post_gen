@@ -79,7 +79,7 @@ run_test() {
     fi
 
     echo "Running test '$test_name' using Docker image '${image}_databench'"
-    cmd="sudo docker run $@ -e TEST_NAME=\"$test_name\" \"${image}_databench\""
+    cmd="sudo docker run -it --rm $@ -e TEST_NAME=\"$test_name\" \"${image}_databench\""
     eval "$cmd"
 }
 
