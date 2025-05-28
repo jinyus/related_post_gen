@@ -19,6 +19,8 @@ RUN wget 'https://github.com/odin-lang/Odin/releases/download/dev-2025-04/odin-u
 
 RUN unzip /home/builduser/odin.zip -d /home/builduser/odin
 
+ENV PATH="/home/builduser/odin:${PATH}"
+
 # location to write the raw results
 VOLUME /results
 
