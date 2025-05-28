@@ -16,7 +16,7 @@ RUN pip install faker nanoid --break-system-packages
 
 #REPLACE-ME-WITH-INSTALLATION-COMMANDS
 
-RUN rm *.tar.* && rm /home/builduser/*.zip && rm /home/builduser/*.tar.*
+RUN rm -f *.tar.* || true && rm -f /home/builduser/*.zip || true && rm -f /home/builduser/*.tar.* || true
 
 RUN mkdir -p /results
 
