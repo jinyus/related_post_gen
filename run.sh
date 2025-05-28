@@ -247,8 +247,8 @@ run_julia_con() {
 
 run_odin() {
     echo "Running Odin" &&
-        cd ./odin &&
-        odin build related.odin -file -o:speed &&
+        odin build ./odin -o:aggressive -out:./odin/related &&
+        cd ./odin && \
         run_command "Odin" $runs ./related &&
         check_output "related_posts_odin.json"
 }
@@ -544,6 +544,14 @@ run_d_v2() {
         dub build --build=release &&
         run_command "D (v2)" $runs ./related &&
         check_output "related_posts_d2.json"
+}
+
+run_d_optimized() {
+    echo "Running D Highly optimized" &&
+        cd ./d_highly_optimized &&
+        dub build --build=release &&
+        run_command "D HO" $runs ./related &&
+        check_output "related_posts_d_optimized.json"
 }
 
 run_d_con() {
@@ -899,6 +907,10 @@ elif [ "$first_arg" = "d2" ]; then
 
     run_d_v2
 
+elif [ "$first_arg" = "d_optimized" ]; then
+
+    run_d_optimized
+
 elif [ "$first_arg" = "d_con" ]; then
 
     run_d_con
@@ -968,6 +980,7 @@ elif [ "$first_arg" = "all" ]; then
         run_rust_con || echo -e "\n" &&
         run_d || echo -e "\n" &&
         run_d_v2 || echo -e "\n" &&
+        run_d_optimized || echo -e "\n" &&
         run_d_con || echo -e "\n" &&
         run_cpp || echo -e "\n" &&
         run_cpp_con || echo -e "\n" &&
@@ -1044,6 +1057,8 @@ elif [ "$first_arg" = "clean" ]; then
         cd d_con && rm -f related_concurrent &&
         cd .. &&
         cd d_v2 && rm -f related &&
+        cd .. &&
+        cd d_highly_optimized && rm -f related &&
         cd .. &&
         cd d_con_v2 && rm -f related_concurrent &&
         cd .. &&

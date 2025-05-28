@@ -1,0 +1,22 @@
+{
+	"authors": [
+		"Bruce Carneal",
+		"Sergei Giniatulin"
+	],
+	"buildTypes": {
+		"release": {
+			"buildOptions": [
+				"inline",
+				"optimize"
+			]
+		}
+	},
+	"copyright": "Copyright © 2023",
+	"dependencies": {
+		"asdf": "~>0.7.17",
+		"swisstable": "~>0.2.0"
+	},
+	"description": "A sequential D application (SWAR optimization).",
+	"license": "MIT",
+	"name": "related"
+}
