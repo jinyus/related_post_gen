@@ -247,8 +247,8 @@ run_julia_con() {
 
 run_odin() {
     echo "Running Odin" &&
-        cd ./odin &&
-        odin build related.odin -file -o:speed &&
+        odin build ./odin -o:aggressive -out:./odin/related &&
+        cd ./odin && \
         run_command "Odin" $runs ./related &&
         check_output "related_posts_odin.json"
 }
