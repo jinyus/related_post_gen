@@ -3,4 +3,4 @@
 
 # RUN su -c "cd /home/builduser/rebar3 && makepkg -si --noconfirm --needed --noprogressbar" builduser
 
-RUN RUN pacman -S --noconfirm --needed rebar3
+RUN pacman -S --noconfirm --needed rebar3
