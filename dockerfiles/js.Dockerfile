@@ -1,3 +1,5 @@
+RUN pacman -S --noconfirm --needed nodejs deno
+
 RUN su -c "curl -fsSL https://bun.sh/install | bash" builduser
 
 ENV BUN_INSTALL="/home/builduser/.bun"
