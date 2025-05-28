@@ -1,0 +1,10 @@
+{
+	"fileVersion": 1,
+	"versions": {
+		"asdf": "0.7.17",
+		"mir-algorithm": "3.22.3",
+		"mir-core": "1.7.1",
+		"silly": "1.1.1",
+		"swisstable": "0.2.0"
+	}
+}
