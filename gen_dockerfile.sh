@@ -33,7 +33,37 @@ fi
 ARG="$1"
 SRC="./dockerfiles/${ARG}.Dockerfile"
 BASE="./dockerfiles/base.Dockerfile"
-OUT="./${ARG}-temp.Dockerfile"
+OUT="./${ARG}_temp.Dockerfile"
+
+generate_image() {
+  fragment="$1"
+  output="$2"
+  awk -v insert="$(<"$fragment")" '
+    /#REPLACE-ME-WITH-INSTALLATION-COMMANDS/ {
+      print insert
+      next
+    }
+    { print }
+  ' "$BASE" >"$output"
+  echo "Wrote output to $output"
+}
+
+if [ "$ARG" = "all" ]; then
+  for f in ./dockerfiles/*.Dockerfile; do
+    [ "$f" = "$BASE" ] && continue
+
+    name=$(basename "$f" .Dockerfile)
+    out="./${name}_temp.Dockerfile"
+
+    generate_image "$f" "$out"
+
+    if [ "$BUILD" -eq 1 ]; then
+      echo "Building Docker image with tag '${name}_databench'..."
+      docker build -f "$out" -t "${name}_databench" .
+    fi
+  done
+  exit 0
+fi
 
 if [ ! -f "$SRC" ]; then
   echo "Source dockerfile '$SRC' not found."
@@ -45,15 +75,7 @@ if [ ! -f "$BASE" ]; then
   exit 3
 fi
 
-awk -v insert="$(<"$SRC")" '
-  /#REPLACE-ME-WITH-INSTALLATION-COMMANDS/ {
-    print insert
-    next
-  }
-  { print }
-' "$BASE" >"$OUT"
-
-echo "Wrote output to $OUT"
+generate_image "$SRC" "$OUT"
 
 if [ "$BUILD" -eq 1 ]; then
   echo "Building Docker image with tag '${ARG}_databench'..."
