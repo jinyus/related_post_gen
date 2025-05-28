@@ -1,4 +1,4 @@
-RUN pacman -S --noconfirm --needed maven
+RUN pacman -S --noconfirm --needed maven zip
 
 RUN curl -s "https://get.sdkman.io" | bash
 
