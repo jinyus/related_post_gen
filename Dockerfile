@@ -41,9 +41,13 @@ RUN wget https://download.swift.org/swift-5.9-release/ubuntu2204/swift-5.9-RELEA
 RUN tar -xvf /home/builduser/swift.tar.gz -C /home/builduser && rm /home/builduser/swift.tar.gz && export PATH=/home/builduser/swift-5.9-RELEASE-ubuntu22.04/usr/bin:$PATH
 
 # install odin
-RUN wget 'https://github.com/odin-lang/Odin/releases/download/dev-2025-02/odin-linux-amd64-dev-2025-02.zip' -O /home/builduser/odin.zip
+RUN wget 'https://github.com/odin-lang/Odin/releases/download/dev-2025-04/odin-ubuntu-amd64-dev-2025-04.zip' -O /home/builduser/odin.zip
 
 RUN unzip /home/builduser/odin.zip -d /home/builduser/odin
+
+RUN tar -xzf /home/builduser/odin/dist.tar.gz -C /home/builduser/odin
+
+ENV PATH="/home/builduser/odin/odin-linux-amd64-nightly+2025-04-03/:${PATH}"
 
 # install vlang
 RUN wget 'https://github.com/vlang/v/releases/download/weekly.2023.40.1/v_linux.zip' -O /home/builduser/v.zip
@@ -55,7 +59,7 @@ RUN su -c "cd /home/builduser/rebar3 && makepkg -si --noconfirm --needed --nopro
 
 RUN unzip /home/builduser/v.zip -d /home/builduser/v
 
-ENV PATH="/home/builduser/odin:/home/builduser/v/v:/home/builduser/swift-5.9-RELEASE-ubuntu22.04/usr/bin:${PATH}"
+ENV PATH="/home/builduser/v/v:/home/builduser/swift-5.9-RELEASE-ubuntu22.04/usr/bin:${PATH}"
 
 RUN pip install faker nanoid --break-system-packages
 
