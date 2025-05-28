@@ -253,6 +253,14 @@ run_odin() {
         check_output "related_posts_odin.json"
 }
 
+run_c3() {
+    echo "Running c3" &&
+        cd ./c3 &&
+        c3c compile related.c3 json.c3 -O3 &&
+        run_command "c3" $runs ./related &&
+        check_output "related_posts_c3.json"
+}
+
 run_vlang() {
     echo "Running Vlang" &&
         cd ./v &&
@@ -771,6 +779,10 @@ elif [ "$first_arg" = "odin" ]; then
 
     run_odin
 
+elif [ "$first_arg" = "c3" ]; then
+
+    run_c3
+
 elif [ "$first_arg" = "jq" ]; then
 
     run_jq
@@ -985,6 +997,7 @@ elif [ "$first_arg" = "all" ]; then
         run_julia_highly_optimized || echo -e "\n" &&
         run_julia_con || echo -e "\n" &&
         run_odin || echo -e "\n" &&
+        run_c3 || echo -e "\n" &&
         run_vlang || echo -e "\n" &&
         run_dart || echo -e "\n" &&
         run_dart_aot || echo -e "\n" &&
@@ -1037,6 +1050,8 @@ elif [ "$first_arg" = "clean" ]; then
         cd .. &&
         cd rust_con && cargo clean &&
         cd .. &&
+        cd c3 && rm -f related &&
+        cd .. &&
         cd d && rm -f related &&
         cd .. &&
         cd d_con && rm -f related_concurrent &&
@@ -1065,6 +1080,6 @@ elif [ "$first_arg" = "clean" ]; then
 
 else
 
-    echo "Valid args: go | go_con | rust | rust_con | d | d_con | r | py | numpy | erlang | cl | numba | numba_con | cr | zig | zig_con | odin | jq | julia | julia_highly_optimized | julia_con | v | dart | swift | swift_con | node | bun | deno | java | java_graal | java_graal_con | nim | luajit | lua | fsharp | fsharp_aot | fsharp_con | csharp | csharp_aot | dascript | all | clean. Unknown argument: $first_arg"
+    echo "Valid args: go | go_con | rust | rust_con | d | d_con | r | py | numpy | erlang | cl | numba | numba_con | cr | zig | zig_con | odin | c3 | jq | julia | julia_highly_optimized | julia_con | v | dart | swift | swift_con | node | bun | deno | java | java_graal | java_graal_con | nim | luajit | lua | fsharp | fsharp_aot | fsharp_con | csharp | csharp_aot | dascript | all | clean. Unknown argument: $first_arg"
 
 fi

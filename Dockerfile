@@ -49,6 +49,16 @@ RUN tar -xzf /home/builduser/odin/dist.tar.gz -C /home/builduser/odin
 
 ENV PATH="/home/builduser/odin/odin-linux-amd64-nightly+2025-04-03/:${PATH}"
 
+# install c3
+RUN wget 'https://github.com/c3lang/c3c/releases/download/v0.7.1/c3-linux.tar.gz' -O /home/builduser/c3.tar.gz
+
+RUN tar zxvf /home/builduser/c3.tar.gz -C /home/builduser
+
+# comilper looks for libxml2.so.2
+RUN cp /usr/lib/libxml2.so /usr/lib/libxml2.so.2
+
+ENV PATH="$PATH:/home/builduser/c3"
+
 # install vlang
 RUN wget 'https://github.com/vlang/v/releases/download/weekly.2023.40.1/v_linux.zip' -O /home/builduser/v.zip
 
