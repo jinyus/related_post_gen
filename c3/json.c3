@@ -8,15 +8,15 @@ import std::encoding::json;
 import std::io;
 
 // Nothing is freed, and assumes that input outlives output
-fn Post[]! parse_posts(String input, Allocator alloc = allocator::heap()) {
-	List(<Post>) posts;
-	Object* posts_arr = json::parse_string(input, alloc)!;
+fn Post[]? parse_posts(String input, Allocator alloc = allocator::heap()) {
+	List{Post} posts;
+	Object* posts_arr = json::parse_string(mem, input)!;
 	foreach (i, post_obj : posts_arr.array) {
-		List(<String>) tags;
+		List{String} tags;
 		foreach (tag_obj : post_obj.get("tags")!.array) {
 			tags.push(tag_obj.s);
 		}
-		posts.push(Post {
+		posts.push((Post){
 			._id = post_obj.get_string("_id")!,
 			.title = post_obj.get_string("title")!,
 			.tags = tags.array_view(),

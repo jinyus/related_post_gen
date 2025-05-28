@@ -10,12 +10,12 @@ struct Post {
 	String title;
 	Tag[] tags;
 }
-def Posts = Post[];
+alias Posts = Post[];
 
-def PostIdx = uint;
-def PostIdxList = List(<PostIdx>);
-def Tag = String;
-def Tag2PostIdxList = HashMap(<Tag, PostIdxList>);
+alias PostIdx = uint;
+alias PostIdxList = List{PostIdx};
+alias Tag = String;
+alias Tag2PostIdxList = HashMap{Tag, PostIdxList};
 
 struct TopPosts {
 	String* _id;
@@ -47,7 +47,7 @@ fn void get_top(uint b, char[] score, char* min, Score[] t5) @inline {
 				t5[u + 1] = t5[u];
 				u -= 1;
 			}
-			t5[u + 1] = Score{ .s = s, .pos = i };
+			t5[u + 1] = (Score){ .s = s, .pos = i };
 			*min = t5[4].s;
 		}
 		i += 1;
@@ -76,7 +76,7 @@ fn void top5(Post*[] related, char[] score, Post[] ps) @inline {
 }
 
 fn void main() {
-	String input = (String)file::load_new("../posts.json")!!;
+	String input = (String)file::load(mem, "../posts.json")!!;
 	Post[] posts = json::parse_posts(input)!!;
 
 	Clock start = clock::now();
