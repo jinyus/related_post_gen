@@ -59,7 +59,7 @@ if [ "$ARG" = "all" ]; then
 
     if [ "$BUILD" -eq 1 ]; then
       echo "Building Docker image with tag '${name}_databench'..."
-      docker build -f "$out" -t "${name}_databench" .
+      sudo docker build -f "$out" -t "${name}_databench" .
     fi
   done
   exit 0
@@ -79,5 +79,5 @@ generate_image "$SRC" "$OUT"
 
 if [ "$BUILD" -eq 1 ]; then
   echo "Building Docker image with tag '${ARG}_databench'..."
-  docker build -f "$OUT" -t "${ARG}_databench" .
+  sudo docker build -f "$OUT" -t "${ARG}_databench" .
 fi
