@@ -75,13 +75,15 @@ fn void top5(Post*[] related, char[] score, Post[] ps) @inline {
 	}
 }
 
+// allocation note: mem is heap allocator, tmem is temp allocator
 fn void main() {
 	String input = (String)file::load(mem, "../posts.json")!!;
-	Post[] posts = json::parse_posts(input)!!;
+	Post[] posts = json::parse_posts(mem, input)!!;
 
 	Clock start = clock::now();
 
 	Tag2PostIdxList tag2postidxs;
+	tag2postidxs.init(mem);
 	foreach (post_idx, post : posts) {
 		foreach (tag : post.tags) {
 			// TODO hashmap doesn't have the API
@@ -93,10 +95,10 @@ fn void main() {
 		}
 	}
 
-	TopPosts[] op = mem::new_array(TopPosts, posts.len);
-	Post*[] rl = mem::new_array(Post*, posts.len * 5);
+	TopPosts[] op = allocator::new_array(tmem, TopPosts, posts.len);
+	Post*[] rl = allocator::new_array(tmem, Post*, posts.len * 5);
 
-	char[] tagged_post_count = mem::new_array(char, posts.len);
+	char[] tagged_post_count = allocator::new_array(tmem, char, posts.len);
 
 	for (int post_idx = 0; post_idx < posts.len; post_idx += 1) {
 		// reset tagged_post_count

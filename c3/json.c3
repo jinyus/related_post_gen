@@ -7,22 +7,34 @@ import std::collections;
 import std::encoding::json;
 import std::io;
 
-// Nothing is freed, and assumes that input outlives output
-fn Post[]? parse_posts(String input, Allocator alloc = allocator::heap()) {
-	List{Post} posts;
-	Object* posts_arr = json::parse_string(mem, input)!;
-	foreach (i, post_obj : posts_arr.array) {
-		List{String} tags;
-		foreach (tag_obj : post_obj.get("tags")!.array) {
-			tags.push(tag_obj.s);
+// Json string is parsed into an Object, all parsed artifacts (objects and strings) are allocated
+// to alloc parameter.
+//
+// `Post` will reference strings allocated by json::parse_string. However, the `List`s used to
+// build the `Post[]` are allocated temporarily, then the slice copied to `alloc`. Optimizer is
+// happier with this than having an array_view into a `List`.
+fn Post[]? parse_posts(Allocator alloc, String input) {
+	@pool() {
+		List{Post} posts;
+		posts.init(tmem);
+		// Allocs objects and strings
+		Object* posts_arr = json::parse_string(alloc, input)!;
+		foreach (i, post_obj : posts_arr.array) {
+			@pool() {
+				List{String} tags;
+				tags.init(tmem);
+				foreach (tag_obj : post_obj.get("tags")!.array) {
+					tags.push(tag_obj.s);
+				}
+				posts.push((Post){
+					._id = post_obj.get_string("_id")!,
+					.title = post_obj.get_string("title")!,
+					.tags = tags.to_array(alloc),
+				});
+			};
 		}
-		posts.push((Post){
-			._id = post_obj.get_string("_id")!,
-			.title = post_obj.get_string("title")!,
-			.tags = tags.array_view(),
-		});
-	}
-	return posts.array_view();
+		return posts.to_array(alloc);
+	};
 }
 
 fn String Post.to_json(post) {

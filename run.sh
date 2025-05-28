@@ -256,7 +256,7 @@ run_odin() {
 run_c3() {
     echo "Running c3" &&
         cd ./c3 &&
-        c3c compile related.c3 json.c3 -O5 &&
+        c3c compile related.c3 json.c3 -O3 &&
         run_command "c3" $runs ./related &&
         check_output "related_posts_c3.json"
 }
