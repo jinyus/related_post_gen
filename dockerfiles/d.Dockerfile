@@ -14,8 +14,6 @@ WORKDIR /app
 
 RUN pip install faker nanoid --break-system-packages
 
-RUN rustup toolchain install stable
-
 # install ldc2
 RUN wget https://github.com/ldc-developers/ldc/releases/download/v1.40.1/ldc2-1.40.1-linux-x86_64.tar.xz
 RUN rm -rf /usr/local/ldc2* && tar -C /usr/local -xvf ldc2-1.40.1-linux-x86_64.tar.xz
