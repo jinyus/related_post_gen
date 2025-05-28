@@ -56,6 +56,6 @@ awk -v insert="$(<"$SRC")" '
 echo "Wrote output to $OUT"
 
 if [ "$BUILD" -eq 1 ]; then
-  echo "Building Docker image with tag '${ARG}:databench'..."
-  docker build -f "$OUT" -t "${ARG}:databench" .
+  echo "Building Docker image with tag '${ARG}_databench'..."
+  docker build -f "$OUT" -t "${ARG}_databench" .
 fi
