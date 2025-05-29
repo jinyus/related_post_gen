@@ -5,3 +5,6 @@ ENV PATH="$PATH:/usr/local/ldc2-1.40.1-linux-x86_64/bin"
 
 # comilper looks for libxml2.so.2
 RUN cp /usr/lib/libxml2.so /usr/lib/libxml2.so.2
+
+#precompile
+RUN git clone https://github.com/jinyus/related_post_gen.git /tmp/repo && cd /tmp/repo && ./run.sh d
