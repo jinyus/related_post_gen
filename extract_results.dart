@@ -7,20 +7,12 @@ final colonOrNewLineRegex = RegExp(r'[:\n]');
 final pTimeRegex =
     RegExp(r'Processing time \(w/o IO\)[^0-9]*([\d.]+)\s?(ms|s|milliseconds)');
 final tTimeRegex = RegExp(r'Time[^0-9]*([\d.]+ (ms|s))');
-final memUsageRegex = RegExp(r'memory: (\d+)k');
 
 const multiCoreHeading = '''
 ### Multicore Results
 
 | Language       | Time (5k posts) | 20k posts        | 60k posts        | Total     |
 | -------------- | --------------- | ---------------- | ---------------- | --------- |
-''';
-
-const memUsageHeading = '''
-### Memory Usage Results
-
-| Language | 5k posts | 20k posts | 60k posts | Total |
-| -------- | -------- | --------- | --------- | ----- |
 ''';
 
 var min5k = double.maxFinite;
@@ -35,42 +27,30 @@ void main(List<String> args) {
 
   if (filename == null) return print('Usage: extract <filename>');
 
-  final file = File(filename);
-
-  if (!file.existsSync()) return print('File "$filename" not found');
-
-  final lines = file.readAsLinesSync();
+  final lines = FileSystemEntity.isFileSync(filename)
+      ? File(filename).readAsLinesSync()
+      : Directory(filename)
+          .listSync()
+          .whereType<File>()
+          .where((f) => f.path.endsWith('.md'))
+          .expand((f) => f.readAsLinesSync())
+          .toList();
 
   final scores = <String, List<Score>>{};
 
-  Score? currentScore;
   String? currentLang;
 
   for (final line in lines) {
     if (langRegex.hasMatch(line)) {
       final name = line.trim().replaceAll(colonOrNewLineRegex, '');
 
-      if (scores.containsKey(name)) {
-        if (currentLang != name) {
-          final newScore = Score(name: name);
-          scores[name]!.add(newScore);
-          currentScore = newScore;
-          currentLang = name;
-          continue;
-        } else {
-          currentScore = scores[name]!.last;
-          continue;
-        }
+      if (!scores.containsKey(name)) {
+        scores[name] = [];
       }
 
       final newScore = Score(name: name);
-      scores[name] = [newScore];
-      currentScore = newScore;
+      scores[name]!.add(newScore);
       currentLang = name;
-      continue;
-    }
-
-    if (currentScore == null) {
       continue;
     }
 
@@ -79,16 +59,12 @@ void main(List<String> args) {
     if (processTimeMatch != null) {
       final unit =
           processTimeMatch.group(2)!.replaceFirst('milliseconds', 'ms');
+
       final time = double.parse(processTimeMatch.group(1)!.trim());
+
+      final currentScore = scores[currentLang]!.last;
       currentScore.addTime(time, unit);
-      continue;
-    }
 
-    final memUsageMatches = memUsageRegex.firstMatch(line);
-
-    if (memUsageMatches != null) {
-      final memUsage = int.parse(memUsageMatches.group(1)!);
-      currentScore.addMemoryUsage(memUsage);
       continue;
     }
   }
@@ -97,13 +73,6 @@ void main(List<String> args) {
     ..sort((a, b) {
       final aSum = a.fold(0.0, (total, sc) => sc.avgTimeMS() + total);
       final bSum = b.fold(0.0, (total, sc) => sc.avgTimeMS() + total);
-      return aSum.compareTo(bSum);
-    });
-
-  final sortedMemScores = scores.values.toList()
-    ..sort((a, b) {
-      final aSum = a.fold(0.0, (total, sc) => sc.avgMemUsage() + total);
-      final bSum = b.fold(0.0, (total, sc) => sc.avgMemUsage() + total);
       return aSum.compareTo(bSum);
     });
 
@@ -118,9 +87,8 @@ void main(List<String> args) {
 
   if (sortedScores.first.length != 3) {
     sortedScores.forEach(print);
-    sortedMemScores.forEach(print);
     print(
-        '${file.readAsStringSync()}\n\nEnough scores not found. Need 3 scores for each language to update readme.md - $currentLang');
+        '${lines}\n\nEnough scores not found. Need 3 scores for each language to update readme.md - $currentLang');
     return;
   }
 
@@ -140,11 +108,11 @@ void main(List<String> args) {
   con_min60k = multiCoreScores.fold(con_min60k,
       (min, sc) => sc[2].avgTimeMS() < min ? sc[2].avgTimeMS() : min);
 
-  final readmePathList = file.absolute.path.split(Platform.pathSeparator)
-    ..removeLast()
+  final parentDir = FileSystemEntity.parentOf(filename)
+      .split(Platform.pathSeparator)
     ..add('readme.md');
 
-  final readmeFile = File(readmePathList.join('/'));
+  final readmeFile = File(parentDir.join('/'));
 
   if (!readmeFile.existsSync()) return print('$readmeFile not found');
 
@@ -189,7 +157,6 @@ typedef Time = ({double time, String unit});
 class Score {
   final String name;
   final List<Time> processingTimes = [];
-  final List<int> memoryUsages = [];
 
   Score({
     required this.name,
@@ -203,13 +170,6 @@ class Score {
         processingTimes.length;
   }
 
-  double avgMemUsage() {
-    if (memoryUsages.isEmpty) return double.maxFinite;
-
-    return memoryUsages.fold(0, (total, el) => el + total) /
-        memoryUsages.length;
-  }
-
   String avgTimeString() {
     final avg = avgTimeMS();
 
@@ -220,42 +180,24 @@ class Score {
     return (avg / 1000).toStringAsFixed(2) + ' s';
   }
 
-  String avgMemUsageString() {
-    if (avgTimeMS() >= double.maxFinite) return 'OOM';
-
-    return (avgMemUsage() / 1000).toStringAsFixed(2) + ' MB';
-  }
-
   void addTime(double time, String unit) {
     processingTimes.add((time: time, unit: unit));
-  }
-
-  void addMemoryUsage(int memUsage) {
-    memoryUsages.add(memUsage);
   }
 
   @override
   String toString() {
     return '| $name | ${avgTimeString()}  |';
   }
-
-  String toMemUsageString() {
-    return '| $name | ${avgMemUsageString()}  |';
-  }
 }
 
 extension on List<Score> {
-  String toRowString([bool isMemUsage = false]) {
+  String toRowString() {
     var name = first.name == "Julia HO" ? "_Julia HO_[^1]" : first.name;
 
     if (name == 'Julia HO') {
       name = '_Julia HO_[^1]';
     } else if (name == 'Inko') {
       name = 'Inko[^2]';
-    }
-
-    if (isMemUsage) {
-      return '| ${name} | ${first.avgMemUsageString()} | ${this[1].avgMemUsageString()} | ${this[2].avgMemUsageString()} | ${this.totalMemString} |';
     }
 
     final isConcurrent = name.contains('Concurrent');
@@ -286,14 +228,6 @@ extension on List<Score> {
     if (sum < 1000) return sum.toStringAsFixed(2) + ' ms';
 
     return (sum / 1000).toStringAsFixed(2) + ' s';
-  }
-
-  String get totalMemString {
-    if (this[2].avgMemUsageString() == 'OOM') return 'N/A';
-
-    final sum = fold(0.0, (total, sc) => sc.avgMemUsage() + total);
-
-    return (sum / 1000).toStringAsFixed(2) + ' MB';
   }
 }
 

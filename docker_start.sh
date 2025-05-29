@@ -14,24 +14,27 @@ if [ -z "$GIT_PAT" ]; then
 else
     echo -e "\n---- GIT_PAT provided, creating PR ----\n"
 fi
+
+result_file="raw_results_$TEST_NAME.md"
+
 #
 echo "Run Benchmark (5k posts)" &&
-    ./run.sh "$TEST_NAME" raw_results.md &&
+    ./run.sh "$TEST_NAME" $result_file &&
     #
     echo "Generate $RUN2 posts" &&
     python gen_fake_posts.py "$RUN2" &&
     #
     echo "Run Benchmark ($RUN2 posts)" &&
-    ./run.sh "$TEST_NAME" raw_results.md append &&
+    ./run.sh "$TEST_NAME" $result_file append &&
     #
     echo "Generate $RUN3 posts" &&
     python gen_fake_posts.py "$RUN3" &&
     #
     echo "Run Benchmark ($RUN3 posts)" &&
-    ./run.sh "$TEST_NAME" raw_results.md append &&
-    cp raw_results.md /results/raw_results.md &&
+    ./run.sh "$TEST_NAME" $result_file append &&
+    cp $result_file /results/$result_file &&
     #
-    dart extract_results.dart raw_results.md verbose &&
+    dart extract_results.dart /results &&
     if [ -n "$GIT_PAT" ]; then
 
         echo "Creating Pull Request" &&
@@ -40,7 +43,7 @@ echo "Run Benchmark (5k posts)" &&
             echo "Creating new branch" &&
             git checkout -b results &&
             echo "Adding new files" &&
-            git add raw_results.md readme.md &&
+            git add $result_file readme.md &&
             git commit -m "Update results" &&
             echo "Pushing to new branch" &&
             echo "$GIT_PAT" >/app/token.txt && gh auth login --with-token </app/token.txt &&

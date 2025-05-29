@@ -1,12 +1,9 @@
 FROM archlinux:base
 
-# ATTENTION:
-# add new install to the end to prevent cache busting
-
 # Update package repository
 RUN pacman -Syu --noconfirm
 
-RUN pacman -S --noconfirm --needed wget unzip sudo base-devel git clang llvm python python-pip pypy3 ncurses gcc dart libedit github-cli less time
+RUN pacman -S --noconfirm --needed wget unzip sudo base-devel git clang llvm python python-pip ncurses gcc dart libedit github-cli less time
 
 # user needed to install aur packages
 RUN useradd -ms /bin/bash builduser
@@ -16,6 +13,10 @@ RUN echo "builduser ALL=(ALL) NOPASSWD:ALL" >>/etc/sudoers
 WORKDIR /app
 
 RUN pip install faker nanoid --break-system-packages
+
+#REPLACE-ME-WITH-INSTALLATION-COMMANDS
+
+RUN rm -f *.tar.* || true && rm -f /home/builduser/*.zip || true && rm -f /home/builduser/*.tar.* || true
 
 RUN mkdir -p /results
 
