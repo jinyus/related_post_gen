@@ -82,7 +82,7 @@ docker run -e TEST_NAME=go -it --rm go_databench
 | Haskell | 26.65 ms | 347.84 ms | 2.81 s | 3.19 s |
 | F# (JIT) | 25.02 ms | 354.38 ms | 3.02 s | 3.40 s |
 | Julia | 23.66 ms | 350.96 ms | 3.10 s | 3.47 s |
-| Vlang | 26.39 ms | 372.67 ms | 3.24 s | 3.64 s |
+| Vlang | 28.42 ms | 408.52 ms | 3.53 s | 3.96 s |
 | D | 29.92 ms | 413.98 ms | 3.60 s | 4.05 s |
 | Nim | 31.00 ms | 469.88 ms | 4.15 s | 4.65 s |
 | Swift | 36.61 ms | 482.22 ms | 4.19 s | 4.71 s |
