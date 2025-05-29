@@ -32,6 +32,8 @@ public class App {
 	public static void main(String[] args) throws IOException {
 		DslJson<Object> dslJson = new DslJson<>();
 
+		dslJson.registerReader(Post[].class, dslJson.newReader(Post[].class));
+
 		Post[] posts;
 		try (InputStream in = Files.newInputStream(Paths.get("../posts.json"))) {
 			posts = Objects.requireNonNull(dslJson.deserialize(Post[].class, in));
