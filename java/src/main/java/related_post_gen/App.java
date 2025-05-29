@@ -2,6 +2,7 @@ package related_post_gen;
 
 import com.dslplatform.json.CompiledJson;
 import com.dslplatform.json.DslJson;
+import com.dslplatform.json.runtime.Settings;
 import com.dslplatform.json.JsonAttribute;
 import org.eclipse.collections.impl.list.mutable.primitive.IntArrayList;
 
@@ -30,9 +31,7 @@ public class App {
 	}
 
 	public static void main(String[] args) throws IOException {
-		DslJson<Object> dslJson = new DslJson<>();
-
-		dslJson.registerReader(Post[].class, dslJson.newReader(Post[].class));
+		DslJson<Object> dslJson = new DslJson<>(Settings.basicSetup());
 
 		Post[] posts;
 		try (InputStream in = Files.newInputStream(Paths.get("../posts.json"))) {
