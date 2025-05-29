@@ -248,7 +248,7 @@ run_julia_con() {
 run_odin() {
     echo "Running Odin" &&
         odin build ./odin -o:aggressive -out:./odin/related &&
-        cd ./odin && \
+        cd ./odin &&
         run_command "Odin" $runs ./related &&
         check_output "related_posts_odin.json"
 }
@@ -403,7 +403,7 @@ run_fsharp() {
             dotnet restore &&
                 dotnet publish -c release
         fi &&
-        run_command "F# (JIT)" $runs ./bin/release/net8.0/fsharp_jit &&
+        run_command "F# (JIT)" $runs ./bin/release/net9.0/fsharp_jit &&
         cd .. &&
         check_output "related_posts_fsharp_jit.json"
 }
@@ -413,9 +413,9 @@ run_fsharp_aot() {
         cd ./fsharp/aot &&
         if [ -z "$appendToFile" ]; then # only build on 5k run
             dotnet restore &&
-                dotnet publish -c release --self-contained -p PublishAot=true -o "bin/release/net8.0/aot"
+                dotnet publish -c release --self-contained -p PublishAot=true -o "bin/release/net9.0/aot"
         fi &&
-        run_command "F# (AOT)" $runs ./bin/release/net8.0/aot/fsharp_aot &&
+        run_command "F# (AOT)" $runs ./bin/release/net9.0/aot/fsharp_aot &&
         cd .. &&
         check_output "related_posts_fsharp_aot.json"
 }
@@ -427,7 +427,7 @@ run_fsharp_con() {
             dotnet restore &&
                 dotnet publish -c release
         fi &&
-        run_command "F# Concurrent" $runs ./bin/release/net8.0/fsharp_con &&
+        run_command "F# Concurrent" $runs ./bin/release/net9.0/fsharp_con &&
         check_output "related_posts_fsharp_con.json"
 }
 
@@ -436,9 +436,9 @@ run_fsharp_con_aot() {
         cd ./fsharp_con &&
         if [ -z "$appendToFile" ]; then # subsequent runs
             dotnet restore &&
-                dotnet publish -c release --self-contained -p PublishAot=true -o "bin/release/net8.0/aot"
+                dotnet publish -c release --self-contained -p PublishAot=true -o "bin/release/net9.0/aot"
         fi &&
-        run_command "F# Concurrent (AOT)" $runs ./bin/release/net8.0/aot/fsharp_con &&
+        run_command "F# Concurrent (AOT)" $runs ./bin/release/net9.0/aot/fsharp_con &&
         check_output "related_posts_fsharp_con.json"
 }
 
@@ -446,9 +446,9 @@ run_csharp() {
     echo "Running CSharp (JIT)" &&
         cd ./csharp &&
         if [ -z "$appendToFile" ]; then # subsequent runs
-            dotnet publish -c release --self-contained -o "bin/release/net8.0/jit"
+            dotnet publish -c release --self-contained -o "bin/release/net9.0/jit"
         fi &&
-        run_command "C# (JIT)" $runs ./bin/release/net8.0/jit/related &&
+        run_command "C# (JIT)" $runs ./bin/release/net9.0/jit/related &&
         check_output "related_posts_csharp.json"
 }
 
@@ -456,9 +456,9 @@ run_csharp_aot() {
     echo "Running CSharp (AOT)" &&
         cd ./csharp &&
         if [ -z "$appendToFile" ]; then # subsequent runs
-            dotnet publish -c release --self-contained -p PublishAot=true -o "bin/release/net8.0/aot"
+            dotnet publish -c release --self-contained -p PublishAot=true -o "bin/release/net9.0/aot"
         fi &&
-        run_command "C# (AOT)" $runs ./bin/release/net8.0/aot/related &&
+        run_command "C# (AOT)" $runs ./bin/release/net9.0/aot/related &&
         check_output "related_posts_csharp.json"
 }
 
@@ -466,9 +466,9 @@ run_csharp_con() {
     echo "Running CSharp Concurrent (JIT)" &&
         cd ./csharp_con &&
         if [ -z "$appendToFile" ]; then # subsequent runs
-            dotnet publish -c release --self-contained -o "bin/release/net8.0/jit"
+            dotnet publish -c release --self-contained -o "bin/release/net9.0/jit"
         fi &&
-        run_command "C# Concurrent (JIT)" $runs ./bin/release/net8.0/jit/related &&
+        run_command "C# Concurrent (JIT)" $runs ./bin/release/net9.0/jit/related &&
         check_output "related_posts_csharp_con.json"
 }
 
@@ -476,9 +476,9 @@ run_csharp_con_aot() {
     echo "Running CSharp Concurrent (AOT)" &&
         cd ./csharp_con &&
         if [ -z "$appendToFile" ]; then # subsequent runs
-            dotnet publish -c release --self-contained -p PublishAot=true -o "bin/release/net8.0/aot"
+            dotnet publish -c release --self-contained -p PublishAot=true -o "bin/release/net9.0/aot"
         fi &&
-        run_command "C# Concurrent (AOT)" 1 ./bin/release/net8.0/aot/related &&
+        run_command "C# Concurrent (AOT)" 1 ./bin/release/net9.0/aot/related &&
         check_output "related_posts_csharp_con.json"
 }
 
