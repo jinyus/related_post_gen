@@ -98,6 +98,7 @@ docker run -e TEST_NAME=go -it --rm go_databench
 | JS (Deno) | 96.40 ms | 1.17 s | 10.61 s | 11.88 s |
 | JS (Node) | 99.00 ms | 1.12 s | 11.03 s | 12.25 s |
 | Clojure | 111.90 ms | 1.31 s | 10.97 s | 12.39 s |
+| Common Lisp (SBCL) | 154.00 ms | 1.34 s | 11.20 s | 12.69 s |
 | Ocaml | 99.40 ms | 1.46 s | 13.05 s | 14.61 s |
 | Typed Racket | 136.36 ms | 1.96 s | 16.31 s | 18.41 s |
 | Racket | 135.03 ms | 2.04 s | 16.69 s | 18.87 s |
