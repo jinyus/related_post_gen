@@ -31,9 +31,8 @@ echo "Run Benchmark (5k posts)" &&
     python gen_fake_posts.py "$RUN3" &&
     #
     echo "Run Benchmark ($RUN3 posts)" &&
-    ./run.sh "$TEST_NAME" $result_file append
-
-cp $result_file /results/$result_file &&
+    ./run.sh "$TEST_NAME" $result_file append &&
+    cp $result_file /results/$result_file &&
     #
     dart extract_results.dart $result_file &&
     if [ -n "$GIT_PAT" ]; then
