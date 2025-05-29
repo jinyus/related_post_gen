@@ -27,15 +27,14 @@ void main(List<String> args) {
 
   if (filename == null) return print('Usage: extract <filename>');
 
-  final files = FileSystemEntity.isFileSync(filename)
-      ? [File(filename)]
+  final lines = FileSystemEntity.isFileSync(filename)
+      ? File(filename).readAsLinesSync()
       : Directory(filename)
           .listSync()
           .whereType<File>()
           .where((f) => f.path.endsWith('.md'))
+          .expand((f) => f.readAsLinesSync())
           .toList();
-
-  final lines = files.expand((f) => f.readAsLinesSync()).toList();
 
   final scores = <String, List<Score>>{};
 
@@ -109,11 +108,11 @@ void main(List<String> args) {
   con_min60k = multiCoreScores.fold(con_min60k,
       (min, sc) => sc[2].avgTimeMS() < min ? sc[2].avgTimeMS() : min);
 
-  final readmePathList = files.first.absolute.path.split(Platform.pathSeparator)
-    ..removeLast()
+  final parentDir = FileSystemEntity.parentOf(filename)
+      .split(Platform.pathSeparator)
     ..add('readme.md');
 
-  final readmeFile = File(readmePathList.join('/'));
+  final readmeFile = File(parentDir.join('/'));
 
   if (!readmeFile.existsSync()) return print('$readmeFile not found');
 
