@@ -79,6 +79,7 @@ docker run -e TEST_NAME=go -it --rm go_databench
 | Java (JIT) | 24.60 ms | 299.00 ms | 2.62 s | 2.94 s |
 | C# (JIT) | 22.53 ms | 314.86 ms | 2.76 s | 3.10 s |
 | C# (AOT) | 21.48 ms | 318.20 ms | 2.79 s | 3.12 s |
+| Haskell | 26.65 ms | 347.84 ms | 2.81 s | 3.19 s |
 | F# (JIT) | 25.02 ms | 354.38 ms | 3.02 s | 3.40 s |
 | Julia | 23.66 ms | 350.96 ms | 3.10 s | 3.47 s |
 | Vlang | 26.39 ms | 372.67 ms | 3.24 s | 3.64 s |
@@ -86,7 +87,6 @@ docker run -e TEST_NAME=go -it --rm go_databench
 | Nim | 31.00 ms | 469.88 ms | 4.15 s | 4.65 s |
 | Swift | 40.76 ms | 578.54 ms | 4.92 s | 5.54 s |
 | F# (AOT) | 37.92 ms | 570.90 ms | 5.07 s | 5.68 s |
-| Haskell | 43.20 ms | 600.00 ms | 5.25 s | 5.89 s |
 | Java (GraalVM) | 33.30 ms | 504.00 ms | 5.47 s | 6.01 s |
 | Crystal | 45.64 ms | 690.35 ms | 6.03 s | 6.77 s |
 | Numba | 66.15 ms | 827.15 ms | 6.94 s | 7.83 s |
