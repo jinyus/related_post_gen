@@ -27,11 +27,15 @@ void main(List<String> args) {
 
   if (filename == null) return print('Usage: extract <filename>');
 
-  final file = File(filename);
+  final files = FileSystemEntity.isFileSync(filename)
+      ? [File(filename)]
+      : Directory(filename)
+          .listSync()
+          .whereType<File>()
+          .where((f) => f.path.endsWith('.md'))
+          .toList();
 
-  if (!file.existsSync()) return print('File "$filename" not found');
-
-  final lines = file.readAsLinesSync();
+  final lines = files.expand((f) => f.readAsLinesSync()).toList();
 
   final scores = <String, List<Score>>{};
 
@@ -85,7 +89,7 @@ void main(List<String> args) {
   if (sortedScores.first.length != 3) {
     sortedScores.forEach(print);
     print(
-        '${file.readAsStringSync()}\n\nEnough scores not found. Need 3 scores for each language to update readme.md - $currentLang');
+        '${lines}\n\nEnough scores not found. Need 3 scores for each language to update readme.md - $currentLang');
     return;
   }
 
@@ -105,7 +109,7 @@ void main(List<String> args) {
   con_min60k = multiCoreScores.fold(con_min60k,
       (min, sc) => sc[2].avgTimeMS() < min ? sc[2].avgTimeMS() : min);
 
-  final readmePathList = file.absolute.path.split(Platform.pathSeparator)
+  final readmePathList = files.first.absolute.path.split(Platform.pathSeparator)
     ..removeLast()
     ..add('readme.md');
 
