@@ -50,7 +50,13 @@ generate_image() {
 
 if [ "$ARG" = "all" ]; then
   for f in ./dockerfiles/*.Dockerfile; do
-    [ "$f" = "$BASE" ] && continue
+    if [ "$f" = "$BASE" ]; then
+      if [ "$BUILD" -eq 1 ]; then
+        echo "Building Docker image with tag 'base_databench'..."
+        sudo docker build -f "$BASE" -t "base_databench" .
+      fi
+      continue
+    fi
 
     name=$(basename "$f" .Dockerfile)
     out="./${name}_temp.Dockerfile"
