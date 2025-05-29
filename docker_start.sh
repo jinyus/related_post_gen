@@ -34,7 +34,7 @@ echo "Run Benchmark (5k posts)" &&
     ./run.sh "$TEST_NAME" $result_file append &&
     cp $result_file /results/$result_file &&
     #
-    dart extract_results.dart $result_file verbose &&
+    dart extract_results.dart /results verbose &&
     if [ -n "$GIT_PAT" ]; then
 
         echo "Creating Pull Request" &&
