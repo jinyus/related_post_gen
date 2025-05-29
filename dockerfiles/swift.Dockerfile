@@ -6,6 +6,9 @@ ENV PATH="/home/builduser/swift-5.9-RELEASE-ubuntu22.04/usr/bin:${PATH}"
 
 RUN ln -s /usr/lib/libncursesw.so.6 /usr/lib/libncurses.so.6
 
+# comilper looks for libxml2.so.2
+RUN cp /usr/lib/libxml2.so /usr/lib/libxml2.so.2
+
 # use global versions
 RUN rm /home/builduser/swift-5.9-RELEASE-ubuntu22.04/usr/bin/clang
 RUN rm /home/builduser/swift-5.9-RELEASE-ubuntu22.04/usr/bin/llvm*
