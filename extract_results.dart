@@ -92,8 +92,9 @@ void main(List<String> args) {
     return;
   }
 
-  final scoresWithoutJulia =
-      sortedScores.where((s) => s.first.name != 'Julia HO').toList();
+  final scoresWithoutJulia = sortedScores
+      .where((s) => !{'Julia HO', 'D HO'}.contains(s.first.name))
+      .toList();
   // caclulate min times
   min5k = scoresWithoutJulia.fold(
       min5k, (min, sc) => sc[0].avgTimeMS() < min ? sc[0].avgTimeMS() : min);
@@ -192,10 +193,12 @@ class Score {
 
 extension on List<Score> {
   String toRowString() {
-    var name = first.name == "Julia HO" ? "_Julia HO_[^1]" : first.name;
+    var name = first.name;
 
     if (name == 'Julia HO') {
       name = '_Julia HO_[^1]';
+    } else if (name == 'D HO') {
+      name = '_D HO_[^1]';
     } else if (name == 'Inko') {
       name = 'Inko[^2]';
     }

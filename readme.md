@@ -66,9 +66,9 @@ docker run -e TEST_NAME=all -it --rm databench
 | Language           | Time (5k posts)                       | 20k posts                              | 60k posts                              | Total     |
 | ------------------ | ------------------------------------- | -------------------------------------- | -------------------------------------- | --------- |
 | _Julia HO_[^1] | 6.80 ms | 23.00 ms | 99.33 ms | 129.13 ms |
-| D HO | $\textsf{\color{lightgreen}11.21 ms}$ | $\textsf{\color{lightgreen}42.84 ms}$ | $\textsf{\color{lightgreen}122.06 ms}$ | 176.11 ms |
-| D (v2) | 13.97 ms | 146.70 ms | 1.14 s | 1.30 s |
-| Rust | 11.54 ms | 149.96 ms | 1.30 s | 1.46 s |
+| _D HO_[^1] | 11.21 ms | 42.84 ms | 122.06 ms | 176.11 ms |
+| D (v2) | 13.97 ms | $\textsf{\color{lightgreen}146.70 ms}$ | $\textsf{\color{lightgreen}1.14 s}$ | 1.30 s |
+| Rust | $\textsf{\color{lightgreen}11.54 ms}$ | 149.96 ms | 1.30 s | 1.46 s |
 | c3 | 13.00 ms | 164.67 ms | 1.33 s | 1.51 s |
 | C++ | 16.10 ms | 202.67 ms | 1.72 s | 1.94 s |
 | Zig | 17.00 ms | 233.67 ms | 1.99 s | 2.24 s |
