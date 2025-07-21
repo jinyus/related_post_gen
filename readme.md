@@ -74,7 +74,6 @@ docker run -e TEST_NAME=go -it --rm go_databench
 | C++ | 16.10 ms | 202.67 ms | 1.72 s | 1.94 s |
 | Zig | 17.00 ms | 233.67 ms | 1.99 s | 2.24 s |
 | Odin | 18.74 ms | 248.22 ms | 2.12 s | 2.39 s |
-| Go | 19.96 ms | 284.42 ms | 2.49 s | 2.79 s |
 | Neat | 22.52 ms | 301.30 ms | 2.54 s | 2.87 s |
 | Java (JIT) | 24.60 ms | 299.00 ms | 2.62 s | 2.94 s |
 | C# (JIT) | 22.53 ms | 314.86 ms | 2.76 s | 3.10 s |
@@ -84,6 +83,7 @@ docker run -e TEST_NAME=go -it --rm go_databench
 | F# (JIT) | 25.02 ms | 354.38 ms | 3.02 s | 3.40 s |
 | Julia | 23.66 ms | 350.96 ms | 3.10 s | 3.47 s |
 | Vlang | 26.39 ms | 372.67 ms | 3.24 s | 3.64 s |
+| Go | 25.79 ms | 390.86 ms | 3.48 s | 3.89 s |
 | D | 29.92 ms | 413.98 ms | 3.60 s | 4.05 s |
 | Swift | 36.61 ms | 482.22 ms | 4.19 s | 4.71 s |
 | F# (AOT) | 37.92 ms | 570.90 ms | 5.07 s | 5.68 s |
@@ -120,8 +120,8 @@ docker run -e TEST_NAME=go -it --rm go_databench
 | C# Concurrent (AOT) | 5.27 ms | 60.57 ms | 487.37 ms | 553.22 ms |
 | D Concurrent | 8.84 ms | 76.34 ms | 560.38 ms | 645.56 ms |
 | Rust Concurrent | 5.43 ms | 69.22 ms | 602.36 ms | 677.00 ms |
+| Go Concurrent | 5.53 ms | 76.80 ms | 640.02 ms | 722.35 ms |
 | Nim Concurrent | 6.17 ms | 90.26 ms | 657.74 ms | 754.17 ms |
-| Go Concurrent | 6.89 ms | 92.48 ms | 771.56 ms | 870.92 ms |
 | F# Concurrent (AOT) | 8.40 ms | 114.00 ms | 1.00 s | 1.13 s |
 | F# Concurrent | 8.80 ms | 122.33 ms | 1.08 s | 1.21 s |
 | Swift Concurrent | 13.24 ms | 148.23 ms | 1.20 s | 1.37 s |

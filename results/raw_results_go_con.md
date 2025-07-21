@@ -1,41 +1,40 @@
+Go Concurrent:
+
+        Processing time (w/o IO): 5.353433ms
+        total: 0.03s memory: 13696k
+        Processing time (w/o IO): 5.614734ms
+        total: 0.03s memory: 14208k
+        Processing time (w/o IO): 5.392323ms
+        total: 0.03s memory: 13824k
+        Processing time (w/o IO): 5.587173ms
+        total: 0.03s memory: 13696k
+        Processing time (w/o IO): 5.551323ms
+        total: 0.03s memory: 13952k
+        Processing time (w/o IO): 5.701563ms
+        total: 0.03s memory: 14080k
+        Processing time (w/o IO): 5.802003ms
+        total: 0.03s memory: 13824k
+        Processing time (w/o IO): 5.483333ms
+        total: 0.03s memory: 13800k
+        Processing time (w/o IO): 5.409843ms
+        total: 0.03s memory: 13952k
+        Processing time (w/o IO): 5.398933ms
+        total: 0.03s memory: 14080k
 
 Go Concurrent:
 
-	Processing time (w/o IO): 6.869984ms
-	total: 0.04s memory: 13568k
-	Processing time (w/o IO): 7.061545ms
-	total: 0.04s memory: 13824k
-	Processing time (w/o IO): 7.058185ms
-	total: 0.04s memory: 13792k
-	Processing time (w/o IO): 6.805373ms
-	total: 0.04s memory: 13696k
-	Processing time (w/o IO): 6.492161ms
-	total: 0.04s memory: 13568k
-	Processing time (w/o IO): 6.784873ms
-	total: 0.04s memory: 13668k
-	Processing time (w/o IO): 6.715153ms
-	total: 0.04s memory: 13568k
-	Processing time (w/o IO): 7.147556ms
-	total: 0.04s memory: 13548k
-	Processing time (w/o IO): 7.130026ms
-	total: 0.04s memory: 13804k
-	Processing time (w/o IO): 6.785873ms
-	total: 0.04s memory: 13824k
+        Processing time (w/o IO): 76.421351ms
+        total: 0.21s memory: 45040k
+        Processing time (w/o IO): 75.555309ms
+        total: 0.19s memory: 44492k
+        Processing time (w/o IO): 78.430635ms
+        total: 0.21s memory: 44576k
 
 Go Concurrent:
 
-	Processing time (w/o IO): 91.376917ms
-	total: 0.24s memory: 44108k
-	Processing time (w/o IO): 93.250492ms
-	total: 0.25s memory: 44340k
-	Processing time (w/o IO): 92.803188ms
-	total: 0.25s memory: 44888k
-
-Go Concurrent:
-
-	Processing time (w/o IO): 766.795007ms
-	total: 1.29s memory: 163496k
-	Processing time (w/o IO): 773.983664ms
-	total: 1.33s memory: 162628k
-	Processing time (w/o IO): 773.890593ms
-	total: 1.34s memory: 162620k
+        Processing time (w/o IO): 638.333468ms
+        total: 1.11s memory: 161288k
+        Processing time (w/o IO): 637.222315ms
+        total: 1.15s memory: 162252k
+        Processing time (w/o IO): 644.505212ms
+        total: 1.16s memory: 163432k
