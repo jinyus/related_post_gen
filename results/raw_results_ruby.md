@@ -2,50 +2,50 @@
 Ruby:
 
 	`RubyGems' were not loaded.
-	Processing time (w/o IO): 1468ms
-	total: 1.53s memory: 36432k
+	Processing time (w/o IO): 1672ms
+	total: 1.88s memory: 36584k
 	`RubyGems' were not loaded.
-	Processing time (w/o IO): 1538ms
-	total: 1.60s memory: 36456k
+	Processing time (w/o IO): 1576ms
+	total: 1.71s memory: 36964k
 	`RubyGems' were not loaded.
-	Processing time (w/o IO): 1493ms
-	total: 1.55s memory: 36500k
+	Processing time (w/o IO): 1594ms
+	total: 1.65s memory: 36760k
 	`RubyGems' were not loaded.
-	Processing time (w/o IO): 1449ms
-	total: 1.51s memory: 36432k
+	Processing time (w/o IO): 1573ms
+	total: 1.71s memory: 36440k
 	`RubyGems' were not loaded.
-	Processing time (w/o IO): 1495ms
-	total: 1.56s memory: 36608k
+	Processing time (w/o IO): 1566ms
+	total: 1.73s memory: 36836k
 	`RubyGems' were not loaded.
-	Processing time (w/o IO): 1496ms
-	total: 1.56s memory: 36456k
+	Processing time (w/o IO): 1559ms
+	total: 1.69s memory: 36424k
 	`RubyGems' were not loaded.
-	Processing time (w/o IO): 1490ms
-	total: 1.55s memory: 36424k
+	Processing time (w/o IO): 1564ms
+	total: 1.67s memory: 36816k
 	`RubyGems' were not loaded.
-	Processing time (w/o IO): 1472ms
-	total: 1.53s memory: 36620k
+	Processing time (w/o IO): 1570ms
+	total: 1.69s memory: 36764k
 	`RubyGems' were not loaded.
-	Processing time (w/o IO): 1534ms
-	total: 1.60s memory: 36456k
+	Processing time (w/o IO): 1597ms
+	total: 1.70s memory: 36780k
 	`RubyGems' were not loaded.
-	Processing time (w/o IO): 1488ms
-	total: 1.55s memory: 36432k
+	Processing time (w/o IO): 1574ms
+	total: 1.73s memory: 36604k
 
 Ruby:
 
 	`RubyGems' were not loaded.
-	Processing time (w/o IO): 24505ms
-	total: 24.70s memory: 77216k
+	Processing time (w/o IO): 24313ms
+	total: 24.57s memory: 77252k
 	`RubyGems' were not loaded.
-	Processing time (w/o IO): 23619ms
-	total: 23.81s memory: 77264k
+	Processing time (w/o IO): 24184ms
+	total: 24.47s memory: 77572k
 
 Ruby:
 
 	`RubyGems' were not loaded.
-	Processing time (w/o IO): 207284ms
-	total: 207.87s memory: 182720k
+	Processing time (w/o IO): 217543ms
+	total: 218.13s memory: 182404k
 	`RubyGems' were not loaded.
-	Processing time (w/o IO): 204872ms
-	total: 205.45s memory: 182556k
+	Processing time (w/o IO): 215337ms
+	total: 216.05s memory: 182684k

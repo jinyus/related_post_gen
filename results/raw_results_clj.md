@@ -1,41 +1,89 @@
 
 Clojure:
 
-	Processing time (w/o IO): 97ms
-	total: 0.79s memory: 137132k
-	Processing time (w/o IO): 93ms
-	total: 0.79s memory: 136204k
-	Processing time (w/o IO): 96ms
-	total: 0.79s memory: 137940k
-	Processing time (w/o IO): 97ms
-	total: 0.78s memory: 136448k
-	Processing time (w/o IO): 97ms
-	total: 0.79s memory: 137884k
-	Processing time (w/o IO): 94ms
-	total: 0.79s memory: 136092k
-	Processing time (w/o IO): 95ms
-	total: 0.78s memory: 139608k
-	Processing time (w/o IO): 99ms
-	total: 0.79s memory: 136416k
-	Processing time (w/o IO): 92ms
-	total: 0.78s memory: 138120k
-	Processing time (w/o IO): 96ms
-	total: 0.78s memory: 136700k
+	WARNING: Final field _id in class related.core.Post has been mutated reflectively by class com.google.gson.internal.bind.ReflectiveTypeAdapterFactory$1 in unnamed module @4602c2a9 (file:/app/related_post_gen/clojure/target/related.jar)
+	WARNING: Use --enable-final-field-mutation=ALL-UNNAMED to avoid a warning
+	WARNING: Mutating final fields will be blocked in a future release unless final field mutation is enabled
+	Processing time (w/o IO): 184ms
+	total: 1.02s memory: 157664k
+	WARNING: Final field _id in class related.core.Post has been mutated reflectively by class com.google.gson.internal.bind.ReflectiveTypeAdapterFactory$1 in unnamed module @4602c2a9 (file:/app/related_post_gen/clojure/target/related.jar)
+	WARNING: Use --enable-final-field-mutation=ALL-UNNAMED to avoid a warning
+	WARNING: Mutating final fields will be blocked in a future release unless final field mutation is enabled
+	Processing time (w/o IO): 185ms
+	total: 0.97s memory: 157556k
+	WARNING: Final field _id in class related.core.Post has been mutated reflectively by class com.google.gson.internal.bind.ReflectiveTypeAdapterFactory$1 in unnamed module @4602c2a9 (file:/app/related_post_gen/clojure/target/related.jar)
+	WARNING: Use --enable-final-field-mutation=ALL-UNNAMED to avoid a warning
+	WARNING: Mutating final fields will be blocked in a future release unless final field mutation is enabled
+	Processing time (w/o IO): 184ms
+	total: 1.09s memory: 158040k
+	WARNING: Final field _id in class related.core.Post has been mutated reflectively by class com.google.gson.internal.bind.ReflectiveTypeAdapterFactory$1 in unnamed module @4602c2a9 (file:/app/related_post_gen/clojure/target/related.jar)
+	WARNING: Use --enable-final-field-mutation=ALL-UNNAMED to avoid a warning
+	WARNING: Mutating final fields will be blocked in a future release unless final field mutation is enabled
+	Processing time (w/o IO): 187ms
+	total: 1.00s memory: 158812k
+	WARNING: Final field _id in class related.core.Post has been mutated reflectively by class com.google.gson.internal.bind.ReflectiveTypeAdapterFactory$1 in unnamed module @4602c2a9 (file:/app/related_post_gen/clojure/target/related.jar)
+	WARNING: Use --enable-final-field-mutation=ALL-UNNAMED to avoid a warning
+	WARNING: Mutating final fields will be blocked in a future release unless final field mutation is enabled
+	Processing time (w/o IO): 176ms
+	total: 0.98s memory: 155864k
+	WARNING: Final field _id in class related.core.Post has been mutated reflectively by class com.google.gson.internal.bind.ReflectiveTypeAdapterFactory$1 in unnamed module @4602c2a9 (file:/app/related_post_gen/clojure/target/related.jar)
+	WARNING: Use --enable-final-field-mutation=ALL-UNNAMED to avoid a warning
+	WARNING: Mutating final fields will be blocked in a future release unless final field mutation is enabled
+	Processing time (w/o IO): 193ms
+	total: 1.01s memory: 158424k
+	WARNING: Final field _id in class related.core.Post has been mutated reflectively by class com.google.gson.internal.bind.ReflectiveTypeAdapterFactory$1 in unnamed module @4602c2a9 (file:/app/related_post_gen/clojure/target/related.jar)
+	WARNING: Use --enable-final-field-mutation=ALL-UNNAMED to avoid a warning
+	WARNING: Mutating final fields will be blocked in a future release unless final field mutation is enabled
+	Processing time (w/o IO): 170ms
+	total: 0.98s memory: 155656k
+	WARNING: Final field _id in class related.core.Post has been mutated reflectively by class com.google.gson.internal.bind.ReflectiveTypeAdapterFactory$1 in unnamed module @4602c2a9 (file:/app/related_post_gen/clojure/target/related.jar)
+	WARNING: Use --enable-final-field-mutation=ALL-UNNAMED to avoid a warning
+	WARNING: Mutating final fields will be blocked in a future release unless final field mutation is enabled
+	Processing time (w/o IO): 137ms
+	total: 1.01s memory: 107936k
+	WARNING: Final field _id in class related.core.Post has been mutated reflectively by class com.google.gson.internal.bind.ReflectiveTypeAdapterFactory$1 in unnamed module @4602c2a9 (file:/app/related_post_gen/clojure/target/related.jar)
+	WARNING: Use --enable-final-field-mutation=ALL-UNNAMED to avoid a warning
+	WARNING: Mutating final fields will be blocked in a future release unless final field mutation is enabled
+	Processing time (w/o IO): 195ms
+	total: 1.00s memory: 154188k
+	WARNING: Final field _id in class related.core.Post has been mutated reflectively by class com.google.gson.internal.bind.ReflectiveTypeAdapterFactory$1 in unnamed module @4602c2a9 (file:/app/related_post_gen/clojure/target/related.jar)
+	WARNING: Use --enable-final-field-mutation=ALL-UNNAMED to avoid a warning
+	WARNING: Mutating final fields will be blocked in a future release unless final field mutation is enabled
+	Processing time (w/o IO): 173ms
+	total: 0.98s memory: 156276k
 
 Clojure:
 
-	Processing time (w/o IO): 1085ms
-	total: 1.93s memory: 208604k
-	Processing time (w/o IO): 1127ms
-	total: 1.93s memory: 209440k
-	Processing time (w/o IO): 1097ms
-	total: 1.94s memory: 206780k
+	WARNING: Final field _id in class related.core.Post has been mutated reflectively by class com.google.gson.internal.bind.ReflectiveTypeAdapterFactory$1 in unnamed module @4602c2a9 (file:/app/related_post_gen/clojure/target/related.jar)
+	WARNING: Use --enable-final-field-mutation=ALL-UNNAMED to avoid a warning
+	WARNING: Mutating final fields will be blocked in a future release unless final field mutation is enabled
+	Processing time (w/o IO): 1523ms
+	total: 2.71s memory: 403132k
+	WARNING: Final field _id in class related.core.Post has been mutated reflectively by class com.google.gson.internal.bind.ReflectiveTypeAdapterFactory$1 in unnamed module @4602c2a9 (file:/app/related_post_gen/clojure/target/related.jar)
+	WARNING: Use --enable-final-field-mutation=ALL-UNNAMED to avoid a warning
+	WARNING: Mutating final fields will be blocked in a future release unless final field mutation is enabled
+	Processing time (w/o IO): 1506ms
+	total: 2.71s memory: 404508k
+	WARNING: Final field _id in class related.core.Post has been mutated reflectively by class com.google.gson.internal.bind.ReflectiveTypeAdapterFactory$1 in unnamed module @4602c2a9 (file:/app/related_post_gen/clojure/target/related.jar)
+	WARNING: Use --enable-final-field-mutation=ALL-UNNAMED to avoid a warning
+	WARNING: Mutating final fields will be blocked in a future release unless final field mutation is enabled
+	Processing time (w/o IO): 1402ms
+	total: 2.50s memory: 400796k
 
 Clojure:
 
-	Processing time (w/o IO): 9507ms
-	total: 10.66s memory: 379460k
-	Processing time (w/o IO): 9138ms
-	total: 10.30s memory: 393900k
-	Processing time (w/o IO): 9163ms
-	total: 10.31s memory: 432228k
+	WARNING: Final field _id in class related.core.Post has been mutated reflectively by class com.google.gson.internal.bind.ReflectiveTypeAdapterFactory$1 in unnamed module @4602c2a9 (file:/app/related_post_gen/clojure/target/related.jar)
+	WARNING: Use --enable-final-field-mutation=ALL-UNNAMED to avoid a warning
+	WARNING: Mutating final fields will be blocked in a future release unless final field mutation is enabled
+	Processing time (w/o IO): 11260ms
+	total: 13.07s memory: 427368k
+	WARNING: Final field _id in class related.core.Post has been mutated reflectively by class com.google.gson.internal.bind.ReflectiveTypeAdapterFactory$1 in unnamed module @4602c2a9 (file:/app/related_post_gen/clojure/target/related.jar)
+	WARNING: Use --enable-final-field-mutation=ALL-UNNAMED to avoid a warning
+	WARNING: Mutating final fields will be blocked in a future release unless final field mutation is enabled
+	Processing time (w/o IO): 10832ms
+	total: 12.68s memory: 433936k
+	WARNING: Final field _id in class related.core.Post has been mutated reflectively by class com.google.gson.internal.bind.ReflectiveTypeAdapterFactory$1 in unnamed module @4602c2a9 (file:/app/related_post_gen/clojure/target/related.jar)
+	WARNING: Use --enable-final-field-mutation=ALL-UNNAMED to avoid a warning
+	WARNING: Mutating final fields will be blocked in a future release unless final field mutation is enabled
+	Processing time (w/o IO): 10890ms
+	total: 12.65s memory: 368632k

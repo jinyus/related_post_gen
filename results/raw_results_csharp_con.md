@@ -1,41 +1,41 @@
 
 C# Concurrent (JIT):
 
-	Processing time (w/o IO): 6.1911ms
-	total: 0.13s memory: 65876k
-	Processing time (w/o IO): 5.5635ms
-	total: 0.13s memory: 65632k
-	Processing time (w/o IO): 5.3348ms
-	total: 0.13s memory: 65680k
-	Processing time (w/o IO): 5.364ms
-	total: 0.13s memory: 65916k
-	Processing time (w/o IO): 6.1463ms
-	total: 0.13s memory: 65524k
-	Processing time (w/o IO): 5.2498ms
-	total: 0.13s memory: 65996k
-	Processing time (w/o IO): 5.3171ms
-	total: 0.13s memory: 65872k
-	Processing time (w/o IO): 5.4399ms
-	total: 0.13s memory: 65304k
-	Processing time (w/o IO): 5.4502ms
-	total: 0.13s memory: 65420k
-	Processing time (w/o IO): 6.8955ms
-	total: 0.13s memory: 65628k
+	Processing time (w/o IO): 7.7168ms
+	total: 0.16s memory: 67596k
+	Processing time (w/o IO): 4.233ms
+	total: 0.15s memory: 67060k
+	Processing time (w/o IO): 7.8095ms
+	total: 0.16s memory: 67220k
+	Processing time (w/o IO): 6.587ms
+	total: 0.16s memory: 67560k
+	Processing time (w/o IO): 4.4647ms
+	total: 0.15s memory: 67240k
+	Processing time (w/o IO): 6.5514ms
+	total: 0.16s memory: 67140k
+	Processing time (w/o IO): 4.6256ms
+	total: 0.15s memory: 67552k
+	Processing time (w/o IO): 6.2845ms
+	total: 0.15s memory: 66812k
+	Processing time (w/o IO): 6.6258ms
+	total: 0.16s memory: 67228k
+	Processing time (w/o IO): 6.7105ms
+	total: 0.16s memory: 67452k
 
 C# Concurrent (JIT):
 
-	Processing time (w/o IO): 52.635ms
-	total: 0.37s memory: 124684k
-	Processing time (w/o IO): 55.9361ms
-	total: 0.38s memory: 123196k
-	Processing time (w/o IO): 54.0696ms
-	total: 0.38s memory: 123372k
+	Processing time (w/o IO): 43.0494ms
+	total: 0.44s memory: 125108k
+	Processing time (w/o IO): 45.0116ms
+	total: 0.45s memory: 124920k
+	Processing time (w/o IO): 42.5976ms
+	total: 0.45s memory: 124724k
 
 C# Concurrent (JIT):
 
-	Processing time (w/o IO): 393.3313ms
-	total: 1.51s memory: 309580k
-	Processing time (w/o IO): 441.3256ms
-	total: 1.61s memory: 310116k
-	Processing time (w/o IO): 375.7472ms
-	total: 1.50s memory: 297120k
+	Processing time (w/o IO): 332.6108ms
+	total: 1.54s memory: 299224k
+	Processing time (w/o IO): 340.4693ms
+	total: 1.56s memory: 307832k
+	Processing time (w/o IO): 340.6238ms
+	total: 1.54s memory: 308548k
