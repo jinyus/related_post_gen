@@ -141,6 +141,13 @@ docker run -e TEST_NAME=go -it --rm go_databench
 | _D HO_[^1] | 10.77 ms | 40.07 ms | 113.05 ms | 163.89 ms |
 | _Julia HO_[^1] | 5.90 ms | 108.67 ms | 80.67 ms | 195.23 ms |
 
+> **Disclaimer:** These results are not directly comparable to the other implementations. The HO entries hardcode the top-5 output (`NUM_TOP_ITEMS`/`TopN`/`SVector{5}`) and exploit constraints of the benchmark dataset that don't generalize:
+> - **Rust HO** uses 8-bit tag IDs, so it fails with more than 256 unique tags, and posts with more than 8 tags fall back to the standard, unoptimized algorithm.
+> - **D HO** requires posts to have at most 8 tags (it aborts otherwise) and uses lookup tables limited to 256 entries.
+> - **Julia HO** always returns exactly 5 related posts via a specialized data structure.
+>
+> They only produce these speeds for this specific dataset/shape of input; an arbitrary number of tags would break them or require changes.
+
 <details>
 <summary> Old Results with details (on my machine) </summary>
 
