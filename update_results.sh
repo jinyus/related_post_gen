@@ -617,7 +617,21 @@ if git -C "$REPO_DIR" diff --cached --quiet; then
     exit 0
 fi
 
-git -C "$REPO_DIR" commit -m "Update benchmark results ($DEVICE)"
+# committing needs an author identity; a fresh server has none, so fall back to
+# the authenticated GitHub account (or GH_COMMIT_NAME / GH_COMMIT_EMAIL)
+commit_name="$(git -C "$REPO_DIR" config user.name || true)"
+commit_email="$(git -C "$REPO_DIR" config user.email || true)"
+if [ -z "$commit_name" ] || [ -z "$commit_email" ]; then
+    gh_login="$(gh api user -q .login 2>/dev/null || true)"
+    gh_id="$(gh api user -q .id 2>/dev/null || true)"
+    [ -n "$commit_name" ] || commit_name="${GH_COMMIT_NAME:-${gh_login:-related-post-gen benchmark}}"
+    [ -n "$commit_email" ] || commit_email="${GH_COMMIT_EMAIL:-${gh_id:+$gh_id+$gh_login@users.noreply.github.com}}"
+    [ -n "$commit_email" ] || commit_email="${gh_login:-benchmark}@users.noreply.github.com"
+    info "committing as $commit_name <$commit_email>"
+fi
+
+git -C "$REPO_DIR" -c user.name="$commit_name" -c user.email="$commit_email" \
+    commit -m "Update benchmark results ($DEVICE)"
 
 git -C "$REPO_DIR" push -u origin "$OUT_BRANCH"
 
