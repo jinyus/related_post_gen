@@ -51,3 +51,6 @@ cpp/main
 
 .metals/
 .bsp/
+
+# benchmark campaign stamp (update_results.sh --skip-existing)
+results/.campaign-ignore

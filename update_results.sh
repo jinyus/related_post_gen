@@ -37,6 +37,9 @@ GITHUB_HOST="github.com"
 # tests that are deliberately not part of the published results
 DEFAULT_SKIP_TESTS="inko"
 
+# tests to leave out of this run (--exclude)
+EXCLUDE_TESTS=""
+
 # ---------------------------------------------------------------------------
 # options
 # ---------------------------------------------------------------------------
@@ -47,6 +50,7 @@ RUN2="${RUN2:-20000}"
 RUN3="${RUN3:-60000}"
 PR_REPO="${PR_REPO:-}"
 SKIP_EXISTING=0
+NEW_CAMPAIGN=0
 FAIL_FAST=0
 NO_PR=0
 DRY_RUN=0
@@ -65,7 +69,10 @@ Options:
   -b, --base BRANCH    PR base branch (default: main)
       --branch NAME    name of the results branch (default: results-<UTC timestamp>)
       --tests "a b"    tests to run, comma or space separated (default: all)
-      --skip-existing  skip tests that already have results/raw_results_<test>.md
+      --exclude "a b"  tests to leave out of this run (eg. --exclude nim)
+      --skip-existing  resume: skip tests already re-run in this campaign
+                       (results that ship with the repository are not skipped)
+      --new-campaign   forget previous progress and re-run everything
       --fail-fast      stop at the first failing test
       --no-pr          update readme.md but do not commit, push or open a PR
       --dry-run        print what would be executed without running it
@@ -117,6 +124,14 @@ while [ $# -gt 0 ]; do
     --skip-existing)
         SKIP_EXISTING=1
         shift
+        ;;
+    --new-campaign)
+        NEW_CAMPAIGN=1
+        shift
+        ;;
+    --exclude)
+        EXCLUDE_TESTS="$2"
+        shift 2
         ;;
     --fail-fast)
         FAIL_FAST=1
@@ -173,6 +188,19 @@ if [ ${#TESTS[@]} -eq 0 ]; then
         done
         [ "$skip" = 1 ] || TESTS+=("$test_name")
     done
+fi
+
+# --exclude always filters, also from an explicit list
+if [ -n "$EXCLUDE_TESTS" ]; then
+    kept=()
+    for test_name in "${TESTS[@]}"; do
+        skip=0
+        for s in $EXCLUDE_TESTS; do
+            [ "$test_name" = "$s" ] && skip=1
+        done
+        [ "$skip" = 1 ] || kept+=("$test_name")
+    done
+    TESTS=("${kept[@]+"${kept[@]}"}")
 fi
 
 for test_name in "${TESTS[@]}"; do
@@ -353,15 +381,21 @@ for f in "$REPO_DIR"/*_temp.Dockerfile; do
 done
 TEMP_CREATED=()
 
+FAILED_IMAGES=()
 for image in "${IMAGES[@]}"; do
     info "[$(now)] building ${image}_databench"
     if [ "$DRY_RUN" = 1 ]; then
         info "  [dry-run] ./gen_dockerfile.sh -b $image"
         continue
     fi
-    (cd "$REPO_DIR" && ./gen_dockerfile.sh -b "$image") ||
-        die "failed to build ${image}_databench"
-    TEMP_CREATED+=("${image}_temp.Dockerfile")
+    if (cd "$REPO_DIR" && ./gen_dockerfile.sh -b "$image"); then
+        TEMP_CREATED+=("${image}_temp.Dockerfile")
+    else
+        # one broken language should not waste the whole run (see --fail-fast)
+        FAILED_IMAGES+=("$image")
+        warn "failed to build ${image}_databench - its tests will be skipped"
+        [ "$FAIL_FAST" = 1 ] && die "stopping after a failed image build (--fail-fast)"
+    fi
 done
 
 cleanup_temp_dockerfiles() {
@@ -384,6 +418,19 @@ step "Running ${#TESTS[@]} test(s)"
 info "tests run one at a time (timings are only comparable on an idle machine);"
 info "this can take hours - use --skip-existing to resume an interrupted run"
 
+# A campaign starts with a full run and lasts until --new-campaign (or deleting
+# the ignore list). --skip-existing only skips results produced *since* that
+# moment, never the results that ship inside the repository.
+CAMPAIGN_IGNORE="$RESULTS_DIR/.campaign-ignore"
+if [ "$DRY_RUN" = 1 ]; then
+    info "[dry-run] campaign ignore list: $CAMPAIGN_IGNORE"
+elif [ "$SKIP_EXISTING" = 1 ] && [ "$NEW_CAMPAIGN" != 1 ] && [ -f "$CAMPAIGN_IGNORE" ]; then
+    info "resuming campaign: $(grep -c . "$CAMPAIGN_IGNORE" 2>/dev/null || echo 0) pre-existing results are re-run"
+else
+    (cd "$RESULTS_DIR" && ls raw_results_*.md 2>/dev/null) >"$CAMPAIGN_IGNORE" || true
+    info "new campaign: pre-existing results are re-run, anything this run produces is remembered"
+fi
+
 FAILED=()
 PASSED=()
 RUN_START=$(date +%s)
@@ -394,8 +441,19 @@ for test_name in "${TESTS[@]}"; do
     image="${TEST_IMAGE[$test_name]}"
     result_file="$RESULTS_DIR/raw_results_${test_name}.md"
 
-    if [ "$SKIP_EXISTING" = 1 ] && [ -f "$result_file" ]; then
-        info "[$index/${#TESTS[@]}] $test_name: skipped (results already exist)"
+    skip_image=0
+    for f in ${FAILED_IMAGES[@]+"${FAILED_IMAGES[@]}"}; do
+        [ "$f" = "$image" ] && skip_image=1
+    done
+    if [ "$skip_image" = 1 ]; then
+        FAILED+=("$test_name (image build failed)")
+        warn "[$index/${#TESTS[@]}] $test_name: skipped, ${image}_databench could not be built"
+        continue
+    fi
+
+    if [ "$SKIP_EXISTING" = 1 ] && [ -f "$result_file" ] &&
+        ! grep -qxF "raw_results_${test_name}.md" "$CAMPAIGN_IGNORE" 2>/dev/null; then
+        info "[$index/${#TESTS[@]}] $test_name: skipped (already ran in this campaign)"
         continue
     fi
 
@@ -439,6 +497,12 @@ for test_name in "${TESTS[@]}"; do
     fi
 
     PASSED+=("$test_name")
+    # it is no longer a pre-existing (stale) result, so a later --skip-existing
+    # run will skip it
+    if [ -f "$CAMPAIGN_IGNORE" ]; then
+        grep -vxF "raw_results_${test_name}.md" "$CAMPAIGN_IGNORE" >"$CAMPAIGN_IGNORE.tmp" 2>/dev/null || true
+        mv "$CAMPAIGN_IGNORE.tmp" "$CAMPAIGN_IGNORE"
+    fi
     info "  $test_name done in $(( $(date +%s) - test_start ))s"
 done
 

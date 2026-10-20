@@ -422,12 +422,33 @@ run_java_graal_con() {
 
 }
 
+# nimble 0.24 (what Arch ships now) no longer passes --path for released
+# dependencies during "nimble build", so the build fails on `import pkg/xxhash`.
+# Compile against the packages nimble installed instead, and fall back to nimble
+# if they are not there (older nimble).
+build_nim_related() {
+    local root="$HOME/.nimble/pkgs2" pkg dir
+    local args=()
+    for pkg in jsony decimal xxhash nint128; do
+        dir="$(ls -d "$root/$pkg-"* 2>/dev/null | head -1)"
+        if [ -n "$dir" ]; then
+            args+=("--path:$dir")
+        fi
+    done
+    if [ ${#args[@]} -ge 2 ]; then
+        nim c -d:release --cc:clang -d:NimblePkgVersion=0.1.0 --noNimblePath \
+            "${args[@]}" --path:src -o:related src/related.nim
+    else
+        nimble --verbose build -d:release --cc:clang
+    fi
+}
+
 run_nim() {
     echo "Running Nim" &&
         cd ./nim &&
         if [ -z "$appendToFile" ]; then # only build on 5k run
             nimble -y install -d &&
-                nimble --verbose build -d:release --cc:clang
+                build_nim_related
         fi &&
         run_command "Nim" $runs ./related &&
         check_output "related_posts_nim.json"
