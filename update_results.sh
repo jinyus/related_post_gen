@@ -283,19 +283,24 @@ install_deps() {
     fi
 }
 
-# gh must be installed and authenticated so the PR can be created
-if ! command -v gh >/dev/null 2>&1; then
-    install_deps || die "gh (GitHub CLI) is not installed. Install it:
+# gh must be installed and authenticated so the PR can be created - but only
+# when a PR is actually wanted
+if [ "$NO_PR" = 1 ]; then
+    info "gh         : not needed (--no-pr)"
+else
+    if ! command -v gh >/dev/null 2>&1; then
+        install_deps || die "gh (GitHub CLI) is not installed. Install it:
     https://github.com/cli/cli#installation
   or rerun with --install-deps"
-fi
+    fi
 
-command -v gh >/dev/null 2>&1 || die "gh is still not available"
+    command -v gh >/dev/null 2>&1 || die "gh is still not available"
 
-if ! gh auth status >/dev/null 2>&1; then
-    die "gh is not authenticated. Run 'gh auth login' (or set GH_TOKEN) first."
+    if ! gh auth status >/dev/null 2>&1; then
+        die "gh is not authenticated. Run 'gh auth login' (or set GH_TOKEN) first."
+    fi
+    info "gh         : $(gh --version | head -1)"
 fi
-info "gh         : $(gh --version | head -1)"
 
 # docker must be installed and usable
 DOCKER=()
