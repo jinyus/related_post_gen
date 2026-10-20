@@ -105,6 +105,37 @@ Notes:
 - Remember to update the "VM Specs" line in readme.md yourself when the machine
   changes.
 
+### Reuse the docker images (GitHub container registry)
+
+Building the language images is the slowest part of a run: 28 images, around
+100GB of toolchains (swift alone is 23GB). Publish them once and later runs pull
+instead of rebuild:
+
+```bash
+# the token from "gh auth login" has no package scopes - add them once:
+gh auth refresh -h github.com -s write:packages,read:packages
+
+./ghcr_images.sh push base go rust swift   # pick images, or no names for all
+./ghcr_images.sh list                      # local size vs published?
+./ghcr_images.sh pull go rust              # on another machine
+```
+
+Then make the packages public (GitHub -> your profile -> Packages -> package
+settings -> visibility), because private GHCR packages are metered (500MB free,
+so a few GB costs money) while public ones are free.
+
+Each image is tagged with a hash of its generated Dockerfile, so a changed
+Dockerfile means a different tag: the pull misses and that image is built locally
+instead of silently using a stale one.
+
+`update_results.sh` can do the pull side itself:
+
+```bash
+./update_results.sh --pull-images
+# or through a wrapper, which also serves the fresh machine:
+./scaleway_bench.sh --update-args "--pull-images --skip-existing"
+```
+
 ### Run it on a Vultr instance
 
 [`vultr_bench.sh`](vultr_bench.sh) provisions the machine, installs everything

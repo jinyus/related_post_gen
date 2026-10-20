@@ -21,9 +21,11 @@ if [[ -n $outfile ]]; then
         truncate -s 0 "$outfile"
     fi
 
-    # this will be used in langauge directories
-    # so we need to go up one level
-    outfile="../$outfile"
+    # Runners cd into their own directory before writing, and some go two levels
+    # deep (eg. fsharp/jit), so a plain "../$outfile" ended up in the wrong
+    # place. Resolve it once: every "tee -a $outfile" then hits the same file,
+    # wherever the runner cd'd to.
+    outfile="$(cd "$(dirname "$outfile")" && pwd)/$(basename "$outfile")"
 fi
 
 time="$(which gtime 2>/dev/null || which time 2>/dev/null)"
@@ -70,6 +72,13 @@ run_command() {
         for ((i = 1; i <= num_times; i++)); do
             ($TIME_CMD -f 'total: %es memory: %Mk' $cmd "$@" 2>&1) | awk '{print "\t" $0}' | tee -a "$outfile"
         done
+
+        # fail here (instead of much later, at the results copy) if the file the
+        # benchmark should have written is not where the caller expects it
+        if [ ! -s "$outfile" ]; then
+            echo "Error: no results were written to $outfile" >&2
+            return 1
+        fi
     fi
 }
 

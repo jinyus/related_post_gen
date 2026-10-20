@@ -51,6 +51,7 @@ RUN3="${RUN3:-60000}"
 PR_REPO="${PR_REPO:-}"
 SKIP_EXISTING=0
 NEW_CAMPAIGN=0
+PULL_IMAGES=0
 FAIL_FAST=0
 NO_PR=0
 DRY_RUN=0
@@ -72,6 +73,7 @@ Options:
       --exclude "a b"  tests to leave out of this run (eg. --exclude nim)
       --skip-existing  resume: skip tests already re-run in this campaign
                        (results that ship with the repository are not skipped)
+      --pull-images    pull published images (ghcr_images.sh) instead of building them
       --new-campaign   forget previous progress and re-run everything
       --fail-fast      stop at the first failing test
       --no-pr          update readme.md but do not commit, push or open a PR
@@ -127,6 +129,10 @@ while [ $# -gt 0 ]; do
         ;;
     --new-campaign)
         NEW_CAMPAIGN=1
+        shift
+        ;;
+    --pull-images)
+        PULL_IMAGES=1
         shift
         ;;
     --exclude)
@@ -381,8 +387,37 @@ for f in "$REPO_DIR"/*_temp.Dockerfile; do
 done
 TEMP_CREATED=()
 
+# images restored from the registry do not need a local build
+PREBUILT=()
+if [ "$PULL_IMAGES" = 1 ]; then
+    if [ ! -x "$REPO_DIR/ghcr_images.sh" ]; then
+        warn "--pull-images: ghcr_images.sh not found or not executable - building everything"
+    elif [ "$DRY_RUN" = 1 ]; then
+        info "[dry-run] would pull published images with ./ghcr_images.sh pull"
+    else
+        info "pulling published images from ${REGISTRY:-ghcr.io}"
+        for image in "${IMAGES[@]}"; do
+            if "$REPO_DIR/ghcr_images.sh" pull --quiet "$image" >/dev/null 2>&1; then
+                PREBUILT+=("$image")
+                info "  $image: pulled"
+            else
+                info "  $image: not published - will build"
+            fi
+        done
+    fi
+fi
+
 FAILED_IMAGES=()
 for image in "${IMAGES[@]}"; do
+    prebuilt=0
+    for b in ${PREBUILT[@]+"${PREBUILT[@]}"}; do
+        [ "$b" = "$image" ] && prebuilt=1
+    done
+    if [ "$prebuilt" = 1 ]; then
+        info "[$(now)] ${image}_databench: using the pulled image"
+        continue
+    fi
+
     info "[$(now)] building ${image}_databench"
     if [ "$DRY_RUN" = 1 ]; then
         info "  [dry-run] ./gen_dockerfile.sh -b $image"
