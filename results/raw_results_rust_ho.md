@@ -1,40 +1,41 @@
-Rust HO:
-
-        Processing time (w/o IO): 4.234946ms
-        total: 0.01s memory: 5712k
-        Processing time (w/o IO): 4.187936ms
-        total: 0.01s memory: 5500k
-        Processing time (w/o IO): 4.207776ms
-        total: 0.01s memory: 5548k
-        Processing time (w/o IO): 4.269166ms
-        total: 0.01s memory: 5412k
-        Processing time (w/o IO): 4.195676ms
-        total: 0.02s memory: 5512k
-        Processing time (w/o IO): 4.224006ms
-        total: 0.01s memory: 5648k
-        Processing time (w/o IO): 4.218386ms
-        total: 0.01s memory: 5648k
-        Processing time (w/o IO): 4.902408ms
-        total: 0.01s memory: 5516k
-        Processing time (w/o IO): 4.253586ms
-        total: 0.01s memory: 5520k
-        Processing time (w/o IO): 4.160756ms
-        total: 0.01s memory: 5412k
 
 Rust HO:
 
-        Processing time (w/o IO): 13.058779ms
-        total: 0.06s memory: 12076k
-        Processing time (w/o IO): 12.973849ms
-        total: 0.06s memory: 12144k
-        Processing time (w/o IO): 13.036729ms
-        total: 0.06s memory: 12116k
+	Processing time (w/o IO): 4.434774ms
+	total: 0.01s memory: 5480k
+	Processing time (w/o IO): 4.421539ms
+	total: 0.22s memory: 5316k
+	Processing time (w/o IO): 4.899408ms
+	total: 0.26s memory: 5436k
+	Processing time (w/o IO): 4.791424ms
+	total: 0.14s memory: 5632k
+	Processing time (w/o IO): 4.773901ms
+	total: 0.10s memory: 5700k
+	Processing time (w/o IO): 4.781736ms
+	total: 0.13s memory: 5436k
+	Processing time (w/o IO): 4.809759ms
+	total: 0.07s memory: 5388k
+	Processing time (w/o IO): 4.756218ms
+	total: 0.11s memory: 5568k
+	Processing time (w/o IO): 4.691397ms
+	total: 0.09s memory: 5624k
+	Processing time (w/o IO): 4.803547ms
+	total: 0.13s memory: 5572k
 
 Rust HO:
 
-        Processing time (w/o IO): 34.604901ms
-        total: 0.19s memory: 31300k
-        Processing time (w/o IO): 34.077728ms
-        total: 0.20s memory: 31360k
-        Processing time (w/o IO): 34.035999ms
-        total: 0.20s memory: 31300k
+	Processing time (w/o IO): 15.492578ms
+	total: 0.17s memory: 11728k
+	Processing time (w/o IO): 15.528475ms
+	total: 0.31s memory: 12204k
+	Processing time (w/o IO): 15.348978ms
+	total: 0.40s memory: 12224k
+
+Rust HO:
+
+	Processing time (w/o IO): 39.273959ms
+	total: 0.76s memory: 31216k
+	Processing time (w/o IO): 39.695593ms
+	total: 1.02s memory: 31076k
+	Processing time (w/o IO): 39.552193ms
+	total: 0.86s memory: 31276k

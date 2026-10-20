@@ -1,37 +1,37 @@
 
 Lobster (JIT):
 
-	Processing time (w/o IO): 0.471156s
-	total: 0.52s memory: 26116k
-	Processing time (w/o IO): 0.46925s
-	total: 0.52s memory: 26000k
-	Processing time (w/o IO): 0.468303s
-	total: 0.52s memory: 26056k
-	Processing time (w/o IO): 0.470902s
-	total: 0.52s memory: 26116k
-	Processing time (w/o IO): 0.467893s
-	total: 0.52s memory: 25976k
-	Processing time (w/o IO): 0.469427s
-	total: 0.52s memory: 26120k
-	Processing time (w/o IO): 0.471322s
-	total: 0.52s memory: 26056k
-	Processing time (w/o IO): 0.467321s
-	total: 0.52s memory: 25860k
-	Processing time (w/o IO): 0.466682s
-	total: 0.52s memory: 25948k
-	Processing time (w/o IO): 0.466255s
-	total: 0.52s memory: 26264k
+	Processing time (w/o IO): 0.146551s
+	total: 0.21s memory: 27016k
+	Processing time (w/o IO): 0.146612s
+	total: 0.24s memory: 26932k
+	Processing time (w/o IO): 0.147726s
+	total: 0.21s memory: 27136k
+	Processing time (w/o IO): 0.147106s
+	total: 0.21s memory: 27308k
+	Processing time (w/o IO): 0.147093s
+	total: 0.21s memory: 27000k
+	Processing time (w/o IO): 0.146568s
+	total: 0.21s memory: 27572k
+	Processing time (w/o IO): 0.148551s
+	total: 0.21s memory: 27396k
+	Processing time (w/o IO): 0.1466s
+	total: 0.21s memory: 27336k
+	Processing time (w/o IO): 0.145738s
+	total: 0.21s memory: 27188k
+	Processing time (w/o IO): 0.146877s
+	total: 0.21s memory: 27244k
 
 Lobster (JIT):
 
-	Processing time (w/o IO): 7.138637s
-	total: 7.37s memory: 82404k
-	Processing time (w/o IO): 7.19187s
-	total: 7.43s memory: 82388k
+	Processing time (w/o IO): 2.244492s
+	total: 2.49s memory: 84088k
+	Processing time (w/o IO): 2.195292s
+	total: 2.50s memory: 84072k
 
 Lobster (JIT):
 
-	Processing time (w/o IO): 64.212706s
-	total: 64.94s memory: 251224k
-	Processing time (w/o IO): 63.549955s
-	total: 64.28s memory: 251060k
+	Processing time (w/o IO): 19.884794s
+	total: 20.69s memory: 251784k
+	Processing time (w/o IO): 19.54428s
+	total: 20.50s memory: 251848k

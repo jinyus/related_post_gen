@@ -1,41 +1,41 @@
 
 Scala Native:
 
-	Processing time (w/o IO): 256ms
-	total: 0.33s memory: 216224k
-	Processing time (w/o IO): 260ms
-	total: 0.33s memory: 216040k
-	Processing time (w/o IO): 251ms
-	total: 0.32s memory: 216220k
-	Processing time (w/o IO): 261ms
-	total: 0.33s memory: 250952k
-	Processing time (w/o IO): 269ms
-	total: 0.34s memory: 250744k
-	Processing time (w/o IO): 270ms
-	total: 0.34s memory: 250712k
-	Processing time (w/o IO): 257ms
-	total: 0.33s memory: 216264k
-	Processing time (w/o IO): 263ms
-	total: 0.34s memory: 250572k
-	Processing time (w/o IO): 265ms
-	total: 0.33s memory: 250644k
-	Processing time (w/o IO): 250ms
-	total: 0.32s memory: 216280k
+	Processing time (w/o IO): 271ms
+	total: 0.35s memory: 238160k
+	Processing time (w/o IO): 271ms
+	total: 0.46s memory: 238504k
+	Processing time (w/o IO): 271ms
+	total: 0.35s memory: 238912k
+	Processing time (w/o IO): 276ms
+	total: 0.38s memory: 238728k
+	Processing time (w/o IO): 266ms
+	total: 0.35s memory: 238356k
+	Processing time (w/o IO): 284ms
+	total: 0.40s memory: 238692k
+	Processing time (w/o IO): 271ms
+	total: 0.38s memory: 238452k
+	Processing time (w/o IO): 273ms
+	total: 0.35s memory: 237920k
+	Processing time (w/o IO): 271ms
+	total: 0.35s memory: 238548k
+	Processing time (w/o IO): 271ms
+	total: 0.35s memory: 238820k
 
 Scala Native:
 
-	Processing time (w/o IO): 3053ms
-	total: 3.38s memory: 997552k
-	Processing time (w/o IO): 3145ms
-	total: 3.47s memory: 997528k
-	Processing time (w/o IO): 3055ms
-	total: 3.38s memory: 998692k
+	Processing time (w/o IO): 3262ms
+	total: 3.60s memory: 961308k
+	Processing time (w/o IO): 3183ms
+	total: 3.54s memory: 961628k
+	Processing time (w/o IO): 3274ms
+	total: 3.64s memory: 961576k
 
 Scala Native:
 
-	Processing time (w/o IO): 26152ms
-	total: 27.25s memory: 3737736k
-	Processing time (w/o IO): 26126ms
-	total: 27.27s memory: 3735836k
-	Processing time (w/o IO): 25442ms
-	total: 26.53s memory: 3737928k
+	Processing time (w/o IO): 26917ms
+	total: 28.39s memory: 3152508k
+	Processing time (w/o IO): 26945ms
+	total: 28.41s memory: 3735776k
+	Processing time (w/o IO): 27118ms
+	total: 28.53s memory: 3735536k

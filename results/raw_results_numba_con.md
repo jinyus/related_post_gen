@@ -1,37 +1,37 @@
 
 Numba Concurrent:
 
-	Processing time (w/o IO): 20.7ms
-	total: 3.75s memory: 245984k
-	Processing time (w/o IO): 20.5ms
-	total: 3.76s memory: 247480k
-	Processing time (w/o IO): 20.6ms
-	total: 3.74s memory: 245624k
-	Processing time (w/o IO): 20.7ms
-	total: 3.73s memory: 246484k
-	Processing time (w/o IO): 20.8ms
-	total: 3.83s memory: 247128k
-	Processing time (w/o IO): 21.2ms
-	total: 3.75s memory: 245812k
-	Processing time (w/o IO): 20.9ms
-	total: 3.79s memory: 246236k
-	Processing time (w/o IO): 20.9ms
-	total: 3.74s memory: 246300k
-	Processing time (w/o IO): 20.6ms
-	total: 3.75s memory: 245728k
-	Processing time (w/o IO): 20.6ms
-	total: 3.75s memory: 246588k
+	Processing time (w/o IO): 24.2ms
+	total: 4.20s memory: 250916k
+	Processing time (w/o IO): 23.6ms
+	total: 3.48s memory: 252988k
+	Processing time (w/o IO): 23.8ms
+	total: 3.50s memory: 251604k
+	Processing time (w/o IO): 29.0ms
+	total: 3.35s memory: 251868k
+	Processing time (w/o IO): 26.6ms
+	total: 3.33s memory: 251732k
+	Processing time (w/o IO): 28.2ms
+	total: 3.40s memory: 250988k
+	Processing time (w/o IO): 23.6ms
+	total: 3.32s memory: 250828k
+	Processing time (w/o IO): 23.7ms
+	total: 3.52s memory: 253004k
+	Processing time (w/o IO): 24.5ms
+	total: 3.57s memory: 253068k
+	Processing time (w/o IO): 23.8ms
+	total: 3.34s memory: 250884k
 
 Numba Concurrent:
 
-	Processing time (w/o IO): 181.5ms
-	total: 4.04s memory: 286892k
-	Processing time (w/o IO): 181.1ms
-	total: 4.04s memory: 285080k
+	Processing time (w/o IO): 199.7ms
+	total: 3.84s memory: 291292k
+	Processing time (w/o IO): 186.6ms
+	total: 3.69s memory: 289028k
 
 Numba Concurrent:
 
-	Processing time (w/o IO): 1.314s
-	total: 5.58s memory: 389188k
-	Processing time (w/o IO): 1.410s
-	total: 5.67s memory: 391392k
+	Processing time (w/o IO): 1.158s
+	total: 5.41s memory: 397620k
+	Processing time (w/o IO): 1.118s
+	total: 7.22s memory: 389228k

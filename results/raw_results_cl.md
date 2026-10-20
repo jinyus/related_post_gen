@@ -1,37 +1,37 @@
 
 Common Lisp (SBCL):
 
-	Processing time (w/o IO): 0.13 s
-	total: 0.22s memory: 120368k
-	Processing time (w/o IO): 0.13 s
-	total: 0.23s memory: 120516k
-	Processing time (w/o IO): 0.13 s
-	total: 0.22s memory: 120504k
-	Processing time (w/o IO): 0.13 s
-	total: 0.22s memory: 120436k
-	Processing time (w/o IO): 0.13 s
-	total: 0.22s memory: 120508k
-	Processing time (w/o IO): 0.13 s
-	total: 0.22s memory: 120396k
-	Processing time (w/o IO): 0.13 s
-	total: 0.22s memory: 120516k
-	Processing time (w/o IO): 0.13 s
-	total: 0.22s memory: 120504k
-	Processing time (w/o IO): 0.13 s
-	total: 0.22s memory: 120508k
-	Processing time (w/o IO): 0.13 s
-	total: 0.22s memory: 120504k
+	Processing time (w/o IO): 0.04 s
+	total: 0.14s memory: 67140k
+	Processing time (w/o IO): 0.04 s
+	total: 0.21s memory: 66972k
+	Processing time (w/o IO): 0.04 s
+	total: 0.14s memory: 67176k
+	Processing time (w/o IO): 0.04 s
+	total: 0.14s memory: 67180k
+	Processing time (w/o IO): 0.04 s
+	total: 0.14s memory: 67236k
+	Processing time (w/o IO): 0.04 s
+	total: 0.16s memory: 67072k
+	Processing time (w/o IO): 0.04 s
+	total: 0.15s memory: 67148k
+	Processing time (w/o IO): 0.04 s
+	total: 0.15s memory: 67184k
+	Processing time (w/o IO): 0.04 s
+	total: 0.15s memory: 67180k
+	Processing time (w/o IO): 0.04 s
+	total: 0.15s memory: 67064k
 
 Common Lisp (SBCL):
 
-	Processing time (w/o IO): 0.99 s
-	total: 1.36s memory: 145592k
-	Processing time (w/o IO): 0.98 s
-	total: 1.36s memory: 145384k
+	Processing time (w/o IO): 0.51 s
+	total: 1.07s memory: 146560k
+	Processing time (w/o IO): 0.51 s
+	total: 1.14s memory: 146688k
 
 Common Lisp (SBCL):
 
-	Processing time (w/o IO): 8.14 s
-	total: 9.37s memory: 340976k
-	Processing time (w/o IO): 8.16 s
-	total: 9.40s memory: 340840k
+	Processing time (w/o IO): 4.52 s
+	total: 6.37s memory: 413676k
+	Processing time (w/o IO): 4.43 s
+	total: 6.18s memory: 413448k

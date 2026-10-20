@@ -1,36 +1,37 @@
-PHP:
-
-        Processing time (w/o IO): 626ms
-        total: 0.68s memory: 28400k
-        Processing time (w/o IO): 607ms
-        total: 0.66s memory: 28248k
-        Processing time (w/o IO): 619ms
-        total: 0.67s memory: 28420k
-        Processing time (w/o IO): 603ms
-        total: 0.66s memory: 28336k
-        Processing time (w/o IO): 626ms
-        total: 0.68s memory: 28408k
-        Processing time (w/o IO): 623ms
-        total: 0.68s memory: 28536k
-        Processing time (w/o IO): 634ms
-        total: 0.69s memory: 28296k
-        Processing time (w/o IO): 621ms
-        total: 0.68s memory: 28240k
-        Processing time (w/o IO): 596ms
-        total: 0.65s memory: 28248k
-        Processing time (w/o IO): 630ms
-        total: 0.69s memory: 28120k
 
 PHP:
 
-        Processing time (w/o IO): 9365ms
-        total: 9.63s memory: 45728k
-        Processing time (w/o IO): 9431ms
-        total: 9.70s memory: 45776k
+	Processing time (w/o IO): 696ms
+	total: 0.99s memory: 29944k
+	Processing time (w/o IO): 697ms
+	total: 0.81s memory: 29588k
+	Processing time (w/o IO): 694ms
+	total: 0.78s memory: 29660k
+	Processing time (w/o IO): 669ms
+	total: 0.75s memory: 29792k
+	Processing time (w/o IO): 669ms
+	total: 0.77s memory: 29604k
+	Processing time (w/o IO): 673ms
+	total: 0.75s memory: 29524k
+	Processing time (w/o IO): 672ms
+	total: 0.75s memory: 29880k
+	Processing time (w/o IO): 667ms
+	total: 0.74s memory: 29848k
+	Processing time (w/o IO): 667ms
+	total: 0.75s memory: 29924k
+	Processing time (w/o IO): 695ms
+	total: 0.78s memory: 29408k
 
 PHP:
 
-        Processing time (w/o IO): 91485ms
-        total: 92.39s memory: 93704k
-        Processing time (w/o IO): 86809ms
-        total: 87.71s memory: 93636k
+	Processing time (w/o IO): 10526ms
+	total: 11.04s memory: 46752k
+	Processing time (w/o IO): 10309ms
+	total: 10.76s memory: 46800k
+
+PHP:
+
+	Processing time (w/o IO): 93140ms
+	total: 95.07s memory: 95560k
+	Processing time (w/o IO): 92980ms
+	total: 95.39s memory: 95032k

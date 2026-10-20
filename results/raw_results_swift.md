@@ -1,41 +1,41 @@
 
 Swift:
 
-	Processing time (w/o IO): 28.842449188232422ms
-	total: 0.15s memory: 45972k
-	Processing time (w/o IO): 29.50572967529297ms
-	total: 0.16s memory: 46008k
-	Processing time (w/o IO): 28.772354125976562ms
-	total: 0.15s memory: 46040k
-	Processing time (w/o IO): 28.969168663024902ms
-	total: 0.15s memory: 46092k
-	Processing time (w/o IO): 28.804302215576172ms
-	total: 0.15s memory: 45968k
-	Processing time (w/o IO): 28.98871898651123ms
-	total: 0.15s memory: 45752k
-	Processing time (w/o IO): 29.119253158569336ms
-	total: 0.16s memory: 46016k
-	Processing time (w/o IO): 28.75983715057373ms
-	total: 0.16s memory: 45972k
-	Processing time (w/o IO): 28.66387367248535ms
-	total: 0.15s memory: 46004k
-	Processing time (w/o IO): 28.972506523132324ms
-	total: 0.15s memory: 45972k
+	Processing time (w/o IO): 31.989097595214844ms
+	total: 0.40s memory: 45868k
+	Processing time (w/o IO): 32.22250938415527ms
+	total: 0.43s memory: 46788k
+	Processing time (w/o IO): 31.721115112304688ms
+	total: 0.72s memory: 47076k
+	Processing time (w/o IO): 32.20689296722412ms
+	total: 0.72s memory: 45868k
+	Processing time (w/o IO): 31.400203704833984ms
+	total: 0.78s memory: 45860k
+	Processing time (w/o IO): 31.817913055419922ms
+	total: 0.81s memory: 45880k
+	Processing time (w/o IO): 31.85105323791504ms
+	total: 0.74s memory: 45148k
+	Processing time (w/o IO): 31.70156478881836ms
+	total: 0.47s memory: 45744k
+	Processing time (w/o IO): 31.43751621246338ms
+	total: 0.57s memory: 45696k
+	Processing time (w/o IO): 31.59010410308838ms
+	total: 0.73s memory: 45836k
 
 Swift:
 
-	Processing time (w/o IO): 381.7586898803711ms
-	total: 0.88s memory: 122828k
-	Processing time (w/o IO): 383.8716745376587ms
-	total: 0.88s memory: 122824k
-	Processing time (w/o IO): 386.7443799972534ms
-	total: 0.89s memory: 128948k
+	Processing time (w/o IO): 400.6199836730957ms
+	total: 1.44s memory: 122100k
+	Processing time (w/o IO): 402.2386074066162ms
+	total: 1.47s memory: 122332k
+	Processing time (w/o IO): 404.14929389953613ms
+	total: 1.25s memory: 128448k
 
 Swift:
 
-	Processing time (w/o IO): 3322.738528251648ms
-	total: 4.84s memory: 353416k
-	Processing time (w/o IO): 3315.187931060791ms
-	total: 4.81s memory: 353136k
-	Processing time (w/o IO): 3328.165888786316ms
-	total: 4.85s memory: 353336k
+	Processing time (w/o IO): 3452.839493751526ms
+	total: 6.21s memory: 352736k
+	Processing time (w/o IO): 3474.2937088012695ms
+	total: 6.15s memory: 352408k
+	Processing time (w/o IO): 3411.9545221328735ms
+	total: 5.70s memory: 352772k

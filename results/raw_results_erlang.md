@@ -1,37 +1,37 @@
 
 Erlang:
 
-	Processing time (w/o IO): 0.646449 s
-	total: 0.89s memory: 77336k
-	Processing time (w/o IO): 0.644671 s
-	total: 0.89s memory: 77064k
-	Processing time (w/o IO): 0.647923 s
-	total: 0.89s memory: 77436k
-	Processing time (w/o IO): 0.642637 s
-	total: 0.89s memory: 77340k
-	Processing time (w/o IO): 0.644780 s
-	total: 0.89s memory: 77260k
-	Processing time (w/o IO): 0.645961 s
-	total: 0.89s memory: 77124k
-	Processing time (w/o IO): 0.653087 s
-	total: 0.90s memory: 77060k
-	Processing time (w/o IO): 0.647634 s
-	total: 0.89s memory: 76848k
-	Processing time (w/o IO): 0.649708 s
-	total: 0.89s memory: 77004k
-	Processing time (w/o IO): 0.648905 s
-	total: 0.89s memory: 77120k
+	Processing time (w/o IO): 0.696576 s
+	total: 0.96s memory: 73900k
+	Processing time (w/o IO): 0.699306 s
+	total: 1.18s memory: 73872k
+	Processing time (w/o IO): 0.695577 s
+	total: 1.13s memory: 73592k
+	Processing time (w/o IO): 0.696598 s
+	total: 0.96s memory: 74096k
+	Processing time (w/o IO): 0.692166 s
+	total: 1.06s memory: 73684k
+	Processing time (w/o IO): 0.697068 s
+	total: 1.19s memory: 74136k
+	Processing time (w/o IO): 0.696691 s
+	total: 1.20s memory: 73096k
+	Processing time (w/o IO): 0.697385 s
+	total: 0.96s memory: 73472k
+	Processing time (w/o IO): 0.687115 s
+	total: 1.18s memory: 73860k
+	Processing time (w/o IO): 0.693774 s
+	total: 1.06s memory: 74052k
 
 Erlang:
 
-	Processing time (w/o IO): 10.303939 s
-	total: 11.02s memory: 116640k
-	Processing time (w/o IO): 10.294422 s
-	total: 11.02s memory: 116728k
+	Processing time (w/o IO): 10.485716 s
+	total: 11.65s memory: 114596k
+	Processing time (w/o IO): 10.456228 s
+	total: 11.65s memory: 115004k
 
 Erlang:
 
-	Processing time (w/o IO): 90.876274 s
-	total: 93.17s memory: 239388k
-	Processing time (w/o IO): 90.622964 s
-	total: 92.89s memory: 239404k
+	Processing time (w/o IO): 98.314181 s
+	total: 101.30s memory: 247928k
+	Processing time (w/o IO): 96.967943 s
+	total: 99.56s memory: 248160k
