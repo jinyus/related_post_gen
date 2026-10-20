@@ -289,6 +289,15 @@ must be pushed first: git push origin $BRANCH"
     fi
 fi
 
+# Continuing an existing results branch: work on it, so the results it already
+# holds (rather than the ones that ship with main) are what gets re-extracted
+# and committed. Without this a resumed run silently reverts the earlier rows.
+if [ -n "$OUT_BRANCH" ] &&
+    git -C "$REPO_DIR" rev-parse --verify --quiet "refs/heads/$OUT_BRANCH" >/dev/null; then
+    info "continuing results branch $OUT_BRANCH"
+    git -C "$REPO_DIR" checkout -f "$OUT_BRANCH"
+fi
+
 # ---------------------------------------------------------------------------
 # dependency checks
 # ---------------------------------------------------------------------------
@@ -607,13 +616,26 @@ if [ -n "$PR_REPO" ] && [ "$PR_REPO" != "$ORIGIN_SLUG" ]; then
     info "pull request will target $PR_REPO"
 fi
 
+# This run rewrote readme.md and results/, and some result files are untracked
+# relative to the target branch, so a plain checkout refuses. Park our results,
+# force the switch, then put them back.
+PARKED="$(mktemp -d)"
+cp -a "$REPO_DIR/readme.md" "$PARKED/readme.md"
+cp -a "$REPO_DIR/results" "$PARKED/results"
+
 # re-running into the same results branch (eg. after fixing a test) reuses it, so
 # the new commit updates the existing PR instead of replacing it
 if git -C "$REPO_DIR" rev-parse --verify --quiet "refs/heads/$OUT_BRANCH" >/dev/null; then
-    git -C "$REPO_DIR" checkout "$OUT_BRANCH"
+    git -C "$REPO_DIR" checkout -f "$OUT_BRANCH"
 else
-    git -C "$REPO_DIR" checkout -b "$OUT_BRANCH"
+    git -C "$REPO_DIR" checkout -f -b "$OUT_BRANCH"
 fi
+
+rm -rf "$REPO_DIR/results"
+cp -a "$PARKED/results" "$REPO_DIR/results"
+cp -a "$PARKED/readme.md" "$REPO_DIR/readme.md"
+rm -rf "$PARKED"
+
 git -C "$REPO_DIR" add readme.md results
 
 if git -C "$REPO_DIR" diff --cached --quiet; then
