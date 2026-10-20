@@ -506,19 +506,19 @@ SETUP
 start_tmux() {
     step "Starting the benchmark in tmux"
 
-    # don't clobber a benchmark that is still running on a reused instance
-    local pane_dead
-    pane_dead="$(ssh_run "$SSH_USER" "$INSTANCE_IP" \
-        "tmux list-panes -t bench -F '#{pane_dead}' 2>/dev/null | head -1")"
-    if [ "$pane_dead" = "0" ] && [ "$FORCE" != "1" ]; then
+    # a run is in progress when the session exists but has not written bench.done
+    if [ "$FORCE" != "1" ] &&
+        ssh_run "$SSH_USER" "$INSTANCE_IP" "tmux has-session -t bench 2>/dev/null && [ ! -f $REMOTE_DONE ]"; then
         warn "a benchmark is already running in tmux session 'bench'"
         warn "watch it with './$SCRIPT_NAME attach', or restart it with --force"
         return 1
     fi
 
+    # the pane runs the benchmark inside a shell and stays interactive afterwards,
+    # so attaching when it is finished gives you a prompt instead of a dead pane
     ssh_run "$SSH_USER" "$INSTANCE_IP" "
         tmux kill-session -t bench 2>/dev/null || true
-        tmux new-session -d -s bench '$REMOTE_SCRIPT'
+        tmux new-session -d -s bench \"bash -lc '$REMOTE_SCRIPT; exec bash'\"
         tmux set-option -t bench remain-on-exit on
         tmux list-sessions
     "
