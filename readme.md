@@ -70,10 +70,9 @@ docker run -e TEST_NAME=go -it --rm go_databench
 | ---------------- | ------------------------------------- | -------------------------------------- | ----------------------------------- | --------- |
 | D (v2) | 14.55 ms | $\textsf{\color{lightgreen}149.95 ms}$ | $\textsf{\color{lightgreen}1.14 s}$ | 1.31 s |
 | Rust | 13.38 ms | 179.28 ms | 1.52 s | 1.71 s |
-| Zig | 15.00 ms | 199.33 ms | 1.71 s | 1.93 s |
 | C++ | 18.60 ms | 197.67 ms | 1.73 s | 1.94 s |
+| Zig | 15.00 ms | 246.33 ms | 1.74 s | 2.00 s |
 | c3 | $\textsf{\color{lightgreen}13.20 ms}$ | 158.67 ms | 1.88 s | 2.05 s |
-| Neat | 19.01 ms | 254.22 ms | 2.15 s | 2.42 s |
 | Go | 20.18 ms | 302.11 ms | 2.32 s | 2.64 s |
 | D | 23.22 ms | 332.08 ms | 2.34 s | 2.69 s |
 | C# (JIT) | 23.23 ms | 302.29 ms | 2.37 s | 2.70 s |
@@ -85,6 +84,7 @@ docker run -e TEST_NAME=go -it --rm go_databench
 | Java (JIT) | 24.50 ms | 323.00 ms | 3.04 s | 3.39 s |
 | F# (AOT) | 26.72 ms | 381.57 ms | 3.30 s | 3.71 s |
 | Haskell | 33.47 ms | 441.17 ms | 3.30 s | 3.77 s |
+| Neat | 26.96 ms | 361.44 ms | 3.44 s | 3.83 s |
 | Swift | 31.79 ms | 402.34 ms | 3.45 s | 3.88 s |
 | Common Lisp (SBCL) | 40.00 ms | 510.00 ms | 4.47 s | 5.03 s |
 | Crystal | 35.79 ms | 549.90 ms | 4.59 s | 5.17 s |
@@ -120,10 +120,10 @@ docker run -e TEST_NAME=go -it --rm go_databench
 | D Concurrent | 6.80 ms | 46.44 ms | 265.78 ms | 319.01 ms |
 | C# Concurrent (AOT) | 5.49 ms | $\textsf{\color{lightgreen}36.27 ms}$ | 304.39 ms | 346.16 ms |
 | Rust Concurrent | $\textsf{\color{lightgreen}3.75 ms}$ | 41.64 ms | 325.22 ms | 370.60 ms |
+| Zig Concurrent | 4.84 ms | 41.89 ms | 330.98 ms | 377.70 ms |
 | C# Concurrent (JIT) | 6.16 ms | 43.55 ms | 337.90 ms | 387.62 ms |
 | F# Concurrent | 6.10 ms | 55.00 ms | 428.67 ms | 489.77 ms |
 | Go Concurrent | 4.94 ms | 61.87 ms | 518.10 ms | 584.91 ms |
-| Zig Concurrent | 6.19 ms | 68.64 ms | 550.06 ms | 624.89 ms |
 | F# Concurrent (AOT) | 4.30 ms | 63.00 ms | 560.00 ms | 627.30 ms |
 | Julia Concurrent | 5.65 ms | 71.93 ms | 589.19 ms | 666.77 ms |
 | C++ Concurrent | 5.60 ms | 52.67 ms | 634.67 ms | 692.93 ms |
@@ -138,7 +138,7 @@ docker run -e TEST_NAME=go -it --rm go_databench
 | Language       | Time (5k posts) | 20k posts        | 60k posts        | Total     |
 | -------------- | --------------- | ---------------- | ---------------- | --------- | 
 | _Rust HO_[^1] | $\textsf{\color{lightgreen}4.72 ms}$ | $\textsf{\color{lightgreen}15.46 ms}$ | $\textsf{\color{lightgreen}39.51 ms}$ | 59.68 ms |
-| _Go HO_[^1] | 5.53 ms | 19.18 ms | 47.62 ms | 72.33 ms |
+| _Go HO_[^1] | 5.59 ms | 19.35 ms | 47.35 ms | 72.30 ms |
 | _Julia HO_[^1] | 5.20 ms | 39.33 ms | 83.67 ms | 128.20 ms |
 | _D HO_[^1] | 11.95 ms | 44.09 ms | 120.19 ms | 176.23 ms |
 
