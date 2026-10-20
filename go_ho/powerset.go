@@ -1,6 +1,9 @@
 package main
 
-import "math/bits"
+import (
+	"fmt"
+	"math/bits"
+)
 
 // Powerset approach (the core of the Rust/D HO entries).
 //
@@ -10,28 +13,37 @@ import "math/bits"
 // trackers. A tracker's entries become "resolved" (locked) once every tracker
 // holds 5 candidates, so low-cardinality passes stop early.
 //
-// It only applies when posts have at most 8 tags (the packed group key must
-// fit into 64 bits) and there are at most 256 unique tags (u8 tag IDs).
-// The racer skips it otherwise; the counting approaches always work.
+// Like the other HO entries this only works for the benchmark's input shape:
+// posts need at most 8 tags (the packed group key must fit into 64 bits) and
+// there can be at most 256 unique tags (u8 tag IDs). Anything else is rejected
+// instead of falling back to a slower algorithm.
 const powersetMaxTagsPerPost = 8
 const powersetMaxUniqueTags = 256
 
-func powersetApplies(posts []Post) bool {
-	unique := make(map[string]struct{}, InitialTagMapSize)
+func checkPowersetSupported(posts []Post) error {
+	unique := 0
+	seen := make(map[string]struct{}, InitialTagMapSize)
 	for i := range posts {
 		if len(posts[i].Tags) > powersetMaxTagsPerPost {
-			return false
+			return fmt.Errorf(
+				"input not supported: post %d has %d tags, at most %d are allowed",
+				i, len(posts[i].Tags), powersetMaxTagsPerPost,
+			)
 		}
 		for _, tag := range posts[i].Tags {
-			if _, ok := unique[tag]; !ok {
-				if len(unique) >= powersetMaxUniqueTags {
-					return false
+			if _, ok := seen[tag]; !ok {
+				seen[tag] = struct{}{}
+				unique++
+				if unique > powersetMaxUniqueTags {
+					return fmt.Errorf(
+						"input not supported: more than %d unique tags",
+						powersetMaxUniqueTags,
+					)
 				}
-				unique[tag] = struct{}{}
 			}
 		}
 	}
-	return true
+	return nil
 }
 
 // resolved: topNs[0..resolved] are locked from higher cardinalities.
