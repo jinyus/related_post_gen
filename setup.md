@@ -59,3 +59,48 @@ sudo docker run -it --rm -e GIT_REPO='<repo-url>' -e BRANCH='<your-branch-name>'
 ```
 
 check dockerfiles/base.Dockerfile for more env variables
+
+### Update all results and open a PR (automated)
+
+`update_results.sh` runs the whole flow: it builds every docker image, runs the
+benchmark for each test with `./results` mounted at `/results`, regenerates the
+tables in readme.md with `extract_results.dart` and opens a PR with the updated
+`readme.md` + `results/`.
+
+On a fresh VPS:
+
+```bash
+curl -fsSL https://get.docker.com | sudo sh   # install docker (or use --install-deps below)
+sudo apt install gh                          # or: sudo pacman -S github-cli
+gh auth login                                # the script refuses to start unauthenticated
+git clone https://github.com/<you>/related_post_gen.git && cd related_post_gen
+./update_results.sh
+```
+
+Useful options:
+
+```bash
+./update_results.sh go go_ho        # only these tests
+./update_results.sh --skip-existing # resume an interrupted run
+./update_results.sh --no-pr         # update readme.md, do not open a PR
+./update_results.sh --device "AWS c7a.xlarge-4vCPU-8GB-RAM-Ubuntu 24.04"
+./update_results.sh --dry-run       # print what would be executed
+./update_results.sh --help
+```
+
+Notes:
+
+- The benchmark runs for hours, so run it inside `tmux`/`screen` (or with
+  `nohup`) and keep the machine otherwise idle - the containers are started one
+  at a time so timings stay comparable.
+- The containers clone the repository from `origin`, so **the commit that gets
+  benchmarked is the one pushed to `origin/<current branch>`**; the script
+  verifies this before starting and tells you to `git push` if needed.
+- A failed test keeps its previous results and is listed in the PR body; the
+  script still opens the PR with the results that did complete (use
+  `--fail-fast` to stop at the first failure instead).
+- The script leaves you on the `results-<timestamp>` branch after the PR is
+  created. The PR targets the default `main` branch (change with `--base`), and
+  if an `upstream` remote exists (fork setup) the PR is opened against it.
+- Remember to update the "VM Specs" line in readme.md yourself when the machine
+  changes.
