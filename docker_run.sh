@@ -5,6 +5,7 @@
 declare -A NameToImage=(
     ["go"]="go"
     ["go_con"]="go"
+    ["go_ho"]="go"
     ["cpp"]="base"
     ["cpp_con"]="base"
     ["rust"]="rust"

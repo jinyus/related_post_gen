@@ -97,6 +97,14 @@ run_go_concurrent() {
         check_output "related_posts_go_con.json"
 }
 
+run_go_ho() {
+    echo "Running Go HO" &&
+        cd ./go_ho &&
+        go build &&
+        run_command "Go HO" $runs ./related_ho &&
+        check_output "related_posts_go_ho.json"
+}
+
 run_cpp() {
     echo "Running C++" &&
         cd ./cpp &&
@@ -762,6 +770,10 @@ elif [ "$first_arg" = "go_con" ]; then
 
     run_go_concurrent
 
+elif [ "$first_arg" = "go_ho" ]; then
+
+    run_go_ho
+
 elif [ "$first_arg" = "cpp" ]; then
 
     run_cpp
@@ -1043,6 +1055,7 @@ elif [ "$first_arg" = "all" ]; then
     echo -e "Running all\n" &&
         run_go || echo -e "\n" &&
         run_go_concurrent || echo -e "\n" &&
+        run_go_ho || echo -e "\n" &&
         run_rust || echo -e "\n" &&
         run_rust_con || echo -e "\n" &&
         run_d || echo -e "\n" &&
@@ -1116,6 +1129,8 @@ elif [ "$first_arg" = "clean" ]; then
         cd .. &&
         cd go_con && rm -f related_concurrent &&
         cd .. &&
+        cd go_ho && rm -f related_ho &&
+        cd .. &&
         cd rust && cargo clean &&
         cd .. &&
         cd rust_con && cargo clean &&
@@ -1150,6 +1165,6 @@ elif [ "$first_arg" = "clean" ]; then
 
 else
 
-    echo "Valid args: go | go_con | rust | rust_con | d | d_con | r | py | numpy | erlang | cl | numba | numba_con | cr | zig_fast | zig_con | odin | c3 | jq | julia | julia_highly_optimized | julia_con | v | dart | swift | swift_con | node | bun | deno | java | java_graal | java_graal_con | nim | luajit | lua | fsharp | fsharp_aot | fsharp_con | csharp | csharp_aot | | php | dascript | all | clean. Unknown argument: $first_arg"
+    echo "Valid args: go | go_con | go_ho | rust | rust_con | d | d_con | r | py | numpy | erlang | cl | numba | numba_con | cr | zig_fast | zig_con | odin | c3 | jq | julia | julia_highly_optimized | julia_con | v | dart | swift | swift_con | node | bun | deno | java | java_graal | java_graal_con | nim | luajit | lua | fsharp | fsharp_aot | fsharp_con | csharp | csharp_aot | | php | dascript | all | clean. Unknown argument: $first_arg"
 
 fi

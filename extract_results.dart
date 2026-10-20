@@ -9,6 +9,8 @@ final pTimeRegex = RegExp(
 );
 final tTimeRegex = RegExp(r'Time[^0-9]*([\d.]+ (ms|s))');
 
+const hoNames = {'Julia HO', 'D HO', 'Rust HO', 'Go HO'};
+
 const multiCoreHeading = '''
 ### Multicore Results
 
@@ -97,11 +99,11 @@ void main(List<String> args) {
       .toList();
 
   final hoScores = sortedScores
-      .where((s) => {'Julia HO', 'D HO', 'Rust HO'}.contains(s.first.name))
+      .where((s) => hoNames.contains(s.first.name))
       .toList();
 
   sortedScores.removeWhere((s) => s.first.name.contains('Concurrent'));
-  sortedScores.removeWhere((s) => {'Julia HO', 'D HO', 'Rust HO'}.contains(s.first.name));
+  sortedScores.removeWhere((s) => hoNames.contains(s.first.name));
 
   if (sortedScores.isNotEmpty && sortedScores.first.length != 3) {
     sortedScores.forEach(print);
@@ -162,6 +164,11 @@ void main(List<String> args) {
   var shouldReplace = false;
   var replaced = false;
 
+  // Blockquotes between the tables and the details tag (eg: the HO
+  // disclaimer) would be wiped by the replacement, so keep them and re-add
+  // them after the HO table.
+  final preservedBlockquotes = <String>[];
+
   final newReadmeContent = readmeLines
       .map((line) {
         if (line.startsWith('| -----') && !replaced && !shouldReplace) {
@@ -172,7 +179,12 @@ void main(List<String> args) {
         if (!shouldReplace) return line;
 
         // removes every line between the table heading and details open tag
-        if (!line.trim().contains('<details>')) return null;
+        if (!line.trim().contains('<details>')) {
+          if (line.trimLeft().startsWith('>')) {
+            preservedBlockquotes.add(line);
+          }
+          return null;
+        }
 
         shouldReplace = false;
         replaced = true;
@@ -185,8 +197,19 @@ void main(List<String> args) {
             hoScores.map((e) => e.toRowString()).join('\n') + '\n\n';
         // final memUsageLines = sortedMemScores.map((e) => e.toRowString(true)).join('\n') + '\n\n';
 
-        // add back the line with detail opening tag
-        return sCoreLines + multiCoreHeading + mCoreLines + highlyOptimizedHeading + hoLines + line;
+        // preserved blockquotes (eg: the HO disclaimer) go back after the
+        // HO table, followed by the line with the detail opening tag
+        final preserved = preservedBlockquotes.isEmpty
+            ? ''
+            : preservedBlockquotes.join('\n') + '\n\n';
+
+        return sCoreLines +
+            multiCoreHeading +
+            mCoreLines +
+            highlyOptimizedHeading +
+            hoLines +
+            preserved +
+            line;
         // return sCoreLines + multiCoreHeading + mCoreLines + memUsageHeading + memUsageLines + line;
       })
       .whereType<String>()
@@ -242,12 +265,14 @@ extension on List<Score> {
       name = '_D HO_[^1]';
     } else if (name == 'Rust HO') {
       name = '_Rust HO_[^1]';
+    } else if (name == 'Go HO') {
+      name = '_Go HO_[^1]';
     } else if (name == 'Inko') {
       name = 'Inko[^2]';
     }
 
     final isConcurrent = name.contains('Concurrent');
-    final isHO = {'Julia HO', 'D HO', 'Rust HO'}.contains(originalName);
+    final isHO = hoNames.contains(originalName);
 
     final min5KToUse = isConcurrent ? con_min5k : (isHO ? ho_min5k : min5k);
     final min20KToUse = isConcurrent ? con_min20k : (isHO ? ho_min20k : min20k);

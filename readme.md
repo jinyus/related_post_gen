@@ -145,6 +145,7 @@ docker run -e TEST_NAME=go -it --rm go_databench
 > - **Rust HO** uses 8-bit tag IDs, so it fails with more than 256 unique tags, and posts with more than 8 tags fall back to the standard, unoptimized algorithm.
 > - **D HO** requires posts to have at most 8 tags (it aborts otherwise) and uses lookup tables limited to 256 entries.
 > - **Julia HO** always returns exactly 5 related posts via a specialized data structure.
+> - **Go HO** races three algorithms per run (powerset intersections, full-array counting, dirty-list counting) and reports only the fastest one's result and time. Its powerset pass requires at most 8 tags per post and 256 unique tags and is skipped when the input violates them; the two counting passes handle arbitrary tag counts.
 >
 > They only produce these speeds for this specific dataset/shape of input; an arbitrary number of tags would break them or require changes.
 
