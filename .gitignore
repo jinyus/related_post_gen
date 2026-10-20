@@ -4,6 +4,7 @@ rust_ho/target
 go/related
 common-lisp/related
 go_con/related_concurrent
+go_ho/related_ho
 odin/main
 related[-_]*.json
 .DS_Store
