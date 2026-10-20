@@ -607,7 +607,13 @@ if [ -n "$PR_REPO" ] && [ "$PR_REPO" != "$ORIGIN_SLUG" ]; then
     info "pull request will target $PR_REPO"
 fi
 
-git -C "$REPO_DIR" checkout -b "$OUT_BRANCH"
+# re-running into the same results branch (eg. after fixing a test) reuses it, so
+# the new commit updates the existing PR instead of replacing it
+if git -C "$REPO_DIR" rev-parse --verify --quiet "refs/heads/$OUT_BRANCH" >/dev/null; then
+    git -C "$REPO_DIR" checkout "$OUT_BRANCH"
+else
+    git -C "$REPO_DIR" checkout -b "$OUT_BRANCH"
+fi
 git -C "$REPO_DIR" add readme.md results
 
 if git -C "$REPO_DIR" diff --cached --quiet; then
@@ -648,12 +654,18 @@ if [ ${#FAILED[@]} -gt 0 ]; then
 - failed tests (previous results kept): ${FAILED[*]}"
 fi
 
-if ! gh pr create "${PR_ARGS[@]+"${PR_ARGS[@]}"}" \
+if pr_out="$(gh pr create "${PR_ARGS[@]+"${PR_ARGS[@]}"}" \
     --base "$BASE_BRANCH" \
     --head "$HEAD_SPEC" \
     --title "Update benchmark results ($DEVICE)" \
-    --body "$BODY"; then
-    die "failed to create the PR. The results branch '$OUT_BRANCH' was pushed, so you can retry with:
+    --body "$BODY" 2>&1)"; then
+    printf '%s\n' "$pr_out"
+elif grep -qi 'already exists' <<<"$pr_out"; then
+    warn "this branch already has a PR - the push above updated it"
+    gh pr view "$HEAD_SPEC" --json url -q .url 2>/dev/null || true
+else
+    die "failed to create the PR: $pr_out
+  The results branch '$OUT_BRANCH' was pushed, so you can retry with:
     gh pr create --base $BASE_BRANCH --head $HEAD_SPEC --title 'Update benchmark results ($DEVICE)'"
 fi
 

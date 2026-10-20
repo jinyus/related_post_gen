@@ -515,7 +515,19 @@ if [ ! -d "$REMOTE_REPO/.git" ]; then
 fi
 cd "$REMOTE_REPO"
 git checkout $branch_q
-git pull --ff-only
+if ! git pull --ff-only --quiet; then
+    # untracked leftovers in the clone (eg. a script that has since been added to
+    # the repo) block a fast-forward; only drop the ones the new revision brings
+    echo "--- pull blocked, clearing untracked files added by the new revision ---"
+    git fetch --quiet origin $branch_q
+    for f in \$(git diff --name-only --diff-filter=A HEAD "origin/$branch_q"); do
+        if [ -e "\$f" ] && ! git ls-files --error-unmatch "\$f" >/dev/null 2>&1; then
+            echo "  removing untracked \$f"
+            rm -f "\$f"
+        fi
+    done
+    git pull --ff-only --quiet
+fi
 
 if [ "$LABEL_SYNC" = 1 ] && grep -q '^##### VM Specs' readme.md; then
     sed -i "s|^##### VM Specs.*|##### VM Specs ( $DEVICE_LABEL )|" readme.md
