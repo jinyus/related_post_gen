@@ -27,6 +27,8 @@ git clone https://github.com/zupat/related_post_gen.git && cd related_post_gen
 
 This will build a docker image named `<language>_databench`
 
+NB: The compilers for some languages (c++,dart,python) are installed in the base image so you need to run `./gen_dockerfile.sh -b base` for these languages.
+
 ### Run docker image
 
 Use the helper script to run the docker image
@@ -41,6 +43,11 @@ Run the docker image manually
 
 ```bash
 sudo docker run -it --rm -e TEST_NAME=rust rust_databench
+```
+
+For c++,dart and python, use `base_databench`:
+```bash
+sudo docker run -it --rm -e TEST_NAME=cpp base_databench
 ```
 
 ### Run the tests on a different repo 
