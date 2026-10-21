@@ -1,6 +1,6 @@
 # Self-contained image: official Rust toolchain on Debian 12 (stable, not a
 # rolling release). Replaces the Arch image that was 6.2GB.
-FROM rust:1.83-bookworm
+FROM rust:1.99.1-bookworm
 
 # benchmark harness
 RUN apt-get update && apt-get install -y --no-install-recommends \
