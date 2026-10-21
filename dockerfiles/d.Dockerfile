@@ -1,17 +1,19 @@
 # Self-contained image: Debian 12 + pinned LDC (ldc2) + dub.
 FROM debian:12-slim
 
-# benchmark harness (+ dub drives the build, libxml2 is linked by ldc,
-# xz-utils unpacks the .tar.xz toolchain)
+# benchmark harness (+ libxml2 is linked by ldc, xz-utils unpacks the .tar.xz
+# toolchain). The `dub` package also pulls in Debian's older ldc as its default
+# compiler; that is only a fallback, because the LDC tarball ships a matching
+# dub in its bin dir and the PATH below puts it first.
 RUN apt-get update && apt-get install -y --no-install-recommends \
     git python3 python3-pip time which curl wget ca-certificates sudo \
     dub libxml2 gcc libc6-dev xz-utils && \
     rm -rf /var/lib/apt/lists/* && \
     pip3 install --break-system-packages --no-cache-dir faker nanoid
 
-RUN wget -q https://github.com/ldc-developers/ldc/releases/download/v1.41.0/ldc2-1.41.0-linux-x86_64.tar.xz -O /tmp/ldc.tar.xz && \
+RUN wget -q https://github.com/ldc-developers/ldc/releases/download/v1.43.0/ldc2-1.43.0-linux-x86_64.tar.xz -O /tmp/ldc.tar.xz && \
     tar -C /opt -xf /tmp/ldc.tar.xz && rm -f /tmp/ldc.tar.xz
-ENV PATH="/opt/ldc2-1.41.0-linux-x86_64/bin:$PATH"
+ENV PATH="/opt/ldc2-1.43.0-linux-x86_64/bin:$PATH"
 RUN ldc2 --version | head -1
 
 #precompile
