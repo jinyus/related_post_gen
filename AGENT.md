@@ -1,0 +1,287 @@
+# AGENT.md — how this project works
+
+Orientation for agents working in this repo. It is a **cross-language benchmark**:
+for every post in `posts.json`, compute the top 5 related posts by number of shared
+tags. Each language has an implementation; the timings are published in
+`readme.md` and the raw runs live in `results/`. The tables in `readme.md` are the
+product — everything else exists to produce them.
+
+If you only read three files, read `run.sh` (how a language is executed),
+`docker_start.sh` (how a test container runs the three datasets) and
+`update_results.sh` (how results become a PR).
+
+---
+
+## 1. Data flow
+
+```
+gen_fake_posts.py N        →  posts.json (5k / 20k / 60k posts, 28 fixed tags, 4-5 per post)
+<language>/                →  related_posts_<lang>.json   (top 5 per post)
+verify.py                  →  compares against correct_related.json
+                              (sum of shared-tag counts over the 5 related posts)
+raw_results_<test>.md      →  one file per test, three sections (5k, 20k, 60k),
+                              each holding the "Processing time (w/o IO)" lines
+results/                   →  all raw_results_*.md (committed; the raw data linked from the readme)
+extract_results.dart       →  rewrites the three tables in readme.md
+update_results.sh          →  orchestrates all of the above in docker images and opens the PR
+```
+
+Published numbers are machine-specific: `readme.md` carries a
+`##### VM Specs ( <label> )` line that must describe the machine that ran them.
+
+---
+
+## 2. Repo map
+
+| Path | What it is |
+|---|---|
+| `posts.json`, `correct_related.json` | 5k-post input and the expected shared-tag sums |
+| `<lang>/` … | one directory per implementation (go, rust, cpp, java, fsharp, …) |
+| `run.sh` | test driver: builds and runs one implementation, writes the results section |
+| `verify.py` | correctness check (shared-tag sum over the top 5) |
+| `gen_fake_posts.py` | dataset generator: `python gen_fake_posts.py 20000` writes `posts.json` |
+| `dockerfiles/<image>.Dockerfile` | one image per runtime family — **self-contained**, each starts with `FROM` |
+| `docker_run.sh` | test-name → image map (`NameToImage`) and a manual runner |
+| `gen_dockerfile.sh` | builds an image (`-b <name>`) from its fragment |
+| `docker_start.sh` | container entrypoint: clone repo → run 5k/20k/60k → copy results to `/results` |
+| `update_results.sh` | the orchestrator: images → tests → extraction → commit → PR |
+| `extract_results.dart` | parser that rewrites the readme tables from `results/` |
+| `results/raw_results_<test>.md` | committed raw results (input to the extractor) |
+| `readme.md` | results tables + rules + HO disclaimer |
+| `scaleway_bench.sh`, `vultr_bench.sh` | one-command providers: create VM, set up, run in tmux |
+| `ghcr_images.sh` | publish/pull the built images (GitHub container registry) |
+| `setup.md` | human setup guide (manual + wrappers) |
+| `.github/workflows/benchmark.yml` | legacy native-benchmark workflow (not the current path) |
+
+---
+
+## 3. What an implementation must satisfy
+
+Rules (also in `readme.md`): no FFI or unsafe code, no custom benchmarking, no
+disabling runtime checks, no hardware-specific targeting, no SIMD in single-threaded
+solutions, no hardcoding the post count, no lazy evaluation, no computation caching.
+Must: support up to 100,000 posts and up to 100 tags, UTF-8 strings, parse JSON at
+runtime, represent tags as strings, be "production ready", stay under 8 GB.
+
+Output shape (`related_posts_<lang>.json`): array of
+`{"_id", "tags", "related": [5 posts]}`, one entry per input post, same order.
+
+Correctness is judged **only** by the sum of shared-tag counts across the 5 related
+posts (`verify.py`), so tie-breaking and ordering inside `related` are free.
+
+---
+
+## 4. `run.sh` — the timing harness
+
+```bash
+./run.sh <test-name>              # stdout only, 10 runs
+./run.sh <test-name> <outfile>    # writes a results file, 10 runs (3 for slow languages)
+./run.sh <test-name> <outfile> append   # appends, 3 runs (2 for slow languages)
+```
+
+- Dispatches to `run_<test>()`, which `cd`s into the language directory, builds (first
+  round only) and calls `run_command "<Title>" <runs> <binary>`.
+- `run_command` runs the binary `runs` times through GNU `time`, prefixes each line with
+  a tab and `tee -a`s it into `$outfile`. The **GNU `time` binary and `which` must exist**
+  in the image (`run.sh` refuses to start otherwise).
+- **Exactly one `Processing time (w/o IO)` line per run** — `extract_results.dart`
+  averages every matching line it sees in a section, so extra lines corrupt the average.
+- `check_output` (`python3 verify.py <json>`) runs only in the first round and fails the
+  test on a mismatch.
+- `$outfile` is resolved to an **absolute path** at startup: runners may `cd` arbitrarily
+  deep (`fsharp` goes two levels down). Do not reintroduce a relative `"../$outfile"`.
+- Runners end with `check_output` **and** a `cd ..` convention: `run.sh` moves up one
+  level per runner `cd`, and `check_output` moves up the last one.
+
+Adding a language: create `<dir>/`, add `run_<name>()` + dispatch + (if it belongs in
+`all`) the `all` list, add `["<test>"]="<image>"` to `docker_run.sh`, add
+`dockerfiles/<image>.Dockerfile`, and make sure `./run.sh <test> out.md` produces
+`related_posts_<lang>.json` + a valid results section.
+
+---
+
+## 5. Images (`dockerfiles/`)
+
+Every fragment is **self-contained** (`FROM …` is the first instruction) and is used as
+the whole Dockerfile by `gen_dockerfile.sh`; the old behaviour (merge into a shared
+`base.Dockerfile`) is only a fallback. All Arch packages are gone.
+
+- `base` is the Dart SDK image + clang/g++ and serves `cpp`, `cpp_con`, `dart`, `dart_aot`.
+- Others are official language images (`golang:1.24-bookworm`, `rust:1.83-bookworm`,
+  `julia:1.11-bookworm`, `swift:6.0-bookworm`, `dotnet/sdk:8.0`, `node:22-bookworm-slim`,
+  `crystallang/crystal:1.14`, `python:3.12-slim`) or `debian:12-slim` + apt/pinned tarball
+  (zig 0.15.1, odin dev-2023-08, nim 2.2.6, v weekly.2023.40.1, c3 0.7.9, neat v0.5.2, …).
+- Each image must carry the **harness**: `git`, `python3` + `faker`/`nanoid`, GNU `time`,
+  `which`, `curl`/`wget`, and (where a runner calls it) `sudo`. It must also end with the
+  same tail: `WORKDIR /app`, `VOLUME /results`, the `GIT_*`/`RUN2`/`RUN3`/`TEST_NAME` env,
+  `COPY docker_start.sh /docker_start.sh`, `CMD ["/docker_start.sh"]`.
+- Builds happen **at run time** (`run.sh` compiles inside the container), so compilers,
+  libc headers and linkers must stay in the image — multi-stage "slim runtime" is not
+  applicable without changing the harness.
+- Toolchains that broke on rolling releases are **pinned with a comment** (Zig 0.15.1 for
+  `std.fs.cwd`/`smp_allocator`, nim 2.2.x for `nimble`, clang-15 symlink for neat).
+
+`docker_run.sh` holds the authoritative `test → image` map (`NameToImage`); `update_results.sh`
+parses it, so keep the `["name"]="image"` formatting.
+
+---
+
+## 6. Test containers (`docker_start.sh`)
+
+Runs inside the image: clones `$GIT_REPO` (default `https://github.com/zupat/related_post_gen.git`)
+at `$BRANCH`, then
+
+```
+./run.sh $TEST_NAME raw_results_$TEST_NAME.md          # 5k
+python gen_fake_posts.py $RUN2 && ./run.sh … append    # 20k
+python gen_fake_posts.py $RUN3 && ./run.sh … append    # 60k
+cp raw_results_$TEST_NAME.md /results/
+```
+
+Consequences that matter:
+
+- **The benchmarked code is the pushed commit**, not the local working tree.
+- A test that fails keeps no results file at all, so failures are clean (`cp` never runs).
+- `/results` is a mounted directory (on the VM: `results/`).
+
+---
+
+## 7. `extract_results.dart`
+
+Input: a results file or a directory of `*.md` (dir mode is what `update_results.sh` uses).
+
+- A line matching `^[a-zA-Z]` starts a new score; its name is the line with `:`/newlines
+  stripped (`Go HO:` → `Go HO`). Every `Processing time (w/o IO)` match inside a section is
+  averaged (units `ms`/`s`/`milliseconds`).
+- **Each language needs exactly three sections (5k, 20k, 60k)**; otherwise it prints
+  "Enough scores not found…" and returns without touching the readme. The guard only
+  checks non-concurrent, non-HO scores, but `toRowString` indexes two more sections for
+  those as well — so give every language three.
+- Routing: names containing `Concurrent` → multicore table; `hoNames`
+  (`Julia HO`, `D HO`, `Rust HO`, `Go HO`) → HO table; everything else → single-core.
+  Display names are remapped (`_Go HO_[^1]`, `Inko[^2]`).
+- Fastest per column gets a green `$\textsf{\color{lightgreen}…}$`; `OOM` is used when a
+  language has no times.
+- Lines between the first table separator and `<details>` are **replaced**. Blockquote
+  lines (the HO disclaimer) are preserved and re-emitted after the HO table — keep that
+  behaviour or the disclaimer disappears on the next extraction.
+
+---
+
+## 8. `update_results.sh` — the orchestrator
+
+Preflight: docker usable (`sudo` fallback), gh installed/authenticated (skipped with
+`--no-pr`), dart on the host or in `base_databench`, and `HEAD == origin/<branch>`
+(the containers clone the remote). Then:
+
+1. **Images**: builds each needed image (`gen_dockerfile.sh -b`), or pulls it from GHCR
+   with `--pull-images`. A failed build is **non-fatal**: its tests are skipped and listed
+   (`--fail-fast` aborts instead).
+2. **Tests**: serial loop in `docker_run.sh` map order, one container at a time, results
+   into `results/`, failures recorded and the run continues.
+   Resume: `--skip-existing` skips tests whose result was produced **in this campaign**
+   (`results/.campaign-ignore` lists the results that pre-existed, i.e. shipped in the
+   repo; each passing test is removed from it). `--new-campaign` resets it.
+3. **Extraction** over `results/` → `readme.md`.
+4. **Publish**: parks `readme.md` + `results/`, `git checkout -f` onto the results branch
+   (reusing it if it exists), restores the fresh files, commits (identity from git config
+   or `gh api user`, overridable with `GH_COMMIT_NAME`/`GH_COMMIT_EMAIL`), pushes, and
+   `gh pr create` (an existing PR for the branch is reported instead of failing).
+
+Flags: `-d/--device`, `-b/--base`, `--branch`, `--exclude a,b,c`, `--skip-existing`,
+`--new-campaign`, `--pull-images`, `--fail-fast`, `--no-pr`, `--dry-run`, `--install-deps`,
+positional test names. Note `--update-args` on the providers word-splits, so pass
+comma-separated values in a single word (`--exclude nim,zig`), never quoted lists.
+
+---
+
+## 9. Providers (`scaleway_bench.sh`, `vultr_bench.sh`)
+
+One command to create a VM, set it up and start the benchmark in a tmux session named
+`bench`, logging to `/opt/related-post-gen-bench/bench.log` and writing
+`bench.done` (`status:`, `pull request:`, `finished:`) when the run ends.
+
+- Commands: `run` (default), `attach`, `status`, `logs`, `wait`, `list`, `destroy`.
+- Local state: `~/.cache/related-post-gen/<provider>-bench.env` (server id, address,
+  ssh user, device label). Re-running reuses a tracked server.
+- The pane runs `bash -lc '<run-bench.sh>; exec bash'`, so **attach after a run gives you a
+  shell**, and "already running" is detected by *session exists and no `bench.done`*.
+- Setup rewrites the readme's `##### VM Specs` line to `--device` (disable with
+  `--no-label-sync`); a manual `./update_results.sh` run does **not** touch it.
+- Scaleway defaults: Elastic Metal `EM-A215R-HDD`, hourly only, first zone with stock
+  (`fr-par-2` at the time of writing), newest Ubuntu LTS the offer supports.
+- Vultr defaults: bare metal `vbm-4c-32gb` (`POST /v2/bare-metals`), newest Ubuntu LTS the
+  plan accepts.
+- Pass bench options through: `--update-args "--skip-existing --exclude nim,zig"`.
+
+---
+
+## 10. Registry (`ghcr_images.sh`)
+
+`push` / `pull` / `list` for the images, tagged
+`ghcr.io/<owner>/<repo>/<image>:<sha256 of the generated Dockerfile, 12 chars>`.
+So **editing any Dockerfile invalidates the published tag** — a pull misses and the image
+is rebuilt locally. Pushing needs a token with `write:packages`
+(`gh auth refresh -h github.com -s write:packages,read:packages`); pulling public packages
+needs nothing. Keep packages public — private GHCR storage is metered.
+
+---
+
+## 11. Invariants and traps
+
+- **One** `Processing time (w/o IO)` line per executed run; extra lines skew the average.
+- Every language must produce **three** dataset sections or extraction bails.
+- `$outfile` is absolute in `run.sh`; runners may `cd` deep.
+- Benchmarks measure the **pushed** commit (containers clone `origin`); push before running.
+- `results/raw_results_*.md` are **committed** — "file exists" cannot mean "already ran this
+  campaign"; hence `results/.campaign-ignore`.
+- The readme tables are generated. Never edit them by hand; run `extract_results.dart`.
+  Never delete the HO blockquote (the extractor preserves it, but keep that code).
+- `##### VM Specs ( … )` must describe the machine; the providers set it, manual runs don't.
+- Timing hygiene: one test at a time, idle machine, no builds during a run. Numbers are
+  **not** comparable across providers/machines — that is what the VM label is for.
+- A newer toolchain can break sources for reasons unrelated to the code (Zig `std.fs.cwd`,
+  nimble path handling, clang renames). Pin versions in the fragment.
+- `docker_run.sh all` iterates a bash associative array (unordered) and runs each test with
+  `sudo docker run`; `update_results.sh` has its own ordered loop. Only the latter is used
+  for result updates.
+
+---
+
+## 12. Common tasks
+
+```bash
+# one language, locally, with verification
+./run.sh go out.md && python3 verify.py related_posts_go.json
+
+# rebuild one image / all images
+./gen_dockerfile.sh -b go
+./gen_dockerfile.sh -b all
+
+# a subset on a VM, into a new results branch + PR
+./scaleway_bench.sh --update-args "--tests go,go_ho,rust --skip-existing"
+
+# resume a failed campaign (same branch = same PR)
+./scaleway_bench.sh --update-args "--skip-existing --branch results-<timestamp>"
+
+# regenerate the readme only
+dart extract_results.dart results
+
+# publish / restore images
+./ghcr_images.sh push go,rust,zig      # or no names for all
+./ghcr_images.sh list
+```
+
+---
+
+## 13. Current state (as of the Debian migration)
+
+- 29 self-contained images, 63 tests, no Arch packages anywhere. `inko` was dropped
+  (never published, no results file, Arch-AUR-only recipe).
+- Heavy images are `swift`, `dotnet`, `java` (GraalVM + sbt), `base` (Dart SDK + clang).
+- Version pins live in the fragments with comments explaining why (zig, odin, nim, v, c3,
+  neat, ldc, alire).
+- The Debian migration has **not** been build-tested as a whole; first run will surface
+  missing package names. Fix per language — each image is independent.
+- `run.sh` carries two behavioural fixes worth preserving: the absolute results path (for
+  fsharp's two-level `cd`) and `build_nim_related` (explicit `--path` for nim deps).

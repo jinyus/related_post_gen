@@ -223,7 +223,8 @@ while [ $# -gt 0 ]; do
     --no-build) BUILD=0 ;;
     -h | --help) usage; exit 0 ;;
     -*) die "unknown option '$1' (try --help)" ;;
-    *) NAMES+=("$1") ;;
+    # commas or spaces both separate names ("push go,rust,zig" works)
+    *) IFS=', ' read -r -a _parts <<<"$1"; NAMES+=("${_parts[@]}") ;;
     esac
     shift
 done
