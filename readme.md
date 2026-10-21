@@ -64,7 +64,7 @@ docker run -e TEST_NAME=go -it --rm go_databench
 
 ### Single Core Results ([raw data](https://github.com/jinyus/related_post_gen/blob/main/results))
 
-##### VM Specs ( Scaleway EM-A215R-HDD-6c12t-16GB-RAM-Ubuntu 26.04 )
+##### VM Specs ( OVHcloud bm-s1-8vCPU-32GB-RAM-Ubuntu 26.04 )
 
 | Language         | Time (5k posts)                       | 20k posts                              | 60k posts                           | Total     |
 | ---------------- | ------------------------------------- | -------------------------------------- | ----------------------------------- | --------- |
@@ -73,7 +73,7 @@ docker run -e TEST_NAME=go -it --rm go_databench
 | C++ | 18.60 ms | 197.67 ms | 1.73 s | 1.94 s |
 | Zig | 15.00 ms | 246.33 ms | 1.74 s | 2.00 s |
 | c3 | $\textsf{\color{lightgreen}13.20 ms}$ | 158.67 ms | 1.88 s | 2.05 s |
-| Go | 20.18 ms | 302.11 ms | 2.32 s | 2.64 s |
+| Go | 17.98 ms | 249.00 ms | 2.11 s | 2.38 s |
 | D | 23.22 ms | 332.08 ms | 2.34 s | 2.69 s |
 | C# (JIT) | 23.23 ms | 302.29 ms | 2.37 s | 2.70 s |
 | Vlang | 19.12 ms | 291.43 ms | 2.46 s | 2.77 s |
