@@ -1,41 +1,41 @@
 
 D Concurrent:
 
-	Processing time (w/o IO): 6.452ms
-	total: 0.06s memory: 13088k
-	Processing time (w/o IO): 6.853ms
-	total: 0.32s memory: 12948k
-	Processing time (w/o IO): 7.184ms
-	total: 0.12s memory: 13300k
-	Processing time (w/o IO): 6.934ms
-	total: 0.12s memory: 13208k
-	Processing time (w/o IO): 6.751ms
-	total: 0.15s memory: 13164k
-	Processing time (w/o IO): 6.875ms
-	total: 0.21s memory: 13064k
-	Processing time (w/o IO): 6.871ms
-	total: 0.15s memory: 13020k
-	Processing time (w/o IO): 6.689ms
-	total: 0.11s memory: 13148k
-	Processing time (w/o IO): 6.769ms
-	total: 0.12s memory: 13004k
-	Processing time (w/o IO): 6.576ms
-	total: 0.12s memory: 13080k
+	Processing time (w/o IO): 5.717ms
+	total: 0.06s memory: 12956k
+	Processing time (w/o IO): 5.68ms
+	total: 0.06s memory: 12952k
+	Processing time (w/o IO): 5.772ms
+	total: 0.06s memory: 12740k
+	Processing time (w/o IO): 5.734ms
+	total: 0.06s memory: 12884k
+	Processing time (w/o IO): 5.855ms
+	total: 0.06s memory: 12868k
+	Processing time (w/o IO): 5.67ms
+	total: 0.06s memory: 13012k
+	Processing time (w/o IO): 5.856ms
+	total: 0.06s memory: 12872k
+	Processing time (w/o IO): 5.834ms
+	total: 0.06s memory: 13020k
+	Processing time (w/o IO): 5.882ms
+	total: 0.06s memory: 12704k
+	Processing time (w/o IO): 5.937ms
+	total: 0.06s memory: 12816k
 
 D Concurrent:
 
-	Processing time (w/o IO): 48.214ms
-	total: 0.65s memory: 45216k
-	Processing time (w/o IO): 44.832ms
-	total: 0.59s memory: 45140k
-	Processing time (w/o IO): 46.259ms
-	total: 0.52s memory: 45164k
+	Processing time (w/o IO): 52.16ms
+	total: 0.27s memory: 45048k
+	Processing time (w/o IO): 52.442ms
+	total: 0.28s memory: 44852k
+	Processing time (w/o IO): 52.419ms
+	total: 0.27s memory: 44812k
 
 D Concurrent:
 
-	Processing time (w/o IO): 262.96ms
-	total: 2.00s memory: 126004k
-	Processing time (w/o IO): 262.346ms
-	total: 2.53s memory: 117948k
-	Processing time (w/o IO): 272.036ms
-	total: 1.92s memory: 118080k
+	Processing time (w/o IO): 398.287ms
+	total: 1.10s memory: 118020k
+	Processing time (w/o IO): 397.345ms
+	total: 1.11s memory: 118076k
+	Processing time (w/o IO): 398.931ms
+	total: 1.13s memory: 125516k
