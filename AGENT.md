@@ -48,9 +48,11 @@ Published numbers are machine-specific: `readme.md` carries a
 | `extract_results.dart` | parser that rewrites the readme tables from `results/` |
 | `results/raw_results_<test>.md` | committed raw results (input to the extractor) |
 | `readme.md` | results tables + rules + HO disclaimer |
-| `scaleway_bench.sh`, `vultr_bench.sh` | one-command providers: create VM, set up, run in tmux |
+| `scaleway_bench.sh` | one-command provider: create VM, set up, run in tmux |
+| `build_images.sh` | disposable builder: parallel `docker build` on a cloud VM, optional GHCR push |
 | `ghcr_images.sh` | publish/pull the built images (GitHub container registry) |
 | `setup.md` | human setup guide (manual + wrappers) |
+| `.github/workflows/build-images.yml` | `workflow_dispatch` matrix that builds every image in parallel (optionally pushes to GHCR) |
 | `.github/workflows/benchmark.yml` | legacy native-benchmark workflow (not the current path) |
 
 ---
@@ -195,7 +197,7 @@ comma-separated values in a single word (`--exclude nim,zig`), never quoted list
 
 ---
 
-## 9. Providers (`scaleway_bench.sh`, `vultr_bench.sh`)
+## 9. Provider (`scaleway_bench.sh`) and builder (`build_images.sh`)
 
 One command to create a VM, set it up and start the benchmark in a tmux session named
 `bench`, logging to `/opt/related-post-gen-bench/bench.log` and writing
@@ -210,8 +212,12 @@ One command to create a VM, set it up and start the benchmark in a tmux session 
   `--no-label-sync`); a manual `./update_results.sh` run does **not** touch it.
 - Scaleway defaults: Elastic Metal `EM-A215R-HDD`, hourly only, first zone with stock
   (`fr-par-2` at the time of writing), newest Ubuntu LTS the offer supports.
-- Vultr defaults: bare metal `vbm-4c-32gb` (`POST /v2/bare-metals`), newest Ubuntu LTS the
-  plan accepts.
+- Elastic Metal (bare metal) takes 10-20 min from create to usable; Scaleway *cloud
+  instances* boot in about a minute but need `cp_servers`/`cp_ips` quota, which a fresh
+  project may not have (0/0 rejects the create).
+- `build_images.sh` builds the images in parallel on a throwaway instance
+  (`--jobs`, `--images`), keeps it for iteration, then `--push` uploads to GHCR and
+  destroys it. Same requirement: cloud-instance quota.
 - Pass bench options through: `--update-args "--skip-existing --exclude nim,zig"`.
 
 ---
@@ -221,7 +227,11 @@ One command to create a VM, set it up and start the benchmark in a tmux session 
 `push` / `pull` / `list` for the images, tagged
 `ghcr.io/<owner>/<repo>/<image>:<sha256 of the generated Dockerfile, 12 chars>`.
 So **editing any Dockerfile invalidates the published tag** — a pull misses and the image
-is rebuilt locally. Pushing needs a token with `write:packages`
+is rebuilt locally. Building all of them in CI: run the **Build images** workflow (`gh workflow run build-images.yml`);
+it defaults to build-only, and `-f push=true` publishes. Tags are computed the same way, so
+`ghcr_images.sh pull` finds them.
+
+Pushing needs a token with `write:packages`
 (`gh auth refresh -h github.com -s write:packages,read:packages`); pulling public packages
 needs nothing. Keep packages public — private GHCR storage is metered.
 

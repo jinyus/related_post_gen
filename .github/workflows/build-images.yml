@@ -1,0 +1,159 @@
+name: Build images
+
+# Builds the benchmark docker images (one matrix job per dockerfiles/*.Dockerfile).
+#
+# When it runs:
+#   * on a push to main that touches dockerfiles/, docker_start.sh, gen_dockerfile.sh
+#     or this workflow
+#   * manually (Actions -> Build images), with an optional image list and a
+#     push toggle for a verify-only run
+#
+# It never rebuilds something that is already published: each job computes the
+# content tag (sha256 of the generated Dockerfile, first 12 chars, identical to
+# ghcr_images.sh) and skips when that manifest already exists in GHCR. Changing a
+# Dockerfile - or docker_start.sh, which every image copies - changes the tag, so
+# the image is rebuilt; untouched images are skipped. Use force=true to rebuild
+# everything anyway.
+#
+# After a successful push, `ghcr_images.sh pull` / `update_results.sh
+# --pull-images` fetch these images instead of building them.
+
+on:
+    push:
+        branches: [main]
+        paths:
+            - "dockerfiles/**"
+            - "docker_start.sh"
+            - "gen_dockerfile.sh"
+            - ".github/workflows/build-images.yml"
+    workflow_dispatch:
+        inputs:
+            images:
+                description: "Comma separated images (empty = every dockerfile)"
+                type: string
+                default: ""
+            push:
+                description: "Push to GHCR (leave off to only verify the builds)"
+                type: boolean
+                default: false
+            force:
+                description: "Rebuild even when the image is already published"
+                type: boolean
+                default: false
+
+permissions:
+    contents: read
+    packages: write
+
+concurrency:
+    group: build-images
+    cancel-in-progress: false
+
+jobs:
+    prepare:
+        runs-on: ubuntu-latest
+        outputs:
+            matrix: ${{ steps.list.outputs.matrix }}
+        steps:
+            - uses: actions/checkout@v4
+
+            - name: Resolve the image list
+              id: list
+              shell: bash
+              run: |
+                  if [ -n "${{ inputs.images }}" ]; then
+                      list="$(tr ',' ' ' <<< "${{ inputs.images }}")"
+                  else
+                      list="$(ls dockerfiles/*.Dockerfile | xargs -n1 basename | sed 's/\.Dockerfile$//')"
+                  fi
+                  for name in $list; do
+                      [ -f "dockerfiles/$name.Dockerfile" ] || { echo "unknown image: $name" >&2; exit 1; }
+                  done
+                  echo "candidates: $list"
+                  echo "matrix=$(printf '%s\n' $list | jq -R . | jq -sc .)" >> "$GITHUB_OUTPUT"
+
+    build:
+        needs: prepare
+        runs-on: ubuntu-latest
+        timeout-minutes: 90
+        strategy:
+            fail-fast: false # one broken language must not stop the others
+            max-parallel: 12
+            matrix:
+                image: ${{ fromJson(needs.prepare.outputs.matrix) }}
+        env:
+            SHOULD_PUSH: ${{ inputs.push || github.event_name == 'push' }}
+        steps:
+            - uses: actions/checkout@v4
+
+            - name: Generate the Dockerfile for ${{ matrix.image }}
+              id: meta
+              shell: bash
+              run: |
+                  ./gen_dockerfile.sh "${{ matrix.image }}"
+                  file="${{ matrix.image }}_temp.Dockerfile"
+                  echo "file=$file" >> "$GITHUB_OUTPUT"
+                  echo "tag=$(sha256sum "$file" | cut -c1-12)" >> "$GITHUB_OUTPUT"
+                  echo "ref=ghcr.io/${{ github.repository }}/${{ matrix.image }}:$(sha256sum "$file" | cut -c1-12)" >> "$GITHUB_OUTPUT"
+                  head -1 "$file"
+
+            - name: Log in to GHCR
+              if: env.SHOULD_PUSH == 'true' || inputs.force
+              uses: docker/login-action@v3
+              with:
+                  registry: ghcr.io
+                  username: ${{ github.actor }}
+                  password: ${{ secrets.GITHUB_TOKEN }}
+
+            - name: Is ${{ steps.meta.outputs.tag }} already published?
+              id: check
+              shell: bash
+              run: |
+                  if [ "${{ inputs.force }}" = "true" ]; then
+                      echo "skip=false" >> "$GITHUB_OUTPUT"
+                      echo "forced rebuild"
+                  elif docker manifest inspect "${{ steps.meta.outputs.ref }}" >/dev/null 2>&1; then
+                      echo "skip=true" >> "$GITHUB_OUTPUT"
+                      echo "${{ steps.meta.outputs.ref }} already exists - skipping"
+                  else
+                      echo "skip=false" >> "$GITHUB_OUTPUT"
+                      echo "not published yet"
+                  fi
+
+            - name: Build ${{ matrix.image }}
+              id: build
+              if: steps.check.outputs.skip != 'true'
+              uses: docker/build-push-action@v6
+              with:
+                  context: .
+                  file: ${{ steps.meta.outputs.file }}
+                  platforms: linux/amd64
+                  push: ${{ env.SHOULD_PUSH == 'true' }}
+                  tags: ${{ steps.meta.outputs.ref }}
+                  cache-from: type=gha,scope=${{ matrix.image }}
+                  cache-to: type=gha,mode=max,scope=${{ matrix.image }}
+
+            - name: Result
+              shell: bash
+              run: |
+                  what="built"
+                  [ "$SHOULD_PUSH" = "true" ] && what="built + pushed"
+                  [ "${{ steps.check.outputs.skip }}" = "true" ] && what="skipped (already published)"
+                  echo "| ${{ matrix.image }} | ${{ steps.meta.outputs.tag }} | $what |" >> "$GITHUB_STEP_SUMMARY"
+
+    summary:
+        needs: [prepare, build]
+        if: always()
+        runs-on: ubuntu-latest
+        steps:
+            - name: Result
+              shell: bash
+              run: |
+                  echo "build: ${{ needs.build.result }}"
+                  {
+                      echo "### Build images"
+                      echo ""
+                      echo "- candidates: \`${{ needs.prepare.outputs.matrix }}\`"
+                      echo "- build result: **${{ needs.build.result }}**"
+                      echo "- pushed to GHCR: **${{ inputs.push || github.event_name == 'push' }}**"
+                  } >> "$GITHUB_STEP_SUMMARY"

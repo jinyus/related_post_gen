@@ -6,6 +6,7 @@
 #   ./ghcr_images.sh push [name...]    build if needed, then upload
 #   ./ghcr_images.sh pull [name...]    download and tag as <name>_databench
 #   ./ghcr_images.sh list [name...]    what exists locally vs in the registry
+#   ./ghcr_images.sh public [name...]  make published packages public (one way!)
 #
 # A name is a dockerfile in ./dockerfiles: base, go, rust, csharp, swift,
 # python... With no names, every one of them is used (around 100GB, so you
@@ -205,6 +206,57 @@ cmd_list() {
     done
 }
 
+cmd_public() {
+    # Packages are private when first published and visibility is per package,
+    # so this flips them in bulk. Public -> private is not possible, hence
+    # --dry-run support.
+    command -v gh >/dev/null 2>&1 || die "gh is required for this command"
+    local me listing
+    me="$(gh api user -q .login 2>/dev/null || true)"
+    [ -n "$me" ] || die "gh is not authenticated"
+
+    listing="$(gh api --paginate "/user/packages?package_type=container" \
+        --jq '.[] | [.name, .visibility, .owner.login] | @tsv' 2>/dev/null || true)"
+    [ -n "$listing" ] || warn "no container packages under $me yet"
+
+    local name pkg vis owner changed=0
+    for name in "$@"; do
+        pkg=""; vis=""; owner=""
+        while IFS=$'\t' read -r p v o; do
+            case "$p" in
+            "$name" | */"$name") pkg="$p"; vis="$v"; owner="$o" ;;
+            esac
+        done <<<"$listing"
+
+        if [ -z "$pkg" ]; then
+            info "  $name: not published yet - nothing to do"
+            continue
+        fi
+        if [ "$vis" = "public" ]; then
+            info "  $name: already public ($pkg)"
+            continue
+        fi
+        if [ "$DRY_RUN" = 1 ]; then
+            info "  $name: would make $pkg public"
+            continue
+        fi
+
+        local encoded="${pkg//\//%2F}" scope
+        if [ "$owner" = "$me" ]; then
+            scope="/user/packages/container"
+        else
+            scope="/orgs/$owner/packages/container"
+        fi
+        if gh api --method PATCH "$scope/$encoded/visibility" -f visibility=public >/dev/null; then
+            info "  $name: now public ($pkg)"
+            changed=$((changed + 1))
+        else
+            warn "  $name: could not change visibility of $pkg"
+        fi
+    done
+    info "changed $changed package(s)"
+}
+
 # ---------------------------------------------------------------------------
 # main
 # ---------------------------------------------------------------------------
@@ -215,11 +267,13 @@ NAMES=()
 QUIET=0
 FORCE=0
 BUILD=1
+DRY_RUN=0
 while [ $# -gt 0 ]; do
     case "$1" in
     -q | --quiet) QUIET=1 ;;
     -f | --force) FORCE=1 ;;
     --build) BUILD=1 ;;
+    --dry-run) DRY_RUN=1 ;;
     --no-build) BUILD=0 ;;
     -h | --help) usage; exit 0 ;;
     -*) die "unknown option '$1' (try --help)" ;;
@@ -231,6 +285,7 @@ done
 
 case "$CMD" in
 push | upload) CMD=push ;;
+public) CMD=public ;;
 pull | restore) CMD=pull ;;
 list | ls) CMD=list ;;
 -h | --help | help) usage; exit 0 ;;
@@ -248,14 +303,17 @@ else
     while read -r name; do IMAGES+=("$name"); done < <(all_images)
 fi
 
-need_docker() { command -v docker >/dev/null 2>&1 || die "docker is required"; }
-need_docker
+if [ "$CMD" != "public" ]; then
+    command -v docker >/dev/null 2>&1 || die "docker is required"
+fi
 
 step "$CMD ${#IMAGES[@]} image(s) in $REGISTRY/$NAMESPACE"
-[ "$CMD" = "list" ] || ensure_login
+# push/pull authenticate with docker; public uses gh
+case "$CMD" in push | pull) ensure_login ;; esac
 
 case "$CMD" in
 push) cmd_push "${IMAGES[@]}" ;;
 pull) cmd_pull "${IMAGES[@]}" ;;
 list) cmd_list "${IMAGES[@]}" ;;
+public) cmd_public "${IMAGES[@]}" ;;
 esac
