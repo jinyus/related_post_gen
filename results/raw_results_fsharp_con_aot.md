@@ -1,41 +1,41 @@
 
 F# Concurrent (AOT):
 
-	Processing time (w/o IO): 5ms
-	total: 0.54s memory: 88580k
-	Processing time (w/o IO): 4ms
-	total: 0.54s memory: 88316k
-	Processing time (w/o IO): 5ms
-	total: 0.53s memory: 88468k
-	Processing time (w/o IO): 4ms
-	total: 0.54s memory: 86472k
-	Processing time (w/o IO): 4ms
-	total: 0.53s memory: 88300k
-	Processing time (w/o IO): 4ms
-	total: 0.53s memory: 88984k
-	Processing time (w/o IO): 4ms
-	total: 0.54s memory: 89004k
-	Processing time (w/o IO): 4ms
-	total: 0.53s memory: 87764k
-	Processing time (w/o IO): 4ms
-	total: 0.53s memory: 87748k
-	Processing time (w/o IO): 5ms
-	total: 0.54s memory: 88576k
+	Processing time (w/o IO): 10ms
+	total: 0.46s memory: 87996k
+	Processing time (w/o IO): 10ms
+	total: 0.47s memory: 87912k
+	Processing time (w/o IO): 10ms
+	total: 0.48s memory: 88120k
+	Processing time (w/o IO): 9ms
+	total: 0.51s memory: 88396k
+	Processing time (w/o IO): 9ms
+	total: 0.49s memory: 86196k
+	Processing time (w/o IO): 10ms
+	total: 0.47s memory: 88084k
+	Processing time (w/o IO): 9ms
+	total: 0.47s memory: 87516k
+	Processing time (w/o IO): 9ms
+	total: 0.48s memory: 87812k
+	Processing time (w/o IO): 9ms
+	total: 0.47s memory: 88404k
+	Processing time (w/o IO): 10ms
+	total: 0.48s memory: 88132k
 
 F# Concurrent (AOT):
 
-	Processing time (w/o IO): 64ms
-	total: 2.17s memory: 261608k
-	Processing time (w/o IO): 63ms
-	total: 2.20s memory: 289656k
-	Processing time (w/o IO): 62ms
-	total: 2.20s memory: 284568k
+	Processing time (w/o IO): 152ms
+	total: 2.26s memory: 257660k
+	Processing time (w/o IO): 147ms
+	total: 2.23s memory: 281232k
+	Processing time (w/o IO): 142ms
+	total: 2.13s memory: 280528k
 
 F# Concurrent (AOT):
 
-	Processing time (w/o IO): 551ms
-	total: 7.09s memory: 695472k
-	Processing time (w/o IO): 562ms
-	total: 7.03s memory: 661376k
-	Processing time (w/o IO): 567ms
-	total: 7.56s memory: 754408k
+	Processing time (w/o IO): 1209ms
+	total: 8.13s memory: 693500k
+	Processing time (w/o IO): 1235ms
+	total: 8.21s memory: 797468k
+	Processing time (w/o IO): 1246ms
+	total: 7.80s memory: 656096k
