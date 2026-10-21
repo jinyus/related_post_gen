@@ -1,5 +1,5 @@
 # Self-contained image: Debian 12 + pinned V compiler (the Arch image used the
-# same weekly release zip, just extracted under /home/builduser).
+# same release zip, just extracted under /home/builduser).
 FROM debian:12-slim
 
 # benchmark harness (+ gcc: V compiles to C)
@@ -9,7 +9,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     rm -rf /var/lib/apt/lists/* && \
     pip3 install --break-system-packages --no-cache-dir faker nanoid
 
-RUN wget -q 'https://github.com/vlang/v/releases/download/weekly.2023.40.1/v_linux.zip' -O /tmp/v.zip && \
+RUN wget -q 'https://github.com/vlang/v/releases/download/0.5.2/v_linux.zip' -O /tmp/v.zip && \
     unzip -q /tmp/v.zip -d /opt && rm -f /tmp/v.zip
 ENV PATH="/opt/v:$PATH"
 RUN v version

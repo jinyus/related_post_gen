@@ -7,9 +7,9 @@ import time
 const top_posts_count = 5
 
 struct Post {
-	id    string   [json: '_id']
-	title string   [json: 'title']
-	tags  []string [json: 'tags']
+	id    string   @[json: '_id']
+	title string   @[json: 'title']
+	tags  []string @[json: 'tags']
 }
 
 struct PostWithSharedTags {
@@ -18,7 +18,7 @@ struct PostWithSharedTags {
 }
 
 struct RelatedPosts {
-	id      string                [json: '_id']
+	id      string                @[json: '_id']
 	tags    []string
 	related [top_posts_count]Post
 }
