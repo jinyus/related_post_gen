@@ -437,7 +437,18 @@ create_instance() {
         fi
 
         case "$OVH_ERROR" in
-        *"stock"* | *"available"* | *"quota"* | *"forbidden"*)
+        *"quota"*)
+            die "not enough project quota for $FLAVOR in $REGION (${OVH_ERROR})
+  OVHcloud RAM/cores are counted per project, so a leftover instance blocks
+  this one. Look for it with:
+    ovhcloud cloud instance list${PROJECT:+ --cloud-project $PROJECT}
+  and remove it with:
+    ovhcloud cloud instance delete <id>${PROJECT:+ --cloud-project $PROJECT}" ;;
+        *"forbidden"* | *"Forbidden"*)
+            die "the project refused to create the instance (${OVH_ERROR})
+  a project in discovery mode cannot create resources: activate it (add a
+  payment method) in the OVHcloud Control Panel first" ;;
+        *"stock"* | *"available"*)
             die "$FLAVOR is not available in $REGION (${OVH_ERROR})
   check availability with: ovhcloud cloud instance flavor list -r $REGION" ;;
         *os* | *"image"* | *"install"* | *boot*)
@@ -693,8 +704,24 @@ destroy_instance() {
     set_project_flag
     step "Deleting $id"
     ovh cloud instance delete "$id" "${PC[@]}" >/dev/null
-    rm -f "$STATE_FILE"
-    info "deleted $id"
+
+    # OVHcloud deletes asynchronously and a delete can stick (the instance stays
+    # OUT_OF_SYNC and keeps holding the project's RAM quota). Wait for it to
+    # really disappear, and keep the local state if it does not, so a later run
+    # cannot create a second instance next to the orphan.
+    local deadline=$((SECONDS + 300))
+    while [ "$SECONDS" -lt "$deadline" ]; do
+        if ! ovh cloud instance get "$id" "${PC[@]}" >/dev/null 2>&1; then
+            rm -f "$STATE_FILE"
+            info "deleted $id"
+            return 0
+        fi
+        printf '  %s waiting for the instance to be deleted...\n' "$(date +%H:%M:%S)"
+        sleep 10
+    done
+    warn "instance $id is still listed after 5min - keeping $STATE_FILE"
+    warn "re-run './$SCRIPT_NAME destroy' to retry (it is still billed)"
+    return 1
 }
 
 # ---------------------------------------------------------------------------
@@ -871,7 +898,21 @@ if [ -n "${INSTANCE_ID:-}" ] && [ "$FORCE" != "1" ]; then
 else
     resolve_project
     resolve_flavor_and_image
-    create_instance
+    # A previous run can leave an instance behind - a delete that stuck, or a
+    # state file removed while the instance lived on. Creating a second one
+    # trips the project's RAM quota, so adopt the leftover instead.
+    leftover="$(instance_id_by_name "$NAME")"
+    if [ -n "$leftover" ]; then
+        warn "an instance named '$NAME' already exists ($leftover) and is not tracked locally"
+        warn "reusing it; if it is stale, delete it and re-run:"
+        warn "  ovhcloud cloud instance delete $leftover${PROJECT:+ --cloud-project $PROJECT}"
+        INSTANCE_ID="$leftover"
+        SSH_USER="ubuntu"
+        REMOTE_SUDO=1
+        save_state
+    else
+        create_instance
+    fi
     wait_for_instance
     wait_for_ssh
 fi

@@ -48,7 +48,7 @@ Published numbers are machine-specific: `readme.md` carries a
 | `extract_results.dart` | parser that rewrites the readme tables from `results/` |
 | `results/raw_results_<test>.md` | committed raw results (input to the extractor) |
 | `readme.md` | results tables + rules + HO disclaimer |
-| `scaleway_bench.sh` | one-command provider: create VM, set up, run in tmux |
+| `scaleway_bench.sh`, `ovhcloud_bench.sh`, `vultr_bench.sh` | one-command providers: create a VM, set it up, run in tmux |
 | `build_images.sh` | disposable builder: parallel `docker build` on a cloud VM, optional GHCR push |
 | `ghcr_images.sh` | publish/pull the built images (GitHub container registry) |
 | `.agents/skills/update-toolchains/` | user-invoked skill: refresh stale toolchain pins, verify each image in Vercel Sandboxes, open one PR |
@@ -235,7 +235,7 @@ comma-separated values in a single word (`--exclude nim,zig`), never quoted list
 
 ---
 
-## 9. Provider (`scaleway_bench.sh`) and builder (`build_images.sh`)
+## 9. Providers (`scaleway_bench.sh`, `ovhcloud_bench.sh`, `vultr_bench.sh`) and builder (`build_images.sh`)
 
 One command to create a VM, set it up and start the benchmark in a tmux session named
 `bench`, logging to `/opt/related-post-gen-bench/bench.log` and writing
@@ -248,15 +248,31 @@ One command to create a VM, set it up and start the benchmark in a tmux session 
   shell**, and "already running" is detected by *session exists and no `bench.done`*.
 - Setup rewrites the readme's `##### VM Specs` line to `--device` (disable with
   `--no-label-sync`); a manual `./update_results.sh` run does **not** touch it.
-- Scaleway defaults: Elastic Metal `EM-A215R-HDD`, hourly only, first zone with stock
-  (`fr-par-2` at the time of writing), newest Ubuntu LTS the offer supports.
-- Elastic Metal (bare metal) takes 10-20 min from create to usable; Scaleway *cloud
-  instances* boot in about a minute but need `cp_servers`/`cp_ips` quota, which a fresh
-  project may not have (0/0 rejects the create).
-- `build_images.sh` builds the images in parallel on a throwaway instance
-  (`--jobs`, `--images`), keeps it for iteration, then `--push` uploads to GHCR and
-  destroys it. Same requirement: cloud-instance quota.
-- Pass bench options through: `--update-args "--skip-existing --exclude nim,zig"`.
+- Pass bench options through `--update-args`; it is **word-split**, so comma-separate:
+  `--update-args "--pull-images --tests go,go_ho"`.
+- `destroy` only clears the local state once the instance has actually disappeared; an
+  async delete that sticks leaves an instance holding quota (and billing).
+
+Per provider:
+
+- `scaleway_bench.sh` — Elastic Metal `EM-A215R-HDD`, hourly only, first zone with stock
+  (`fr-par-2` at the time of writing), newest Ubuntu LTS the offer supports. Elastic Metal
+  takes 10-20 min from create to usable; Scaleway *cloud instances* boot in about a minute
+  but need `cp_servers`/`cp_ips` quota (a fresh project's 0/0 rejects the create).
+- `ovhcloud_bench.sh` — Public Cloud **Metal Instances** (`bm-s1`/`bm-m1`/`bm-l1`). Needs a
+  Public Cloud project (`--project`, else `OVH_CLOUD_PROJECT_SERVICE`, else the only one in
+  the account) and an `ovhcloud` token granting the `/cloud` routes. Flavor/region come from
+  `cloud instance flavor list` and prefer a region with a real quota profile (`8vms`), not
+  the discovery-mode `limited` one. Traps: instance creation is **v1** and resolves
+  `--ssh-key.name` against the v1 `sshkey` store, which is separate from the v2 store the
+  CLI's `cloud ssh-key` writes — hence `--ssh-key.create.*` with a name fallback; RAM/cores
+  are counted **per project**, so an instance left behind (e.g. a stuck delete) makes the
+  next create fail with `conflict: ram quota … reached`; a fresh server runs
+  `unattended-upgrades`, which the setup disables before benchmarking so it neither holds
+  the dpkg lock nor steals CPU from the timings.
+- `build_images.sh` — builds images in parallel on a throwaway instance (`--jobs`,
+  `--images`), keeps it for iteration, then `--push` uploads to GHCR and destroys it.
+  Same requirement: cloud-instance quota.
 
 ---
 
