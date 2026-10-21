@@ -1,6 +1,5 @@
-# Self-contained image: official Julia on Debian 12. Replaces the Arch image
-# that was 5.6GB.
-FROM julia:1.11-bookworm
+# Self-contained image: official Julia 1.13.2 on Debian 12 (bookworm).
+FROM julia:1.13.2-bookworm
 
 # benchmark harness
 RUN apt-get update && apt-get install -y --no-install-recommends \

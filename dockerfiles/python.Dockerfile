@@ -1,7 +1,8 @@
-# Self-contained image: official CPython on Debian 12. Serves py, numba and
-# numba_con (previously all three used the shared Arch "base" image).
-# numba/numpy come from python/requirements.txt at run time, as before.
-FROM python:3.12-slim
+# Self-contained image: official CPython 3.15.0 on Debian 13 (trixie). Serves py,
+# numpy, numba and numba_con (previously all used the shared Arch "base" image).
+# numba/numpy/scipy come from python/requirements.txt at run time, as before;
+# numba 0.68.0, numpy 2.5.4 and scipy 1.18.1 all ship cp315 linux wheels.
+FROM python:3.15.0-slim
 
 # benchmark harness
 RUN apt-get update && apt-get install -y --no-install-recommends \

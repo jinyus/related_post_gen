@@ -1,6 +1,6 @@
-# Self-contained image: official Node on Debian 12 + deno and bun (their own
+# Self-contained image: official Node 26 on Debian 12 + deno and bun (their own
 # installers, installed for root instead of the Arch "builduser").
-FROM node:22-bookworm-slim
+FROM node:26.12.0-bookworm-slim
 
 # benchmark harness
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -8,8 +8,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     rm -rf /var/lib/apt/lists/* && \
     pip3 install --break-system-packages --no-cache-dir faker nanoid
 
-RUN curl -fsSL https://deno.land/install.sh | sh
-RUN curl -fsSL https://bun.sh/install | bash
+RUN curl -fsSL https://deno.land/install.sh | sh -s v2.9.7
+RUN curl -fsSL https://bun.sh/install | bash -s "bun-v1.4.3"
 
 ENV DENO_INSTALL=/root/.deno
 ENV BUN_INSTALL=/root/.bun

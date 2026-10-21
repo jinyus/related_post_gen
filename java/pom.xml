@@ -76,7 +76,8 @@
                     <version>3.11.0</version>
                     <configuration>
                         <compilerArgs>
-                            <!-- <arg>-proc:full</arg>  for JAVA 21-->
+                            <!-- JDK 23+ only runs annotation processors when asked explicitly -->
+                            <arg>-proc:full</arg>
                         </compilerArgs>
                         <compilerArguments>
                             <Adsljson.configuration>related_post_gen.JsonConfig</Adsljson.configuration>
