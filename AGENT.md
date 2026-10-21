@@ -51,6 +51,7 @@ Published numbers are machine-specific: `readme.md` carries a
 | `scaleway_bench.sh` | one-command provider: create VM, set up, run in tmux |
 | `build_images.sh` | disposable builder: parallel `docker build` on a cloud VM, optional GHCR push |
 | `ghcr_images.sh` | publish/pull the built images (GitHub container registry) |
+| `.opencode/skills/update-toolchains/` | user-invoked skill: refresh stale toolchain pins, verify each image in Vercel Sandboxes, open one PR |
 | `setup.md` | human setup guide (manual + wrappers) |
 | `.github/workflows/build-images.yml` | `workflow_dispatch` matrix that builds every image in parallel (optionally pushes to GHCR) |
 | `.github/workflows/benchmark.yml` | legacy native-benchmark workflow (not the current path) |
