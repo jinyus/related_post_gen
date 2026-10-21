@@ -141,39 +141,38 @@ instead of silently using a stale one.
 
 ```bash
 ./update_results.sh --pull-images
-# or through a wrapper, which also serves the fresh machine:
-./scaleway_bench.sh --update-args "--pull-images --skip-existing"Da
+# or through the provisioner, which also serves the fresh machine:
+./ovhcloud_bench.sh --update-args "--pull-images --skip-existing"
 ```
 
-### Run it on Scaleway Elastic Metal
+### Run it on an OVHcloud Metal Instance
 
-[`scaleway_bench.sh`](scaleway_bench.sh) is the same flow on a Scaleway
-**Elastic Metal** server, driven by `scw` (already authenticated if
-`~/.config/scw/config.yaml` exists).
+[`ovhcloud_bench.sh`](ovhcloud_bench.sh) is the whole flow on an OVHcloud
+**Metal Instance** (`bm-s1` and friends), driven by the `ovhcloud` CLI.
 
 ```bash
-./scaleway_bench.sh                                  # EM-A215R-HDD, all tests
-./scaleway_bench.sh --update-args "--tests go,go_ho" # quick subset
-./scaleway_bench.sh status                           # how far along is it?
-./scaleway_bench.sh --wait --destroy-when-done       # wait for the PR, then delete
-./scaleway_bench.sh destroy                          # delete it manually
+./ovhcloud_bench.sh --project <id>                    # bm-s1, all tests
+./ovhcloud_bench.sh --project <id> --update-args "--tests go,go_ho"
+./ovhcloud_bench.sh --project <id> status             # how far along is it?
+./ovhcloud_bench.sh --project <id> --wait --destroy-when-done
+./ovhcloud_bench.sh destroy                           # delete it manually
 ```
 
-Defaults and behaviour:
+Requirements and behaviour:
 
-- Offer `EM-A215R-HDD`: **hourly** Elastic Metal (6 cores / 12 threads AMD Ryzen
-  PRO 3600, 16 GB RAM, 2x1TB HDD, ~EUR 0.101/h, no setup fee). The script only
-  ever picks offers whose `subscription_period` is `hourly`, and prints the
-  hourly price before creating anything.
-- Zone: the zone configured in `scw` if it has the offer in stock, otherwise the
-  first zone that does (`EM-A215R-HDD` is in `fr-par-2` and `nl-ams-1`, but only
-  `fr-par-2` had stock - `--zone` to override).
-- Image: the newest Ubuntu LTS the offer supports, from
-  `scw baremetal os list offer-id=...` (26.04, then 24.04, then 22.04), with the
-  machine label following whichever one was installed.
-- Delivery + OS installation takes a few minutes (`--timeout`, default 60), then
-  the script logs in as the image's default user (`ubuntu`, via sudo), sets
-  everything up and starts the benchmark in tmux the same way.
-- Billed hourly until you `destroy` it (use `--destroy-when-done`).
+- A **Public Cloud project** (`--project`, else `OVH_CLOUD_PROJECT_SERVICE`, else the
+  only one in the account) and an `ovhcloud` token whose rules grant the `/cloud`
+  routes (`ovhcloud login`). A project in *discovery* mode cannot create anything -
+  activate it with a payment method first.
+- Flavor `bm-s1` (4 cores / 8 threads, 32 GB RAM, 2x960 GB SSD, ~EUR 0.50/h hourly).
+  The region is picked from `cloud instance flavor list`, preferring one with a real
+  quota profile (`8vms`) over the discovery-mode `limited` one.
+- Image: the newest `Baremetal - Ubuntu` LTS the region offers, with the machine
+  label following whichever one was installed.
+- Delivery takes ~15-30 min (`--timeout`, default 60), then the script logs in as
+  `ubuntu` (via sudo), sets everything up and starts the benchmark in tmux the same way.
+- Billed hourly until you `destroy` it (use `--destroy-when-done`). RAM/cores are
+  counted per project, so a leftover instance blocks a new one; the script tracks a
+  partial create and adopts an instance that already carries its `--name`.
 
 

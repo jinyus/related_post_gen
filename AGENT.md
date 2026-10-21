@@ -48,8 +48,7 @@ Published numbers are machine-specific: `readme.md` carries a
 | `extract_results.dart` | parser that rewrites the readme tables from `results/` |
 | `results/raw_results_<test>.md` | committed raw results (input to the extractor) |
 | `readme.md` | results tables + rules + HO disclaimer |
-| `scaleway_bench.sh`, `ovhcloud_bench.sh`, `vultr_bench.sh` | one-command providers: create a VM, set it up, run in tmux |
-| `build_images.sh` | disposable builder: parallel `docker build` on a cloud VM, optional GHCR push |
+| `ovhcloud_bench.sh` | one-command provider: create a Metal Instance, set it up, run in tmux |
 | `ghcr_images.sh` | publish/pull the built images (GitHub container registry) |
 | `.agents/skills/update-toolchains/` | user-invoked skill: refresh stale toolchain pins, verify each image in Vercel Sandboxes, open one PR |
 | `setup.md` | human setup guide (manual + wrappers) |
@@ -235,15 +234,15 @@ comma-separated values in a single word (`--exclude nim,zig`), never quoted list
 
 ---
 
-## 9. Providers (`scaleway_bench.sh`, `ovhcloud_bench.sh`, `vultr_bench.sh`) and builder (`build_images.sh`)
+## 9. Provider (`ovhcloud_bench.sh`)
 
 One command to create a VM, set it up and start the benchmark in a tmux session named
 `bench`, logging to `/opt/related-post-gen-bench/bench.log` and writing
 `bench.done` (`status:`, `pull request:`, `finished:`) when the run ends.
 
 - Commands: `run` (default), `attach`, `status`, `logs`, `wait`, `list`, `destroy`.
-- Local state: `~/.cache/related-post-gen/<provider>-bench.env` (server id, address,
-  ssh user, device label). Re-running reuses a tracked server.
+- Local state: `~/.cache/related-post-gen/ovhcloud-bench.env` (instance id, address,
+  ssh user, device label). Re-running reuses a tracked instance.
 - The pane runs `bash -lc '<run-bench.sh>; exec bash'`, so **attach after a run gives you a
   shell**, and "already running" is detected by *session exists and no `bench.done`*.
 - Setup rewrites the readme's `##### VM Specs` line to `--device` (disable with
@@ -252,27 +251,24 @@ One command to create a VM, set it up and start the benchmark in a tmux session 
   `--update-args "--pull-images --tests go,go_ho"`.
 - `destroy` only clears the local state once the instance has actually disappeared; an
   async delete that sticks leaves an instance holding quota (and billing).
+- A create that fails or is interrupted still gets tracked by name, and a run that finds an
+  untracked instance under the same `--name` adopts it — so a leftover cannot silently eat
+  the project's RAM quota.
 
-Per provider:
+OVHcloud specifics:
 
-- `scaleway_bench.sh` — Elastic Metal `EM-A215R-HDD`, hourly only, first zone with stock
-  (`fr-par-2` at the time of writing), newest Ubuntu LTS the offer supports. Elastic Metal
-  takes 10-20 min from create to usable; Scaleway *cloud instances* boot in about a minute
-  but need `cp_servers`/`cp_ips` quota (a fresh project's 0/0 rejects the create).
-- `ovhcloud_bench.sh` — Public Cloud **Metal Instances** (`bm-s1`/`bm-m1`/`bm-l1`). Needs a
-  Public Cloud project (`--project`, else `OVH_CLOUD_PROJECT_SERVICE`, else the only one in
-  the account) and an `ovhcloud` token granting the `/cloud` routes. Flavor/region come from
-  `cloud instance flavor list` and prefer a region with a real quota profile (`8vms`), not
-  the discovery-mode `limited` one. Traps: instance creation is **v1** and resolves
-  `--ssh-key.name` against the v1 `sshkey` store, which is separate from the v2 store the
-  CLI's `cloud ssh-key` writes — hence `--ssh-key.create.*` with a name fallback; RAM/cores
-  are counted **per project**, so an instance left behind (e.g. a stuck delete) makes the
-  next create fail with `conflict: ram quota … reached`; a fresh server runs
-  `unattended-upgrades`, which the setup disables before benchmarking so it neither holds
-  the dpkg lock nor steals CPU from the timings.
-- `build_images.sh` — builds images in parallel on a throwaway instance (`--jobs`,
-  `--images`), keeps it for iteration, then `--push` uploads to GHCR and destroys it.
-  Same requirement: cloud-instance quota.
+- Public Cloud **Metal Instances** (`bm-s1`/`bm-m1`/`bm-l1`). Needs a Public Cloud project
+  (`--project`, else `OVH_CLOUD_PROJECT_SERVICE`, else the only one in the account) and an
+  `ovhcloud` token granting the `/cloud` routes.
+- Flavor/region come from `cloud instance flavor list` and prefer a region with a real
+  quota profile (`8vms`), not the discovery-mode `limited` one.
+- Traps: instance creation is **v1** and resolves `--ssh-key.name` against the v1 `sshkey`
+  store, which is separate from the v2 store the CLI's `cloud ssh-key` writes (hence
+  `--ssh-key.create.*` with a name fallback); RAM/cores are counted **per project**, so an
+  instance left behind makes the next create fail with `conflict: ram quota … reached`; a
+  fresh server runs `unattended-upgrades`, which the setup disables before benchmarking so
+  it neither holds the dpkg lock nor steals CPU from the timings; and the CLI's `--wait`
+  can fail on a transient 5xx while the instance itself is fine.
 
 ---
 
@@ -339,11 +335,11 @@ needs nothing. Keep packages public — private GHCR storage is metered.
 # build/publish every image in CI (content-tag aware; skips what is published)
 gh workflow run build-images.yml -f push=true
 
-# a subset on a VM, into a new results branch + PR
-./scaleway_bench.sh --update-args "--tests go,go_ho,rust --skip-existing"
+# a subset on a Metal Instance, into a new results branch + PR
+./ovhcloud_bench.sh --project <id> --update-args "--tests go,go_ho,rust --skip-existing"
 
 # resume a failed campaign (same branch = same PR)
-./scaleway_bench.sh --update-args "--skip-existing --branch results-<timestamp>"
+./ovhcloud_bench.sh --update-args "--skip-existing --branch results-<timestamp>"
 
 # regenerate the readme only
 dart extract_results.dart results
