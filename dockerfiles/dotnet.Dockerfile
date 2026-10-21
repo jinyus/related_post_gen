@@ -5,8 +5,12 @@
 FROM mcr.microsoft.com/dotnet/sdk:10.0.402
 
 # benchmark harness
+# `clang` + `zlib1g-dev` are required by NativeAOT: the _aot tests run
+# `dotnet publish -p PublishAot=true`, which links the runtime with the system
+# toolchain. The pre-migration Arch base image provided clang, so these were
+# missed when the image was rewritten on Debian.
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    git python3 python3-pip time which curl ca-certificates && \
+    git python3 python3-pip time which curl ca-certificates clang zlib1g-dev && \
     rm -rf /var/lib/apt/lists/* && \
     pip3 install --break-system-packages --no-cache-dir faker nanoid
 

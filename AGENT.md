@@ -133,6 +133,37 @@ the whole Dockerfile by `gen_dockerfile.sh`; the old behaviour (merge into a sha
 `docker_run.sh` holds the authoritative `test → image` map (`NameToImage`); `update_results.sh`
 parses it, so keep the `["name"]="image"` formatting.
 
+### Verifying an image change — in a Vercel Sandbox, never locally
+
+Do **not** build or run these images on the machine the agent runs on. They are
+large, the timings are only meaningful on a clean box, and a local build competes
+with everything else for CPU/disk. Use a Vercel Sandbox:
+
+```bash
+.agents/skills/update-toolchains/scripts/check-sandbox.sh   # 0 = ready, 2 = missing, 3 = not logged in
+.agents/skills/update-toolchains/scripts/vercel-run.sh \
+  --worktree <worktree> \
+  --dockerfile dockerfiles/<image>.Dockerfile \
+  --tag <image>_test <test> [test...]
+```
+
+`vercel-run.sh` creates the sandbox, installs and starts Docker inside it, copies
+the worktree in, and runs `scripts/run-tests.sh`, which builds a copy of the
+Dockerfile with the `#precompile` block stripped (that block clones `main` and
+would test old sources) and runs each test with `bash -c "./run.sh <test>"` — not
+`-lc`, which sources `/etc/profile` and drops the toolchain from `PATH`. A test
+passes only when its output shows `Success: … is valid!` or a zero exit code.
+
+Local `run-tests.sh --engine docker|podman` exists as a fallback **only** after the
+user explicitly agrees; `vercel-run.sh` refuses to fall back on its own. Full
+details: `.agents/skills/update-toolchains/SKILL.md` and its
+`references/sandbox-recipe.md`.
+
+When several sandboxes run at once, pass an explicit `--name` to each. The
+default name is `<worktree basename>-<epoch seconds>`, so two runs started from
+the same worktree in the same second collide: one dies and the other's `exec`
+fails with `Named sandbox … not found`.
+
 ---
 
 ## 6. Test containers (`docker_start.sh`)
@@ -232,9 +263,12 @@ One command to create a VM, set it up and start the benchmark in a tmux session 
 ## 10. Registry (`ghcr_images.sh`)
 
 `push` / `pull` / `list` for the images, tagged
-`ghcr.io/<owner>/<repo>/<image>:<sha256 of the generated Dockerfile, 12 chars>`.
-So **editing any Dockerfile invalidates the published tag** — a pull misses and the image
-is rebuilt locally. Every image also carries a `:latest` alias, advanced only by builds on
+`ghcr.io/<owner>/<repo>/<image>:<sha256, 12 chars>`, where the hash covers the
+generated Dockerfile **and `docker_start.sh`** (every image copies it in, so the
+harness is image content). So **editing any Dockerfile or the harness invalidates
+the published tag** — a pull misses and the image is rebuilt. The same hash is
+computed by `ghcr_images.sh` and `.github/workflows/build-images.yml`; keep them
+identical or pulls silently miss. Every image also carries a `:latest` alias, advanced only by builds on
 `main`; it is for humans (`docker pull .../rust:latest`), never for the harness, so the
 benchmark keeps pulling the content tag and cannot run an image that does not match its
 Dockerfile. `ghcr_images.sh latest` repoints the alias from the registry without rebuilding
@@ -251,6 +285,10 @@ needs nothing. Keep packages public — private GHCR storage is metered.
 ## 11. Invariants and traps
 
 - **One** `Processing time (w/o IO)` line per executed run; extra lines skew the average.
+- **Never build or test an image on the local machine.** Verify in a Vercel Sandbox
+  (`scripts/vercel-run.sh`, §5); local Docker/Podman only with explicit user approval.
+- An image's tag covers `docker_start.sh` as well as its Dockerfile, so a harness
+  edit republishes every image (see §10).
 - Every language must produce **three** dataset sections or extraction bails.
 - `$outfile` is absolute in `run.sh`; runners may `cd` deep.
 - Benchmarks measure the **pushed** commit (containers clone `origin`); push before running.
@@ -275,9 +313,15 @@ needs nothing. Keep packages public — private GHCR storage is metered.
 # one language, locally, with verification
 ./run.sh go out.md && python3 verify.py related_posts_go.json
 
-# rebuild one image / all images
-./gen_dockerfile.sh -b go
-./gen_dockerfile.sh -b all
+# generate an image's Dockerfile (no build)
+./gen_dockerfile.sh go
+
+# build + test one image: Vercel Sandbox, never local docker (see §5)
+.agents/skills/update-toolchains/scripts/vercel-run.sh --worktree . \
+  --dockerfile dockerfiles/go.Dockerfile --tag go_test go
+
+# build/publish every image in CI (content-tag aware; skips what is published)
+gh workflow run build-images.yml -f push=true
 
 # a subset on a VM, into a new results branch + PR
 ./scaleway_bench.sh --update-args "--tests go,go_ho,rust --skip-existing"

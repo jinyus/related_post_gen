@@ -599,7 +599,11 @@ run_luajit() {
     echo "Running LuaJIT" &&
         cd ./lua &&
         if [ -z "$appendToFile" ]; then # subsequent runs
-            sudo luarocks --lua-version 5.1 install luasocket
+            # No --lua-version: Debian's luarocks is version-pinned, and that flag
+            # loses the include path ("Failed finding Lua header files" even with
+            # liblua5.1-0-dev present). The image's luarocks already targets Lua
+            # 5.1, and LuaJIT loads the rock it installs.
+            sudo luarocks install luasocket
         fi &&
         run_command "LuaJIT" $runs luajit only_lua.lua &&
         check_output "related_posts_lua.json"
@@ -610,7 +614,8 @@ run_luajit_jit_off() {
     echo "Running LuaJIT (JIT OFF)" &&
         cd ./lua &&
         if [ -z "$appendToFile" ]; then # subsequent runs
-            sudo luarocks --lua-version 5.1 install luasocket
+            # see run_luajit: no --lua-version on Debian's version-pinned luarocks
+            sudo luarocks install luasocket
         fi &&
         run_command "LuaJIT (JIT OFF)" $slow_lang_runs luajit -joff only_lua.lua &&
         check_output "related_posts_lua.json"
