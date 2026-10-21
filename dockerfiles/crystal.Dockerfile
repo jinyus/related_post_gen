@@ -1,5 +1,5 @@
-# Self-contained image: official Crystal on Debian 12 (replaces the Arch package).
-FROM crystallang/crystal:1.14
+# Self-contained image: official Crystal on Ubuntu 26.04 (replaces the Arch package).
+FROM crystallang/crystal:1.22.0
 
 # benchmark harness
 RUN apt-get update && apt-get install -y --no-install-recommends \
