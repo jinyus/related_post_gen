@@ -450,6 +450,16 @@ create_instance() {
         fi
 
         case "$OVH_ERROR" in
+        *"failed to wait"* | *"error fetching operation"* | *"Internal server error"* | *"InternalServerError"*)
+            # The request was accepted and the instance exists; only the CLI's
+            # "--wait" poll failed (a transient 5xx on the operation endpoint).
+            # Continue and watch the instance itself.
+            if [ -n "$partial" ]; then
+                warn "creation could not be confirmed through the API operation (transient error);"
+                warn "watching instance $partial directly instead"
+                break
+            fi
+            die "creating the instance failed: $OVH_ERROR" ;;
         *"quota"*)
             die "not enough project quota for $FLAVOR in $REGION (${OVH_ERROR})
   OVHcloud RAM/cores are counted per project, so a leftover instance blocks
