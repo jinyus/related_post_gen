@@ -50,19 +50,23 @@ inline fn top5(related: []*Post, score: []u8, ps: []Post) void {
 }
 
 pub fn main() !void {
+    var threaded: std.Io.Threaded = .init(std.heap.page_allocator, .{});
+    defer threaded.deinit();
+    const io = threaded.io();
+
     var allocator = std.heap.page_allocator;
 
-    const file = try std.fs.cwd().openFile("../posts.json", .{});
-    defer file.close();
+    const file = try std.Io.Dir.cwd().openFile(io, "../posts.json", .{});
+    defer file.close(io);
     var file_buffer: [4096]u8 = undefined;
-    var file_reader = file.reader(&file_buffer);
+    var file_reader = file.reader(io, &file_buffer);
     const io_reader = &file_reader.interface;
     var json_reader = std.json.Reader.init(allocator, io_reader);
     defer json_reader.deinit();
     const parsed = try std.json.parseFromTokenSource(Posts, allocator, &json_reader, .{});
     defer parsed.deinit();
 
-    const start = try std.time.Instant.now();
+    const start = std.Io.Clock.awake.now(io);
 
     const ArrPosts = std.ArrayList(u32);
     var map = fxhash.StringHashMap(ArrPosts).init(allocator);
@@ -107,19 +111,19 @@ pub fn main() !void {
         top5(related, tagged_post_count, parsed.value);
         op.items[post_index] = .{ ._id = &parsed.value[post_index]._id, .tags = &parsed.value[post_index].tags, .related = related };
     }
-    const end = try std.time.Instant.now();
+    const end = std.Io.Clock.awake.now(io);
 
     var stdout_buffer: [4096]u8 = undefined;
-    var stdout = std.fs.File.writer(std.fs.File.stdout(), &stdout_buffer);
+    var stdout = std.Io.File.stdout().writer(io, &stdout_buffer);
 
-    try stdout.interface.print("Processing time (w/o IO): {d}ms\n", .{@divFloor(end.since(start), std.time.ns_per_ms)});
+    try stdout.interface.print("Processing time (w/o IO): {d}ms\n", .{@divFloor(start.durationTo(end).nanoseconds, std.time.ns_per_ms)});
     try stdout.interface.flush();
 
-    const op_file = try std.fs.cwd().createFile("../related_posts_zig.json", .{});
-    defer op_file.close();
+    const op_file = try std.Io.Dir.cwd().createFile(io, "../related_posts_zig.json", .{});
+    defer op_file.close(io);
 
     var buf: [4096]u8 = undefined;
-    var writer = std.fs.File.writer(op_file, &buf);
+    var writer = op_file.writer(io, &buf);
 
     try std.json.Stringify.value(
         try op.toOwnedSlice(allocator),

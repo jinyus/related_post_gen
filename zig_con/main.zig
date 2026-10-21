@@ -21,29 +21,30 @@ const RelatedPosts = struct {
 };
 
 pub fn main() !void {
+    var threaded: std.Io.Threaded = .init(std.heap.page_allocator, .{});
+    defer threaded.deinit();
+    const io = threaded.io();
+
     const allocator = std.heap.smp_allocator;
 
-    const posts_json = try std.fs.cwd().readFileAlloc(allocator, "../posts.json", std.math.maxInt(usize));
+    const posts_json = try std.Io.Dir.cwd().readFileAlloc(io, "../posts.json", allocator, .unlimited);
     var posts = try json.parseFromSlice([]Post, allocator, posts_json, .{});
     defer posts.deinit();
 
-    var thread_pool: Thread.Pool = undefined;
     const cpu_count = try std.Thread.getCpuCount();
     const worker_count: usize = if (cpu_count > 1) cpu_count - 1 else 1;
-    try thread_pool.init(.{ .allocator = allocator, .n_jobs = worker_count });
-    defer thread_pool.deinit();
 
-    const start_time = std.time.nanoTimestamp();
-    const related_posts = try genRelatedPosts(allocator, posts.value, &thread_pool, worker_count);
-    const duration = std.time.nanoTimestamp() - start_time;
+    const start_time = std.Io.Clock.awake.now(io);
+    const related_posts = try genRelatedPosts(allocator, posts.value, worker_count);
+    const duration = start_time.durationTo(std.Io.Clock.awake.now(io));
 
-    std.debug.print("Processing time (w/o IO): {d:.3}ms\n", .{@as(f64, @floatFromInt(duration)) / 1_000_000.0});
+    std.debug.print("Processing time (w/o IO): {d:.3}ms\n", .{@as(f64, @floatFromInt(duration.nanoseconds)) / 1_000_000.0});
 
-    var file = try std.fs.cwd().createFile("../related_posts_zig_con.json", .{});
-    defer file.close();
+    const file = try std.Io.Dir.cwd().createFile(io, "../related_posts_zig_con.json", .{});
+    defer file.close(io);
 
     var buf: [4096]u8 = undefined;
-    var writer = std.fs.File.writer(file, &buf);
+    var writer = file.writer(io, &buf);
     try json.Stringify.value(related_posts, .{}, &writer.interface);
     try writer.interface.flush();
 }
@@ -51,7 +52,6 @@ pub fn main() !void {
 fn genRelatedPosts(
     allocator: std.mem.Allocator,
     posts: []const Post,
-    thread_pool: *Thread.Pool,
     worker_count: usize,
 ) ![]RelatedPosts {
     const Chunk = @Vector(64, SharedCount);
@@ -122,7 +122,8 @@ fn genRelatedPosts(
                 }
                 counts[@intCast(post_idx)] = 0;
 
-                var topn = [_]SharedCountAndIndex{.{ .count = 0, .related_post_index = 0 }} ** TopN;
+                const seed = SharedCountAndIndex{ .count = 0, .related_post_index = 0 };
+                var topn: [TopN]SharedCountAndIndex = @splat(seed);
                 var threshold: SharedCount = 0;
                 var vthreshold: Chunk = @splat(0);
 
@@ -132,8 +133,9 @@ fn genRelatedPosts(
                         const base_idx = 64 * chunk_idx;
                         const remaining = ctx.posts.len - base_idx;
                         const sub_limit: usize = if (remaining < 64) remaining else 64;
+                        const chunk_arr: [64]SharedCount = chunk;
                         for (0..sub_limit) |sub_idx| {
-                            const count = chunk[sub_idx];
+                            const count = chunk_arr[sub_idx];
                             if (count <= threshold) continue;
                             const newest = SharedCountAndIndex{ .count = count, .related_post_index = @intCast(base_idx + sub_idx) };
                             topn[TopN - 1] = newest;
@@ -164,11 +166,12 @@ fn genRelatedPosts(
         }
     };
 
-    var wg: std.Thread.WaitGroup = .{};
-    for (0..worker_count) |_| {
-        thread_pool.spawnWg(&wg, worker.work, .{ &context, &atomic_countdown });
+    const threads = try allocator.alloc(std.Thread, worker_count);
+    defer allocator.free(threads);
+    for (threads) |*t| {
+        t.* = try std.Thread.spawn(.{}, worker.work, .{ &context, &atomic_countdown });
     }
-    thread_pool.waitAndWork(&wg);
+    for (threads) |t| t.join();
 
     return related_posts;
 }

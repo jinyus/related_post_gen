@@ -1,7 +1,6 @@
 # Self-contained image: Debian 12 + pinned Zig, no distro Zig package.
-# Zig 0.15.1 is deliberate: these sources use std.fs.cwd / std.heap.smp_allocator
-# from that era, and newer Zig removed/changed them. Replaces the Arch image that
-# was 5.4GB.
+# The sources are kept on the 0.17 std.Io API (the 0.15 std.fs/std.time paths
+# were removed). Replaces the Arch image that was 5.4GB.
 FROM debian:12-slim
 
 # benchmark harness (+ libc headers: run.sh compiles with "zig build-exe -lc")
@@ -10,7 +9,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     rm -rf /var/lib/apt/lists/* && \
     pip3 install --break-system-packages --no-cache-dir faker nanoid
 
-RUN curl -fsSL https://ziglang.org/download/0.15.1/zig-x86_64-linux-0.15.1.tar.xz -o /tmp/zig.tar.xz && \
+RUN curl -fsSL https://ziglang.org/download/0.17.0/zig-x86_64-linux-0.17.0.tar.xz -o /tmp/zig.tar.xz && \
     mkdir -p /opt/zig && tar -C /opt/zig --strip-components=1 -xf /tmp/zig.tar.xz && rm -f /tmp/zig.tar.xz
 ENV PATH="/opt/zig:$PATH"
 

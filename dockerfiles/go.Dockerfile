@@ -1,6 +1,6 @@
 # Self-contained image: official Go on Debian 12. Replaces the Arch image that
 # was 4.3GB.
-FROM golang:1.24-bookworm
+FROM golang:1.27.3-bookworm
 
 # benchmark harness
 RUN apt-get update && apt-get install -y --no-install-recommends \

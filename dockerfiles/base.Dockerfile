@@ -1,7 +1,7 @@
-# Self-contained image: official Dart SDK on Debian 12, plus clang/g++ for the
+# Self-contained image: official Dart SDK on Debian 13, plus clang/g++ for the
 # C++ benchmark. Serves cpp, cpp_con, dart and dart_aot - the last users of the
 # old shared Arch base.
-FROM dart:3.5
+FROM dart:3.13.6
 
 # benchmark harness
 RUN apt-get update && apt-get install -y --no-install-recommends \

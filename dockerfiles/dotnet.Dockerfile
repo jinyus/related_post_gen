@@ -2,7 +2,7 @@
 # that built dotnet from the AUR (dotnet-core-bin).
 # SDK 10 is required: every project targets net10.0 (SDK 8 refuses it with
 # NETSDK1045).
-FROM mcr.microsoft.com/dotnet/sdk:10.0
+FROM mcr.microsoft.com/dotnet/sdk:10.0.402
 
 # benchmark harness
 RUN apt-get update && apt-get install -y --no-install-recommends \

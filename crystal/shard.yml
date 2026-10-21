@@ -8,6 +8,6 @@ targets:
     crystal:
         main: src/crystal.cr
 
-crystal: 1.9.2
+crystal: 1.22.0
 
 license: MIT

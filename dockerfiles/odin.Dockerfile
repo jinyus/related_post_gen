@@ -8,13 +8,16 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     rm -rf /var/lib/apt/lists/* && \
     pip3 install --break-system-packages --no-cache-dir faker nanoid
 
-# Two constraints pin this version: run.sh passes -o:aggressive (dev-2023-08
-# only knows minimal/size/speed/none) and odin/related.odin calls
-# os.read_entire_file_from_filename, which was removed in dev-2026-03.
-# dev-2025-12 is the newest release satisfying both.
-RUN curl -fsSL https://github.com/odin-lang/Odin/releases/download/dev-2025-12/odin-linux-amd64-dev-2025-12.tar.gz -o /tmp/odin.tar.gz && \
+# Pinned to a specific Odin dev release: the CLI and core library churn between
+# releases. odin/related.odin uses the current core:os API (os.read_entire_file
+# takes an allocator and returns ([]byte, os.Error); the old
+# read_entire_file_from_filename bool API was removed) and run.sh builds with
+# -o:aggressive, which dev-2026-10 still accepts (none/minimal/size/speed/
+# aggressive).
+RUN curl -fsSL https://github.com/odin-lang/Odin/releases/download/dev-2026-10/odin-linux-amd64-dev-2026-10.tar.gz -o /tmp/odin.tar.gz && \
     tar -C /opt -xzf /tmp/odin.tar.gz && rm -f /tmp/odin.tar.gz && \
-    mv /opt/odin-linux-*/ /opt/odin
+    mv /opt/odin-linux-*/ /opt/odin && \
+    ln -sf /opt/odin/odin /usr/local/bin/odin
 ENV PATH="/opt/odin:$PATH"
 
 #precompile

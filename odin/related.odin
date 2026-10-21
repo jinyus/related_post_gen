@@ -83,9 +83,9 @@ top5 :: #force_inline proc(related: []^Post, score: []u8, ps: []Post) {
 }
 
 main :: proc() {
-	file, ok := os.read_entire_file_from_filename("../posts.json")
+	file, read_err := os.read_entire_file("../posts.json", context.allocator)
 
-	if !ok {
+	if read_err != nil {
 		fmt.println("failed to read posts.json")
 		return
 	}
@@ -143,8 +143,8 @@ main :: proc() {
 
 	out_str := transmute([]u8)write_json(op)
 
-	ok = os.write_entire_file("../related_posts_odin.json", out_str)
-	if !ok {
+	write_err := os.write_entire_file("../related_posts_odin.json", out_str)
+	if write_err != nil {
 		fmt.println("failed to write related_posts.json")
 		return
 	}

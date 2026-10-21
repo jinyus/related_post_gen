@@ -26,7 +26,7 @@ end
 
 posts = Array(Post).from_json(File.read("../posts.json"))
 
-t1 = Time.monotonic
+t1 = Time.instant
 
 tag_map = Hash(String, Array(Int32)).new(INITIAL_TAG_ARRAY_CAP) do |hash, key|
   hash[key] = Array(Int32).new(INITIAL_TAG_ARRAY_CAP)
@@ -80,7 +80,7 @@ posts.each_with_index do |post, idx|
   allRelatedPosts << RelatedPost.new(_id: post._id, tags: post.tags, related: top_posts)
 end
 
-t2 = Time.monotonic
+t2 = Time.instant
 print "Processing time (w/o IO): #{(t2 - t1).total_milliseconds}ms\n"
 
 File.write("../related_posts_cr.json", allRelatedPosts.to_json)
