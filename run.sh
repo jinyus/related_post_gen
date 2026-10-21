@@ -15,6 +15,13 @@ else
     slow_lang_runs=2
 fi
 
+# A run that takes longer than this many seconds is not repeated: the slowest
+# languages spend minutes on a single 60k run and extra samples of an already
+# slow implementation do not change the published averages enough to justify
+# the wall-clock time. Override with e.g. LONG_RUN_THRESHOLD_SECONDS=60, or set
+# it to 0 to always repeat (the old behaviour).
+long_run_threshold_seconds="${LONG_RUN_THRESHOLD_SECONDS:-30}"
+
 if [[ -n $outfile ]]; then
 
     if [ -f "$outfile" ] && [ -z "$appendToFile" ]; then
@@ -63,16 +70,44 @@ run_command() {
     if [ -z "$outfile" ]; then
         # outfile is empty, so write to stdout
         echo -e "$title:\n"
-        for ((i = 1; i <= num_times; i++)); do
-            ($TIME_CMD -f 'total: %es memory: %Mk' $cmd "$@" 2>&1) | awk '{print "\t" $0}'
-        done
     else
         # write to a file and stdout
         echo -e "\n$title:\n" | tee -a "$outfile"
-        for ((i = 1; i <= num_times; i++)); do
-            ($TIME_CMD -f 'total: %es memory: %Mk' $cmd "$@" 2>&1) | awk '{print "\t" $0}' | tee -a "$outfile"
-        done
+    fi
 
+    # Capture each run's output together with GNU time's summary so we can see
+    # how long the run took. Implementations only print their result line at the
+    # end, so buffering does not hide progress.
+    local output total_seconds
+    for ((i = 1; i <= num_times; i++)); do
+        output="$($TIME_CMD -f 'total: %es memory: %Mk' $cmd "$@" 2>&1)"
+
+        if [ -z "$outfile" ]; then
+            printf '%s\n' "$output" | awk '{print "\t" $0}'
+        else
+            printf '%s\n' "$output" | awk '{print "\t" $0}' | tee -a "$outfile"
+        fi
+
+        # GNU time always prints its summary last; take the final matching line
+        # in case an implementation happens to print "total: ..." itself.
+        total_seconds="$(printf '%s\n' "$output" | awk '
+            /^total: [0-9.]+s / { v = $2 }
+            END { if (v != "") sub(/s$/, "", v); print v }')"
+
+        # Stop repeating once a single run is already slow. The remaining
+        # samples would dominate the total suite time without improving the
+        # result: extract_results.dart averages whatever samples it finds, and
+        # only needs one "Processing time" line per dataset section.
+        if ((i < num_times)) && ((long_run_threshold_seconds > 0)) &&
+            [ -n "$total_seconds" ] &&
+            awk -v t="$total_seconds" -v limit="$long_run_threshold_seconds" \
+                'BEGIN { exit !(t > limit) }'; then
+            echo -e "\t(skipped $((num_times - i)) remaining run(s): took ${total_seconds}s, over the ${long_run_threshold_seconds}s limit)" >&2
+            break
+        fi
+    done
+
+    if [ -n "$outfile" ]; then
         # fail here (instead of much later, at the results copy) if the file the
         # benchmark should have written is not where the caller expects it
         if [ ! -s "$outfile" ]; then
