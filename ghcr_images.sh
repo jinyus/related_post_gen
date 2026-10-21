@@ -95,8 +95,12 @@ generated_dockerfile() { # -> path of the generated Dockerfile for $1
     echo "$REPO_DIR/${1}_temp.Dockerfile"
 }
 
-image_hash() { # -> content hash of the generated Dockerfile
-    sha256sum "$(generated_dockerfile "$1")" | cut -c1-12
+image_hash() { # -> content hash of everything baked into the image
+    # docker_start.sh is COPY'd in by every generated Dockerfile, so it is part
+    # of the image content: hashing it as well means a harness change produces a
+    # new tag and invalidates published images. cat + sha256 keeps the value
+    # independent of file paths, so the CLI and the build workflow agree.
+    cat "$(generated_dockerfile "$1")" "$REPO_DIR/docker_start.sh" | sha256sum | cut -c1-12
 }
 
 remote_ref() { # -> registry reference with the content tag

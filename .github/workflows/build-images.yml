@@ -9,11 +9,11 @@ name: Build images
 #     push toggle for a verify-only run
 #
 # It never rebuilds something that is already published: each job computes the
-# content tag (sha256 of the generated Dockerfile, first 12 chars, identical to
-# ghcr_images.sh) and skips when that manifest already exists in GHCR. Changing a
-# Dockerfile - or docker_start.sh, which every image copies - changes the tag, so
-# the image is rebuilt; untouched images are skipped. Use force=true to rebuild
-# everything anyway.
+# content tag (sha256 of the generated Dockerfile followed by docker_start.sh,
+# which every image copies in; first 12 chars, identical to ghcr_images.sh) and
+# skips when that manifest already exists in GHCR. Changing a Dockerfile - or
+# docker_start.sh - changes the tag, so the image is rebuilt; untouched images
+# are skipped. Use force=true to rebuild everything anyway.
 #
 # After a successful push, `ghcr_images.sh pull` / `update_results.sh
 # --pull-images` fetch these images instead of building them.
@@ -92,9 +92,12 @@ jobs:
               run: |
                   ./gen_dockerfile.sh "${{ matrix.image }}"
                   file="${{ matrix.image }}_temp.Dockerfile"
+                  # Same content hash as ghcr_images.sh: the generated Dockerfile
+                  # plus docker_start.sh, which every image copies in.
+                  tag="$(cat "$file" docker_start.sh | sha256sum | cut -c1-12)"
                   echo "file=$file" >> "$GITHUB_OUTPUT"
-                  echo "tag=$(sha256sum "$file" | cut -c1-12)" >> "$GITHUB_OUTPUT"
-                  echo "ref=ghcr.io/${{ github.repository }}/${{ matrix.image }}:$(sha256sum "$file" | cut -c1-12)" >> "$GITHUB_OUTPUT"
+                  echo "tag=$tag" >> "$GITHUB_OUTPUT"
+                  echo "ref=ghcr.io/${{ github.repository }}/${{ matrix.image }}:$tag" >> "$GITHUB_OUTPUT"
                   # ":latest" is a convenience alias for humans. The benchmark
                   # always pulls the content tag, so the alias cannot make an
                   # image drift from its Dockerfile. Only main advances it.
