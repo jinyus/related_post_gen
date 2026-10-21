@@ -6,7 +6,7 @@ The CLI is `sandbox` (alias `sbx`). It may be installed globally by npm/pnpm and
 not on `PATH`; `scripts/check-sandbox.sh` searches common locations.
 
 ```bash
-.opencode/skills/update-toolchains/scripts/check-sandbox.sh
+.agents/skills/update-toolchains/scripts/check-sandbox.sh
 # exit 0 = ready; 2 = missing; 3 = found but unauthenticated
 ```
 

@@ -65,7 +65,7 @@ gh auth status
 - Check the sandbox:
 
 ```bash
-.opencode/skills/update-toolchains/scripts/check-sandbox.sh
+.agents/skills/update-toolchains/scripts/check-sandbox.sh
 ```
 
 Exit codes:
@@ -79,7 +79,7 @@ Exit codes:
 If the user chooses local mode, detect the engine:
 
 ```bash
-.opencode/skills/update-toolchains/scripts/detect-engine.sh
+.agents/skills/update-toolchains/scripts/detect-engine.sh
 ```
 
 - `docker` or `podman`: use it only after explicit confirmation.
@@ -92,7 +92,7 @@ the repo's Docker images. Record the chosen mode; workers must use it.
 ## Phase 1 — Find stale pins
 
 ```bash
-.opencode/skills/update-toolchains/scripts/list-image-groups.sh
+.agents/skills/update-toolchains/scripts/list-image-groups.sh
 ```
 
 Output is `image<TAB>dockerfile<TAB>tests`. Each line is one work unit; do not
@@ -118,7 +118,7 @@ Group by **image**, not by language: `js.Dockerfile` covers Node/Deno/Bun and
 Create one worktree/branch per stale image:
 
 ```bash
-.opencode/skills/update-toolchains/scripts/create-worktrees.sh <image> [...]
+.agents/skills/update-toolchains/scripts/create-worktrees.sh <image> [...]
 ```
 
 Defaults: base `main`, worktree root `/tmp/opencode/rpg-worktrees`, branch

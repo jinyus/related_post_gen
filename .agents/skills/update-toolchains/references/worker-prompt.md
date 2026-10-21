@@ -39,7 +39,7 @@ first.
 Do NOT run Docker, Podman, or compilers on the host. Use the provided scripts:
 
 ```bash
-<REPO_ROOT>/.opencode/skills/update-toolchains/scripts/vercel-run.sh \
+<REPO_ROOT>/.agents/skills/update-toolchains/scripts/vercel-run.sh \
   --name rpg-<IMAGE>-<EPOCH> \
   --worktree <WORKTREE> \
   --dockerfile dockerfiles/<IMAGE>.Dockerfile \
@@ -56,7 +56,7 @@ gone; otherwise pick a new name).
 Only after the parent confirmed local builds:
 
 ```bash
-<REPO_ROOT>/.opencode/skills/update-toolchains/scripts/run-tests.sh \
+<REPO_ROOT>/.agents/skills/update-toolchains/scripts/run-tests.sh \
   --engine <docker|podman> \
   --worktree <WORKTREE> \
   --dockerfile dockerfiles/<IMAGE>.Dockerfile \
