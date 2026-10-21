@@ -110,9 +110,9 @@ the whole Dockerfile by `gen_dockerfile.sh`; the old behaviour (merge into a sha
 
 - `base` is the Dart SDK image + clang/g++ and serves `cpp`, `cpp_con`, `dart`, `dart_aot`.
 - Others are official language images (`golang:1.24-bookworm`, `rust:1.83-bookworm`,
-  `julia:1.11-bookworm`, `swift:6.0-bookworm`, `dotnet/sdk:8.0`, `node:22-bookworm-slim`,
+  `julia:1.11-bookworm`, `swift:6.0-bookworm`, `dotnet/sdk:10.0`, `node:22-bookworm-slim`,
   `crystallang/crystal:1.14`, `python:3.12-slim`) or `debian:12-slim` + apt/pinned tarball
-  (zig 0.15.1, odin dev-2023-08, nim 2.2.6, v weekly.2023.40.1, c3 0.7.9, neat v0.5.2, …).
+  (zig 0.15.1, odin dev-2025-12, nim 2.2.6, v weekly.2023.40.1, c3 0.7.9, neat v0.5.2, …).
 - Each image must carry the **harness**: `git`, `python3` + `faker`/`nanoid`, GNU `time`,
   `which`, `curl`/`wget`, and (where a runner calls it) `sudo`. It must also end with the
   same tail: `WORKDIR /app`, `VOLUME /results`, the `GIT_*`/`RUN2`/`RUN3`/`TEST_NAME` env,
@@ -121,7 +121,8 @@ the whole Dockerfile by `gen_dockerfile.sh`; the old behaviour (merge into a sha
   libc headers and linkers must stay in the image — multi-stage "slim runtime" is not
   applicable without changing the harness.
 - Toolchains that broke on rolling releases are **pinned with a comment** (Zig 0.15.1 for
-  `std.fs.cwd`/`smp_allocator`, nim 2.2.x for `nimble`, clang-15 symlink for neat).
+  `std.fs.cwd`/`smp_allocator`, nim 2.2.x for `nimble`, real clang-15/llvm-15 for neat,
+  GHC 9.10 + llvm-15 (clang assembles llc output) for the `-fllvm` GHC2024 build).
 
 `docker_run.sh` holds the authoritative `test → image` map (`NameToImage`); `update_results.sh`
 parses it, so keep the `["name"]="image"` formatting.
