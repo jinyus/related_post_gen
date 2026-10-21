@@ -87,6 +87,11 @@ posts (`verify.py`), so tie-breaking and ordering inside `related` are free.
 - `run_command` runs the binary `runs` times through GNU `time`, prefixes each line with
   a tab and `tee -a`s it into `$outfile`. The **GNU `time` binary and `which` must exist**
   in the image (`run.sh` refuses to start otherwise).
+- A run that takes longer than `LONG_RUN_THRESHOLD_SECONDS` (default **30**) is not
+  repeated: the sample already recorded is kept and the remaining repeats are skipped.
+  This keeps the minute-long 60k runs (PHP, Python, Ruby, Lua, …) from dominating a full
+  pass. Set the variable to `0` to always repeat; `extract_results.dart` only needs one
+  sample per dataset section, so the shorter sample count does not break extraction.
 - **Exactly one `Processing time (w/o IO)` line per run** — `extract_results.dart`
   averages every matching line it sees in a section, so extra lines corrupt the average.
 - `check_output` (`python3 verify.py <json>`) runs only in the first round and fails the
