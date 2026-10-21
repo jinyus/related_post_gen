@@ -2,9 +2,10 @@
 # toolchain, as the Arch version did.
 FROM debian:12-slim
 
-# benchmark harness
+# benchmark harness (+ libc headers: gnatcoll compiles getRSS.c/atomics.c)
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    git python3 python3-pip time which curl wget ca-certificates unzip sudo && \
+    git python3 python3-pip time which curl wget ca-certificates unzip sudo \
+    gcc libc6-dev make && \
     rm -rf /var/lib/apt/lists/* && \
     pip3 install --break-system-packages --no-cache-dir faker nanoid
 

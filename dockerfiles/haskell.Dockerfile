@@ -1,11 +1,18 @@
-# Self-contained image: Debian 12 + GHC + cabal (the runner uses "cabal build"
-# and "cabal list-bin", so no ghcup is needed any more).
-FROM debian:12-slim
+# Self-contained image: Debian 12 + GHC 9.10 + cabal from the official image.
+# Debian's own packages are too old on both counts: ghc 9.0 does not accept
+# "default-language: GHC2024" (the project sets it) and cabal 3.4 fails
+# "cabal update" with "<repo>/root.json does not have enough signatures".
+FROM haskell:9.10.3-slim-bookworm
 
-# benchmark harness
+# benchmark harness (+ llvm: the project builds with -fllvm, and GHC 9.10
+# accepts LLVM 13-15, so the versioned Debian tools are exposed under the plain
+# names GHC looks for; clang assembles what llc emits)
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    git python3 python3-pip time which curl wget ca-certificates sudo ghc cabal-install && \
+    git python3 python3-pip time which curl wget xz-utils ca-certificates sudo \
+    gcc libc6-dev make clang llvm-15 && \
     rm -rf /var/lib/apt/lists/* && \
+    ln -sf /usr/bin/llc-15 /usr/local/bin/llc && \
+    ln -sf /usr/bin/opt-15 /usr/local/bin/opt && \
     pip3 install --break-system-packages --no-cache-dir faker nanoid
 RUN cabal update
 

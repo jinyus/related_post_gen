@@ -2,10 +2,10 @@
 # newer than Debian's 1.6 package).
 FROM debian:12-slim
 
-# benchmark harness (+ gcc: nim compiles to C)
+# benchmark harness (+ gcc: nim compiles to C, xz-utils unpacks the .tar.xz)
 RUN apt-get update && apt-get install -y --no-install-recommends \
     git python3 python3-pip time which curl wget ca-certificates sudo \
-    gcc libc6-dev && \
+    gcc libc6-dev xz-utils && \
     rm -rf /var/lib/apt/lists/* && \
     pip3 install --break-system-packages --no-cache-dir faker nanoid
 

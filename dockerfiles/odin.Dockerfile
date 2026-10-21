@@ -4,13 +4,17 @@ FROM debian:12-slim
 
 # benchmark harness (+ clang: Odin compiles through clang at run time)
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    git python3 python3-pip time which curl ca-certificates unzip clang libc6-dev && \
+    git python3 python3-pip time which curl ca-certificates xz-utils clang libc6-dev && \
     rm -rf /var/lib/apt/lists/* && \
     pip3 install --break-system-packages --no-cache-dir faker nanoid
 
-RUN curl -fsSL https://github.com/odin-lang/Odin/releases/download/dev-2023-08/odin-ubuntu-amd64-dev-2023-08.zip -o /tmp/odin.zip && \
-    mkdir -p /opt/odin && unzip -q /tmp/odin.zip -d /opt/odin && rm -f /tmp/odin.zip && \
-    chmod +x /opt/odin/odin
+# Two constraints pin this version: run.sh passes -o:aggressive (dev-2023-08
+# only knows minimal/size/speed/none) and odin/related.odin calls
+# os.read_entire_file_from_filename, which was removed in dev-2026-03.
+# dev-2025-12 is the newest release satisfying both.
+RUN curl -fsSL https://github.com/odin-lang/Odin/releases/download/dev-2025-12/odin-linux-amd64-dev-2025-12.tar.gz -o /tmp/odin.tar.gz && \
+    tar -C /opt -xzf /tmp/odin.tar.gz && rm -f /tmp/odin.tar.gz && \
+    mv /opt/odin-linux-*/ /opt/odin
 ENV PATH="/opt/odin:$PATH"
 
 #precompile
