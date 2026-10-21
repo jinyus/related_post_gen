@@ -7,13 +7,21 @@ FROM debian:12-slim
 
 # benchmark harness
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    git python3 python3-pip time which curl ca-certificates zip unzip maven \
+    git python3 python3-pip time which curl ca-certificates zip unzip maven && \
+    rm -rf /var/lib/apt/lists/* && \
+    pip3 install --break-system-packages --no-cache-dir faker nanoid
+
+# Java / Scala Native native toolchain, kept in its own layer so the harness
+# layer above can be reused by the other Debian-based images and stays cached
+# when this toolchain changes. clang-16 is required by Scala Native 0.5
+# (Debian 12's default clang 14 miscompiles its runtime); gcc and the zlib
+# headers/libs are for GraalVM native-image.
+RUN apt-get update && apt-get install -y --no-install-recommends \
     clang-16 lld-16 gcc libc6-dev zlib1g-dev && \
     update-alternatives --install /usr/bin/clang clang /usr/bin/clang-16 100 && \
     update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-16 100 && \
     update-alternatives --install /usr/bin/ld.lld ld.lld /usr/bin/ld.lld-16 100 && \
-    rm -rf /var/lib/apt/lists/* && \
-    pip3 install --break-system-packages --no-cache-dir faker nanoid
+    rm -rf /var/lib/apt/lists/*
 
 RUN curl -s "https://get.sdkman.io" | bash
 RUN bash -c "source /root/.sdkman/bin/sdkman-init.sh && sdk install java 25.4.4+1-graal && sdk install sbt"
