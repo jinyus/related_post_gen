@@ -124,6 +124,11 @@ Then make the packages public (GitHub -> your profile -> Packages -> package
 settings -> visibility), because private GHCR packages are metered (500MB free,
 so a few GB costs money) while public ones are free.
 
+Or build the whole set in CI instead of on a machine: **Actions -> Build images -> Run workflow**
+(`gh workflow run build-images.yml`), once with `push` off to verify, then again with
+`push` on (`gh workflow run build-images.yml -f push=true`). It is one matrix job per
+dockerfile, so 29 builds run in parallel with per-image layer caching.
+
 Each image is tagged with a hash of its generated Dockerfile, so a changed
 Dockerfile means a different tag: the pull misses and that image is built locally
 instead of silently using a stale one.
@@ -135,53 +140,6 @@ instead of silently using a stale one.
 # or through a wrapper, which also serves the fresh machine:
 ./scaleway_bench.sh --update-args "--pull-images --skip-existing"
 ```
-
-### Run it on a Vultr instance
-
-[`vultr_bench.sh`](vultr_bench.sh) provisions the machine, installs everything
-on it and starts the benchmark in tmux - the run keeps going if the SSH
-connection drops, and you can attach to it whenever you want.
-
-```bash
-source ~/.env                 # VULTR_API_KEY (or: export VULTR_API_KEY=...)
-
-./vultr_bench.sh                                  # vbm-4c-32gb + newest Ubuntu LTS, all tests
-./vultr_bench.sh --update-args "--tests go,go_ho" # quick subset
-./vultr_bench.sh status                           # how far along is it?
-./vultr_bench.sh attach                           # tmux attach (or: logs for a tail -f)
-./vultr_bench.sh --wait --destroy-when-done       # block until the PR, then delete it
-./vultr_bench.sh destroy                          # delete it manually
-```
-
-What it does: picks the newest Ubuntu LTS the plan actually accepts (Vultr's
-`os list` is account-wide, so 26.04 gets rejected by some bare metal plans and
-the script falls back to 24.04, then 22.04 - pass `--os-id` to pin one), uses
-the first region the plan is offered in, uploads `~/.ssh/id_rsa.pub` to Vultr,
-waits for the machine (bare metal takes 10-20 min), then logs in and installs
-docker + gh, authenticates gh with `gh auth token` (or `$GH_TOKEN`), clones this
-repo, points the readme's "VM Specs" line at the new machine and starts
-`update_results.sh` in a tmux session named `bench`. The device label - and
-therefore the PR title/body and the readme line - follows the image that
-actually worked.
-
-It drives the account through `vultr-cli` (`plans metal`, `os list`,
-`ssh-key list/create`, `bare-metal create|get|list|delete`, all with `-o json`),
-so `vultr-cli`, `jq` and `ssh` have to be on your `PATH`; credentials come from
-`VULTR_API_KEY` or `~/.vultr-cli.yaml`. `--dry-run` prints the resolved plan,
-image and the create command without touching anything.
-
-
-Things worth knowing:
-
-- The instance is billed while it exists (`vbm-4c-32gb` is ~$0.164/h), so
-  `destroy` once the PR is up.
-- `--device` sets the label written into the PR and the readme;
-  `--no-label-sync` leaves the readme line alone; `--plan`, `--os-id` and
-  `--region` pin the machine (useful for comparable numbers over time).
-- Re-running it on a tracked instance reuses it, and it refuses to restart a
-  benchmark that is still running unless you pass `--force`.
-- The PR is opened from the instance by `update_results.sh`, so `gh auth token`
-  (or `$GH_TOKEN`) has to work here; the instance installs its own `gh`.
 
 ### Run it on Scaleway Elastic Metal
 
@@ -211,7 +169,7 @@ Defaults and behaviour:
   machine label following whichever one was installed.
 - Delivery + OS installation takes a few minutes (`--timeout`, default 60), then
   the script logs in as the image's default user (`ubuntu`, via sudo), sets
-  everything up and starts the benchmark in tmux exactly like the Vultr script.
+  everything up and starts the benchmark in tmux the same way.
 - Billed hourly until you `destroy` it (use `--destroy-when-done`).
 
 

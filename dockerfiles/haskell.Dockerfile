@@ -1,12 +1,22 @@
-# install ghcup for ghc and cabal
-RUN su -c "git clone https://aur.archlinux.org/ghcup-hs-bin.git /home/builduser/ghcup" builduser
-RUN su -c "cd /home/builduser/ghcup && makepkg -si --noconfirm --needed --noprogressbar" builduser
-RUN ghcup install ghc 9.10.1
-RUN ghcup set ghc 9.10.1
-RUN ghcup install cabal 3.12.1.0
-RUN ghcup set cabal 3.12.1.0
-ENV PATH=$PATH:/root/.ghcup/bin
+# Self-contained image: Debian 12 + GHC + cabal (the runner uses "cabal build"
+# and "cabal list-bin", so no ghcup is needed any more).
+FROM debian:12-slim
+
+# benchmark harness
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    git python3 python3-pip time which curl wget ca-certificates sudo ghc cabal-install && \
+    rm -rf /var/lib/apt/lists/* && \
+    pip3 install --break-system-packages --no-cache-dir faker nanoid
 RUN cabal update
 
-#compile code
-RUN git clone https://github.com/jinyus/related_post_gen.git /tmp/repo && cd /tmp/repo/haskell && cabal build
+#precompile
+RUN git clone https://github.com/jinyus/related_post_gen.git /tmp/repo && cd /tmp/repo && ./run.sh haskell
+
+WORKDIR /app
+RUN mkdir -p /results
+VOLUME /results
+ENV GIT_PAT="" GIT_USER="zupat" GIT_EMAIL="zupat@users.noreply.github.com" \
+    GIT_REPO="https://github.com/zupat/related_post_gen.git" GIT_REPO_NAME="related_post_gen" \
+    TEST_NAME="all" BRANCH="main" DEVICE="Workflow-VM-2vCPU-7GBram" RUN2="20000" RUN3="60000"
+COPY docker_start.sh /docker_start.sh
+CMD ["/docker_start.sh"]

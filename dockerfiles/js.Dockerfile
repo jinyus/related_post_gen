@@ -1,9 +1,30 @@
-RUN pacman -S --noconfirm --needed nodejs deno
+# Self-contained image: official Node on Debian 12 + deno and bun (their own
+# installers, installed for root instead of the Arch "builduser").
+FROM node:22-bookworm-slim
 
-RUN su -c "curl -fsSL https://bun.sh/install | bash" builduser
+# benchmark harness
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    git python3 python3-pip time which curl ca-certificates unzip && \
+    rm -rf /var/lib/apt/lists/* && \
+    pip3 install --break-system-packages --no-cache-dir faker nanoid
 
-ENV BUN_INSTALL="/home/builduser/.bun"
+RUN curl -fsSL https://deno.land/install.sh | sh
+RUN curl -fsSL https://bun.sh/install | bash
 
-ENV PATH=$BUN_INSTALL/bin:$PATH
+ENV DENO_INSTALL=/root/.deno
+ENV BUN_INSTALL=/root/.bun
+ENV PATH="/root/.deno/bin:/root/.bun/bin:$PATH"
 
-RUN bun --version
+RUN node --version && deno --version && bun --version
+
+#precompile
+RUN git clone https://github.com/jinyus/related_post_gen.git /tmp/repo && cd /tmp/repo && ./run.sh node
+
+WORKDIR /app
+RUN mkdir -p /results
+VOLUME /results
+ENV GIT_PAT="" GIT_USER="zupat" GIT_EMAIL="zupat@users.noreply.github.com" \
+    GIT_REPO="https://github.com/zupat/related_post_gen.git" GIT_REPO_NAME="related_post_gen" \
+    TEST_NAME="all" BRANCH="main" DEVICE="Workflow-VM-2vCPU-7GBram" RUN2="20000" RUN3="60000"
+COPY docker_start.sh /docker_start.sh
+CMD ["/docker_start.sh"]

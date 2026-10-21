@@ -1,50 +1,23 @@
-FROM archlinux:base
+# Self-contained image: official Dart SDK on Debian 12, plus clang/g++ for the
+# C++ benchmark. Serves cpp, cpp_con, dart and dart_aot - the last users of the
+# old shared Arch base.
+FROM dart:3.5
 
-# Update package repository
-RUN pacman -Syu --noconfirm
+# benchmark harness
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    git python3 python3-pip time which curl wget ca-certificates sudo \
+    clang g++ make && \
+    rm -rf /var/lib/apt/lists/* && \
+    pip3 install --break-system-packages --no-cache-dir faker nanoid
 
-RUN pacman -S --noconfirm --needed wget unzip sudo base-devel git clang llvm python python-pip ncurses gcc dart libedit github-cli less time
-
-# user needed to install aur packages
-RUN useradd -ms /bin/bash builduser
-
-RUN echo "builduser ALL=(ALL) NOPASSWD:ALL" >>/etc/sudoers
+#precompile
+RUN git clone https://github.com/jinyus/related_post_gen.git /tmp/repo && cd /tmp/repo && ./run.sh cpp
 
 WORKDIR /app
-
-RUN pip install faker nanoid --break-system-packages
-
-#REPLACE-ME-WITH-INSTALLATION-COMMANDS
-
-RUN rm -f *.tar.* || true && rm -f /home/builduser/*.zip || true && rm -f /home/builduser/*.tar.* || true
-
 RUN mkdir -p /results
-
-# location to write the raw results
 VOLUME /results
-
-# you token that will be used to authenticate your fork
-ENV GIT_PAT=""
-
-ENV GIT_USER="zupat"
-ENV GIT_EMAIL="zupat@users.noreply.github.com"
-
-# the repo that will be clone. Most likely your fork
-ENV GIT_REPO="https://github.com/zupat/related_post_gen.git"
-
-# incase you use a different name for your fork
-ENV GIT_REPO_NAME="related_post_gen"
-
-ENV TEST_NAME="all"
-
-ENV BRANCH="main"
-
-ENV DEVICE="Workflow-VM-2vCPU-7GBram"
-
-ENV RUN2="20000"
-
-ENV RUN3="60000"
-
+ENV GIT_PAT="" GIT_USER="zupat" GIT_EMAIL="zupat@users.noreply.github.com" \
+    GIT_REPO="https://github.com/zupat/related_post_gen.git" GIT_REPO_NAME="related_post_gen" \
+    TEST_NAME="all" BRANCH="main" DEVICE="Workflow-VM-2vCPU-7GBram" RUN2="20000" RUN3="60000"
 COPY docker_start.sh /docker_start.sh
-
 CMD ["/docker_start.sh"]

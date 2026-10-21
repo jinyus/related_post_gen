@@ -35,7 +35,7 @@ RESULTS_DIR="$REPO_DIR/results"
 GITHUB_HOST="github.com"
 
 # tests that are deliberately not part of the published results
-DEFAULT_SKIP_TESTS="inko"
+DEFAULT_SKIP_TESTS=""
 
 # tests to leave out of this run (--exclude)
 EXCLUDE_TESTS=""
@@ -136,7 +136,9 @@ while [ $# -gt 0 ]; do
         shift
         ;;
     --exclude)
-        EXCLUDE_TESTS="$2"
+        # commas and spaces both separate the names, so a wrapper can pass
+        # "--exclude a,b,c" as a single word
+        EXCLUDE_TESTS="${2//,/ }"
         shift 2
         ;;
     --fail-fast)

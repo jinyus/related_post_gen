@@ -38,6 +38,14 @@ OUT="./${ARG}_temp.Dockerfile"
 generate_image() {
   fragment="$1"
   output="$2"
+  # A fragment that starts with FROM is self-contained (its own base image, eg.
+  # an official distro image with a pinned toolchain); otherwise it is merged
+  # into the shared base.Dockerfile as before.
+  if grep -qi '^[[:space:]]*FROM[[:space:]]' "$fragment"; then
+    cp "$fragment" "$output"
+    echo "Wrote output to $output (self-contained)"
+    return 0
+  fi
   awk -v insert="$(<"$fragment")" '
     /#REPLACE-ME-WITH-INSTALLATION-COMMANDS/ {
       print insert
