@@ -22,13 +22,13 @@ echo "Run Benchmark (5k posts)" &&
     ./run.sh "$TEST_NAME" $result_file &&
     #
     echo "Generate $RUN2 posts" &&
-    python gen_fake_posts.py "$RUN2" &&
+    python3 gen_fake_posts.py "$RUN2" &&
     #
     echo "Run Benchmark ($RUN2 posts)" &&
     ./run.sh "$TEST_NAME" $result_file append &&
     #
     echo "Generate $RUN3 posts" &&
-    python gen_fake_posts.py "$RUN3" &&
+    python3 gen_fake_posts.py "$RUN3" &&
     #
     echo "Run Benchmark ($RUN3 posts)" &&
     ./run.sh "$TEST_NAME" $result_file append &&
