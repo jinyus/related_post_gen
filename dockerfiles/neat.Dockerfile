@@ -1,8 +1,9 @@
 # Self-contained image: Debian 12 + the Neat toolchain built against LLVM 15.
-# Neat 0.5.2 emits LLVM 15 IR and shells out to "clang-15 -opaque-pointers", so
-# a real clang/llvm 15 is required (Debian's default is 14). Its build.sh looks
-# for llvm-config in /usr/lib/llvm-15/bin, where Debian keeps the versioned
-# binaries under /usr/bin/*-15.
+# Neat 0.7.1 emits LLVM 15 IR and shells out to "clang-15 -opaque-pointers", so
+# a real clang/llvm 15 is required (Debian's default is 14). Its
+# find-llvm-config.sh looks for llvm-config in /usr/lib/llvm-15/bin (or
+# /usr/lib/llvm/15/bin), where Debian keeps the versioned binaries under
+# /usr/bin/*-15.
 FROM debian:12-slim
 
 # benchmark harness
@@ -16,10 +17,10 @@ RUN mkdir -p /usr/lib/llvm/15/bin && \
     ln -sf /usr/bin/llvm-config-15 /usr/lib/llvm/15/bin/llvm-config && \
     llvm-config-15 --version && clang-15 --version | head -1
 
-RUN wget -q https://github.com/Neat-Lang/neat/releases/download/v0.5.2/neat-v0.5.2-llvm.tar.xz -O /tmp/neat.tar.xz && \
+RUN wget -q https://github.com/Neat-Lang/neat/releases/download/v0.7.1/neat-v0.7.1-llvm.tar.xz -O /tmp/neat.tar.xz && \
     tar -C /opt -xf /tmp/neat.tar.xz && rm -f /tmp/neat.tar.xz
-RUN cd /opt/neat-v0.5.2-llvm && ./build.sh
-ENV PATH="/opt/neat-v0.5.2-llvm:$PATH"
+RUN cd /opt/neat-v0.7.1-llvm && ./build.sh
+ENV PATH="/opt/neat-v0.7.1-llvm:$PATH"
 
 #precompile
 RUN git clone https://github.com/jinyus/related_post_gen.git /tmp/repo && cd /tmp/repo && ./run.sh neat
