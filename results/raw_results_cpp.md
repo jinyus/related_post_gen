@@ -1,41 +1,41 @@
 
 C++:
 
-	Processing time (w/o IO): 15 ms
-	total: 0.16s memory: 46964k
-	Processing time (w/o IO): 15 ms
-	total: 0.24s memory: 46864k
 	Processing time (w/o IO): 14 ms
-	total: 0.19s memory: 46884k
+	total: 0.15s memory: 46388k
 	Processing time (w/o IO): 15 ms
-	total: 0.16s memory: 47104k
-	Processing time (w/o IO): 15 ms
-	total: 0.45s memory: 46804k
-	Processing time (w/o IO): 15 ms
-	total: 0.30s memory: 46528k
-	Processing time (w/o IO): 15 ms
-	total: 0.23s memory: 46816k
-	Processing time (w/o IO): 35 ms
-	total: 0.18s memory: 47072k
-	Processing time (w/o IO): 33 ms
-	total: 0.26s memory: 47176k
+	total: 0.16s memory: 46400k
 	Processing time (w/o IO): 14 ms
-	total: 0.16s memory: 47140k
+	total: 0.16s memory: 46416k
+	Processing time (w/o IO): 14 ms
+	total: 0.16s memory: 46408k
+	Processing time (w/o IO): 14 ms
+	total: 0.15s memory: 46436k
+	Processing time (w/o IO): 14 ms
+	total: 0.16s memory: 46128k
+	Processing time (w/o IO): 14 ms
+	total: 0.15s memory: 46328k
+	Processing time (w/o IO): 15 ms
+	total: 0.16s memory: 46404k
+	Processing time (w/o IO): 14 ms
+	total: 0.15s memory: 46416k
+	Processing time (w/o IO): 14 ms
+	total: 0.15s memory: 46396k
 
 C++:
 
-	Processing time (w/o IO): 197 ms
-	total: 1.38s memory: 176568k
-	Processing time (w/o IO): 198 ms
-	total: 1.18s memory: 176412k
-	Processing time (w/o IO): 198 ms
-	total: 1.07s memory: 176404k
+	Processing time (w/o IO): 179 ms
+	total: 0.76s memory: 175900k
+	Processing time (w/o IO): 176 ms
+	total: 0.75s memory: 176092k
+	Processing time (w/o IO): 177 ms
+	total: 0.74s memory: 176008k
 
 C++:
 
-	Processing time (w/o IO): 1658 ms
-	total: 4.71s memory: 460520k
-	Processing time (w/o IO): 1731 ms
-	total: 4.51s memory: 460272k
-	Processing time (w/o IO): 1789 ms
-	total: 4.73s memory: 460624k
+	Processing time (w/o IO): 1456 ms
+	total: 3.23s memory: 459660k
+	Processing time (w/o IO): 1470 ms
+	total: 3.21s memory: 459580k
+	Processing time (w/o IO): 1459 ms
+	total: 3.20s memory: 459632k

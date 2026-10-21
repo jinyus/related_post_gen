@@ -1,41 +1,41 @@
 
 c3:
 
-	Processing time (w/o IO): 12ms
-	total: 0.05s memory: 26448k
-	Processing time (w/o IO): 13ms
-	total: 0.13s memory: 26464k
 	Processing time (w/o IO): 14ms
-	total: 0.08s memory: 26256k
-	Processing time (w/o IO): 13ms
-	total: 0.13s memory: 26296k
+	total: 0.04s memory: 25928k
 	Processing time (w/o IO): 14ms
-	total: 0.09s memory: 26260k
+	total: 0.04s memory: 26088k
 	Processing time (w/o IO): 13ms
-	total: 0.09s memory: 26264k
+	total: 0.04s memory: 26104k
+	Processing time (w/o IO): 15ms
+	total: 0.04s memory: 26072k
 	Processing time (w/o IO): 14ms
-	total: 0.14s memory: 26296k
+	total: 0.04s memory: 26092k
+	Processing time (w/o IO): 14ms
+	total: 0.04s memory: 26108k
+	Processing time (w/o IO): 14ms
+	total: 0.04s memory: 26144k
+	Processing time (w/o IO): 15ms
+	total: 0.04s memory: 25888k
+	Processing time (w/o IO): 15ms
+	total: 0.04s memory: 25972k
 	Processing time (w/o IO): 13ms
-	total: 0.05s memory: 26484k
-	Processing time (w/o IO): 13ms
-	total: 0.07s memory: 26184k
-	Processing time (w/o IO): 13ms
-	total: 0.08s memory: 26268k
+	total: 0.04s memory: 25884k
 
 c3:
 
-	Processing time (w/o IO): 159ms
-	total: 0.41s memory: 97628k
-	Processing time (w/o IO): 159ms
-	total: 0.32s memory: 97552k
-	Processing time (w/o IO): 158ms
-	total: 0.32s memory: 97412k
+	Processing time (w/o IO): 184ms
+	total: 0.31s memory: 97128k
+	Processing time (w/o IO): 161ms
+	total: 0.29s memory: 96952k
+	Processing time (w/o IO): 170ms
+	total: 0.29s memory: 97144k
 
 c3:
 
-	Processing time (w/o IO): 1319ms
-	total: 2.42s memory: 291504k
-	Processing time (w/o IO): 2912ms
-	total: 3.98s memory: 291664k
-	Processing time (w/o IO): 1394ms
-	total: 2.49s memory: 291740k
+	Processing time (w/o IO): 1328ms
+	total: 1.74s memory: 291324k
+	Processing time (w/o IO): 1329ms
+	total: 1.73s memory: 291280k
+	Processing time (w/o IO): 1333ms
+	total: 1.77s memory: 291280k

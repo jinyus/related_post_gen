@@ -1,41 +1,41 @@
 
 Pypy:
 
-	Processing time (w/o IO): 70.5ms
-	total: 1.55s memory: 81908k
-	Processing time (w/o IO): 66.7ms
-	total: 0.15s memory: 62348k
-	Processing time (w/o IO): 65.5ms
-	total: 0.15s memory: 62544k
-	Processing time (w/o IO): 66.8ms
-	total: 0.44s memory: 62448k
-	Processing time (w/o IO): 65.6ms
-	total: 0.15s memory: 62844k
-	Processing time (w/o IO): 67.0ms
-	total: 0.15s memory: 62620k
-	Processing time (w/o IO): 66.1ms
-	total: 0.15s memory: 62596k
-	Processing time (w/o IO): 72.8ms
-	total: 0.15s memory: 62240k
-	Processing time (w/o IO): 66.1ms
-	total: 0.18s memory: 62648k
-	Processing time (w/o IO): 66.3ms
-	total: 0.17s memory: 62376k
+	Processing time (w/o IO): 77.3ms
+	total: 0.34s memory: 86432k
+	Processing time (w/o IO): 90.2ms
+	total: 0.20s memory: 85748k
+	Processing time (w/o IO): 87.1ms
+	total: 0.19s memory: 85624k
+	Processing time (w/o IO): 86.9ms
+	total: 0.19s memory: 85472k
+	Processing time (w/o IO): 87.1ms
+	total: 0.19s memory: 85352k
+	Processing time (w/o IO): 86.7ms
+	total: 0.19s memory: 85592k
+	Processing time (w/o IO): 87.1ms
+	total: 0.19s memory: 85588k
+	Processing time (w/o IO): 87.2ms
+	total: 0.19s memory: 85288k
+	Processing time (w/o IO): 88.0ms
+	total: 0.20s memory: 85040k
+	Processing time (w/o IO): 87.1ms
+	total: 0.19s memory: 85716k
 
 Pypy:
 
-	Processing time (w/o IO): 829.7ms
-	total: 1.07s memory: 122460k
-	Processing time (w/o IO): 793.4ms
-	total: 1.29s memory: 122848k
-	Processing time (w/o IO): 815.9ms
-	total: 1.37s memory: 121920k
+	Processing time (w/o IO): 1.183s
+	total: 1.41s memory: 134148k
+	Processing time (w/o IO): 1.182s
+	total: 1.41s memory: 140796k
+	Processing time (w/o IO): 1.182s
+	total: 1.41s memory: 131660k
 
 Pypy:
 
-	Processing time (w/o IO): 7.895s
-	total: 9.13s memory: 290244k
-	Processing time (w/o IO): 8.086s
-	total: 9.25s memory: 291052k
-	Processing time (w/o IO): 8.080s
-	total: 9.15s memory: 290544k
+	Processing time (w/o IO): 10.847s
+	total: 11.44s memory: 338776k
+	Processing time (w/o IO): 10.816s
+	total: 11.41s memory: 342976k
+	Processing time (w/o IO): 10.815s
+	total: 11.41s memory: 339924k

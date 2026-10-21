@@ -1,41 +1,41 @@
 
 JS (Node):
 
-	Processing time (w/o IO): 226ms
-	total: 2.99s memory: 73612k
-	Processing time (w/o IO): 95ms
-	total: 0.29s memory: 74596k
-	Processing time (w/o IO): 93ms
-	total: 0.15s memory: 74300k
+	Processing time (w/o IO): 118ms
+	total: 0.30s memory: 70572k
+	Processing time (w/o IO): 99ms
+	total: 0.15s memory: 71776k
 	Processing time (w/o IO): 94ms
-	total: 0.15s memory: 74140k
-	Processing time (w/o IO): 93ms
-	total: 0.15s memory: 73960k
-	Processing time (w/o IO): 95ms
-	total: 0.15s memory: 73764k
-	Processing time (w/o IO): 97ms
-	total: 0.15s memory: 74556k
-	Processing time (w/o IO): 95ms
-	total: 0.15s memory: 73368k
-	Processing time (w/o IO): 96ms
-	total: 0.15s memory: 74156k
+	total: 0.14s memory: 71848k
+	Processing time (w/o IO): 101ms
+	total: 0.14s memory: 71748k
 	Processing time (w/o IO): 98ms
-	total: 0.16s memory: 72536k
+	total: 0.14s memory: 71760k
+	Processing time (w/o IO): 92ms
+	total: 0.13s memory: 72228k
+	Processing time (w/o IO): 96ms
+	total: 0.14s memory: 71568k
+	Processing time (w/o IO): 98ms
+	total: 0.14s memory: 71712k
+	Processing time (w/o IO): 93ms
+	total: 0.13s memory: 71740k
+	Processing time (w/o IO): 101ms
+	total: 0.14s memory: 71720k
 
 JS (Node):
 
-	Processing time (w/o IO): 1292ms
-	total: 1.59s memory: 117172k
-	Processing time (w/o IO): 1204ms
-	total: 1.43s memory: 117068k
-	Processing time (w/o IO): 1252ms
-	total: 1.54s memory: 117024k
+	Processing time (w/o IO): 1246ms
+	total: 1.33s memory: 116004k
+	Processing time (w/o IO): 1213ms
+	total: 1.31s memory: 115848k
+	Processing time (w/o IO): 1216ms
+	total: 1.31s memory: 115904k
 
 JS (Node):
 
-	Processing time (w/o IO): 11876ms
-	total: 12.78s memory: 232404k
-	Processing time (w/o IO): 10511ms
-	total: 11.43s memory: 233004k
-	Processing time (w/o IO): 10575ms
-	total: 11.44s memory: 232176k
+	Processing time (w/o IO): 9891ms
+	total: 10.14s memory: 228532k
+	Processing time (w/o IO): 9842ms
+	total: 10.09s memory: 229796k
+	Processing time (w/o IO): 11055ms
+	total: 11.31s memory: 230684k

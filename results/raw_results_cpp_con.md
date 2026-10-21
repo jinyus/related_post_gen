@@ -1,41 +1,41 @@
 
 C++ Concurrent:
 
-	Processing time (w/o IO): 6 ms
-	total: 0.15s memory: 47436k
 	Processing time (w/o IO): 5 ms
-	total: 0.35s memory: 47400k
-	Processing time (w/o IO): 6 ms
-	total: 0.20s memory: 47176k
-	Processing time (w/o IO): 7 ms
-	total: 0.16s memory: 47156k
-	Processing time (w/o IO): 4 ms
-	total: 0.33s memory: 47196k
-	Processing time (w/o IO): 9 ms
-	total: 0.16s memory: 47016k
+	total: 0.16s memory: 46652k
 	Processing time (w/o IO): 5 ms
-	total: 0.17s memory: 46980k
-	Processing time (w/o IO): 4 ms
-	total: 0.16s memory: 47160k
-	Processing time (w/o IO): 6 ms
-	total: 0.16s memory: 47312k
-	Processing time (w/o IO): 4 ms
-	total: 0.16s memory: 47416k
+	total: 0.16s memory: 46672k
+	Processing time (w/o IO): 5 ms
+	total: 0.16s memory: 46648k
+	Processing time (w/o IO): 5 ms
+	total: 0.15s memory: 46660k
+	Processing time (w/o IO): 5 ms
+	total: 0.15s memory: 46652k
+	Processing time (w/o IO): 5 ms
+	total: 0.16s memory: 46748k
+	Processing time (w/o IO): 5 ms
+	total: 0.16s memory: 46800k
+	Processing time (w/o IO): 5 ms
+	total: 0.15s memory: 46640k
+	Processing time (w/o IO): 5 ms
+	total: 0.15s memory: 46516k
+	Processing time (w/o IO): 5 ms
+	total: 0.15s memory: 46796k
 
 C++ Concurrent:
 
-	Processing time (w/o IO): 53 ms
-	total: 0.88s memory: 177260k
-	Processing time (w/o IO): 52 ms
-	total: 0.91s memory: 177000k
-	Processing time (w/o IO): 53 ms
-	total: 0.84s memory: 177136k
+	Processing time (w/o IO): 59 ms
+	total: 0.66s memory: 176296k
+	Processing time (w/o IO): 59 ms
+	total: 0.66s memory: 176320k
+	Processing time (w/o IO): 58 ms
+	total: 0.66s memory: 176576k
 
 C++ Concurrent:
 
-	Processing time (w/o IO): 549 ms
-	total: 3.53s memory: 461200k
-	Processing time (w/o IO): 604 ms
-	total: 3.75s memory: 461388k
-	Processing time (w/o IO): 751 ms
-	total: 3.80s memory: 461388k
+	Processing time (w/o IO): 435 ms
+	total: 2.28s memory: 460072k
+	Processing time (w/o IO): 441 ms
+	total: 2.28s memory: 460200k
+	Processing time (w/o IO): 436 ms
+	total: 2.29s memory: 460464k
