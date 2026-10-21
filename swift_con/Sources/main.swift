@@ -17,6 +17,38 @@ struct RelatedPosts: Codable {
     let related: [Post]
 }
 
+// State shared with the concurrent workers. `tagMap` is immutable once built
+// and each worker writes a distinct `allRelatedPosts` slot, so the lock only
+// serialises the single write per post (the counting loop stays lock-free).
+final class SharedState: @unchecked Sendable {
+    let tagMap: TreeDictionary<String, [Int]>
+    private var allRelatedPosts: [RelatedPosts]
+    private let lock = NSLock()
+
+    init(posts: [Post]) {
+        var tagMap: TreeDictionary<String, [Int]> = [:]
+        for (i, post) in posts.enumerated() {
+            for tag in post.tags {
+                tagMap[tag, default: []].append(i)
+            }
+        }
+        self.tagMap = tagMap
+        self.allRelatedPosts = Array(repeating: RelatedPosts(_id: "", tags: [], related: []), count: posts.count)
+    }
+
+    func set(_ post: RelatedPosts, at index: Int) {
+        lock.lock()
+        allRelatedPosts[index] = post
+        lock.unlock()
+    }
+
+    func results() -> [RelatedPosts] {
+        lock.lock()
+        defer { lock.unlock() }
+        return allRelatedPosts
+    }
+}
+
 func main() {
     let jsonData: Data
     do {
@@ -33,24 +65,16 @@ func main() {
 
     let start = DispatchTime.now()
 
-    var tagMap: TreeDictionary<String, [Int]> = [:]
-
-    for (i, post) in posts.enumerated() {
-        for tag in post.tags {
-            tagMap[tag, default: []].append(i)
-        }
-    }
+    let shared = SharedState(posts: posts)
 
     let queue = DispatchQueue(label: "relatedPosts", attributes: .concurrent)
     let group = DispatchGroup()
-
-    var allRelatedPosts: [RelatedPosts] = Array(repeating: RelatedPosts(_id: "", tags: [], related: []), count: posts.count)
 
     for (idx, post) in posts.enumerated() {
         queue.async(group: group) {
             var taggedPostCount = Array(repeating: 0, count: posts.count)
             for tag in post.tags {
-                if let tagPosts = tagMap[tag] {
+                if let tagPosts = shared.tagMap[tag] {
                     for otherPostIdx in tagPosts {
                         taggedPostCount[otherPostIdx] += 1
                     }
@@ -78,7 +102,7 @@ func main() {
             }
             let related = top5Queue.map { posts[$0.0] }
 
-            allRelatedPosts[idx] = RelatedPosts(_id: post._id, tags: post.tags, related: related)
+            shared.set(RelatedPosts(_id: post._id, tags: post.tags, related: related), at: idx)
         }
     }
 
@@ -90,7 +114,7 @@ func main() {
     print("Processing time (w/o IO): \(processingTime)ms")
 
     let fileURL = URL(fileURLWithPath: "../related_posts_swift_con.json", isDirectory: false)
-    if let data = try? JSONEncoder().encode(allRelatedPosts) {
+    if let data = try? JSONEncoder().encode(shared.results()) {
         try! data.write(to: fileURL, options: .atomic)
     }
 }
