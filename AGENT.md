@@ -228,7 +228,11 @@ One command to create a VM, set it up and start the benchmark in a tmux session 
 `push` / `pull` / `list` for the images, tagged
 `ghcr.io/<owner>/<repo>/<image>:<sha256 of the generated Dockerfile, 12 chars>`.
 So **editing any Dockerfile invalidates the published tag** — a pull misses and the image
-is rebuilt locally. Building all of them in CI: run the **Build images** workflow (`gh workflow run build-images.yml`);
+is rebuilt locally. Every image also carries a `:latest` alias, advanced only by builds on
+`main`; it is for humans (`docker pull .../rust:latest`), never for the harness, so the
+benchmark keeps pulling the content tag and cannot run an image that does not match its
+Dockerfile. `ghcr_images.sh latest` repoints the alias from the registry without rebuilding
+(plain manifest copy), which is also how to add it to already published images. Building all of them in CI: run the **Build images** workflow (`gh workflow run build-images.yml`);
 it defaults to build-only, and `-f push=true` publishes. Tags are computed the same way, so
 `ghcr_images.sh pull` finds them.
 

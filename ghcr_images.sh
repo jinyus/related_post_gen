@@ -7,6 +7,7 @@
 #   ./ghcr_images.sh pull [name...]    download and tag as <name>_databench
 #   ./ghcr_images.sh list [name...]    what exists locally vs in the registry
 #   ./ghcr_images.sh public [name...]  make published packages public (one way!)
+#   ./ghcr_images.sh latest [name...]  point :latest at the published content tag
 #
 # A name is a dockerfile in ./dockerfiles: base, go, rust, csharp, swift,
 # python... With no names, every one of them is used (around 100GB, so you
@@ -15,6 +16,11 @@
 # Images are tagged with a hash of their generated Dockerfile (base + fragment),
 # so a changed Dockerfile produces a different tag - "pull" then reports it as
 # missing and the benchmark builds it locally instead of using a stale image.
+#
+# Each image also gets a :latest alias for humans who just want to pull it. It
+# is cosmetic: "pull" and --pull-images always use the content tag, so the image
+# used for a benchmark can never drift from the Dockerfile it was built from.
+# "latest" repoints the alias from the registry, without rebuilding anything.
 #
 # Credentials:
 #   * pushing needs a token with write:packages - the token from "gh auth login"
@@ -155,6 +161,11 @@ cmd_push() {
         docker tag "$local" "$ref"
         if docker push "$ref" >/dev/null; then
             pushed=$((pushed + 1))
+            # keep the convenience alias in step with what was just pushed
+            alias_ref="${ref%:*}:latest"
+            docker tag "$local" "$alias_ref" &&
+                docker push "$alias_ref" >/dev/null ||
+                warn "  $name: pushed $ref but could not update the latest alias"
         else
             warn "  $name: push failed (docker's error is above)"
             failed=$((failed + 1))
@@ -204,6 +215,108 @@ cmd_list() {
         fi
         printf '%-10s %-9s %-9s %s\n' "$name" "$local_state" "$remote_state" "$(image_hash "$name")"
     done
+}
+
+# ---------------------------------------------------------------------------
+# registry API helpers (no docker needed)
+# ---------------------------------------------------------------------------
+registry_creds() { # -> "user:token" for the registry API
+    local token user
+    token="${GHCR_TOKEN:-${GITHUB_TOKEN:-}}"
+    [ -n "$token" ] || token="$(gh auth token 2>/dev/null || true)"
+    [ -n "$token" ] || die "no token found (GHCR_TOKEN, GITHUB_TOKEN or gh auth token)"
+    user="${GHCR_USER:-}"
+    [ -n "$user" ] || user="$(gh api user -q .login 2>/dev/null || true)"
+    [ -n "$user" ] || user="${NAMESPACE%%/*}"
+    printf '%s:%s' "$user" "$token"
+}
+
+registry_token() { # $1 = repository, $2 = pull | pull,push -> bearer token
+    curl -fsSL -u "$(registry_creds)" \
+        "https://$REGISTRY/token?service=$REGISTRY&scope=repository:$1:$2" |
+        python3 -c 'import json, sys; d = json.load(sys.stdin); print(d.get("token") or d.get("access_token", ""))'
+}
+
+header_value() { # $1 = header file, $2 = header name -> value
+    tr -d '\r' <"$1" |
+        awk -v h="$2" 'BEGIN { IGNORECASE = 1 } tolower($1) == tolower(h ":") { print $2; exit }'
+}
+
+cmd_latest() {
+    # Copy the manifest of the content tag to :latest, so the alias can be
+    # refreshed without rebuilding or re-uploading layers.
+    local name ref repo tag tok accept tmpdir
+    local hcode lcode pcode ctype hdigest ldigest
+    local changed=0 unchanged=0 missing=0 failed=0
+
+    accept='application/vnd.oci.image.index.v1+json'
+    accept="$accept,application/vnd.docker.distribution.manifest.list.v2+json"
+    accept="$accept,application/vnd.oci.image.manifest.v1+json"
+    accept="$accept,application/vnd.docker.distribution.manifest.v2+json"
+
+    tmpdir="$(mktemp -d)"
+    # expand now: tmpdir is local and gone by the time the trap runs
+    trap "rm -rf '$tmpdir'" EXIT
+
+    for name in "$@"; do
+        ref="$(remote_ref "$name")"
+        repo="${ref#"$REGISTRY/"}"
+        repo="${repo%:*}"
+        tag="${ref##*:}"
+
+        tok="$(registry_token "$repo" pull)"
+        hcode="$(curl -sS -o "$tmpdir/body" -D "$tmpdir/head" -w '%{http_code}' \
+            -H "Authorization: Bearer $tok" -H "Accept: $accept" \
+            "https://$REGISTRY/v2/$repo/manifests/$tag")"
+        if [ "$hcode" = "404" ]; then
+            info "  $name: $tag is not published - nothing to alias"
+            missing=$((missing + 1))
+            continue
+        fi
+        [ "$hcode" = "200" ] || die "$name: fetching $tag failed (HTTP $hcode)"
+
+        ctype="$(header_value "$tmpdir/head" content-type)"
+        hdigest="$(header_value "$tmpdir/head" docker-content-digest)"
+        [ -n "$ctype" ] || die "$name: registry returned no content type for $tag"
+
+        lcode="$(curl -sS -o "$tmpdir/latest" -D "$tmpdir/lhead" -w '%{http_code}' \
+            -H "Authorization: Bearer $tok" -H "Accept: $accept" \
+            "https://$REGISTRY/v2/$repo/manifests/latest")"
+        ldigest="$(header_value "$tmpdir/lhead" docker-content-digest)"
+        if [ "$lcode" = "200" ] && [ -n "$ldigest" ] && [ "$ldigest" = "$hdigest" ]; then
+            info "  $name: latest already points at $tag"
+            unchanged=$((unchanged + 1))
+            continue
+        fi
+        if [ "$DRY_RUN" = 1 ]; then
+            info "  $name: would point latest at $tag"
+            continue
+        fi
+
+        tok="$(registry_token "$repo" pull,push)"
+        pcode="$(curl -sS -o /dev/null -w '%{http_code}' -X PUT \
+            -H "Authorization: Bearer $tok" -H "Content-Type: $ctype" \
+            --data-binary @"$tmpdir/body" \
+            "https://$REGISTRY/v2/$repo/manifests/latest")"
+        case "$pcode" in
+        200 | 201)
+            info "  $name: latest -> $tag"
+            changed=$((changed + 1))
+            ;;
+        401 | 403)
+            warn "  $name: not allowed to write latest (HTTP $pcode)"
+            warn "        the token needs write:packages: gh auth refresh -s write:packages"
+            failed=$((failed + 1))
+            ;;
+        *)
+            warn "  $name: tagging latest failed (HTTP $pcode)"
+            failed=$((failed + 1))
+            ;;
+        esac
+    done
+
+    info "latest: $changed updated, $unchanged already current, $missing not published"
+    [ "$failed" = 0 ] || return 1
 }
 
 cmd_public() {
@@ -287,9 +400,10 @@ case "$CMD" in
 push | upload) CMD=push ;;
 public) CMD=public ;;
 pull | restore) CMD=pull ;;
+latest | tag) CMD=latest ;;
 list | ls) CMD=list ;;
 -h | --help | help) usage; exit 0 ;;
-*) die "unknown command '$CMD' (push, pull or list)" ;;
+*) die "unknown command '$CMD' (push, pull, list, public or latest)" ;;
 esac
 
 if [ ${#NAMES[@]} -gt 0 ]; then
@@ -303,9 +417,9 @@ else
     while read -r name; do IMAGES+=("$name"); done < <(all_images)
 fi
 
-if [ "$CMD" != "public" ]; then
-    command -v docker >/dev/null 2>&1 || die "docker is required"
-fi
+case "$CMD" in
+public | latest) ;; # registry API only
+*) command -v docker >/dev/null 2>&1 || die "docker is required" ;; esac
 
 step "$CMD ${#IMAGES[@]} image(s) in $REGISTRY/$NAMESPACE"
 # push/pull authenticate with docker; public uses gh
@@ -316,4 +430,5 @@ push) cmd_push "${IMAGES[@]}" ;;
 pull) cmd_pull "${IMAGES[@]}" ;;
 list) cmd_list "${IMAGES[@]}" ;;
 public) cmd_public "${IMAGES[@]}" ;;
+latest) cmd_latest "${IMAGES[@]}" ;;
 esac
