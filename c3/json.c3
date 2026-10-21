@@ -4,21 +4,22 @@
 module related::json;
 
 import std::collections;
+import std::core::mem::alloc;
 import std::encoding::json;
 import std::io;
 
 // Json string is parsed into an Object, all parsed artifacts (objects and strings) are allocated
 // to alloc parameter.
 //
-// `Post` will reference strings allocated by json::parse_string. However, the `List`s used to
+// `Post` will reference strings allocated by json::parse. However, the `List`s used to
 // build the `Post[]` are allocated temporarily, then the slice copied to `alloc`. Optimizer is
 // happier with this than having an array_view into a `List`.
-fn Post[]? parse_posts(Allocator alloc, String input) {
+fn Post[]? parse_posts(alloc::Allocator alloc, String input) {
 	@pool() {
 		List{Post} posts;
 		posts.init(tmem);
 		// Allocs objects and strings
-		Object* posts_arr = json::parse_string(alloc, input)!;
+		Object* posts_arr = json::parse(alloc, input)!;
 		foreach (i, post_obj : posts_arr.array) {
 			@pool() {
 				List{String} tags;

@@ -2,6 +2,7 @@ module related;
 
 import std::collections;
 import std::core::mem;
+import std::core::mem::alloc;
 import std::io;
 import std::time::clock;
 
@@ -95,10 +96,10 @@ fn void main() {
 		}
 	}
 
-	TopPosts[] op = allocator::new_array(tmem, TopPosts, posts.len);
-	Post*[] rl = allocator::new_array(tmem, Post*, posts.len * 5);
+	TopPosts[] op = alloc::new_array(tmem, TopPosts, posts.len);
+	Post*[] rl = alloc::new_array(tmem, Post*, posts.len * 5);
 
-	char[] tagged_post_count = allocator::new_array(tmem, char, posts.len);
+	char[] tagged_post_count = alloc::new_array(tmem, char, posts.len);
 
 	for (int post_idx = 0; post_idx < posts.len; post_idx += 1) {
 		// reset tagged_post_count
