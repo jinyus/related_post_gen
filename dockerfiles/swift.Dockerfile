@@ -1,6 +1,6 @@
 # Self-contained image: official Swift on Debian 12. Replaces the Arch image
 # that was 23GB (the distro package pulls in a full LLVM toolchain tree).
-FROM swift:6.0-bookworm
+FROM swift:6.4.1-bookworm
 
 # benchmark harness
 RUN apt-get update && apt-get install -y --no-install-recommends \

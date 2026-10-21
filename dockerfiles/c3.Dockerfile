@@ -1,4 +1,4 @@
-# Self-contained image: Debian 12 + pinned c3c release.
+# Self-contained image: Debian 12 + pinned c3c release (0.8.5_1).
 FROM debian:12-slim
 
 # benchmark harness (+ libxml2: the c3 compiler links it, gcc: c3c links
@@ -9,7 +9,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     rm -rf /var/lib/apt/lists/* && \
     pip3 install --break-system-packages --no-cache-dir faker nanoid
 
-RUN wget -q https://github.com/c3lang/c3c/releases/download/v0.7.9/c3-linux.tar.gz -O /tmp/c3.tar.gz && \
+RUN wget -q https://github.com/c3lang/c3c/releases/download/v0.8.5_1/c3-linux.tar.gz -O /tmp/c3.tar.gz && \
     mv /tmp/c3.tar.gz /opt/c3.tar.gz && tar -xzf /opt/c3.tar.gz -C /opt && rm -f /opt/c3.tar.gz
 ENV PATH="/opt/c3:$PATH"
 RUN c3c --version

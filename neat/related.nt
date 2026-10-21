@@ -33,6 +33,38 @@ struct PostsWithSharedTags
     ubyte sharedTags;
 }
 
+// Neat 0.7.1 made class fields immutable unless declared `mut`, but the
+// std.stream ArraySource/ArraySink still assign to their fields. Mirror them
+// here with mutable fields so the JSON lexer/printer keep their stream API.
+class ChunkSource : Source!(ubyte[])
+{
+    mut ubyte[][] chunks;
+    mut int index;
+
+    this(ubyte[][] chunks) { this.chunks = chunks; }
+
+    override (ubyte[] | :else | Error) get() {
+        if (this.index >= this.chunks.length)
+            return :else;
+        auto result = this.chunks[this.index];
+        this.index++;
+        return result;
+    }
+}
+
+class ChunkSink : Sink!(ubyte[])
+{
+    mut ubyte[][] chunks;
+
+    this() { }
+
+    public ubyte[][] array() => this.chunks;
+
+    override (void | Error) put(ubyte[] value) {
+        this.chunks ~= value;
+    }
+}
+
 void main() {
     errorMain.case {
         void: {}
@@ -42,10 +74,10 @@ void main() {
     }
 }
 
-(void | fail Error) errorMain()
+(void | Error) errorMain()
 {
     ubyte[] file = readFile("../posts.json");
-    auto source = new ArraySource!(ubyte[])([file]);
+    auto source = new ChunkSource([file]);
     auto lexer = new JsonLexer(source);
     auto posts = lexer.decode!(Post[])?;
 
@@ -105,7 +137,7 @@ void main() {
     }
     sw.stop;
     print("Processing time (w/o IO): $(cast(int) (sw.seconds * 1_000_000)/1000.0f)ms");
-    auto sink = new ArraySink!(ubyte[]);
+    auto sink = new ChunkSink;
     auto jsonPrinter = new JsonPrinter(sink);
     relatedPosts.encode(jsonPrinter)?;
     "../related_posts_neat.json".writeFile([join a for a in sink.array]);

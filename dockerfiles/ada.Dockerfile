@@ -9,7 +9,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     rm -rf /var/lib/apt/lists/* && \
     pip3 install --break-system-packages --no-cache-dir faker nanoid
 
-RUN wget -q https://github.com/alire-project/alire/releases/download/v2.1.0/alr-2.1.0-bin-x86_64-linux.zip -O /tmp/alr.zip && \
+RUN wget -q https://github.com/alire-project/alire/releases/download/v2.1.1/alr-2.1.1-bin-x86_64-linux.zip -O /tmp/alr.zip && \
     mkdir -p /opt/alr && unzip -q /tmp/alr.zip -d /opt/alr && \
     install -m 755 /opt/alr/bin/alr /usr/local/bin/alr && rm -f /tmp/alr.zip
 RUN alr -n toolchain --select gnat_native gprbuild

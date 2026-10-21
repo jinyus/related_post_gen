@@ -1,11 +1,12 @@
-# Self-contained image: Debian 12 + GHC 9.10 + cabal from the official image.
+# Self-contained image: Debian 12 + GHC 9.14 + cabal from the official image.
 # Debian's own packages are too old on both counts: ghc 9.0 does not accept
 # "default-language: GHC2024" (the project sets it) and cabal 3.4 fails
 # "cabal update" with "<repo>/root.json does not have enough signatures".
-FROM haskell:9.10.3-slim-bookworm
+# GHC 9.14 also needs cabal-install >= 3.16, which the official image bundles.
+FROM haskell:9.14.1-slim-bookworm
 
-# benchmark harness (+ llvm: the project builds with -fllvm, and GHC 9.10
-# accepts LLVM 13-15, so the versioned Debian tools are exposed under the plain
+# benchmark harness (+ llvm: the project builds with -fllvm, and GHC 9.14
+# accepts LLVM 13-20, so the versioned Debian tools are exposed under the plain
 # names GHC looks for; clang assembles what llc emits)
 RUN apt-get update && apt-get install -y --no-install-recommends \
     git python3 python3-pip time which curl wget xz-utils ca-certificates sudo \
