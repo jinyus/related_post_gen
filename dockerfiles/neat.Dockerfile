@@ -8,7 +8,7 @@ FROM debian:12-slim
 # benchmark harness
 RUN apt-get update && apt-get install -y --no-install-recommends \
     git python3 python3-pip time which curl wget ca-certificates sudo \
-    xz-utils clang-15 llvm-15 llvm-15-dev gcc libc6-dev make && \
+    xz-utils clang-15 llvm-15 llvm-15-dev gcc libc6-dev make file && \
     rm -rf /var/lib/apt/lists/* && \
     pip3 install --break-system-packages --no-cache-dir faker nanoid
 
