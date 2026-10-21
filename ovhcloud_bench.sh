@@ -384,7 +384,7 @@ create_instance() {
 
     init_ssh_key_name
 
-    local images=() cand attempt out id
+    local images=() cand attempt out id partial
     # candidates: "image id___image name"
     if [ -n "$IMAGE_ID" ]; then
         images=("$IMAGE_ID"___"Ubuntu (image id $IMAGE_ID)")
@@ -434,6 +434,19 @@ create_instance() {
         if [ -n "$out" ]; then
             INSTANCE_ID="$(jq -r '.details.id // empty' <<<"$out" 2>/dev/null || true)"
             break
+        fi
+
+        # A create that reports failure - or that is interrupted while the
+        # instance is being delivered - can still leave a partial instance
+        # behind, and that holds the project's RAM quota. Track it so
+        # 'destroy' can reach it.
+        partial="$(instance_id_by_name "$NAME")"
+        if [ -n "$partial" ]; then
+            INSTANCE_ID="$partial"
+            SSH_USER="ubuntu"
+            REMOTE_SUDO=1
+            save_state
+            warn "the failed create left instance $partial behind; tracking it (./$SCRIPT_NAME destroy removes it)"
         fi
 
         case "$OVH_ERROR" in
