@@ -1,6 +1,8 @@
 # Self-contained image: official .NET SDK on Debian 12. Replaces the Arch image
 # that built dotnet from the AUR (dotnet-core-bin).
-FROM mcr.microsoft.com/dotnet/sdk:8.0
+# SDK 10 is required: every project targets net10.0 (SDK 8 refuses it with
+# NETSDK1045).
+FROM mcr.microsoft.com/dotnet/sdk:10.0
 
 # benchmark harness
 RUN apt-get update && apt-get install -y --no-install-recommends \

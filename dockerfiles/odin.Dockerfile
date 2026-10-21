@@ -4,13 +4,15 @@ FROM debian:12-slim
 
 # benchmark harness (+ clang: Odin compiles through clang at run time)
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    git python3 python3-pip time which curl ca-certificates unzip clang libc6-dev && \
+    git python3 python3-pip time which curl ca-certificates xz-utils clang libc6-dev && \
     rm -rf /var/lib/apt/lists/* && \
     pip3 install --break-system-packages --no-cache-dir faker nanoid
 
-RUN curl -fsSL https://github.com/odin-lang/Odin/releases/download/dev-2023-08/odin-ubuntu-amd64-dev-2023-08.zip -o /tmp/odin.zip && \
-    mkdir -p /opt/odin && unzip -q /tmp/odin.zip -d /opt/odin && rm -f /tmp/odin.zip && \
-    chmod +x /opt/odin/odin
+# dev-2026-09 is pinned because run.sh passes -o:aggressive, which only
+# exists in newer releases (dev-2023-08 knows minimal/size/speed/none).
+RUN curl -fsSL https://github.com/odin-lang/Odin/releases/download/dev-2026-09/odin-linux-amd64-dev-2026-09.tar.gz -o /tmp/odin.tar.gz && \
+    tar -C /opt -xzf /tmp/odin.tar.gz && rm -f /tmp/odin.tar.gz && \
+    mv /opt/odin-linux-*/ /opt/odin
 ENV PATH="/opt/odin:$PATH"
 
 #precompile

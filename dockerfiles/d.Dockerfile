@@ -1,10 +1,11 @@
 # Self-contained image: Debian 12 + pinned LDC (ldc2) + dub.
 FROM debian:12-slim
 
-# benchmark harness (+ dub drives the build, libxml2 is linked by ldc)
+# benchmark harness (+ dub drives the build, libxml2 is linked by ldc,
+# xz-utils unpacks the .tar.xz toolchain)
 RUN apt-get update && apt-get install -y --no-install-recommends \
     git python3 python3-pip time which curl wget ca-certificates sudo \
-    dub libxml2 gcc libc6-dev && \
+    dub libxml2 gcc libc6-dev xz-utils && \
     rm -rf /var/lib/apt/lists/* && \
     pip3 install --break-system-packages --no-cache-dir faker nanoid
 

@@ -1,9 +1,11 @@
 # Self-contained image: Debian 12 + pinned c3c release.
 FROM debian:12-slim
 
-# benchmark harness (+ libxml2: the c3 compiler links it)
+# benchmark harness (+ libxml2: the c3 compiler links it, gcc: c3c links
+# the final binary by shelling out to cc)
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    git python3 python3-pip time which curl wget ca-certificates sudo libxml2 && \
+    git python3 python3-pip time which curl wget ca-certificates sudo libxml2 \
+    gcc libc6-dev && \
     rm -rf /var/lib/apt/lists/* && \
     pip3 install --break-system-packages --no-cache-dir faker nanoid
 
