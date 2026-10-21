@@ -1,22 +1,26 @@
-# Self-contained image: Debian 12 + GraalVM (as the JDK) + maven + sbt + clang.
+# Self-contained image: Debian 12 + GraalVM for JDK 25 (as the JDK) + maven + sbt + clang.
 # Serves java, java_con, java_graal, java_graal_con and scala_native.
-# sdkman is kept from the Arch version - it works fine on Debian; clang is for
-# Scala Native's linking step.
+# sdkman is kept from the Arch version - it works fine on Debian. clang-16 is
+# the Scala Native 0.5 toolchain (Debian 12's default clang 14 miscompiles its
+# runtime); gcc + zlib headers/libs are for GraalVM native-image.
 FROM debian:12-slim
 
 # benchmark harness
 RUN apt-get update && apt-get install -y --no-install-recommends \
     git python3 python3-pip time which curl ca-certificates zip unzip maven \
-    clang libc6-dev && \
+    clang-16 lld-16 gcc libc6-dev zlib1g-dev && \
+    update-alternatives --install /usr/bin/clang clang /usr/bin/clang-16 100 && \
+    update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-16 100 && \
+    update-alternatives --install /usr/bin/ld.lld ld.lld /usr/bin/ld.lld-16 100 && \
     rm -rf /var/lib/apt/lists/* && \
     pip3 install --break-system-packages --no-cache-dir faker nanoid
 
 RUN curl -s "https://get.sdkman.io" | bash
-RUN bash -c "source /root/.sdkman/bin/sdkman-init.sh && sdk install java 21-graal && sdk install sbt"
+RUN bash -c "source /root/.sdkman/bin/sdkman-init.sh && sdk install java 25.4.4+1-graal && sdk install sbt"
 
-ENV GRAALVM_HOME=/root/.sdkman/candidates/java/21-graal
-ENV JAVA_HOME=/root/.sdkman/candidates/java/21-graal
-ENV PATH="/root/.sdkman/candidates/java/21-graal/bin:/root/.sdkman/candidates/sbt/current/bin:$PATH"
+ENV GRAALVM_HOME=/root/.sdkman/candidates/java/25.4.4+1-graal
+ENV JAVA_HOME=/root/.sdkman/candidates/java/25.4.4+1-graal
+ENV PATH="/root/.sdkman/candidates/java/25.4.4+1-graal/bin:/root/.sdkman/candidates/sbt/current/bin:$PATH"
 
 RUN java -version
 
