@@ -142,7 +142,7 @@ instead of silently using a stale one.
 ```bash
 ./update_results.sh --pull-images
 # or through a wrapper, which also serves the fresh machine:
-./scaleway_bench.sh --update-args "--pull-images --skip-existing"
+./scaleway_bench.sh --update-args "--pull-images --skip-existing"Da
 ```
 
 ### Run it on Scaleway Elastic Metal
