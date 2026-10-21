@@ -118,7 +118,11 @@ gh auth refresh -h github.com -s write:packages,read:packages
 ./ghcr_images.sh push base go rust swift   # pick images, or no names for all
 ./ghcr_images.sh list                      # local size vs published?
 ./ghcr_images.sh pull go rust              # on another machine
+./ghcr_images.sh latest                     # point :latest at the published tags
 ```
+
+`latest` is only a convenience alias (`docker pull ghcr.io/<owner>/related_post_gen/go:latest`);
+the benchmark always uses the content-hash tag, so an image never drifts from its Dockerfile.
 
 Then make the packages public (GitHub -> your profile -> Packages -> package
 settings -> visibility), because private GHCR packages are metered (500MB free,

@@ -95,6 +95,14 @@ jobs:
                   echo "file=$file" >> "$GITHUB_OUTPUT"
                   echo "tag=$(sha256sum "$file" | cut -c1-12)" >> "$GITHUB_OUTPUT"
                   echo "ref=ghcr.io/${{ github.repository }}/${{ matrix.image }}:$(sha256sum "$file" | cut -c1-12)" >> "$GITHUB_OUTPUT"
+                  # ":latest" is a convenience alias for humans. The benchmark
+                  # always pulls the content tag, so the alias cannot make an
+                  # image drift from its Dockerfile. Only main advances it.
+                  if [ "${{ github.ref }}" = "refs/heads/main" ]; then
+                      echo "latest=ghcr.io/${{ github.repository }}/${{ matrix.image }}:latest" >> "$GITHUB_OUTPUT"
+                  else
+                      echo "latest=" >> "$GITHUB_OUTPUT"
+                  fi
                   head -1 "$file"
 
             # the default "docker" driver cannot export the gha cache, so buildx
@@ -133,7 +141,10 @@ jobs:
                   file: ${{ steps.meta.outputs.file }}
                   platforms: linux/amd64
                   push: ${{ env.SHOULD_PUSH == 'true' }}
-                  tags: ${{ steps.meta.outputs.ref }}
+                  # empty entries are ignored by the action
+                  tags: |
+                      ${{ steps.meta.outputs.ref }}
+                      ${{ steps.meta.outputs.latest }}
                   cache-from: type=gha,scope=${{ matrix.image }}
                   cache-to: type=gha,mode=max,scope=${{ matrix.image }}
 
