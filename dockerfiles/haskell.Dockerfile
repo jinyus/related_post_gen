@@ -6,10 +6,10 @@ FROM haskell:9.10.3-slim-bookworm
 
 # benchmark harness (+ llvm: the project builds with -fllvm, and GHC 9.10
 # accepts LLVM 13-15, so the versioned Debian tools are exposed under the plain
-# names GHC looks for)
+# names GHC looks for; clang assembles what llc emits)
 RUN apt-get update && apt-get install -y --no-install-recommends \
     git python3 python3-pip time which curl wget xz-utils ca-certificates sudo \
-    gcc libc6-dev make llvm-15 && \
+    gcc libc6-dev make clang llvm-15 && \
     rm -rf /var/lib/apt/lists/* && \
     ln -sf /usr/bin/llc-15 /usr/local/bin/llc && \
     ln -sf /usr/bin/opt-15 /usr/local/bin/opt && \

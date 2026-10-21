@@ -8,9 +8,11 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     rm -rf /var/lib/apt/lists/* && \
     pip3 install --break-system-packages --no-cache-dir faker nanoid
 
-# dev-2026-09 is pinned because run.sh passes -o:aggressive, which only
-# exists in newer releases (dev-2023-08 knows minimal/size/speed/none).
-RUN curl -fsSL https://github.com/odin-lang/Odin/releases/download/dev-2026-09/odin-linux-amd64-dev-2026-09.tar.gz -o /tmp/odin.tar.gz && \
+# Two constraints pin this version: run.sh passes -o:aggressive (dev-2023-08
+# only knows minimal/size/speed/none) and odin/related.odin calls
+# os.read_entire_file_from_filename, which was removed in dev-2026-03.
+# dev-2025-12 is the newest release satisfying both.
+RUN curl -fsSL https://github.com/odin-lang/Odin/releases/download/dev-2025-12/odin-linux-amd64-dev-2025-12.tar.gz -o /tmp/odin.tar.gz && \
     tar -C /opt -xzf /tmp/odin.tar.gz && rm -f /tmp/odin.tar.gz && \
     mv /opt/odin-linux-*/ /opt/odin
 ENV PATH="/opt/odin:$PATH"

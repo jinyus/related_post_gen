@@ -12,8 +12,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     rm -rf /var/lib/apt/lists/* && \
     pip3 install --break-system-packages --no-cache-dir faker nanoid
 
-RUN mkdir -p /usr/lib/llvm-15/bin && \
-    ln -sf /usr/bin/llvm-config-15 /usr/lib/llvm-15/bin/llvm-config && \
+RUN mkdir -p /usr/lib/llvm/15/bin && \
+    ln -sf /usr/bin/llvm-config-15 /usr/lib/llvm/15/bin/llvm-config && \
     llvm-config-15 --version && clang-15 --version | head -1
 
 RUN wget -q https://github.com/Neat-Lang/neat/releases/download/v0.5.2/neat-v0.5.2-llvm.tar.xz -O /tmp/neat.tar.xz && \
